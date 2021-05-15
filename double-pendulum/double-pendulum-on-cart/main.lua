@@ -1,5 +1,7 @@
 -- License CC0 (Creative Commons license) -- 2021 (c) darkfrei
 
+RK4 = require ('runge-kutta-rk4') -- https://love2d.org/forums/viewtopic.php?p=166759
+
 sin = math.sin
 cos = math.cos
 
@@ -7,7 +9,7 @@ function new_game ()
 	local width, height = love.graphics.getDimensions( )
 	local x0, y0 = width/2, height/2 -- center of screen
 	game = {}
-	game.g = 9.8 * 100 -- one meter is 100 pixels
+	game.g = 9.8 * 10 -- one meter is 10 pixels
 	game.handler = {}
 	
 	-- indexes: 1 - cart; 2, 3 - pendulums
@@ -61,11 +63,12 @@ function update_pendulum (h, dt)
 			+ 2*dq2^2*l2*m2*sin(q2) 
 			+ 2*dq2^2*l2*m3*sin(q2) 
 			+ dq3^2*l3*m3*sin(q3)))
-	/(2*m1*m2 + m1*m3 + m2*m3 - m2^2*cos(2*q2) + m2^2 - m2*m3*cos(2*q2) - m1*m3*cos(2*q2 - 2*q3))
+	/(2*m1*m2 + m1*m3 + m2*m3 - m2^2*cos(2*q2) 
+		+ m2^2 - m2*m3*cos(2*q2) - m1*m3*cos(2*q2 - 2*q3))
 	
 	-- pendulum 1
-	local ddq2 = -(dq2^2*l2*m2^2*sin(2*q2) - 
-		2*m1*g*m2*sin(q2) 
+	local ddq2 = -(dq2^2*l2*m2^2*sin(2*q2) 
+		- 2*m1*g*m2*sin(q2) 
 		- 2*g*m2*m3*sin(q2) 
 		- m1*g*m3*sin(q2) 
 		- m1*g*m3*sin(q2 - 2*q3) 
@@ -75,7 +78,8 @@ function update_pendulum (h, dt)
 		+ dq3^2*l3*m2*m3*sin(q2 - q3) 
 		+ dq2^2*l2*m2*m3*sin(2*q2) 
 		+ m1*dq2^2*l2*m3*sin(2*q2 - 2*q3))
-	/(l2*(2*m1*m2 + m1*m3 + m2*m3 - m2^2*cos(2*q2) + m2^2 - m2*m3*cos(2*q2) - m1*m3*cos(2*q2 - 2*q3)))
+	/(l2*(2*m1*m2 + m1*m3 + m2*m3 - m2^2*cos(2*q2) 
+			+ m2^2 - m2*m3*cos(2*q2) - m1*m3*cos(2*q2 - 2*q3)))
 	
 	-- pendulum 2
 	local ddq3 = (m1*(g*(m2 + m3)*(sin(q3) 
@@ -83,20 +87,35 @@ function update_pendulum (h, dt)
 			+ 2*dq2^2*l2*m2*sin(q2 - q3) 
 			+ 2*dq2^2*l2*m3*sin(q2 - q3) 
 			+ dq3^2*l3*m3*sin(2*q2 - 2*q3)))
-	/(l3*(2*m1*m2 + m1*m3 + m2*m3 - m2^2*cos(2*q2) + m2^2 - m2*m3*cos(2*q2) - m1*m3*cos(2*q2 - 2*q3)))
+	/(l3*(2*m1*m2 + m1*m3 + m2*m3 - m2^2*cos(2*q2) 
+			+ m2^2 - m2*m3*cos(2*q2) - m1*m3*cos(2*q2 - 2*q3)))
 
 --	print ('ddx1: ' .. ddx1 .. ' ddq2: ' .. ddq2 .. ' ddq3: ' .. ddq3)
+	
+--	RK4.Integrate2D
+	
+--	-- angle speeds
+--	h.dx1=h.dx1+dt*ddx1
+--	h.dq2=h.dq2+dt*ddq2
+--	h.dq3=h.dq3+dt*ddq3
+	
+	
+--	-- angles
+--	h.x1=h.x1+dt*dx1
+--	h.q2=h.q2+dt*dq2
+--	h.q3=h.q3+dt*dq3
 
-	-- angle speeds
-	h.dx1=h.dx1+dt*ddx1
-	h.dq2=h.dq2+dt*ddq2
-	h.dq3=h.dq3+dt*ddq3
+--	local rk4x1 = RK4.Integrate1D ({x=h.x1, v=h.dx1}, 0, dt, ddx1)
+--	local rk4q2 = RK4.Integrate1D ({x=h.q2, v=h.dq2}, 0, dt, ddq2)
+--	local rk4q3 = RK4.Integrate1D ({x=h.q3, v=h.dq3}, 0, dt, ddq3)
 	
+--	h.x1, h.dx1 = rk4x1.x, rk4x1.v
+--	h.q2, h.dq2 = rk4q2.x, rk4q2.v
+--	h.q3, h.dq3 = rk4q3.x, rk4q3.v
 	
-	-- angles
-	h.x1=h.x1+dt*dx1
-	h.q2=h.q2+dt*dq2
-	h.q3=h.q3+dt*dq3
+	h.x1, h.dx1 = RK4.integrate(h.x1, h.dx1, ddx1, dt)
+	h.q2, h.dq2 = RK4.integrate(h.q2, h.dq2, ddq2, dt)
+	h.q3, h.dq3 = RK4.integrate(h.q3, h.dq3, ddq3, dt)
 	
 --	p.y1 = 0
 
@@ -115,6 +134,7 @@ function update_pendulum (h, dt)
 	
 	-- potential energy
 	h.p = g*(m3*(l2*cos(q2) + l3*cos(q3)) + m2*l2*cos(q2))
+
 	
 	h.xgravity = (h.x1*h.m1 + h.x2*h.m2 + h.x3*h.m3)/(h.m1+h.m2+h.m3)
 end
@@ -124,12 +144,16 @@ function love.update(dt)
 	if pause then return end
 	if dt > 0.1 then dt = 0.1 end
 	
-	local dt2 = dt
-	dt = 0.001 -- 1 or 0.66 ms 
-	while dt2 > 0 do
-		dt2 = dt2-dt
-		dt = math.min(dt, dt2)
+	if false then
 		update_pendulum (game.handler, dt)
+	else
+		local dt2 = dt
+		dt = 0.001 -- 1 or 0.66 ms 
+		while dt2 > 0 do
+			dt2 = dt2-dt
+			dt = math.min(dt, dt2)
+			update_pendulum (game.handler, dt)
+		end
 	end
 end
 
@@ -145,6 +169,7 @@ function love.draw()
 	love.graphics.setColor(0.5,0.5,0.5)
 	love.graphics.setLineWidth( 1 )
 	love.graphics.line(h.xgravity, 0, h.xgravity, 1080)
+	love.graphics.print(' '..h.xgravity, h.xgravity, 0)
 
 	-- cart
 	local width, height  = 64, 32
