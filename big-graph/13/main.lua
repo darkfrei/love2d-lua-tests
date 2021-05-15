@@ -1,95 +1,19 @@
---local info = love.filesystem.getInfo( 'big-table.lua', filtertype )
---if info then
---	print("info")
---else
---	print("no info")
---	require('generate-graph')
---end
-	
-
---local list = require('big-table')
---local list = love.filesystem.read(filename)
-
---[[
-filename = 'big_tables.lua' -- you canfind it in the %appdata%\LOVE
-
-require('serialize-list')
-
-local chunk = love.filesystem.load(filename)
-if not chunk then
-	
-	if false then -- disabled
-		require('generate-graph')
-		chunk = love.filesystem.load(filename)
-		tables_list = chunk()
-	else -- special graph
-		print('special graph')
-		tables_list = require('my_tables')
-		
---		file = io.open( 'big-table.lua', "w" )
---		file:write(serialize_list(tables_list))
---		file:close()
-	end
-else
-	tables_list = chunk()
-end
-]]
-
-tables_list = require('my_tables')
-
-
-
 window = require ("zoom-and-move-window")
+to_tsv = require ("tsv-to-lua")
 
-function middle (line, k)
-	k = k or 3
-	local l = {}
-	for a = 1, 10 do
-		k=k+1
-		l = {}
-		for i = 1, k-1 do
-			l[i]=false
-		end
-		for i = k, #line-k+1 do
-			local n = 0
-			local min, max
-			local fl = true
-			for j = -k+1, (k-1) do
-				local v = line[i+j]
-				min = min and math.min(min, v) or v
-				max = max and math.max(max, v) or v
-				if v then 
-					n=n+v 
-				else
-					fl = false
-				end
-			end
-			if fl then
-				n=n-min-max
-				local value = n/(2*k-3)
-				l[#l+1]=value
-			else
-				l[#l+1]=false
-			end
-		end
-		line = l
-	end
-	l.color = {0,1,1}
-	return l
-end
-
-
-tables_list[#tables_list+1] = middle (tables_list[1])
-
+local tables_list = to_tsv('graph.tsv')
 
 function love.load()
 	local width = love.graphics.getWidth()
 	local height = love.graphics.getHeight()
---	love.graphics.translate( 0, height )
-
 	love.window.setMode( width, 600, {resizable=true})
 	window:load(height)
-	love.graphics.scale(0.5, 0.5)
+	
+	window.zoom = 0.00048828125
+	window.zoom_x = 0.25
+	window.translate.y = 300
+	
+	--	love.graphics.scale(0.5, 0.5)
 	frame = {0, width}
 	last_zoom = 1
 	dpixel = 1
@@ -109,11 +33,6 @@ function love.load()
 		end
 		lines[#lines+1]=line
 	end
---	print ('#lines:'..#lines)
---	print ('#lines[1]:'..#lines[1])
---	print ('#lines[2]:'..#lines[2])
-	
-	--lines[#lines+1]=derivative (lines[2])
 end
  
  
@@ -144,7 +63,6 @@ function love.update(dt)
 		last_zoom = window.zoom
 		last_tx = window.translate.x
 	end
-	
 end
  
  
@@ -165,7 +83,7 @@ function love.draw()
 		end
 	end
 	
-	if true then
+	if true then -- debug enabled
 	-- debug GUI
 		local mx = love.mouse.getX()
 		local my = love.mouse.getY()
