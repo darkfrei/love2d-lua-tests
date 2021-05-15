@@ -15,8 +15,6 @@ end
 function RK4.integrate (x, v, acc, dt) -- old position and velocity; new acceleration, dt between them
 	local state = {x=x,v=v, a=acc}
 	local derivative = {dx = 0,	dv = 0}
---	local derivative = {dx = v,	dv = 0}
---	local derivative = {dx = v,	dv = acc}
 	local a = RK4.evaluate (state, 0, derivative)
 	local b = RK4.evaluate (state, 0.5*dt, a)
 	local c = RK4.evaluate (state, 0.5*dt, b)
