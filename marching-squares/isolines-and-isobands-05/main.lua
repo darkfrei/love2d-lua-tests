@@ -6,15 +6,49 @@
 --	https://www.youtube.com/watch?v=0ZONMNUKTfU
 
 
+
+
+function field_noise_rescale (min, max)
+	
+	for i, js in pairs (field) do
+		for j, value in pairs (js) do
+			value = (value-min)/max
+			value = math.floor(value*16)/16
+			field[i][j] = value
+		end
+	end
+	
+end
+
+function rewrite (from, to)
+	
+		
+end
+
+function deepcopy (tabl)
+	local new_table = {}
+		
+	return new_table
+end
+
+
+
 function new_field ()
 	field = {}
+	
+	local min, max
 	for i = 1, cols-1 do
 		field[i] = {}
 		for j = 1, rows-1 do
-			field[i][j] = math.random()
+			local value = math.random()
+			field[i][j] = value
+			min = not min and value or min > value and value or min
+			max = not max and value or max < value and value or max
 --			field[i][j] = math.random(2)-1
 		end
 	end
+	
+	field_noise_rescale (min, max)
 end
 
 
