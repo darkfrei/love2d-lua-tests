@@ -16,11 +16,9 @@ end
 function love.load()
 	love.window.setMode(1920, 1080, {resizable=false, borderless=true})
 	love.graphics.setLineWidth( 2 )
---	love.graphics.setBlendMode("multiply", "premultiplied")
 	love.graphics.setBlendMode("alpha")
---	love.graphics.setBlendMode("add")
---	love.graphics.setBlendMode("replace")
---	love.graphics.setBlendMode("screen")
+	
+	canvas = love.graphics.newCanvas(1920, 1080)
 	
 	pendulums = {}
 	for i = 1, 10000 do
@@ -41,6 +39,8 @@ function love.load()
 	fullscrean = false
 	show_dots = true
 	show_lines = true
+	
+	show_canvas = true
 end
 
 
@@ -63,19 +63,44 @@ function update_pendulum (p, dt)
 	
 	p.x2 = p.x1+p.l2*sin(p.O2)
 	p.y2 = p.y1+p.l2*cos(p.O2)
+	
+
 end
 
 
-function love.update(dt2)
+function love.update(dt)
 	if pause then return end
+	dt = 1/60
+	
 	for i, pendulum in pairs (pendulums) do
-		update_pendulum (pendulum, dt2)
+		update_pendulum (pendulum, dt)
 	end	
+	
+	local points = {}
+	for i, pendulum in pairs (pendulums) do
+		table.insert (points, pendulum.x2)
+		table.insert (points, pendulum.y2)
+	end	
+	
+	love.graphics.setCanvas(canvas)
+--		love.graphics.setBlendMode("alpha")
+--		love.graphics.setBlendMode("alpha", "premultiplied")
+--		love.graphics.setBlendMode("multiply", "premultiplied")
+--		love.graphics.setBlendMode("lighten", "premultiplied")
+--		love.graphics.setBlendMode("add", "alphamultiply")
+--		love.graphics.setBlendMode("add", "alphamultiply")
+--		love.graphics.setBlendMode("add")
+--		love.graphics.setColor(1,1,1, 1/255)
+--		love.graphics.setColor(1/8, 1/8, 1/255, 1)
+		love.graphics.setColor(1, 1, 1, 1/32)
+		love.graphics.points(points)	
+	love.graphics.setCanvas()
 end
 
 
 function love.draw()
 	love.graphics.setColor(1,1,1)
+	love.graphics.setBlendMode("alpha")
 	if pause then
 		love.graphics.print('press space', 30, 10)
 	end
@@ -83,6 +108,7 @@ function love.draw()
 	love.graphics.print('FPS: '.. tostring(love.timer.getFPS( )), 30, 30+20)
 	love.graphics.print('z: show lines: '.. tostring(show_lines), 30, 30+2*20)
 	love.graphics.print('x: show dots: '.. tostring(show_dots), 30, 30+3*20)
+	love.graphics.print('c: clear canvas', 30, 30+4*20)
 	
 	if fullscreen then
 			love.graphics.scale(2,2)
@@ -103,6 +129,9 @@ function love.draw()
 			end
 		end
 	end
+	love.graphics.setColor(1, 1, 1)
+--	love.graphics.setBlendMode("add", "premultiplied")
+	love.graphics.draw(canvas, 0, 0)
 end
 
 function love.keypressed(key, scancode, isrepeat)
@@ -117,7 +146,11 @@ function love.keypressed(key, scancode, isrepeat)
 		
 	elseif key == "x" then
 		show_lines = not show_lines
-
+		
+	elseif key == "c" then
+		love.graphics.setCanvas(canvas)
+			love.graphics.clear()
+		love.graphics.setCanvas()
 	elseif key == "escape" then
 		love.event.quit()
 	end
