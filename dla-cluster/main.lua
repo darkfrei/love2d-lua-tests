@@ -9,7 +9,8 @@ function love.load()
 --	else
 --		love.window.setMode(ddwidth, ddheight-200, {resizable=true, borderless=false})
 --	end
-	love.window.setMode(1230, 692, {resizable=true, borderless=false})
+--	love.window.setMode(1230, 692, {resizable=true, borderless=false})
+	love.window.setFullscreen( true )
 	
 	width, height = love.graphics.getDimensions( )
 	
@@ -17,7 +18,7 @@ function love.load()
 	canvas = love.graphics.newCanvas(width, height)
 	canvas:setFilter("linear", "nearest")
 	
-	scale = 2
+	scale = 4
 	
 --	love.graphics.setPointSize( scale )
 
