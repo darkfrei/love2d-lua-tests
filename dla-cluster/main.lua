@@ -9,8 +9,8 @@ function love.load()
 --	else
 --		love.window.setMode(ddwidth, ddheight-200, {resizable=true, borderless=false})
 --	end
---	love.window.setMode(1230, 692, {resizable=true, borderless=false})
-	love.window.setFullscreen( true )
+	love.window.setMode(1230, 800, {resizable=true, borderless=false})
+--	love.window.setFullscreen( true )
 	
 	width, height = love.graphics.getDimensions( )
 	
@@ -18,7 +18,7 @@ function love.load()
 	canvas = love.graphics.newCanvas(width, height)
 	canvas:setFilter("linear", "nearest")
 	
-	scale = 4
+	scale = 2
 	
 --	love.graphics.setPointSize( scale )
 
@@ -26,6 +26,7 @@ function love.load()
 	
 	map = {}
 	center = {x=math.floor(width/2), y=math.floor(height/2)}
+	dots = 0
 --	add_point_to_map (center.x, center.y, true)
 	add_point_to_map (center.x, center.y, false)
 	
@@ -35,8 +36,15 @@ function love.load()
 	rectangle.x2 = center.x+rectangle.s
 	rectangle.y2 = center.y+rectangle.s
 	
-	dots = 0
+	
 	full = false
+end
+
+function dots_to_color ()
+	local r = 0.5 + 0.5* math.cos(dots^0.5/7)
+	local g = 0.6 + 0.4* math.cos(dots^0.5/27)
+	local b = 0.6 + 0.2* math.cos(dots^0.5/47)
+	return {r,g,b}
 end
 
 function add_point_to_map (x, y, ignore)
@@ -49,11 +57,9 @@ function add_point_to_map (x, y, ignore)
 	if not ignore then
 --		love.graphics.scale(1, 1)
 		love.graphics.setCanvas(canvas)
---			love.graphics.scale(1, 1)
---			love.graphics.scale(scale, scale)
-			love.graphics.setColor(1,1,1)
+--			love.graphics.setColor(1,1,1)
+			love.graphics.setColor(dots_to_color ())
 			love.graphics.points(x,y)
---			love.graphics.scale(1,1)
 		love.graphics.setCanvas()
 	end
 end
@@ -184,7 +190,7 @@ end
 
 function love.draw()
 	love.graphics.setColor(1,1,1)
-	love.graphics.print('dots: '..dots, 10, 10)
+	love.graphics.print('dots: '..dots..'	'.. (100*dots/((rectangle.x2-rectangle.x1)*(rectangle.y2-rectangle.y1)))..'%', 10, 10)
 	love.graphics.print('press space for fast speed', 10, 30)
 	love.graphics.print('fast: '..tostring(fast), 10, 50)
 	love.graphics.print('full: '..tostring(full), 10, 70)
@@ -202,7 +208,7 @@ function love.draw()
 	
 	if agent and not fast then
 		love.graphics.setColor(1,1,0)
-		love.graphics.circle ('fill', scale*agent.x, scale*agent.y, 2)
+		love.graphics.circle ('fill', scale*agent.x, scale*agent.y, scale)
 		
 --		love.graphics.line(scale*agent.x, scale*agent.y, scale*center.x, scale*center.y)
 	end
