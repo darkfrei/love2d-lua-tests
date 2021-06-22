@@ -14,19 +14,43 @@ function love.load()
 --	circle = {x=width/scale/2+(1/128)/scale, y=height/scale/2+4/scale, d=2}
 	circle = {x=width/scale/2, y=height/scale/2, d=2}
 	canvas:setFilter("nearest", "nearest")
+	
+	local r = 10
+	for y = -r, r do -- r is radius, integer
+		-- mx is min x and max x for current horizontal line
+		--local mx = math.cos (math.arcsin(y/r))
+		local mx = math.ceil(r*(1-(y/r)^2)^0.5)
+--		for x = -mx, mx do
+			print (y .. ' ' .. mx)
+--		end
+	end
 end
 
  
 function love.update(dt)
 	buffer = buffer + dt
 	if buffer > buffer_limit then
-		circle.d = circle.d + 1
+		circle.d = circle.d + 2
 		love.graphics.setCanvas(canvas)
 			love.graphics.clear()
-			love.graphics.setLineStyle("rough")
-			love.graphics.setDefaultFilter("nearest", "nearest")
-			love.graphics.setLineWidth( 0.8 )
-			love.graphics.circle('line', circle.x + (circle.d/2)%1, 0.5+circle.y + (circle.d/2)%1, circle.d/2)
+			points = {}
+--			local r = 20
+			local r = circle.d / 2
+			for y = -r, r do -- r is radius, integer
+				-- mx is min x and max x for current horizontal line
+				--local mx = math.cos (math.arcsin(y/r))
+				local mx = math.ceil(r*(1-(y/r)^2)^0.5)
+				for x = -mx, mx do
+					table.insert (points, x)
+					table.insert (points, y)
+				end
+			end
+			love.graphics.points(points)
+			--love.graphics.clear()
+--			love.graphics.setLineStyle("rough")
+--			love.graphics.setDefaultFilter("nearest", "nearest")
+--			love.graphics.setLineWidth( 0.8 )
+--			love.graphics.circle('line', circle.x + (circle.d/2)%1, 0.5+circle.y + (circle.d/2)%1, circle.d/2)
 		love.graphics.setCanvas()
 		buffer = buffer - buffer_limit
 	end
@@ -36,6 +60,8 @@ end
 function love.draw()
 	love.graphics.setDefaultFilter("nearest", "nearest")
 	love.graphics.draw(canvas, 0, 0,0,scale, scale)
+	
+
 end
 
 function love.keypressed(key, scancode, isrepeat)
