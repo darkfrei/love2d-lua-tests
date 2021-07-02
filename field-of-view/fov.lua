@@ -4,13 +4,19 @@ fov = {}
 
 
 
-fov.march_line = function (map, view, i1, j1, i2, j2) -- source and target
+fov.march_line = function (map, view, i1, j1, i2, j2, radius) -- source and target
 	local length = math.abs(i2-i1) + math.abs(j2-j1)
 	if length > 1 then
 		local dx = (i2-i1)/(length)
 		local dy = (j2-j1)/(length)
 		for n = 1, length do
-			local i, j = math.floor (i1+n*dx+0.5), math.floor (j1+n*dy+0.5)
+--			local i, j = math.floor (i1+n*dx+0.5), math.floor (j1+n*dy+0.5) -- makes path wetweed diagonals
+			local i, j = math.floor (i1+n*dx+0.5+0.00001*dy), math.floor (j1+n*dy+0.5-0.000001*dx) -- fixed!
+			
+			if radius^2 <= ((i1-i)^2+(j1-j)^2) then
+				-- out of range for circle
+				return
+			end
 			
 			view[i] = view[i] or {}
 			if map[i] and map[i][j] and map[i][j] <= 0 then
@@ -32,13 +38,13 @@ end
 
 function fov.marching (map, i, j, radius)
 	local view = {}
-	for i2 = i - radius, i + radius do
-		fov.march_line (map, view, i, j, i2, j+radius)
-		fov.march_line (map, view, i, j, i2, j-radius)
+	for i2 = i-radius, i+radius do
+		fov.march_line (map, view, i, j, i2, j+radius, radius)
+		fov.march_line (map, view, i, j, i2, j-radius, radius)
 	end
-	for j2 = j - radius + 1, i + radius - 1 do
-		fov.march_line (map, view, i, j, i+radius, j2)
-		fov.march_line (map, view, i, j, i-radius, j2)
+	for j2 = j-radius+1, j+radius-1 do
+		fov.march_line (map, view, i, j, i+radius, j2, radius)
+		fov.march_line (map, view, i, j, i-radius, j2, radius)
 	end
 	return view
 end
