@@ -9,16 +9,18 @@ function love.load()
 	love.window.setMode( ww/2, wh/2)
 	width, height = love.graphics.getDimensions( )
 
-	rez = 8
+	rez = 16
 	map_width, map_height = math.floor((width-rez)/rez), math.floor((height-rez)/rez)
 	
 	blobs = {}
-	for n = 1, 10 do
+	for n = 1, 30 do
 		local blob = {x=math.random (map_width), y=math.random(map_height)}
 		blob.radius = math.random(10, 100)
 		blob.rezradius = blob.radius / 32
 		blob.vx = -math.random (50, 200)/rez
 		blob.vy = -math.random (10, 200)/rez
+--		blob.color = ({{1,0,0},{0,1,0},{0,0,1}})[math.random(3)]
+		blob.color = ({{1,0,0},{0,1,0},{0,0,1}})[(n-1)%3+1]
 		table.insert (blobs, blob)
 	end
 end
@@ -47,9 +49,6 @@ function love.update(dt)
 	end
 end
 
-function draw_rectangle (mode, x, y)
-	
-end
 
 function dist(x1, y1, x2, y2)
 	return math.sqrt((x2-x1)^2+(y2-y1)^2)
@@ -58,13 +57,16 @@ end
 function love.draw()
 	for i = 1, map_width do
 		for j = 1, map_height do
-			local c = 0
+--			local c = {0,0,0}
+			local r, g ,b = 0,0,0
 			for n, blob in pairs (blobs) do
 				local d = dist(i, j, blob.x, blob.y)
-				c = c + (1/(2*rez))*blob.radius/d
+				r = r + blob.color[1]*(1/(2*rez))*blob.radius/d
+				g = g + blob.color[2]*(1/(2*rez))*blob.radius/d
+				b = b + blob.color[3]*(1/(2*rez))*blob.radius/d
 				
 			end
-			love.graphics.setColor(c,c,c)
+			love.graphics.setColor(r*r,g*g,b*b)
 			love.graphics.rectangle('fill', rez*(i-1/2), rez*(j-1/2), rez, rez)
 		end
 	end
