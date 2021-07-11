@@ -7,13 +7,15 @@ end
 local slime = {}
 
 function slime.new(x, y, grid_size, slime_size)
-	local factor = 0.1*grid_size
+--	local factor = 0.1*grid_size
+--	local factor = 1*grid_size
+	local factor = 1*grid_size
 	slime.r = grid_size*slime_size
 
-	slime.g = 10*factor
-	slime.jump_vy = 1.25*factor^2
-	slime.vx_max=0.7*factor^2
-	slime.ax_max=128*factor
+	slime.g = (10*factor)
+	slime.jump_vy = (5*factor)
+	slime.vx_max=(2.25*factor)
+	slime.ax_max=(128*factor)
 	slime.wall_speed = (1/2)*factor
 	
 	slime.x=x
@@ -77,16 +79,19 @@ function bounce_ceiling (dt)
 	
 	local i1, j1 = get_grid (slime.x, slime.y-slime.r-0.00001)
 	
-	local i2, j2 = get_grid (slime.x+dt*slime.vx, slime.y-slime.r+dt*slime.vy)
+	local i2, j2 = get_grid (slime.x+dt*slime.vx, slime.y-slime.r+dt*slime.vy-0.00001)
 
-	if (not slime.on_ceiling) and (is_tile_wall (i1, j1)) then
+--	if (not slime.on_ceiling) and is_tile_wall (i1, j1) then
 --		slime.vy = 0
-		
-	elseif (not slime.on_ceiling) and (is_tile_wall (i2, j2)) then
+--		slime.on_ceiling = true
+--	elseif (not slime.on_ceiling) and is_tile_wall (i2, j2) then
+	if (not slime.on_ceiling) and is_tile_wall (i2, j2) then
 		slime.y = (j-0.5)*grid_size+slime.r
 		slime.vy = 0
 		slime.on_ceiling = true
-	elseif slime.on_ceiling and is_tile_wall (i1, j1-1) then
+--	elseif slime.on_ceiling and is_tile_wall (i, j-1) then
+	elseif slime.on_ceiling and is_tile_wall (i1, j1) then
+		-- idle on ceiling
 		slime.vy = 0
 	else
 		slime.on_ceiling = false
@@ -94,7 +99,7 @@ function bounce_ceiling (dt)
 end
 
 function bounce_wall (dt)
-	if slime.on_corner then return end
+	
 	
 	local sign = slime.vx > 0 and 1 or slime.vx < 0 and -1 or 0
 	if sign == 0 then 
