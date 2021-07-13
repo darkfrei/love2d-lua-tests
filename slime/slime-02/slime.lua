@@ -9,14 +9,22 @@ local slime = {}
 function slime.new(x, y, grid_size, slime_size)
 --	local factor = 0.1*grid_size
 --	local factor = 1*grid_size
-	local factor = 1*grid_size
+	local factor = 3
+	
+	slime.grid_size = grid_size
+	slime.slime_size = slime_size
+--	local factor = 2*grid_size
+	
 	slime.r = grid_size*slime_size
 
-	slime.g = (10*factor)
-	slime.jump_vy = (5*factor)
-	slime.vx_max=(2.25*factor)
-	slime.ax_max=(128*factor)
-	slime.wall_speed = (1/2)*factor
+--	slime.g = (50000*factor)^0.5
+	slime.g = 1000*factor
+--	slime.jump_vy = (7*factor)
+	slime.jump_vy = 500*factor^0.5
+--	slime.vx_max=(2.25*factor)
+	slime.vx_max=220*factor^0.5
+	slime.ax_max=(1000*grid_size)
+	slime.wall_speed = (1/2)*grid_size*factor
 	
 	slime.x=x
 	slime.y=y
@@ -39,10 +47,17 @@ function check_corners (dt) -- static solution only
 	local n = 0
 	local n_corner = 0
 --	local points = {{i=-1.000001,j=-1.000001}, {i=1,j=-1.000001}, {i=1,j=1}, {i=-1.000001,j=1}}
+--	local points = {{i=-1.000001,j=-1.000001}, {i=1,j=-1.000001}, {i=1,j=1}, {i=-1.000001,j=1}}
+--	local points = {{i=-0.99,j=-0.99}, {i=0.99,j=-1}, {i=0.99,j=0.99}, {i=-0.99999,j=0.99}}
+--	local points = {
+--		{i=-1.000001,j=-1.000001}, 	{i=0,j=-1.000001},	{i=1,j=-1.000001}, 
+--		{i=-1.000001,j=0}, 								{i=1,j=0}, 
+--		{i=-1.000001,j=1}, 			{i=0,j=1},			{i=1,j=1}
+--		}
 	local points = {
-		{i=-1.000001,j=-1.000001}, 	{i=0,j=-1.000001},	{i=1,j=-1.000001}, 
-		{i=-1.000001,j=0}, 								{i=1,j=0}, 
-		{i=-1.000001,j=1}, 			{i=0,j=1},			{i=1,j=1}
+		{i=-0.99,j=-0.99}, 	{i=0,j=-0.99},	{i=0.99,j=-0.99}, 
+		{i=-0.99,j=0}, 						{i=0.99,j=0}, 
+		{i=-0.99,j=0.99}, 	{i=0,j=0.99},	{i=0.99,j=0.99}
 		}
 	
 	
@@ -52,7 +67,8 @@ function check_corners (dt) -- static solution only
 			n_corner = nn_corner
 		end
 	end
-	if n == 1 then
+	if n>0 and n<3 then
+--	if n == 1 then
 		slime.on_corner = true
 		slime.n_corner = n_corner
 	else
@@ -108,6 +124,16 @@ function bounce_wall (dt)
 --		local i2, j2 = get_grid (slime.x+slime.r, slime.y)
 		if slime.on_wall and not (is_tile_wall (i4, j4) or is_tile_wall (i6, j6)) then
 			slime.on_wall = false
+		elseif slime.vy>slime.wall_speed then
+			if not slime.on_wall and is_tile_wall (i4, j4) then
+				-- left
+				slime.x = (i4+0.5)*grid_size+slime.r
+				slime.on_wall = true
+			elseif not slime.on_wall and is_tile_wall (i6, j6) then
+				-- right
+				slime.x = (i6-0.5)*grid_size-slime.r
+				slime.on_wall = true
+			end
 		end
 		return 
 	end
@@ -132,6 +158,42 @@ function XOR (a, b)
 	return (a or b) and not (a==b)
 end
 
+function bounce_corner (dt)
+	if slime.n_corner == 1 then
+		slime.vx = -slime.vy
+		slime.on_ceiling = true
+	elseif slime.n_corner == 2 then
+		slime.vx = slime.vy
+		slime.on_ceiling = true
+	elseif slime.n_corner == 3 then
+		slime.vx = math.min(-slime.vy, slime.vx)
+	elseif slime.n_corner == 4 then
+		slime.vx = math.max(slime.vy, slime.vx)
+	end
+	
+--	if slime.n_corner == 6 or slime.n_corner == 7 or slime.n_corner == 8 then
+--		slime.vy = 0
+--	else
+--		slime.vx = 0
+--	end
+--	if false then
+		
+--	elseif slime.n_corner == 3 then
+		
+--	elseif slime.n_corner == 4 then
+--		slime.vx = 0
+----		slime.vx, slime.vy = slime.vx, slime.vy
+
+
+--	elseif slime.n_corner == 6 or slime.n_corner == 7 then
+--		slime.vx = math.max(slime.vy, slime.vx)
+--		slime.on_wall = true
+--	elseif slime.n_corner == 8 then
+--		slime.vx = math.min(-slime.vy, slime.vx)
+--		slime.on_wall = true
+--	end
+end
+
 
 function slime.update(dt, map)
 	
@@ -151,16 +213,10 @@ function slime.update(dt, map)
 	elseif not slime.on_corner then
 		slime.vy = slime.vy + dt*slime.g
 	end
-	
-	if love.keyboard.isDown('s') and slime.on_ceiling then
-		slime.vy = slime.vy + dt*slime.g
-		slime.on_ceiling = false
-		slime.flying = true
-	end
-	
+
 
 	check_corners (dt)
-	if slime.on_corner then
+	if false and slime.on_corner then
 --		bounce_corner (dt)
 	else
 		bounce_floor (dt)
@@ -175,21 +231,17 @@ end
 function slime.draw()
 	if slime.on_corner then
 		love.graphics.setColor(0.5,0,0)
-	elseif slime.on_wall then
-		love.graphics.setColor(0,0.5,0)
+	
 	elseif slime.on_ceiling then
 		love.graphics.setColor(0,0,0.7)
+	elseif slime.on_wall then
+		love.graphics.setColor(0,0.5,0)
 	else
 		love.graphics.setColor(0,0,0)
 	end
 	love.graphics.rcircle('fill', slime.x,slime.y, slime.r)
 	love.graphics.setColor(1,1,1)
 	love.graphics.rcircle('line', slime.x,slime.y, slime.r)
-	love.graphics.setColor(0,1,0)
---	love.graphics.print(' '..tostring(slime.on_ceiling), slime.x,slime.y)
-	love.graphics.print('floor: '..tostring(slime.on_floor), slime.x,slime.y+20)
-	love.graphics.print('corner: '..tostring(slime.n_corner), slime.x,slime.y+40)
-	love.graphics.print('wall: '..tostring(slime.on_wall), slime.x,slime.y+60)
 	
 	local ii = 1
 	for i, v in pairs (slime) do
@@ -206,13 +258,27 @@ function slime.draw()
 end
 
 function slime.keypressed(key, scancode, isrepeat)
-	if key == "space" then
+	if false then
+		
+	elseif key == "w" or key == "space" then
 		if slime.on_floor or slime.on_wall or slime.on_corner then
-			slime.vy = -(slime.jump_vy)
+			if slime.on_wall then
+				slime.vy = -1.4*(slime.jump_vy)
+			else
+				slime.vy = -(slime.jump_vy)
+			end
 			
 			slime.on_floor = false
 			slime.on_wall = false
 			slime.on_corner = false
+		end
+	elseif key == "s" then
+	
+		if slime.on_ceiling then
+--			slime.vy = slime.vy
+			slime.on_ceiling = false
+		elseif slime.on_wall and (not slime.ignore_wall) then
+			slime.ignore_wall = true
 		end
 	end
 end
