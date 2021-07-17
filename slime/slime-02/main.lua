@@ -8,7 +8,7 @@ function love.load()
 --	local ddwidth, ddheight = love.window.getDesktopDimensions( display )
 --	if ddheight > 1080 then
 --		print('ddheight: ' .. ddheight)
-		love.window.setMode(1920, 1080, {resizable=true, borderless=false})
+--		love.window.setMode(1920, 1080, {resizable=true, borderless=false})
 --	else
 --		love.window.setMode(ddwidth, ddheight-200, {resizable=true, borderless=false})
 --	end
@@ -28,7 +28,7 @@ function love.load()
 		}
 
 	grid_size = math.floor (math.min (width/(#map[1]+1), (height/(#map+1))))
-	grid_size = 100
+--	grid_size = 100
 	
 	
 	slime_size = 1/8
@@ -51,32 +51,41 @@ function love.draw()
 	love.graphics.translate(-camera.x, 0)
 	
 	for j, is in pairs (map) do
-		for i, v in pairs (is) do
-			local c = 1-v
-			love.graphics.setColor(c,c,c)
-			love.graphics.rectangle('fill', (i-0.5)*grid_size, (j-0.5)*grid_size, grid_size, grid_size)
-			love.graphics.setColor(0.5,0.5,0.5)
-			love.graphics.rectangle('line', (i-0.5)*grid_size, (j-0.5)*grid_size, grid_size, grid_size)
-			
-			if is_tile_wall (i, j)then
-				love.graphics.setColor(1,1,1)
-				local a = 1*slime_size
-				if not (is_tile_wall (i, j-1) or is_tile_wall (i-1, j) or is_tile_wall (i-1, j-1)) then
-					love.graphics.line ((i-0.5)*grid_size, (j+(-0.5+a))*grid_size, (i+(-0.5+a))*grid_size, (j-0.5)*grid_size)
+--	for j = math.floor((camera.x)/grid_size+0.5), math.floor((camera.x+camera.w)/grid_size+0.5) do
+--		local is = map[j]
+		if is then
+--			for i, v in pairs (is) do
+			for i = math.floor((camera.x)/grid_size+0.5), math.floor((camera.x+camera.w)/grid_size+0.5) do
+				local v = map[j][i]
+				if v then
+					
+					local c = 1-v
+					love.graphics.setColor(c,c,c)
+					love.graphics.rectangle('fill', (i-0.5)*grid_size, (j-0.5)*grid_size, grid_size, grid_size)
+					love.graphics.setColor(0.5,0.5,0.5)
+					love.graphics.rectangle('line', (i-0.5)*grid_size, (j-0.5)*grid_size, grid_size, grid_size)
+					
+					if is_tile_wall (i, j)then
+						love.graphics.setColor(1,1,1)
+						local a = 1*slime_size
+						if not (is_tile_wall (i, j-1) or is_tile_wall (i-1, j) or is_tile_wall (i-1, j-1)) then
+							love.graphics.line ((i-0.5)*grid_size, (j+(-0.5+a))*grid_size, (i+(-0.5+a))*grid_size, (j-0.5)*grid_size)
+						end
+						
+						if not (is_tile_wall (i, j+1) or is_tile_wall (i-1, j) or is_tile_wall (i-1, j+1)) then
+							love.graphics.line ((i-0.5)*grid_size, (j+(0.5-a))*grid_size, (i+(-0.5+a))*grid_size, (j+0.5)*grid_size)
+						end
+						
+						if not (is_tile_wall (i, j-1) or is_tile_wall (i+1, j) or is_tile_wall (i+1, j-1)) then
+							love.graphics.line ((i+0.5)*grid_size, (j+(-0.5+a))*grid_size, (i+(0.5-a))*grid_size, (j-0.5)*grid_size)
+						end
+						
+						if not (is_tile_wall (i, j+1) or is_tile_wall (i+1, j) or is_tile_wall (i+1, j+1)) then
+							love.graphics.line ((i+0.5)*grid_size, (j+(0.5-a))*grid_size, (i+(0.5-a))*grid_size, (j+0.5)*grid_size)
+						end
+						
+					end
 				end
-				
-				if not (is_tile_wall (i, j+1) or is_tile_wall (i-1, j) or is_tile_wall (i-1, j+1)) then
-					love.graphics.line ((i-0.5)*grid_size, (j+(0.5-a))*grid_size, (i+(-0.5+a))*grid_size, (j+0.5)*grid_size)
-				end
-				
-				if not (is_tile_wall (i, j-1) or is_tile_wall (i+1, j) or is_tile_wall (i+1, j-1)) then
-					love.graphics.line ((i+0.5)*grid_size, (j+(-0.5+a))*grid_size, (i+(0.5-a))*grid_size, (j-0.5)*grid_size)
-				end
-				
-				if not (is_tile_wall (i, j+1) or is_tile_wall (i+1, j) or is_tile_wall (i+1, j+1)) then
-					love.graphics.line ((i+0.5)*grid_size, (j+(0.5-a))*grid_size, (i+(0.5-a))*grid_size, (j+0.5)*grid_size)
-				end
-				
 			end
 		end
 	end

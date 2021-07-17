@@ -5,7 +5,7 @@ end
 local slime = {}
 
 function slime.new(x, y, grid_size, slime_size)
-	local factor = 2
+	local factor = 2*grid_size/100
 	
 	slime.grid_size = grid_size
 	slime.slime_size = slime_size
@@ -13,8 +13,10 @@ function slime.new(x, y, grid_size, slime_size)
 	slime.r = grid_size*slime_size
 
 	slime.g = 1000*factor
-	slime.jump_vy = 500*factor^0.5
-	slime.vx_max=230*factor^0.5
+--	slime.jump_vy = 500*factor^0.5
+	slime.jump_vy = 380*factor^0.5
+--	slime.vx_max=230*factor^0.5
+	slime.vx_max=170*factor^0.5
 	slime.ax_max=(1000*grid_size)
 	slime.wall_speed = (1/2)*grid_size*factor
 	
@@ -107,7 +109,7 @@ function bounce_wall (dt)
 	if is_tile_wall (i2d, j2d) then
 		slime.vx = 0
 		slime.x = (i+sign*0.5)*grid_size-sign*slime.r
-		if slime.vy>0 then
+		if slime.vy >= 0 then
 			slime.on_wall = true
 		end
 	else
@@ -128,6 +130,9 @@ function slime.update(dt, map)
 	elseif love.keyboard.isDown('a') then
 		slime.vx = slime.vx - dt*slime.ax_max
 		slime.vx = math.max (slime.vx, -slime.vx_max)
+	elseif love.keyboard.isDown('m') then
+		slime.x = slime.x + grid_size
+		return
 	elseif not (slime.vx == 0) then
 		local sign = slime.vx > 0 and 1 or -1
 		slime.vx = sign * math.max (0, math.abs(slime.vx) - dt*slime.ax_max)
