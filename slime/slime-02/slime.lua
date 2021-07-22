@@ -4,21 +4,18 @@ end
 
 local slime = {}
 
-function slime.new(x, y, grid_size, slime_size)
-	local factor = 2*grid_size/100
+function slime.new(x, y)
 	
-	slime.grid_size = grid_size
-	slime.slime_size = slime_size
+	slime.grid_size = 96
+	slime.slime_size = 24
 	
-	slime.r = grid_size*slime_size
+	slime.r = 12
 
-	slime.g = 1000*factor
---	slime.jump_vy = 500*factor^0.5
-	slime.jump_vy = 380*factor^0.5
---	slime.vx_max=230*factor^0.5
-	slime.vx_max=170*factor^0.5
-	slime.ax_max=(1000*grid_size)
-	slime.wall_speed = (1/2)*grid_size*factor
+	slime.g = 40*96
+	slime.jump_vy = 10*96
+	slime.vx_max=5*96
+	slime.ax_max=24*24*10
+	slime.wall_speed = 4*24
 	
 	slime.x=x slime.y=y
 	slime.vx=0 slime.vy=0
@@ -46,12 +43,6 @@ function bounce_floor (dt)
 		slime.y = (j2d-0.5)*grid_size-slime.r
 		slime.vy = 0
 		slime.on_floor = true
---	elseif is_tile_wall (i1d, j1d) and slime.vx > 0 then
---		slime.vx = math.max (slime.vy, slime.vx)
---		slime.vy = slime.vx
---	elseif is_tile_wall (i3d, j3d) and slime.vx < 0 then
---		slime.vx = math.min (slime.vy, slime.vx)
---		slime.vy = -slime.vx
 	else
 		slime.on_floor = false
 	end
