@@ -1,13 +1,18 @@
 local graphics = {}
 	
-graphics.draw_map = function (i1, j1, i2, j2)
+graphics.draw_map = function (i1, j1, i2, j2, view, seen)
 --	for j, is in pairs (map) do
 	for j = j1, j2 do
 		local is = map[j]
 		if is then
 			for i = i1, i2 do
 				local v = map[j][i]
-				if v then
+				local is_view = view[j] and view[j][i]
+--				local is_seen = seen and seen[j] and seen[j][i]
+				local is_seen = seen and seen[i] and seen[i][j]
+--				if v and is_view then
+				if v and is_seen then
+--				if v then
 					
 					local c = 1-v
 					love.graphics.setColor(c,c,c)
@@ -36,6 +41,8 @@ graphics.draw_map = function (i1, j1, i2, j2)
 						end
 						
 					end
+				elseif not is_seen and not v then
+					map[j][i] = 1
 				end
 			end
 		end

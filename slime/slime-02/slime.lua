@@ -52,14 +52,23 @@ function bounce_ceiling (dt)
 	-- actual position
 	local i, j = get_grid (slime.x, slime.y)
 	-- static solution
+	local i7, j7 = get_grid (slime.x-slime.r/2, slime.y-slime.r-0.00001)
 	local i8, j8 = get_grid (slime.x, slime.y-slime.r-0.00001)
+	local i9, j9 = get_grid (slime.x+slime.r/2, slime.y-slime.r-0.00001)
 	-- dynamic solution
 	local i8d, j8d = get_grid (slime.x+dt*slime.vx, slime.y-slime.r+dt*slime.vy-0.00001)
+--	if (not slime.on_ceiling) and is_tile_wall (i8d, j8d) then
 	if (not slime.on_ceiling) and is_tile_wall (i8d, j8d) then
+--		print ("bounce_ceiling - " .. i8d .. ' '..j8d)
 		slime.y = (j-0.5)*grid_size+slime.r
 		slime.vy = 0
 		slime.on_ceiling = true
-	elseif slime.on_ceiling and is_tile_wall (i8, j8) then
+--	elseif not (slime.on_ceiling) and (is_tile_wall (i7, j7) or is_tile_wall (i9, j9)) then
+--		slime.vy = 0
+--		slime.y = (j-0.5)*grid_size+slime.r
+--		slime.on_ceiling = true
+--	elseif slime.on_ceiling and (is_tile_wall (i8, j8) or is_tile_wall (i7, j7) or is_tile_wall (i9, j9)) then
+	elseif slime.on_ceiling and (is_tile_wall (i8, j8)) then
 		-- idle on ceiling
 		slime.vy = 0
 	else
@@ -93,16 +102,23 @@ function bounce_wall (dt)
 	
 	-- current cell
 	local i, j = get_grid (slime.x, slime.y)
+	--- static solution: 
+	local i3d, j3d = get_grid (slime.x+sign*slime.r+dt*slime.vx+sign*0.00001, slime.y-slime.r/2+dt*slime.vy)
 	--- dynamic solution: 
 	local i2d, j2d = get_grid (slime.x+sign*slime.r+dt*slime.vx+sign*0.00001, slime.y+dt*slime.vy)
 
---	if is_tile_wall (i2d, j2d) and slime.vy>0 then
+
 	if is_tile_wall (i2d, j2d) then
-		slime.vx = 0
+		if is_tile_wall (i3d, j3d) then
+			slime.vx = 0
+		end
 		slime.x = (i+sign*0.5)*grid_size-sign*slime.r
 		if slime.vy >= 0 then
 			slime.on_wall = true
 		end
+	elseif is_tile_wall (i3d, j3d) then
+		slime.vx = 0
+--		slime.r = slime.r + 2
 	else
 		slime.on_wall = false
 	end
