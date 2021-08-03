@@ -5,6 +5,33 @@ road_size = 20
 car_h=20
 car_w=12
 
+function get_line_length (line)
+	local length = 0
+	for i = 1, #line-3, 2 do
+		local l = ((line[i+2]-line[i])^2+(line[i+3]-line[i+1])^2)^0.5
+		length = length + l
+	end
+	return length
+end
+
+function new_road (line, typ)
+	local road = {}
+	road.id = #roads + 1
+	road.line = line
+	road.line_length = get_line_length (line)
+--	road.type = "generator"
+	road.frequency = 1
+--	road.type = "terminator"
+	road.type = typ or "normal"
+	road.color = {math.random (60, 120)/255, math.random (60, 120)/255, math.random (60, 120)/255}
+	
+	road.cars = {}
+	
+	road.prev = {}
+	road.next = {}
+	
+	roads[#roads+1] = road
+end
 
 function love.load()
 	
@@ -24,22 +51,15 @@ function love.load()
 		end
 	end
 	
---	love.mouse.setGrabbed(true)
 	mouse_line = {points = {}, pressed = false, last = {x=0, y=0}}
 	lines = {}
+	roads = {}
 	agents = {}
-	
---	local line = {30, 30, 60, 80, 80, 50, 300, 10}
---	table.insert(lines, line)
---	create_agent (line)
 
 	topology = {}
-	crossings = {}
+	crossing_points = {}
 	
 	crosslines = {}
-	
---	get_intersection (ax, ay, bx, by, cx, cy, dx, dy)
---	get_intersection (10, 10, 300, 300, 200, 10 , 10, 200)
 end
 
 
@@ -119,7 +139,7 @@ function update_agents (dt)
 --			else
 ----				print (t1, t2, t2-t1) -- positive when clockwise
 --			end
-			print (math.floor(t1*1000+0.5)/1000, math.floor(t2*1000+0.5)/1000, math.floor((t2-t1+t3)*1000+0.5)/1000)
+--			print (math.floor(t1*1000+0.5)/1000, math.floor(t2*1000+0.5)/1000, math.floor((t2-t1+t3)*1000+0.5)/1000)
 				
 			agent.x, agent.y = x1, y1
 			
@@ -146,6 +166,7 @@ function love.update(dt)
 end
 
 function draw_mouse_line ()
+	love.graphics.setLineWidth(1)
 	local line = {}
 	for i, point in ipairs (mouse_line.points) do
 		table.insert (line, point.x/scale)
@@ -159,6 +180,7 @@ function draw_mouse_line ()
 end
 
 function draw_map ()
+	love.graphics.setLineWidth(1)
 	love.graphics.setColor(.1,.1,.1)
 	for i, js in pairs (map) do
 		for j, value in pairs (js) do
@@ -168,6 +190,7 @@ function draw_map ()
 end
 
 function draw_mouse_poiner ()
+	love.graphics.setLineWidth(1)
 	if mouse_line.pressed then
 		love.graphics.circle('line', love.mouse.getX( )/scale, love.mouse.getY( )/scale, 0.5*unit)
 	else
@@ -176,34 +199,55 @@ function draw_mouse_poiner ()
 end
 
 function draw_line_points (line)
+	love.graphics.setLineWidth(1)
 	love.graphics.setColor(0,1,0)
 	for i = 1, #line-1, 2 do
-		love.graphics.circle('fill', line[i], line[i+1], 1)
+		love.graphics.circle('fill', line[i], line[i+1], 2)
 	end
 end
 
-function draw_lines ()
-	local line_width = love.graphics.getLineWidth( )
+function draw_roads ()
+	
 	love.graphics.setLineWidth( 20 )
 
---	love.graphics.setColor(1,1,1)
 	
-	for i, line in pairs (lines) do
-		love.graphics.setColor(1,1,1)
+	
+	for i, road in pairs (roads) do
+		local line = road.line
+		love.graphics.setColor(road.color)
 		love.graphics.circle('fill', line[1], line[2], 20/2)
 		love.graphics.line(line)
 		love.graphics.circle('fill', line[#line-1], line[#line], 20/2)
 		
+--		draw_line_points (line)
+	end
+
+end
+
+function draw_lines ()
+	local line_width = love.graphics.getLineWidth( )
+--	love.graphics.setLineWidth( 2 )
+
+	
+	
+	for i, line in pairs (lines) do
+		love.graphics.setLineWidth(2)
+		love.graphics.setColor(1,1,1)
+		
+		love.graphics.circle('fill', line[1], line[2], 2)
+		love.graphics.line(line)
+		love.graphics.circle('fill', line[#line-1], line[#line], 2)
+		
+		love.graphics.setLineWidth(1)
 		draw_line_points (line)
 	end
-	love.graphics.setLineWidth( line_width )
 
 end
 
 
-function draw_crossings ()
+function draw_crossing_points ()
 	love.graphics.setColor(0,1,0)
-	for i, crossing in pairs (crossings) do
+	for i, crossing in pairs (crossing_points) do
 		love.graphics.circle ('line', crossing.x, crossing.y, 5)
 --		love.graphics.print((crossing.x ..' '.. crossing.y), crossing.x, crossing.y)
 	end
@@ -225,6 +269,7 @@ function love.draw()
 	
 	draw_map ()
 
+	draw_roads ()
 	draw_lines ()
 
 	draw_mouse_line ()
@@ -240,7 +285,7 @@ function love.draw()
 --		love.graphics.print(string.format ("%#0.2f", agent.s), agent.x, agent.y+15)
 	end
 
-	draw_crossings ()
+	draw_crossing_points ()
 	draw_crosslines ()
 	
 	draw_mouse_poiner ()
@@ -305,17 +350,19 @@ end
 function cut_line (line, last_index, point)
 	local new_line = {point.x, point.y}
 	
-	for i = last_index+1, #line do
+	for i = last_index, #line do
 		new_line[#new_line+1] = line[i]
---		line[i] = nil
+		line[i] = nil
 	end
 	table.insert(line, point.x)
 	table.insert(line, point.y)
 	
---	table.insert (new_line, new_line)
+	new_road (new_line, typ)
+	table.insert (lines, new_line)
 end
 
-function find_crossings (line)
+function find_crossing_points (line)
+	local crossings = {}
 	for i, line2 in pairs (lines) do
 		for j = 1, #line2-3, 2 do
 			for k = 1, #line-3, 2 do
@@ -323,14 +370,19 @@ function find_crossings (line)
 					line[k], line[k+1], line[k+2], line[k+3], 
 					line2[j],line2[j+1],line2[j+2], line2[j+3])
 				if point then
---					cut_line (line, k+1, point)
+--					
 					
---					cut_line (line2, j+1, point)
+					table.insert (crossings, {line = line, index=k+2, point = point})
 					
-					table.insert (crossings, point)
+					table.insert (crossings, {line = line2, index=j+2, point = point})
+					
+					table.insert (crossing_points, point)
 				end
 			end
 		end
+	end
+	for i, crossing in pairs (crossings) do
+		cut_line (crossing.line, crossing.index, crossing.point)
 	end
 end
 
@@ -348,9 +400,11 @@ function love.mousereleased(x, y, button)
 			line = smooth_line (line, 1)
 		end
 		if #line > 2 then
-			find_crossings (line)
+			find_crossing_points (line)
 			
 			table.insert (lines, line)
+			new_road (line, typ)
+			
 			create_agent (line)
 		end
 		mouse_line.points = {}
