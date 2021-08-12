@@ -1,5 +1,5 @@
 local menu = {}
-
+menu.buttons = {}
 
 local black = {0,0,0}
 local white = {1,1,1}
@@ -9,11 +9,28 @@ local yellow = {1, 220/255, 60/255}
 
 local fonts = {}
 
+menu.text_color = yellow
+menu.disabled_text_color = gray_70
 menu.background_color = black
 
-menu.main_buttons = {
+menu.selected_text_color = black
+menu.selected_background_color = yellow
+
+
+function menu.change_value (button_name, parameter, value)
+	for i, buttons in pairs (menu.buttons) do
+		for j, button in pairs (buttons) do
+			if button.name == button_name then
+				button[parameter] = value
+			end
+		end
+	end
+end
+
+
+menu.buttons.main = {
 	{
-		name = "new",
+		name = "new_game",
 		text = "New game",
 		x = 150/800,
 		y = 180/600,
@@ -21,20 +38,21 @@ menu.main_buttons = {
 		h = 50/600
 	},
 	{
-		name = "load",
-		text = "Load",
+		name = "load_game",
+		text = "Load game",
 		x = 150/800,
 		y = 240/600,
 		w = 500/800,
 		h = 50/600
 	},
 	{
-		name = "save",
-		text = "Save",
+		name = "save_game",
+		text = "Save game",
 		x = 150/800,
 		y = 300/600,
 		w = 500/800,
-		h = 50/600
+		h = 50/600,
+		disabled = true
 	},
 	{
 		name = "settings",
@@ -63,8 +81,10 @@ menu.main_buttons = {
 	},
 }
 
+menu.change_value ('save_game', 'disabled', true)
 
-menu.settings_buttons = {
+
+menu.buttons.settings = {
 	{
 		name = "change_color_white",
 		text = "White",
@@ -79,35 +99,38 @@ menu.settings_buttons = {
 		x = 420/800,
 		y = 180/600,
 		w = 280/800,
-		h = 50/600
+		h = 50/600,
+		disabled = true
 	},
-	{
-		name = "change_color_gray_70",
-		text = "Gray 70",
-		x = 80/800,
-		y = 240/600,
-		w = 280/800,
-		h = 50/600
-	},
-	{
-		name = "change_color_gray_90",
-		text = "Gray 90",
-		x = 420/800,
-		y = 240/600,
-		w = 280/800,
-		h = 50/600
-	},
+--	{
+--		name = "change_color_gray_70",
+--		text = "Gray 70",
+--		x = 80/800,
+--		y = 240/600,
+--		w = 280/800,
+--		h = 50/600
+--	},
+--	{
+--		name = "change_color_gray_90",
+--		text = "Gray 90",
+--		x = 420/800,
+--		y = 240/600,
+--		w = 280/800,
+--		h = 50/600
+--	},
 	{
 		name = "go_to_main_menu",
 		text = "Back",
 		x = 150/800,
-		y = 320/600,
+		y = 480/600,
 		w = 500/800,
 		h = 50/600
 	},
 }
 
-menu.credits_buttons = {
+menu.change_value ('change_color_black', 'disabled', true)
+
+menu.buttons.credits = {
 	{
 		name = "text-field",
 		text = [[Many thanks to
@@ -142,14 +165,14 @@ and another good people]],
 }
 
 
-menu.buttons = menu.main_buttons
+menu.active_buttons = menu.buttons.main
 
 menu.logo = {
-	x = 150/800,
+	x = 83/800,
 	y = 20/600,
-	w = 500/800,
-	h = 140/600,
-	image = love.graphics.newImage( 'menu-background.png' )
+	w = 633/800,
+	h = 147/600,
+	image = love.graphics.newImage( 'graphics/menu-background.png' )
 }
 
 function menu.load()
@@ -231,32 +254,30 @@ function draw_logo (width, height)
 end
 
 function menu.draw()
+	local width, height = love.graphics.getDimensions( )
 	
 	love.graphics.setBackgroundColor (menu.background_color)
-	
---	love.graphics.setColor(black)
-	local width, height = love.graphics.getDimensions( )
 	draw_logo (width, height)
 	
-	
 	local mx, my = love.mouse.getPosition()
-	for i, button in pairs (menu.buttons) do
+	for i, button in pairs (menu.active_buttons) do
 		local x = math.floor (button.x*width)
 		local y = math.floor (button.y*height)
 		local w = math.floor (button.w*width)
 		local h = math.floor (button.h*height)
 		if is_button_selected (x, y, w, h, mx, my) and not (button.name == "text-field") then
---			love.graphics.setColor(gray_90)
-			love.graphics.setColor(yellow)
+			love.graphics.setColor(menu.selected_background_color)
 			love.graphics.rectangle('fill', x, y, w, h)
-			love.graphics.setColor(black)
+			love.graphics.setColor(menu.selected_text_color)
 			draw_button_text (x, y, w, h, button)
-		else
-			love.graphics.setColor(black)
+		else -- not selected
+			love.graphics.setColor(menu.background_color)
 			love.graphics.rectangle('fill', x, y, w, h)
-			love.graphics.setColor(yellow)
+			love.graphics.setColor(menu.text_color)
 			love.graphics.rectangle('line', x, y, w, h)
-			love.graphics.setColor(yellow)
+			if button.disabled then
+				love.graphics.setColor(menu.disabled_text_color)
+			end
 			draw_button_text (x, y, w, h, button)
 		end
 		
@@ -269,9 +290,7 @@ end
 function menu.mousepressed(x, y, button, istouch, presses)
 	local width, height = love.graphics.getDimensions( )
 	
-	
-	
-	for i, button in pairs (menu.buttons) do
+	for i, button in pairs (menu.active_buttons) do
 		local bx = math.floor (button.x*width)
 		local by = math.floor (button.y*height)
 		local bw = math.floor (button.w*width)
@@ -280,27 +299,43 @@ function menu.mousepressed(x, y, button, istouch, presses)
 			if button.name == 'exit' then
 				love.event.quit()
 			elseif button.name == 'settings' then
-				menu.buttons = menu.settings_buttons
+				menu.active_buttons = menu.buttons.settings
 			elseif button.name == 'change_color_white' then
+				
+				menu.text_color = black
+				menu.disabled_text_color = gray_70
 				menu.background_color = white
+
+				menu.selected_text_color = white
+				menu.selected_background_color = black
+				
+				menu.change_value ('change_color_black', 'disabled', false)
+				menu.change_value ('change_color_white', 'disabled', true)
 			elseif button.name == 'change_color_black' then
+				
+				menu.text_color = yellow
+				menu.disabled_text_color = gray_70
 				menu.background_color = black
-			elseif button.name == 'change_color_gray_70' then
-				menu.background_color = gray_70
-			elseif button.name == 'change_color_gray_90' then
-				menu.background_color = gray_90
+
+				menu.selected_text_color = black
+				menu.selected_background_color = yellow
+				
+				menu.change_value ('change_color_black', 'disabled', true)
+				menu.change_value ('change_color_white', 'disabled', false)
 			elseif button.name == 'credits' then
-				menu.buttons = menu.credits_buttons
+				menu.active_buttons = menu.buttons.credits
 			elseif button.name == 'go_to_main_menu' then
-				menu.buttons = menu.main_buttons
+				menu.active_buttons = menu.buttons.main
 			end
 		end
 	end
 end
 
 function menu.resize()
-	for i, button in pairs (menu.buttons) do
-		button.font = nil
+	for i, buttons in pairs (menu.buttons) do
+		for j, button in pairs (buttons) do
+			button.font = nil
+		end
 	end
 end
 
