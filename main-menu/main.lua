@@ -2,13 +2,13 @@
 
 states = {}
 states.menu = require ('menu')
---states.game = require ('game')
+states.game = require ('game')
 
 state = states.menu
 
 ------------------------------------------------------------
 function love.load ()
-	love.window.setMode(800, 600, {resizable = true} )
+	love.window.setMode(1920, 1080, {resizable = true} )
 	state.load ()
 end
 
@@ -17,7 +17,6 @@ function love.update (dt)
 end
 
 function love.draw ()
-
 	state.draw ()
 end
 

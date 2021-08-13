@@ -167,12 +167,14 @@ and another good people]],
 
 menu.active_buttons = menu.buttons.main
 
+local logo = love.graphics.newImage( 'graphics/menu-background.png' )
+logo:getFilter('nearest', 'nearest')
 menu.logo = {
-	x = 83/800,
-	y = 20/600,
-	w = 633/800,
-	h = 147/600,
-	image = love.graphics.newImage( 'graphics/menu-background.png' )
+	x = 0.5*643/1920,
+	y = 15/1080,
+	w = 2*633/1920,
+	h = 2*147/1080,
+	image = logo
 }
 
 function menu.load()
@@ -298,6 +300,9 @@ function menu.mousepressed(x, y, button, istouch, presses)
 		if is_button_selected (bx, by, bw, bh, x, y) then
 			if button.name == 'exit' then
 				love.event.quit()
+			elseif button.name == 'new_game' then
+				state = states.game
+				state.new_game ()
 			elseif button.name == 'settings' then
 				menu.active_buttons = menu.buttons.settings
 			elseif button.name == 'change_color_white' then
