@@ -18,9 +18,14 @@ tools.line =
 	mousereleased = function ( x, y, button, istouch, presses )
 		if grid_enabled then x,y = to_grid (x, y) end
 		local line = tool.line
-		table.insert (line, x)
-		table.insert (line, y)
-		table.insert (lines, line)
+		
+		if not (line[#line-1] == x and line[#line] == y) then
+			table.insert (line, x)
+			table.insert (line, y)
+		end
+		if #line > 2 then
+			table.insert (lines, line)
+		end
 		tool.line = nil
 	end,
 }
@@ -58,7 +63,9 @@ tools.free =
 			table.insert (line, x)
 			table.insert (line, y)
 		end
-		table.insert (lines, line)
+		if #line > 2 then
+			table.insert (lines, line)
+		end
 		tool.line = nil
 	end,
 }
