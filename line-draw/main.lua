@@ -24,6 +24,7 @@ tools.line =
 		tool.line = nil
 	end,
 }
+
 tools.free = 
 {
 	name = "free",
@@ -52,7 +53,7 @@ tools.free =
 	
 	mousereleased = function ( x, y, button, istouch, presses )
 		local line = tool.line
-		if grid_enabled then 
+		if grid_enabled or line[#line-1] == x and line[#line] == y then 
 		else
 			table.insert (line, x)
 			table.insert (line, y)
@@ -62,10 +63,69 @@ tools.free =
 	end,
 }
 
-tool = tools.line
+function distPointToLine(px,py,x1,y1,x2,y2)
+	local dx,dy = x2-x1,y2-y1
+	local length = math.sqrt(dx*dx+dy*dy)
+	dx,dy = dx/length,dy/length
+	local p = dx*(px-x1)+dy*(py-y1)
+	if p < 0 then
+		dx,dy = px-x1,py-y1
+		return math.sqrt(dx*dx+dy*dy)
+	elseif p > length then
+		dx,dy = px-x2,py-y2
+		return math.sqrt(dx*dx+dy*dy)
+	end
+	return math.abs(dy*(px-x1)-dx*(py-y1))
+end
+
+ggap = 0
+
+tools.remove = 
+{
+	name = "remove",
+	gap = 5,
+	mousepressed = function ( x, y, button, istouch, presses )
+		
+	end,
+	
+	mousemoved = function ( x, y, dx, dy, istouch )
+		local gap = tool.gap
+		local i_line
+		for i, line in pairs (lines) do
+			local ax,ay = line[1], line[2]
+			for j = 3, #line-1, 2 do
+				local bx,by = line[j], line[j+1]
+				local dist = distPointToLine(x,y,ax,ay,bx,by)
+				if dist<gap then
+					gap = dist
+					i_line = i
+				end
+				ax, ay = bx, by
+			end
+		end
+		if i_line then
+			selected_line = i_line
+		else
+			selected_line = nil
+		end
+		ggap = gap
+	end,
+	
+	mousereleased = function ( x, y, button, istouch, presses )
+		if selected_line then
+			table.remove(lines, selected_line)
+			selected_line = nil
+		end
+	end,
+}
+
+--tool = tools.line
+tool = tools.free
 
 grid_size = 20
-grid_enabled = true
+--grid_enabled = true
+grid_enabled = false
+
 function to_grid (x, y)
 	return math.floor(x/grid_size+0.5)*grid_size, math.floor(y/grid_size+0.5)*grid_size
 end
@@ -101,9 +161,11 @@ function love.draw()
 	love.graphics.print ('tools: ', 0, 40)
 	love.graphics.print ('press q to line ', 0, 60)
 	love.graphics.print ('press w to free ', 0, 80)
-	love.graphics.print ('press g for grid ', 0, 100)
+	love.graphics.print ('press e to remove ', 0, 100)
+	love.graphics.print (ggap, 150, 100)
+	love.graphics.print ('press g for grid ', 0, 120)
 	if tool then
-		love.graphics.print ('tool: '..tool.name, 0, 120)
+		love.graphics.print ('tool: '..tool.name, 0, 140)
 	else
 		love.graphics.print ('no tool', 0, 120)
 	end
@@ -111,10 +173,17 @@ function love.draw()
 
 	
 	love.graphics.setLineWidth (3)
-	love.graphics.setColor(1,1,1)
+	
 	for i, line in pairs (lines) do
-		love.graphics.line(line)
-		love.graphics.print(#line/2, line[#line-1], line[#line])
+		if selected_line and selected_line == i then
+			love.graphics.setColor(1,0,0)
+			love.graphics.line(line)
+			love.graphics.print(#line/2, line[#line-1], line[#line])
+		else
+			love.graphics.setColor(1,1,1)
+			love.graphics.line(line)
+			love.graphics.print(#line/2, line[#line-1], line[#line])
+		end
 	end
 	
 	-- draw the tool line and last line point to mouse
@@ -144,6 +213,12 @@ function love.keypressed(key, scancode, isrepeat)
 		else 
 			tool = tools.free
 		end
+	elseif key == "e" then
+		if tool and tool == tools.remove then
+			tool = nil
+		else 
+			tool = tools.remove
+		end
 	elseif key == "g" then
 		grid_enabled = not grid_enabled
 	elseif key == "escape" then
@@ -170,22 +245,13 @@ function love.mousemoved( x, y, dx, dy, istouch )
 	end
 end
 
-function find_line_and_delete ()
---	shortest = {}
---	gap = 20
---	for 
-	
---	end
---	end
-end
-
 function love.mousereleased( x, y, button, istouch, presses )
 	if button == 1 then -- left mouse button
 		if tool then
 			tool.mousereleased( x, y, button, istouch, presses )
 		end
 	elseif button == 2 then -- right mouse button
-		find_line_and_delete ()
+		
 	elseif button == 3 then -- middle mouse button
 		
 	end
