@@ -1,19 +1,14 @@
 -- License CC0 (Creative Commons license) (c) darkfrei, 2021
 
+local beep = require ('beep')
+
 function normul (x, y, offset) -- normalization and multiplication
 	local d = (x*x+y*y)^0.5
 	offset = offset or 1
 	return offset*x/d, offset*y/d
 end
 
-local rate = 44100
-local length = 1/256
-local tone = 344 -- Hz
-local p = math.floor(rate/tone) -- 128
-local soundData = love.sound.newSoundData(length*rate, rate, 16, 1)
-for i=0, length*rate-1 do soundData:setSample(i, i%p>p/2 and 1 or -1) end
-local source = love.audio.newSource(soundData)
-local function beep() source:play() end
+
 
 graph = {}
 graph.lines = require ('example')
