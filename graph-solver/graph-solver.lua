@@ -106,7 +106,6 @@ end
 function get_node_number (nodes, x, y)
 	for i = 1, #nodes-1, 2 do
 		if nodes[i]==x and nodes[i+1]==y then
---			return math.floor((i-1)/2+1) -- converts 1, 3, 5, 7 to 1, 2, 3, 4
 			return math.floor((i+1)/2) -- converts 1, 3, 5, 7 to 1, 2, 3, 4
 		end
 	end
@@ -139,8 +138,8 @@ function gs.create_paths (lines, nodes) -- lines is as array of lines
 	
 	for index, path in pairs (paths) do
 		path.index = index
-		path.n1_node = get_node_number (nodes, path.x1, path.y1)
-		path.n2_node = get_node_number (nodes, path.x2, path.y2)
+		path.from = get_node_number (nodes, path.x1, path.y1)
+		path.to = get_node_number (nodes, path.x2, path.y2)
 		path.next_paths = get_next_paths (paths, path.x2, path.y2)
 		path.prev_paths = get_prev_paths (paths, path.x1, path.y1)
 	end
@@ -186,13 +185,9 @@ end
 
 function gs.get_trace (paths, x1, y1, x2, y2) -- paths, source, target
 	local ps = get_starting_paths (paths, x1, y1) -- paths from start
-	
-	
 	local sh_paths = {} -- shortest paths
-	
 	local value = 0
 	local nodes = {x1, y1, value}
-	
 	for i, p in pairs (ps) do
 		local x, y= p.x2, y2
 		local value2 = get_node_value (x, y, nodes)
