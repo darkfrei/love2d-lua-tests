@@ -14,21 +14,25 @@ end
 gs = require ('graph-solver')
 local lines = require ('example')
 
---local nodes, roads = gs.create_nodes_and_roads (lines)
 local nodes = gs.create_nodes (lines)
-local roads = gs.create_roads (lines)
---print(serpent.block(roads))
-print('roads: '..#roads)
-
-arrows = {}
-colors = {}
+local paths = gs.create_paths (lines, nodes)
+print('nodes: '..#nodes, 'paths: '..#paths)
 
 
--- souces are hardcoded:
-sources = {{x=60,y=320, color={1,0,0}},{x=60,y=360, color={0,1,0}},{x=60,y=400, color={0,0,1}}}
+-- sources are hardcoded:
+--sources = {{x=60,y=320, color={1,0,0}},{x=60,y=360, color={0,1,0}},{x=60,y=400, color={0,0,1}}}
+sources = {{x=60,y=320, color={1,0,0}}}
 
 -- the target before it will be new selected:
-target = {x=620, y=280}
+target = {x=640, y=300}
+
+-- tre trace has a line from source to the target
+traces = {}
+for i, source in pairs (sources) do
+	local trace = gs.get_trace (paths, source.x, source.y, target.x, target.y)
+	trace.color = source.color
+	table.insert (traces, trace)
+end
 
 function change_nearest_target (mx, my)
 	local gap, ni, nx, ny = 30
@@ -65,44 +69,41 @@ end
 
 
 function love.draw()
-	love.graphics.setLineWidth(5)
-	for i, road in pairs (roads) do
-		love.graphics.setColor(road.color)
-		for i, line in pairs (road.lines) do
-			love.graphics.line(line)
-		end
-		for i, line in pairs (road.arrow_lines) do
-			love.graphics.line(line)
-		end
-	end
-	
-	love.graphics.setLineWidth(2)
-	for i, line in pairs (arrows) do
+	love.graphics.setLineWidth(3)
+	for i, path in pairs (paths) do
+		love.graphics.setColor(path.color)
+		love.graphics.line(path.line)
 		
-		love.graphics.setColor(colors[i])
-		love.graphics.line(line)
+		-- draw arrow
+		love.graphics.line(path.arrow_line)
+--		love.graphics.print(path.length, path.arrow_line[1], path.arrow_line[2])
+--		love.graphics.print(string.format("length = %.2f", path.length), math.floor(path.arrow_line[1]+0.5), math.floor(path.arrow_line[2]+0.5), path.text_angle)
+--		love.graphics.print(string.format("l=%.2f", path.length), path.x_text, path.y_text, path.text_angle)
+		love.graphics.print("l="..path.length, path.x_text, path.y_text, path.text_angle)
 	end
+
 	
+	-- draw nodes
 	love.graphics.setColor(1,1,1)
+	love.graphics.setLineWidth(1)
 	for i = 1, #nodes-1, 2 do
 		local x, y = nodes[i], nodes[i+1]
 		love.graphics.circle('line', x, y,5)
 	end
-	
---	love.graphics.setColor(1,1,1)
---	love.graphics.setLineWidth(2)
---	for i, path in pairs (paths) do
-		
---		for j, line in pairs (path.lines) do
-----			print (#line, table.concat(line,", "))
---			love.graphics.line(line)
---		end
---	end
 
-	
+	-- draw source circles
+	for i, source in pairs (sources) do
+		love.graphics.setColor(source.color)
+		love.graphics.circle('fill', source.x, source.y, 6)
+--		love.graphics.print(source.x..' '..source.y, source.x, source.y-20)
+	end
+
+	-- draw target circle
+	love.graphics.setColor(1,1,1)
 	love.graphics.circle('fill', target.x, target.y, 8)
+	love.graphics.print(target.x..' '..target.y, target.x, target.y-20)
 	
-	
+	-- draw mouse position
 	local mx, my = love.mouse.getPosition()
 	love.graphics.print(mx..' '..my, mx, my-20)
 end
