@@ -14,9 +14,9 @@ end
 gs = require ('graph-solver')
 local lines = require ('example')
 
-local nodes = gs.create_nodes (lines)
-local paths = gs.create_paths (lines, nodes)
-print('nodes: '..#nodes, 'paths: '..#paths)
+local node_points = gs.create_node_points (lines)
+local paths = gs.create_paths (lines, node_points)
+print('node_points: '..#node_points, 'paths: '..#paths)
 
 
 -- sources are hardcoded:
@@ -25,21 +25,31 @@ sources = {{x=60,y=320, color={1,0,0}}}
 
 -- the target before it will be new selected:
 target = {x=640, y=300}
+local target_node = get_node_number (node_points, target.x, target.y)
+print ('target_node',target_node)
 
 -- tre trace has a line from source to the target
 traces = {}
-for i, source in pairs (sources) do
-	local trace = gs.get_trace (paths, source.x, source.y, target.x, target.y)
-	trace.color = source.color
-	table.insert (traces, trace)
+
+function trace_all ()
+	for i, v in pairs (traces) do traces[i] = nil end
+	for i, source in pairs (sources) do
+		local trace = gs.get_trace (paths, node_points, source.x, source.y, target.x, target.y)
+		print ('trace #line', #trace.line)
+		trace.color = source.color
+		table.insert (traces, trace)
+	end
 end
+
+trace_all ()
+
 
 function change_nearest_target (mx, my)
 	local gap, ni, nx, ny = 30
 	local sgap = gap*gap -- square gap
 --	for i_point, point in pairs (points) do
-	for i = 1, #nodes-1, 2 do
-		local x, y = nodes[i], nodes[i+1]
+	for i = 1, #node_points-1, 2 do
+		local x, y = node_points[i], node_points[i+1]
 		if (x-mx)^2+(y-my)^2 < sgap then
 			sgap = (x-mx)^2+(y-my)^2
 			ni = (i-1)/2+1
@@ -52,6 +62,7 @@ function change_nearest_target (mx, my)
 		target.x = nx
 		target.y = ny
 		beep()
+		trace_all ()
 		return true
 	end
 	return false
@@ -82,13 +93,21 @@ function love.draw()
 		love.graphics.print("l="..path.length, path.x_text, path.y_text, path.text_angle)
 	end
 
+	-- draw trace
+--	love.graphics.setColor(1,1,1)
+	love.graphics.setLineWidth(3)
+	for i, trace in pairs (traces) do
+		love.graphics.setColor(trace.color)
+		love.graphics.line(trace.line)
+	end
 	
-	-- draw nodes
+	-- draw node_points
 	love.graphics.setColor(1,1,1)
 	love.graphics.setLineWidth(1)
-	for i = 1, #nodes-1, 2 do
-		local x, y = nodes[i], nodes[i+1]
+	for i = 1, #node_points-1, 2 do
+		local x, y = node_points[i], node_points[i+1]
 		love.graphics.circle('line', x, y,5)
+		love.graphics.print('n'..math.floor((i+1)/2), x, y+5)
 	end
 
 	-- draw source circles
