@@ -46,12 +46,13 @@ function love.draw()
 	love.graphics.print ('press q to line ', 0, 60)
 	love.graphics.print ('press w to free ', 0, 80)
 	love.graphics.print ('press e to remove ', 0, 100)
-	love.graphics.print (tools.ggap, 150, 100)
-	love.graphics.print ('press g for grid ', 0, 120)
+	love.graphics.print ('press r to circle ', 0, 120)
+	love.graphics.print (tools.ggap, 150, 160)
+	love.graphics.print ('press g for grid ', 0, 180)
 	if tool then
-		love.graphics.print ('tool: '..tool.name, 0, 140)
+		love.graphics.print ('tool: '..tool.name, 0, 200)
 	else
-		love.graphics.print ('no tool', 0, 120)
+		love.graphics.print ('no tool', 0, 200)
 	end
 	
 
@@ -81,6 +82,9 @@ function love.draw()
 			mx, my = to_grid (mx, my)
 		end
 		love.graphics.line(tool.line[#tool.line-1], tool.line[#tool.line], mx, my)
+		if tool.circle then
+			love.graphics.circle('line', tool.circle.x,tool.circle.y,tool.circle.r)
+		end
 	end
 end
 
@@ -97,6 +101,12 @@ function love.keypressed(key, scancode, isrepeat)
 		else 
 			tool = tools.free
 		end
+	elseif key == "r" then
+		if tool and tool == tools.circle then
+			tool = nil
+		else 
+			tool = tools.circle
+		end
 	elseif key == "e" then
 		if tool and tool == tools.remove then
 			tool = nil
@@ -105,6 +115,11 @@ function love.keypressed(key, scancode, isrepeat)
 		end
 	elseif key == "g" then
 		grid_enabled = not grid_enabled
+	elseif key == "space" then
+		for i, line in pairs (lines) do
+--			print (unpack(line))
+			print('{' ..table.concat(line,",")..'},')
+		end
 	elseif key == "escape" then
 		love.event.quit()
 	end
