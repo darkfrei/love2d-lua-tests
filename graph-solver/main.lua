@@ -16,27 +16,38 @@ local lines = require ('example')
 
 local node_points = gs.create_node_points (lines)
 local paths = gs.create_paths (lines, node_points)
-print('node_points: '..#node_points, 'paths: '..#paths)
+--print('node_points: '..#node_points, 'paths: '..#paths)
 
 
 -- sources are hardcoded:
---sources = {{x=60,y=320, color={1,0,0}},{x=60,y=360, color={0,1,0}},{x=60,y=400, color={0,0,1}}}
-sources = {{x=60,y=320, color={1,0,0}}}
+
+--sources = {{x=60,y=320, color={1,0,0}}}
+sources = {
+	{x=60,y=320, color={1,0,0}, width = 10},
+	{x=60,y=360, color={0,1,0}, width = 6},
+	{x=60,y=400, color={0,0,1}, width = 2}
+}
 
 -- the target before it will be new selected:
-target = {x=640, y=300}
+--target = {x=640, y=300}
+--target = {x=340, y=380}
+target = {x=520, y=320}
+
 local target_node = get_node_number (node_points, target.x, target.y)
-print ('target_node',target_node)
+--print ('target_node',target_node)
 
 -- tre trace has a line from source to the target
 traces = {}
 
 function trace_all ()
-	for i, v in pairs (traces) do traces[i] = nil end
+--	for i, v in ipairs (traces) do traces[i] = nil end
+	traces = {}
 	for i, source in pairs (sources) do
-		local trace = gs.get_trace (paths, node_points, source.x, source.y, target.x, target.y)
-		print ('trace #line', #trace.line)
+--		print ('trace', i)
+		local trace = gs.get_trace (paths, node_points, source.x, source.y, target.x, target.y, i)
+--		print ('trace #line', #trace.line)
 		trace.color = source.color
+		trace.width = source.width
 		table.insert (traces, trace)
 	end
 end
@@ -80,25 +91,26 @@ end
 
 
 function love.draw()
-	love.graphics.setLineWidth(3)
+	love.graphics.setLineWidth(2)
 	for i, path in pairs (paths) do
 		love.graphics.setColor(path.color)
+--		love.graphics.setLineWidth(path.width) -- not trace
 		love.graphics.line(path.line)
 		
 		-- draw arrow
 		love.graphics.line(path.arrow_line)
---		love.graphics.print(path.length, path.arrow_line[1], path.arrow_line[2])
---		love.graphics.print(string.format("length = %.2f", path.length), math.floor(path.arrow_line[1]+0.5), math.floor(path.arrow_line[2]+0.5), path.text_angle)
---		love.graphics.print(string.format("l=%.2f", path.length), path.x_text, path.y_text, path.text_angle)
 		love.graphics.print("l="..path.length, path.x_text, path.y_text, path.text_angle)
 	end
 
 	-- draw trace
 --	love.graphics.setColor(1,1,1)
-	love.graphics.setLineWidth(3)
+--	love.graphics.setLineWidth(3)
 	for i, trace in pairs (traces) do
-		love.graphics.setColor(trace.color)
-		love.graphics.line(trace.line)
+		if #trace.line > 3 then
+			love.graphics.setColor(trace.color)
+			love.graphics.setLineWidth(trace.width)
+			love.graphics.line(trace.line)
+		end
 	end
 	
 	-- draw node_points

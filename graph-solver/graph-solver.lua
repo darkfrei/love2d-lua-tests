@@ -92,6 +92,7 @@ function get_node_number (node_points, x, y)
 			return math.floor((i+1)/2) -- converts 1, 3, 5, 7 to 1, 2, 3, 4
 		end
 	end
+	return 0
 end
 
 ---------------------------------------------------------------------
@@ -173,14 +174,17 @@ function set_node_value (x, y, node_points, value)
 	end
 end
 
-function gs.get_trace (paths, node_points, x1, y1, x2, y2) -- paths, source, target
+function gs.get_trace (paths, node_points, x1, y1, x2, y2, n_source) -- paths, source, target
 --	local ps = get_starting_paths (paths, x1, y1) -- paths from start
 	local value = 0
 	local nodes = {}
 	local start_node_number = get_node_number (node_points, x1, y1)
+--	print ('start_node_number', start_node_number)
 	local end_node_number = get_node_number (node_points, x2, y2)
+--	print ('start_node_number', start_node_number, 'end_node_number', end_node_number)
+	
 	nodes[start_node_number] = {cost=0, str_nodes=""..start_node_number}
-	local sh_lines = dijkstra (paths, nodes, start_node_number, end_node_number)
+	local sh_lines = dijkstra (paths, nodes, start_node_number, end_node_number, n_source)
 	
 	
 	local shline = {}
@@ -188,13 +192,13 @@ function gs.get_trace (paths, node_points, x1, y1, x2, y2) -- paths, source, tar
 		-- copy first point
 		shline[1], shline[2] = sh_lines[1][1], sh_lines[1][2]
 		for i, line in pairs (sh_lines) do
-			print ('line', i, #line)
+--			print ('line', i, #line)
 			for j = 3, #line do -- copy all points except first
 				table.insert (shline, line[j])
 			end
 		end
 	end
-	print ('#shline', #shline)
+--	print ('#shline', #shline)
 	return {line=shline}
 end
 
