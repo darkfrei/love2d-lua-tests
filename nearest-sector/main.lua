@@ -1,5 +1,18 @@
 -- License CC0 (Creative Commons license) (c) darkfrei, 2021
 
+function get_nearest_line_color (x, y, line)
+	local x1, y1, x2, y2 = nearest_sector_in_line (x, y, line)
+	
+	for i = 1, #line -3, 2 do
+		if x1 == line[i] and y1 == line[i+1] and x2 == line[i+2] and y2 == line[i+3] then
+			local t = (i-1)/(#line-3)
+			local color = get_red_blue_gradient_color (t)
+			return color
+		end
+	end
+end
+
+
 function love.load()
 	line = {
 	0,266,22,256,44,246,67,234,88,222,107,210,
@@ -39,6 +52,20 @@ function love.load()
 	424,589,391,595}
 
 	selected_line = {0,266,22,256}
+	
+	width, height = love.graphics.getDimensions( )
+
+	
+	canvas = love.graphics.newCanvas()
+	love.graphics.setCanvas(canvas)
+		for x = 1, width do
+			for y = 1, height do
+				local color = get_nearest_line_color (x, y, line)
+				love.graphics.setColor(color)
+				love.graphics.points(x, y)
+			end
+		end
+	love.graphics.setCanvas()
 end
 
  
@@ -47,10 +74,31 @@ function love.update(dt)
 end
 
 
+function get_red_blue_gradient_color (t)
+	local r = 2-4*t
+	local g = t < 1/2 and 4*t or 4-4*t
+	local b = -2 + 4*t
+	r = math.min(math.max(0, r), 1)
+	g = math.min(math.max(0, g), 1)
+	b = math.min(math.max(0, b), 1)
+	return {r^0.5,g^0.5,b^0.5,1}
+end
+
+
 function love.draw()
 	love.graphics.setColor(1,1,1)
-	love.graphics.setLineWidth(1)
+	love.graphics.draw(canvas)
+	love.graphics.setColor(0,0,0)
+	love.graphics.setLineWidth(11)
 	love.graphics.line(line)
+	
+	love.graphics.setLineWidth(1)
+--	love.graphics.line(line)
+	for i = 1, #line -3, 2 do
+		local t = (i-1)/(#line-3)
+		love.graphics.setColor(get_red_blue_gradient_color (t))
+		love.graphics.line(line[i],line[i+1],line[i+2],line[i+3])
+	end
 	
 	love.graphics.setColor(1,1,0)
 	love.graphics.setLineWidth(3)
