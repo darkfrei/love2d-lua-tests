@@ -2,11 +2,19 @@
 
 function love.load()
 
-	love.window.setMode(1920+80, 1080+80, {resizable=true, borderless=true})
-	width, height = love.graphics.getDimensions( )
-	
 	mouse = {x=0, y=0}
 	translate = {x=40, y=40}
+	scale = 2
+--	love.window.setMode(1920+80, 1080+80, {resizable=true, borderless=true})
+	width, height = love.graphics.getDimensions( )
+	love.window.setMode(width, height, {resizable=true, borderless=false})
+--	love.window.setMode(2000, 500, {resizable=true, borderless=false})
+	
+
+--	width, height = love.graphics.getDimensions( )
+	love.resize(width, height)
+	
+
 	
 	polygons = {}
 	line = nil
@@ -18,7 +26,9 @@ function love.update(dt)
 end
 
 function draw_grid (x0,y0,width,height)
---	love.graphics.setBackgroundColor(89/255,157/255,220/255) -- 599DDC
+	love.graphics.setColor(0.2,0.2,0.2)
+	love.graphics.rectangle('fill', -40,-40, 2000, 1160)
+	
 	love.graphics.setColor(89/255,157/255,220/255) -- 599DDC
 	love.graphics.rectangle('fill', x0,y0,x0+width, y0+height)
 	local grid_size = 40
@@ -93,7 +103,10 @@ function draw_line ()
 end
 
 function love.draw()
-	love.graphics.translate(40,40)
+	
+	love.graphics.translate(translate.x,translate.y)
+	love.graphics.scale(scale)
+	
 	draw_grid (0,0,1920,960)
 	draw_polygons ()
 	draw_line ()
@@ -105,13 +118,19 @@ function love.keypressed(key, scancode, isrepeat)
 	if false then
 	elseif key == "escape" then
 		love.event.quit()
+	elseif key == "f11" then
+		fullscreen = not fullscreen
+		love.window.setFullscreen( fullscreen, fstype )
+		love.resize(love.graphics.getDimensions())
 	elseif key == "return" then
-		if line then
+		if line and #line > 5 then
 			if love.math.isConvex( line ) then
 				table.insert(polygons, {polygon = line})
 			else -- concave
 				table.insert(polygons, {polygon = line, triangles = love.math.triangulate(line)})
 			end
+			line = nil
+		elseif line then
 			line = nil
 		end
 		
@@ -129,8 +148,11 @@ function love.keypressed(key, scancode, isrepeat)
 end
 
 function round_mouse_position (grid_size)
-	local mx = math.floor(love.mouse.getX()/grid_size+0.5)*grid_size-translate.x
-	local my = math.floor(love.mouse.getY()/grid_size+0.5)*grid_size-translate.y
+	grid_size = grid_size
+	local mx = math.floor((love.mouse.getX()-translate.x)/scale/grid_size+0.5)*grid_size
+	local my = math.floor((love.mouse.getY()-translate.y)/scale/grid_size+0.5)*grid_size
+--	local my = math.floor(love.mouse.getY()/grid_size+0.5)*grid_size
+--	return mx-translate.x/scale, my-translate.y/scale
 	return mx, my
 end
 
@@ -162,3 +184,15 @@ function love.mousereleased( x, y, button, istouch, presses )
 	end
 end
 
+function love.resize(w, h)
+	local w1, h1 = 1920+80, 1080+80
+	local sw = w/w1
+	local sh = h/h1
+	local s = math.min(sw, sh)
+	local s1 = math.max(sw, sh)
+
+	translate.x = 40*s+(w-w1*s)/2
+	translate.y = 40*s
+--	print(s, sw, sh, w-w1*sh)
+	scale = s
+end
