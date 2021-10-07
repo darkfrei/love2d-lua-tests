@@ -68,7 +68,7 @@ function generate_agent (n_line)
 	agent.v = math.random (0, 50)
 	agent.middle = {t=0, s=0, v=0}
 --	agent.a = 200
-	agent.a = math.random (50, 150)
+	agent.a = math.random (5, 150)
 	
 	agent.angle = math.atan2(agent.ny, agent.nx)
 	
@@ -85,13 +85,27 @@ function love.load()
 	end
 	
 	agents = {}
-	for i = 1, 10 do
+	for i = 1, 100 do
 		local n_line = (i-1)%#paths+1
 		generate_agent (n_line)
 	end
 	
 end
 
+function reset_agent(agent) 
+	local line = agent.line
+	agent.x, agent.y = line[1], line[2]
+	
+	agent.traveled_distance = 0
+	agent.n_segment = 1
+	
+	agent.a = math.random (5, 150)
+	agent.v = math.random (0, 50)
+	agent.middle = {t=0, s=0, v=0}
+	
+	agent.nx, agent.ny = get_normal (line[1], line[2], line[3], line[4])
+	agent.angle = math.atan2(agent.ny, agent.nx)
+end
  
 function love.update(dt)
 --	buffer = buffer and buffer + dt or dt
@@ -144,7 +158,7 @@ function love.update(dt)
 			agent.middle.s = agent.middle.s + ds
 			agent.middle.v = agent.middle.s/agent.middle.t
 		else
-			
+			reset_agent(agent)
 			
 		end
 		
@@ -176,9 +190,9 @@ function draw_agents ()
 	for i, agent in pairs (agents) do
 		
 		drawRotatedRectangle('line', agent.x, agent.y, agent.width, agent.height, agent.angle)
-		love.graphics.print (agent.middle.v, agent.x, agent.y)
-		love.graphics.print (agent.middle.s, agent.x, agent.y+20)
-		love.graphics.print (agent.middle.t, agent.x, agent.y+40)
+--		love.graphics.print (agent.middle.v, agent.x, agent.y)
+--		love.graphics.print (agent.middle.s, agent.x, agent.y+20)
+--		love.graphics.print (agent.middle.t, agent.x, agent.y+40)
 	end
 end
 
