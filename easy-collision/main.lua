@@ -1,5 +1,8 @@
 -- License CC0 (Creative Commons license) (c) darkfrei, 2021
 
+-- easy-collision-01
+-- collision between player and tiles
+
 function love.load()
 	width, height = love.graphics.getDimensions( )
 
@@ -24,12 +27,14 @@ function love.update(dt)
 		if isCollision (player.x+small,player.y+small) 
 			or isCollision (player.x+player.w-small,player.y+small) then
 			player.y = math.floor (player.y/tileSize+0.5)*tileSize
+			byWall = true
 		end
 	elseif love.keyboard.isDown("down", "s") then
 		player.y = player.y + dt*player.v
 		if isCollision (player.x+player.w-small,player.y+player.h-small) or
 			isCollision (player.x+small,player.y+player.h-small) then
 			player.y = math.floor ((player.y+player.h)/tileSize+0.5)*tileSize-player.h
+			byWall = true
 		end
     end
 
@@ -39,12 +44,14 @@ function love.update(dt)
 		if isCollision (player.x+small,player.y+small)
 			or isCollision (player.x+small,player.y+player.h-small) then
 			player.x = math.floor (player.x/tileSize+0.5)*tileSize
+			byWall = true
 		end
 	elseif love.keyboard.isDown("right", "d") then
 		player.x = player.x + dt*player.v
 		if isCollision (player.x+player.w-small,player.y+small) 
 			or isCollision (player.x+player.w-small,player.y+player.h-small) then
 			player.x = math.floor ((player.x+player.w)/tileSize+0.5)*tileSize-player.w
+			byWall = true
 		end
     end
 	
@@ -62,7 +69,7 @@ function love.draw()
 		end
 	end
 	if player.byWall then
-		love.graphics.setColor(1,1,0)
+		love.graphics.setColor(1,0,0)
 	end
 	love.graphics.rectangle('fill', player.x, player.y, player.w, player.h)
 end
