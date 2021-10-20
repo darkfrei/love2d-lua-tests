@@ -22,24 +22,35 @@ end
  
 function love.update(dt)
 	local new_particles = {}
+	local directions = {{x=0,y=-1},{x=1,y=0},{x=0,y=1},{x=-1,y=0}}
 	for i, particle in pairs (particles) do
 		local power = particle.power - 1
-		particle.power = power
+		
 		if power > 0 then
-			local x=particle.x+math.random(-1,1)*tileSize
-			local y=particle.y+math.random(-1,1)*tileSize
-			table.insert (new_particles, createNewParticle (x,y, power))
+			local dir = directions[math.random(#directions)]
+			local x=particle.x+dir.x*tileSize
+			local y=particle.y+dir.y*tileSize
 			particle.x, particle.y = x, y
 			
-			x=math.floor(x/tileSize)
-			y=math.floor(y/tileSize)
-			if not map[x] then map[x] = {} end
-			if not map[x][y] then 
-				map[x][y] = 1
-			else
-				map[x][y] = map[x][y] + 1
-				maxThickness = math.max (maxThickness, map[x][y])
+			if math.random() < 0.1 then
+				particle.power = power/2
+				table.insert (new_particles, createNewParticle (x,y, power/2))
 			end
+			
+			if math.random() < 0.8 then
+--				particle.power = power
+				x=math.floor(x/tileSize)
+				y=math.floor(y/tileSize)
+				if not map[x] then map[x] = {} end
+				if not map[x][y] then 
+					map[x][y] = 1
+				else
+					map[x][y] = map[x][y] + 1
+					maxThickness = math.max (maxThickness, map[x][y])
+				end
+			end
+		else
+			particle.power = power
 		end
 	end
 	for i = #particles, 1, -1 do
@@ -64,7 +75,7 @@ function love.draw()
 		for y, value in pairs (ys) do
 --			if value then
 				local c = value/maxThickness
-				c=1/8+7/8*c
+				c=1/16+15/16*c
 				love.graphics.setColor(c,c,c)
 				love.graphics.rectangle('fill', x*tileSize, y*tileSize,tileSize,tileSize)
 --			end
@@ -93,8 +104,11 @@ end
 
 function love.mousepressed( x, y, button, istouch, presses )
 	if button == 1 then -- left mouse button
-		table.insert (particles, createNewParticle (x,y))
+--		local power = math.random(100, 300)
+		local power = 200
+		table.insert (particles, createNewParticle (x,y, power))
 	elseif button == 2 then -- right mouse button
+		map={}
 	end
 end
 
