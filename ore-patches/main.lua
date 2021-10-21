@@ -12,6 +12,11 @@ function love.load()
 
 	map = {} -- map[x][y]
 	
+--	for i = 0, 80 do
+--		map[i]={}
+--		map[i][1]=i
+--	end
+	
 	tileSize = 20
 	
 	particles = {}
@@ -19,35 +24,71 @@ function love.load()
 	maxThickness = 0
 end
 
+function get_direction (x,y)
+	local directions = {{x=0,y=-1},{x=1,y=0},{x=0,y=1},{x=-1,y=0}}
+	local value = map[x] and map[x][y] or false
+	if not value then 
+		if not map[x] then map[x]={} end
+		if not map[x][y] then map[x][y]=1 end
+		value = 0
+	end
+	for i = #directions, 1, -1 do
+		local dir = directions[i]
+		local xa, ya = x+dir.x, x+dir.x
+		if map[xa] and map[xa][ya] then
+			if map[xa][ya] >= value then
+				table.remove(directions, i)
+			end
+		end
+	end
+--	print (#directions)
+	return directions[math.random(#directions)]
+end
  
 function love.update(dt)
+--	buffer = buffer or 0.1
+--	if buffer < 0 then
+--		buffer = 0.1
+--	else
+--		buffer = buffer-dt
+--		return
+--	end
+	
+	
 	local new_particles = {}
-	local directions = {{x=0,y=-1},{x=1,y=0},{x=0,y=1},{x=-1,y=0}}
+	
 	for i, particle in pairs (particles) do
 		local power = particle.power - 1
 		
 		if power > 0 then
-			local dir = directions[math.random(#directions)]
-			local x=particle.x+dir.x*tileSize
-			local y=particle.y+dir.y*tileSize
-			particle.x, particle.y = x, y
-			
-			if math.random() < 0.1 then
-				particle.power = power/2
-				table.insert (new_particles, createNewParticle (x,y, power/2))
-			end
-			
-			if math.random() < 0.8 then
---				particle.power = power
-				x=math.floor(x/tileSize)
-				y=math.floor(y/tileSize)
-				if not map[x] then map[x] = {} end
-				if not map[x][y] then 
-					map[x][y] = 1
-				else
-					map[x][y] = map[x][y] + 1
-					maxThickness = math.max (maxThickness, map[x][y])
+--			local dir = directions[math.random(#directions)]
+			local x=math.floor(particle.x/tileSize)
+			local y=math.floor(particle.y/tileSize)
+			local dir = get_direction (x,y)
+			if dir then
+				x=x+dir.x
+				y=y+dir.y
+				particle.x, particle.y = x*tileSize, y*tileSize
+				
+				if math.random() < 0.1 then
+					particle.power = power/2
+--					table.insert (new_particles, createNewParticle (x,y, power/2))
+					table.insert (new_particles, createNewParticle (particle.x, particle.y, power/2))
 				end
+				
+				if math.random() < 0.8 then
+--					y=math.floor(y/tileSize)
+					if not map[x] then map[x] = {} end
+					if not map[x][y] then 
+						map[x][y] = 1
+					else
+						map[x][y] = map[x][y] + 1
+						maxThickness = math.max (maxThickness, map[x][y])
+					end
+				end
+			else
+				map[x][y] = map[x][y] + 1
+				
 			end
 		else
 			particle.power = power
@@ -69,17 +110,36 @@ function love.update(dt)
 	
 end
 
+function get_color_from_gradient (t)
+	if t<0.25 then
+		return {(t)/0.25,0.25-t,0.25-t}
+	elseif t<0.75 then
+		return {1,(t-0.25)/0.55,0}
+	elseif t>=1 then
+		return {0,1,1}
+	end
+	
+	return {1,1,(t-0.75)/0.25}
+end
 
 function love.draw()
 	for x, ys in pairs (map) do
 		for y, value in pairs (ys) do
 --			if value then
 				local c = value/maxThickness
-				c=1/16+15/16*c
-				love.graphics.setColor(c,c,c)
+--				c=1/16+15/16*c
+--				love.graphics.setColor(c,c,c)
+--				love.graphics.setColor(2*c,1-2*c,1)
+				love.graphics.setColor(get_color_from_gradient (c))
 				love.graphics.rectangle('fill', x*tileSize, y*tileSize,tileSize,tileSize)
 --			end
 		end
+	end
+	
+	for i = 0, 80 do
+		love.graphics.setColor(get_color_from_gradient (i/maxThickness))
+		love.graphics.rectangle('fill', i*tileSize, 1*tileSize,tileSize,tileSize)
+		love.graphics.print (i, i*tileSize,2*tileSize)
 	end
 	
 	love.graphics.setColor(0,1,0)
@@ -109,6 +169,7 @@ function love.mousepressed( x, y, button, istouch, presses )
 		table.insert (particles, createNewParticle (x,y, power))
 	elseif button == 2 then -- right mouse button
 		map={}
+		maxThickness=0
 	end
 end
 
