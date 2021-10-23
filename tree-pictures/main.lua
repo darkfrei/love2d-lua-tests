@@ -1,15 +1,16 @@
 -- License CC0 (Creative Commons license) (c) darkfrei, 2021
 
 function draw_tree (x,y,r)
-	local n = 900
+	local n = 150
 	for i = 1, n do
 --		local a = math.random ()*2*math.pi
-		local a = i/3+0.2*math.random()
+--		local a = 2*math.pi*math.random()*0.01 + 8*i
+		local a = math.random()*0.001*i + 9*i+math.random()*0.5
 		local nx, ny = math.cos(a), math.sin(a)
-		local r1 = 1/10*r
+		local r1 = 1/7*r
 --		local s = math.random()*(r-r1)
 --		local s = ((n-i)/n)^0.4*(r-r1)
-		local r2 = ((n-i)/n)^0.40
+		local r2 = ((n-i)/n)^0.4
 		local s = r2*(r-r1)
 		love.graphics.setColor(0,0,0)
 --		love.graphics.setColor(1,1,1)
@@ -59,9 +60,12 @@ function love.keypressed(key, scancode, isrepeat)
 	if false then
 	elseif key == "return" then
 		local filename = tostring(os.tmpname ())
-		filename = filename:sub(2)
-		print(filename)
-		canvas:newImageData():encode("png",filename..".png")
+		local time = tostring(os.time ())
+--		filename = filename:sub(2) -- removing first character
+		filename = filename:sub(2, -2) -- removing first and last characters
+		
+		print(filename, time)
+		canvas:newImageData():encode("png",time..'-'..filename..".png")
 		
 	elseif key == "escape" then
 		love.event.quit()
