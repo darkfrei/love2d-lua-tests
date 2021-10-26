@@ -3,6 +3,7 @@
 
 
 function draw_tree (x,y,r)
+	love.graphics.setColor(0,0,0)
 	local agents = {}
 	for i = 1, 150 do
 		local radius = r*math.random()^(1/3)
@@ -40,7 +41,7 @@ function draw_tree (x,y,r)
 --				agent1.x, agent1.y = 0.8*x1+0.2*x2, 0.8*y1+0.2*y2
 				if min_sqdist < (2*agent1.weight)^2 then
 --					agent1.weight = agent1.weight + nearest_agent.weight
-					love.graphics.setColor(1,1,1)
+--					love.graphics.setColor(1,1,1)
 					love.graphics.setLineWidth(nearest_agent.weight)
 					love.graphics.line(agent1.x, agent1.y, nearest_agent.x, nearest_agent.y)
 					agents[index] = nil
@@ -87,6 +88,8 @@ function love.load()
 	love.graphics.setCanvas(canvas)
 		draw_tree (width/2, height/2, math.min (width, height)/2)
 	love.graphics.setCanvas()
+	
+	love.graphics.setBackgroundColor(1,1,1)
 end
 
  
@@ -96,12 +99,13 @@ end
 
 
 function love.draw()
-	love.graphics.setBackgroundColor(1,1,1)
---	love.graphics.setColor(1,1,1)
+	
+	
 	love.graphics.setColor(0,0,0)
 	love.graphics.setLineWidth(1)
 	love.graphics.circle('line', width/2, height/2, math.min (width, height)/2)
 	
+	love.graphics.setColor(1,1,1)
 	love.graphics.draw(canvas)
 end
 
@@ -116,7 +120,7 @@ function love.keypressed(key, scancode, isrepeat)
 		local filename = tostring(os.tmpname ())
 		local time = tostring(os.time ())
 --		filename = filename:sub(2) -- removing first character
-		filename = filename:sub(2, -2) -- removing first and last characters
+		filename = filename:sub(2, -3) -- removing first and last characters
 		
 		print(filename, time)
 		canvas:newImageData():encode("png",time..'-'..filename..".png")
