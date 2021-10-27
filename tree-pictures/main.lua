@@ -5,8 +5,9 @@
 function draw_tree (x,y,r)
 	love.graphics.setColor(0,0,0)
 	local agents = {}
-	for i = 1, 150 do
-		local radius = r*math.random()^(1/3)
+	for i = 1, 180 do
+--		local radius = r*math.random()^(1/3)
+		local radius = r*math.random()^(1/2)
 		local angle = 2*math.pi*math.random()
 		local ax = x+radius*math.cos(angle)
 		local ay = y+radius*math.sin(angle)
@@ -14,7 +15,7 @@ function draw_tree (x,y,r)
 		table.insert(agents, agent)
 	end
 	
-	for _ = 1, 16 do
+	for _ = 1, 32 do
 		for i, agent1 in pairs (agents) do
 			local ax, ay =  agent1.x, agent1.y
 --			love.graphics.circle('line', agent1.x,agent1.y,agent1.weight/2)
@@ -36,11 +37,15 @@ function draw_tree (x,y,r)
 --				love.graphics.setColor(1,1,0)
 --				love.graphics.line(x1,y1,x2,y2)
 				
-				agent1.x, agent1.y = 				0.5*x1+0.4*x2+0.1*x, 0.5*y1+0.4*y2+0.1*y
+--				agent1.x, agent1.y = 				0.5*x1+0.4*x2+0.1*x, 0.5*y1+0.4*y2+0.1*y
+--				agent1.x, agent1.y = 				0.5*x1+0.49*x2+0.01*x, 0.5*y1+0.49*y2+0.01*y
+				agent1.x, agent1.y = 				0.7*x1+0.25*x2+0.05*x, 0.7*y1+0.25*y2+0.05*y
+--				agent1.x, agent1.y = 				0.6*x1+0.4*x2, 0.6*y1+0.4*y2
 --				nearest_agent.x, nearest_agent.y = 	0.5*x2+0.4*x1+0.1*x, 0.5*y2+0.4*y1+0.1*y
 --				agent1.x, agent1.y = 0.8*x1+0.2*x2, 0.8*y1+0.2*y2
 				if min_sqdist < (2*agent1.weight)^2 then
 --					agent1.weight = agent1.weight + nearest_agent.weight
+					agent1.weight = math.max(agent1.weight, nearest_agent.weight) + 1
 --					love.graphics.setColor(1,1,1)
 					love.graphics.setLineWidth(nearest_agent.weight)
 					love.graphics.line(agent1.x, agent1.y, nearest_agent.x, nearest_agent.y)
@@ -50,7 +55,7 @@ function draw_tree (x,y,r)
 --					nearest_agent.weight = agent1.weight + 1
 				end
 			end
-			agent1.weight = math.min(15,agent1.weight)
+--			agent1.weight = math.min(15,agent1.weight)
 			
 --			love.graphics.setColor(1,1,1)
 --			love.graphics.circle('line', agent1.x,agent1.y,agent1.weight/2)
