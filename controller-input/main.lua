@@ -1,6 +1,9 @@
+-- testing the controller, move left and right sticks
+
 -- License CC0 (Creative Commons license) (c) darkfrei, 2021
 
 function love.load()
+	love.window.setMode(1920, 1080, {resizable=true, borderless=false})
 	width, height = love.graphics.getDimensions( )
 
 	
@@ -8,56 +11,25 @@ function love.load()
 	joystick = joysticks[1]
 	
 
-	leftCircle = {x = 200, y = 280, size = 50}
-	rightCircle = {x = 600, y = 280, size = 50}
-	speed = 300
+	leftCircle = {x0=height/2, x=height/2, y0=height/2, y = height/2, r=height/3, size = 50}
+	rightCircle = {x0=width-height/2, x=width-height/2, y0=height/2, y = height/2, r=height/3, size = 50}
 	
-
-	
-	gamepad = {
-		triggerleft=0, triggerright=0,
-		leftx=0, lefty=0, 
-		rightx=0, righty=0,
-		}
+	canvas = love.graphics.newCanvas()
 end
 
 function love.update(dt)
 	if not joystick then return end
-
-
-	
-	if joystick:isGamepadDown("dpleft") then
-		leftCircle.x = leftCircle.x - dt*speed
-	elseif joystick:isGamepadDown("dpright") then
-		leftCircle.x = leftCircle.x + dt*speed
-	end
-
-	if joystick:isGamepadDown("dpup") then
-		leftCircle.y = leftCircle.y - dt*speed
-	elseif joystick:isGamepadDown("dpdown") then
-		leftCircle.y = leftCircle.y + dt*speed
-	end
-	
-	leftCircle.x = leftCircle.x + dt*speed*joystick:getGamepadAxis("leftx")
-	leftCircle.y = leftCircle.y + dt*speed*joystick:getGamepadAxis("lefty")
-	
-	rightCircle.x = rightCircle.x + dt*speed*joystick:getGamepadAxis("rightx")
-	rightCircle.y = rightCircle.y + dt*speed*joystick:getGamepadAxis("righty")
 end
 
 function love.draw()
 	if not joystick then return end
 	
 	local leftSize = (1-joystick:getGamepadAxis("triggerleft"))*leftCircle.size
-	local rightSize = (1-joystick:getGamepadAxis("triggerright"))*rightCircle.size
 	love.graphics.circle("fill", leftCircle.x, leftCircle.y, leftSize)
+	local rightSize = (1-joystick:getGamepadAxis("triggerright"))*rightCircle.size
 	love.graphics.circle("fill", rightCircle.x, rightCircle.y, rightSize)
-
-	local t1, dt = 40, 20
-	for axis, value in pairs (gamepad) do
-		love.graphics.print(axis..' '.. tostring(value),0,t1)
-		t1=t1+dt
-	end
+	
+	love.graphics.draw(canvas)
 end
 
 function love.keypressed(key, scancode, isrepeat)
@@ -82,19 +54,36 @@ function love.mousereleased( x, y, button, istouch, presses )
 	end
 end
 
---function love.joystickaxis( joystick, axis, value )
---	text = 'joystickaxis: '.. axis .. ' - ' .. value
---end
+
 
 function love.gamepadaxis( joystick, axis, value )
-	gamepad[axis] = value
+	if axis == 'leftx' then
+		leftCircle.x = leftCircle.x0+value*leftCircle.r
+	elseif axis == 'lefty' then
+		leftCircle.y = leftCircle.y0+value*leftCircle.r
+	elseif axis == 'rightx' then
+		rightCircle.x = rightCircle.x0+value*rightCircle.r
+	elseif axis == 'righty' then
+		rightCircle.y = rightCircle.y0+value*rightCircle.r
+		
+	elseif axis == 'triggerleft' or axis == 'triggerright' then
+		local left = joystick:getGamepadAxis("triggerleft")
+		local right = joystick:getGamepadAxis("triggerright")
+		
+		success = joystick:setVibration(left, right)
+	end
+	
+	love.graphics.setCanvas(canvas)
+		love.graphics.points (leftCircle.x, leftCircle.y, rightCircle.x, rightCircle.y)
+	love.graphics.setCanvas()
+	
 	
 end
 
 function love.gamepadpressed( joystick, button )
-	gamepad[button] = true
+	
 end
 
 function love.gamepadreleased( joystick, button )
-	gamepad[button] = false
+	
 end
