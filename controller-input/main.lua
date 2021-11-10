@@ -58,13 +58,13 @@ end
 
 function love.gamepadaxis( joystick, axis, value )
 	if axis == 'leftx' then
-		leftCircle.x = leftCircle.x0+value*leftCircle.r
+		leftCircle.x = leftCircle.x0+value*leftCircle.r*math.abs(value)
 	elseif axis == 'lefty' then
-		leftCircle.y = leftCircle.y0+value*leftCircle.r
+		leftCircle.y = leftCircle.y0+value*leftCircle.r*math.abs(value)
 	elseif axis == 'rightx' then
-		rightCircle.x = rightCircle.x0+value*rightCircle.r
+		rightCircle.x = rightCircle.x0+value*rightCircle.r*math.abs(value)
 	elseif axis == 'righty' then
-		rightCircle.y = rightCircle.y0+value*rightCircle.r
+		rightCircle.y = rightCircle.y0+value*rightCircle.r*math.abs(value)
 		
 	elseif axis == 'triggerleft' or axis == 'triggerright' then
 		local left = joystick:getGamepadAxis("triggerleft")
@@ -74,6 +74,7 @@ function love.gamepadaxis( joystick, axis, value )
 	end
 	
 	love.graphics.setCanvas(canvas)
+		
 		love.graphics.points (leftCircle.x, leftCircle.y, rightCircle.x, rightCircle.y)
 	love.graphics.setCanvas()
 	
