@@ -34,11 +34,9 @@ function love.update(dt)
 		if active == "left" then
 			x = width/2 + radius * joystick:getGamepadAxis("leftx")
 			y = height/2 + radius * joystick:getGamepadAxis("lefty")
-			active = "right"
 		else
 			x = width/2 + radius * joystick:getGamepadAxis("rightx")
 			y = height/2 + radius * joystick:getGamepadAxis("righty")
-			active = "left"
 		end
 		for i = #targets, 1, -1 do
 			local target = targets[i]
@@ -51,6 +49,11 @@ function love.update(dt)
 				end
 				moved = false
 				position = {x = width/2, y = height/2}
+				if active == "right" then
+					active = "left"
+				else
+					active = "right"
+				end
 			end
 		end
 	end
