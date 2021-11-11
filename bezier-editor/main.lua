@@ -70,7 +70,9 @@ function createLine (bezier)
 		table.insert (line, point.y)
 	end
 	bezier.line = line
-	bezier.curve = love.math.newBezierCurve(line):render(4)
+	if #line > 2 then
+		bezier.curve = love.math.newBezierCurve(line):render(4)
+	end
 	
 end
 
@@ -125,7 +127,9 @@ function love.mousemoved( x, y, dx, dy, istouch )
 	if pressed and pressed.point then
 		pressed.point.x = x
 		pressed.point.y = y
-		createLine (active)
+		if active then
+			createLine (active)
+		end
 	else
 		if active then
 			getHovered (active, x, y)
