@@ -91,7 +91,7 @@ function love.mousepressed( x, y, button, istouch, presses )
 		end
 		
 	elseif button == 2 then -- right mouse button
-		if active then
+		if active and not hovered then
 			active = nil
 		end
 	end
@@ -124,12 +124,10 @@ function getHovered (bezier, x, y)
 end
 
 function love.mousemoved( x, y, dx, dy, istouch )
-	if pressed and pressed.point then
+	if active and pressed and pressed.point then
 		pressed.point.x = x
 		pressed.point.y = y
-		if active then
-			createLine (active)
-		end
+		createLine (active)
 	else
 		if active then
 			getHovered (active, x, y)
