@@ -3,7 +3,7 @@
 function love.load()
 	local ddwidth, ddheight = love.window.getDesktopDimensions( display )
 	if ddheight > 1080 then
-		print('ddheight: ' .. ddheight)
+--		print('ddheight: ' .. ddheight)
 		love.window.setMode(1920, 1080, {resizable=true, borderless=false})
 	else
 		love.window.setMode(ddwidth, ddheight-200, {resizable=true, borderless=false})
@@ -14,6 +14,8 @@ function love.load()
 	active = nil
 	hovered = nil
 	pressed = nil
+	
+
 	
 	love.graphics.setLineStyle("rough")
 
@@ -32,7 +34,6 @@ function love.draw()
 	for i, bezier in ipairs (beziers) do
 		for j, point in ipairs (bezier.points) do
 			if hovered and hovered.point and hovered.point.x == point.x then
-				
 				love.graphics.setColor(1,1,1)
 				love.graphics.print ('hovered: ' .. hovered.i)
 			else
@@ -48,6 +49,9 @@ function love.draw()
 			love.graphics.line(bezier.curve)
 		end
 	end
+	love.graphics.print ('beziers: ' .. tostring(#beziers), 30, 30)
+	love.graphics.print ('active: ' .. tostring(active), 30, 50)
+	
 end
 
 function newBezier (x, y)
@@ -79,8 +83,11 @@ end
 function love.mousepressed( x, y, button, istouch, presses )
 	if button == 1 then -- left mouse button
 		if hovered and hovered.point then
-			pressed = hovered
-			
+			if active then
+				pressed = hovered
+			elseif hovered and hovered.bezier_index then
+				active = beziers[hovered.bezier_index]
+			end
 		else
 			if active then
 				addPoint (active, x, y)
@@ -98,14 +105,14 @@ function love.mousepressed( x, y, button, istouch, presses )
 end
 
 function getHovered (bezier, x, y)
-	hovered = nil
+	local hovered = nil
 	local hPoint
 	local gap = 20
 	local iPoint
 	for i, point in ipairs (bezier.points) do
 		if math.abs(point.x-x) < gap and math.abs(point.y-y) < gap then
 			local distance = ((point.x-x)^2+(point.y-y)^2)^0.5
-			print (distance)
+--			print (distance)
 			if distance < gap then
 				iPoint = i
 				hPoint = point
@@ -115,12 +122,8 @@ function getHovered (bezier, x, y)
 	end
 	if hPoint then
 		hovered = {i=iPoint, point = hPoint}
-		return
+		return hovered
 	end
-	
-	gap = 20
-	
-	
 end
 
 function love.mousemoved( x, y, dx, dy, istouch )
@@ -128,9 +131,19 @@ function love.mousemoved( x, y, dx, dy, istouch )
 		pressed.point.x = x
 		pressed.point.y = y
 		createLine (active)
+	elseif active then
+		hovered = getHovered (active, x, y)
 	else
-		if active then
-			getHovered (active, x, y)
+		local gap = 20
+		hovered = nil
+		for i, bezier in ipairs (beziers) do
+			local h = getHovered (bezier, x, y)
+			if h then
+				hovered = h
+				hovered.bezier = bezier
+				hovered.bezier_index = i
+				return
+			end
 		end
 	end
 end
