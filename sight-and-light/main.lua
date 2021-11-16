@@ -60,7 +60,11 @@ function love.load()
 --	new polygons
 	areas = {}
 	
+	mesh = nil
+
+	radius = 200
 	
+--	love.graphics.setBackgroundColor (178/255,228/255,249/255)
 end
 
 
@@ -68,34 +72,34 @@ function love.update(dt)
 	
 end
 
-
-function love.draw()
-	
-	love.graphics.scale (scale)
-
-	local mx, my = love.mouse.getPosition()
-	mx, my = mx/scale, my/scale
-	
+function drawDebugLines (mx, my)
 	-- draw debug lines to uniquePoints
 	love.graphics.setColor (1,1,1)
 	love.graphics.setLineWidth (1/scale)
 	for i, point in ipairs (uniquePoints) do
 		love.graphics.line (mx, my, point.x, point.y)
 	end
-	
+end
+
+function drawAreas ()
 	-- areas, new polygons
 	love.graphics.setColor (1,0,0, 0.5)
 	for i, verticles in ipairs (areas) do
 		love.graphics.polygon ('fill', verticles)
 	end
-	
+end
+
+function drawDebugViewLines (mx, my)
 	-- draw red lines
 	love.graphics.setColor (1,0,0)
 	love.graphics.setLineWidth (4/scale)
 	for i, point in ipairs (intersects) do
 		love.graphics.line (mx, my, point.x, point.y)
+--		love.graphics.print(tostring(point.dist), point.x, point.y, 0, 0.25*1/scale)
 	end
-	
+end
+
+function drawSegments ()
 	-- draw segments (polygons)
 	love.graphics.setColor (1,1,1)
 	love.graphics.setLineWidth (4/scale)
@@ -105,13 +109,45 @@ function love.draw()
 		elseif #polygon == 4 then
 			love.graphics.line(polygon)
 		end
---		love.graphics.print(tostring(i), polygon[1], polygon[2], 0, 1/scale)
 	end
+end
+
+function love.draw()
+	
+	love.graphics.scale (scale)
+
+	local mx, my = love.mouse.getPosition()
+	mx, my = mx/scale, my/scale
+	
+--	drawDebugLines (mx, my)
+
+--	drawAreas () -- red area
+
+--	drawDebugViewLines (mx, my)
+
+	drawSegments ()
+
+	if mesh then
+		love.graphics.draw(mesh)
+	end
+	
+--	for i, point in ipairs (intersects) do
+----		love.graphics.line (mx, my, point.x, point.y)
+--		love.graphics.print(tostring(point.dist), point.x, point.y, 0, 0.25*1/scale)
+--	end
 end
 
 function getUniqueAngles (mx, my)
 	local angles = {}
+	
+	local deltaAngle = 5
+	for i = deltaAngle/2, 360, deltaAngle do
+		local angle = math.rad(i)
+		angles[angle] = true
+	end
+	
 	local precision = 2^16
+	
 	for i, point in ipairs (uniquePoints) do
 		local angle = math.atan2 (point.y-my, point.x-mx)
 		angle = math.floor (angle*precision/math.pi + 0.5)/precision*math.pi
@@ -122,7 +158,7 @@ function getUniqueAngles (mx, my)
 	end
 	local uniqueAngles = {}
 	for angle, bool in pairs (angles) do
-		table.insert (uniqueAngles, angle%(2*math.pi))
+		table.insert (uniqueAngles, (angle)%(2*math.pi))
 	end
 	table.sort(uniqueAngles)
 	return uniqueAngles
@@ -139,7 +175,7 @@ function getIntersection(ray, segment)
 	local r_mag = (r_dx*r_dx+r_dy*r_dy)^0.5
 	local s_mag = (s_dx*s_dx+s_dy*s_dy)^0.5
 	
-	if(r_dx/r_mag==s_dx/s_mag and r_dy/r_mag==s_dy/s_mag) then
+	if (r_dx/r_mag==s_dx/s_mag and r_dy/r_mag==s_dy/s_mag) then
 		return -- parallel
 	end
 	
@@ -152,13 +188,15 @@ function getIntersection(ray, segment)
 	-- for three rays
 	if t1<0 or t2 < 0 or t2 > 1 then return end
 	
-	local x, y, dist = r_px+r_dx*t1, r_py+r_dy*t1, t1
+	local x, y, dist = r_px+r_dx*t1, r_py+r_dy*t1, t1*r_mag
 	
-	return {x=x,y=y}, dist
+	return {x=x,y=y, dist=dist}, dist
 end
 
+
+
 function findClosestIntersection (ray)
-	local closestIntersect, closestDist = nil, nil
+	local closestIntersect, closestDist = nil, radius
 	for i, polygon in ipairs (segments) do
 		for j = 1, #polygon-3, 2 do
 			local segment = {polygon[j], polygon[j+1], polygon[j+2], polygon[j+3]}
@@ -168,6 +206,7 @@ function findClosestIntersection (ray)
 				closestIntersect = intersect
 			end
 		end
+		
 		local segment = {polygon[#polygon-1], polygon[#polygon], polygon[1], polygon[2]}
 		local intersect, dist = getIntersection(ray,segment)
 		if dist and ((not closestDist) or (dist < closestDist)) then
@@ -175,6 +214,7 @@ function findClosestIntersection (ray)
 			closestDist = dist
 			closestIntersect = intersect
 		end
+		
 	end
 	
 	return closestIntersect, closestDist
@@ -196,6 +236,10 @@ function love.mousemoved( x, y, dx, dy, istouch )
 		if closestIntersect then
 			closestIntersect.angle = angle
 			table.insert (intersects, closestIntersect)
+		else
+--			local radius = 100
+			local nointersect = {x=x+radius*math.cos(angle), y=y+radius*math.sin(angle), dist=radius}
+			table.insert (intersects, nointersect)
 		end
 	end
 	
@@ -208,7 +252,25 @@ function love.mousemoved( x, y, dx, dy, istouch )
 		int1 = int2
 	end
 	
+	local verticles = {}
+	local verticle = {x, y, 0, 0, 1,1,1}
+	table.insert (verticles, verticle)
 	
+	local int = intersects[#intersects]
+	local value = (radius-int.dist)/radius
+--	verticle = {int.x, int.y, 0, 0, value,value,value}
+	verticle = {int.x, int.y, 0, 0, 1,1,1, value}
+	table.insert (verticles, verticle)
+	
+	for i = 1, #intersects do
+		int = intersects[i]
+		value = (radius-int.dist)/radius
+--		verticle = {int.x, int.y, 0, 0, value,value,value}
+		verticle = {int.x, int.y, 0, 0, 1,1,1, value}
+		table.insert (verticles, verticle)
+	end
+	
+	mesh = love.graphics.newMesh(verticles, mode, usage )
 end
 
 
