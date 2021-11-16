@@ -24,7 +24,7 @@ function getAllUniquePoints ()
 end
 
 function love.load()
-	scale = 2
+	scale = 3
 	love.window.setMode(640*scale, 360*scale, {resizable=true, borderless=false})
 
 	width, height = love.graphics.getDimensions( )
@@ -35,7 +35,6 @@ function love.load()
 		{0,0, 640,0, 640,360, 0,360},
 		-- #1
 		{100,150, 120,50, 200,80, 140,210},
---		{100,150, 120,50},
 		-- #2 
 		{100,200, 120,250, 60, 300},
 		-- #3
@@ -55,6 +54,10 @@ function love.load()
 	
 	-- points as intersects[i] = {x=x,y=y, angle=angle}
 	intersects = {} 
+	
+--	new polygons
+	areas = {}
+	
 end
 
 
@@ -87,21 +90,27 @@ function love.draw()
 		love.graphics.line (mx, my, point.x, point.y)
 	end
 	
+	-- areas, new polygons
+	love.graphics.setColor (1,0,0, 0.5)
+	for i, verticles in ipairs (areas) do
+		love.graphics.polygon ('fill', verticles)
+	end
+	
 	love.graphics.setColor (1,0,0)
 	love.graphics.setLineWidth (4/scale)
 	for i, point in ipairs (intersects) do
 		love.graphics.line (mx, my, point.x, point.y)
 	end
 	
-	love.graphics.print (#intersects, 30,30)
+--	love.graphics.print (#intersects, 30,30)
 end
 
 function getUniqueAngles (mx, my)
 	local angles = {}
 	local precision = 1024
 	for i, point in ipairs (uniquePoints) do
-		local angle = math.atan2 (my-point.y, mx-point.x)
-		angle = math.floor (angle*precision/math.pi + 0.5)/precision*math.pi
+		local angle = math.atan2 (point.y-my, point.x-mx)
+--		angle = math.floor (angle*precision/math.pi + 0.5)/precision*math.pi
 		angles[angle] = true
 	end
 	local uniqueAngles = {}
@@ -130,7 +139,7 @@ function getIntersection(ray, segment)
 	local t2 = (r_dx*(s_py-r_py) + r_dy*(r_px-s_px))/(s_dx*r_dy - s_dy*r_dx)
 	local t1 = (s_px+s_dx*t2-r_px)/r_dx
 	
-	if t1<0 or t2< -0.01 or t2>1.01 then return end
+	if t1<0 or t2 < -0.01 or t2 > 1.01 then return end
 --	if t2<0 or t2>1 then return end
 	
 	local x, y, dist = r_px+r_dx*t1, r_py+r_dy*t1, t1
@@ -172,13 +181,23 @@ function love.mousemoved( x, y, dx, dy, istouch )
 	for i, angle in ipairs (uniqueAngles) do
 		local dx = math.cos(angle)
 		local dy = math.sin(angle)
-		local ray = {x, y, -dx, -dy}
+		local ray = {x, y, dx, dy}
 		local closestIntersect = findClosestIntersection (ray)
 		if closestIntersect then
 			closestIntersect.angle = angle
 			table.insert (intersects, closestIntersect)
 		end
 	end
+	
+	areas = {}
+	local int1 = intersects[#intersects]
+	for i = 1, #intersects do
+		local int2 = intersects[i]
+		local area = {x, y, int1.x, int1.y, int2.x, int2.y}
+		table.insert (areas, area)
+		int1 = int2
+	end
+	
 	
 end
 
