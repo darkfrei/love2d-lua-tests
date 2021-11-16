@@ -25,6 +25,8 @@ end
 
 function love.load()
 	scale = 3
+	local font = love.graphics.newFont(20*scale)
+	love.graphics.setFont(font)
 	love.window.setMode(640*scale, 360*scale, {resizable=true, borderless=false})
 
 	width, height = love.graphics.getDimensions( )
@@ -36,13 +38,13 @@ function love.load()
 		-- #1
 		{100,150, 120,50, 200,80, 140,210},
 		-- #2 
-		{100,200, 120,250, 60, 300},
+		{100,200, 120,250, 60, 300, 100, 300},
 		-- #3
-		{200,260, 220,150, 300,200, 350,320},
+		{200,260, 220,150, 300,200, 350,320, 250,250},
 		-- #4
 		{340,60, 360,40, 370,70},
 		-- #5
-		{450,190, 560,170, 540,270, 430,290},
+		{450,170, 560,170, 560,290, 450,290},
 		-- #6
 		{400,95, 580,50, 450,150},
 	}
@@ -58,6 +60,7 @@ function love.load()
 --	new polygons
 	areas = {}
 	
+	
 end
 
 
@@ -69,22 +72,12 @@ end
 function love.draw()
 	
 	love.graphics.scale (scale)
-	love.graphics.setColor (1,1,1)
-	love.graphics.setLineWidth (4/scale)
-	
-	-- draw segments (polygons)
-	for i, polygon in ipairs (segments) do
-		if #polygon > 4 then
-			love.graphics.polygon('line', polygon)
-		elseif #polygon == 4 then
-			love.graphics.line(polygon)
-		end
-	end
-	
+
 	local mx, my = love.mouse.getPosition()
 	mx, my = mx/scale, my/scale
 	
-	-- lines to uniquePoints
+	-- draw debug lines to uniquePoints
+	love.graphics.setColor (1,1,1)
 	love.graphics.setLineWidth (1/scale)
 	for i, point in ipairs (uniquePoints) do
 		love.graphics.line (mx, my, point.x, point.y)
@@ -96,26 +89,40 @@ function love.draw()
 		love.graphics.polygon ('fill', verticles)
 	end
 	
+	-- draw red lines
 	love.graphics.setColor (1,0,0)
 	love.graphics.setLineWidth (4/scale)
 	for i, point in ipairs (intersects) do
 		love.graphics.line (mx, my, point.x, point.y)
 	end
 	
---	love.graphics.print (#intersects, 30,30)
+	-- draw segments (polygons)
+	love.graphics.setColor (1,1,1)
+	love.graphics.setLineWidth (4/scale)
+	for i, polygon in ipairs (segments) do
+		if #polygon > 4 then
+			love.graphics.polygon('line', polygon)
+		elseif #polygon == 4 then
+			love.graphics.line(polygon)
+		end
+--		love.graphics.print(tostring(i), polygon[1], polygon[2], 0, 1/scale)
+	end
 end
 
 function getUniqueAngles (mx, my)
 	local angles = {}
-	local precision = 1024
+	local precision = 2^16
 	for i, point in ipairs (uniquePoints) do
 		local angle = math.atan2 (point.y-my, point.x-mx)
---		angle = math.floor (angle*precision/math.pi + 0.5)/precision*math.pi
-		angles[angle] = true
+		angle = math.floor (angle*precision/math.pi + 0.5)/precision*math.pi
+--		angles[angle] = true
+		angles[angle-1/(precision/math.pi)] = true
+		angles[angle+1/(precision/math.pi)] = true
+		
 	end
 	local uniqueAngles = {}
 	for angle, bool in pairs (angles) do
-		table.insert (uniqueAngles, angle)
+		table.insert (uniqueAngles, angle%(2*math.pi))
 	end
 	table.sort(uniqueAngles)
 	return uniqueAngles
@@ -139,8 +146,11 @@ function getIntersection(ray, segment)
 	local t2 = (r_dx*(s_py-r_py) + r_dy*(r_px-s_px))/(s_dx*r_dy - s_dy*r_dx)
 	local t1 = (s_px+s_dx*t2-r_px)/r_dx
 	
-	if t1<0 or t2 < -0.01 or t2 > 1.01 then return end
---	if t2<0 or t2>1 then return end
+	-- for one ray
+--	if t1<0 or t2 < -0.01 or t2 > 1.01 then return end
+	
+	-- for three rays
+	if t1<0 or t2 < 0 or t2 > 1 then return end
 	
 	local x, y, dist = r_px+r_dx*t1, r_py+r_dy*t1, t1
 	
@@ -149,7 +159,6 @@ end
 
 function findClosestIntersection (ray)
 	local closestIntersect, closestDist = nil, nil
-	
 	for i, polygon in ipairs (segments) do
 		for j = 1, #polygon-3, 2 do
 			local segment = {polygon[j], polygon[j+1], polygon[j+2], polygon[j+3]}
@@ -162,12 +171,13 @@ function findClosestIntersection (ray)
 		local segment = {polygon[#polygon-1], polygon[#polygon], polygon[1], polygon[2]}
 		local intersect, dist = getIntersection(ray,segment)
 		if dist and ((not closestDist) or (dist < closestDist)) then
+			secondClosestIntersect, secondClosestDist = closestIntersect, closestDist
 			closestDist = dist
 			closestIntersect = intersect
 		end
 	end
 	
-	return closestIntersect
+	return closestIntersect, closestDist
 end
 
 function love.mousemoved( x, y, dx, dy, istouch )
