@@ -14,7 +14,15 @@ function love.load()
 	width, height = love.graphics.getDimensions( )
 	
 	Bezier.load ()
-	Bezier.newLayer (20)
+	local layer = Bezier.newLayer (20)
+	
+	local s = 300
+--	local s1 = s * 0.55191502449
+	local s1 = s * 4/3*(2^0.5-1)
+	Bezier.addBezier (layer, {400,400-s, 400+s1,400-s, 400+s,400-s1, 400+s,400})
+	Bezier.addBezier (layer, {400+s,400, 400+s,400+s1, 400+s1,400+s, 400,400+s})
+	Bezier.addBezier (layer, {400,400+s, 400-s1,400+s, 400-s,400+s1, 400-s,400})
+	Bezier.addBezier (layer, {400-s,400, 400-s,400-s1, 400-s1,400-s, 400,400-s})
 end
 
 

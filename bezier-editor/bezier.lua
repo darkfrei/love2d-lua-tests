@@ -38,6 +38,33 @@ function Bezier.load ()
 end
 
 
+function Bezier.newBezier (layer, x, y)
+	local point = {x=x, y=y}
+	local points = {point}
+	local beziers = layer.beziers
+	
+	local bezier = {line={}, points = points, curve = {}}
+	table.insert(beziers, bezier)
+	bezier.index = #beziers -- must be updated by setting activeBezier
+	return bezier
+end
+
+function Bezier.addBezier (layer, lovePoints)
+	local points = {}
+	for i = 1, #lovePoints-1, 2 do
+		local x = lovePoints[i]
+		local y = lovePoints[i+1]
+		local point = {x=x, y=y}
+		table.insert (points, {x=x,y=y})
+	end
+	local bezier = {line={}, points = points, curve = {}}
+	Bezier.createLine (bezier)
+	
+	local beziers = layer.beziers
+	table.insert(beziers, bezier)
+	bezier.index = #beziers -- must be updated by setting activeBezier
+	return bezier
+end
 
 
 function Bezier.drawBezierCurve (bezier)
@@ -48,11 +75,16 @@ function Bezier.drawBezierCurve (bezier)
 	end
 end
 
-function Bezier.drawControlPoints (bezier, snapRadius)
+function Bezier.drawControlPoints (bezier, snapRadius, isActiveBezier)
 	for i, point in ipairs (bezier.points) do
 		love.graphics.circle ('line', point.x, point.y, snapRadius)
 	end
 	if #bezier.line > 2 then
+		if isActiveBezier then
+			love.graphics.setColor(0,1,0)
+		else
+			love.graphics.setColor(0,1,0, 0.5)
+		end
 		love.graphics.line(bezier.line)
 	end
 end
@@ -69,8 +101,9 @@ function Bezier.drawLayer (layer)
 				love.graphics.setColor(1,1,1, 0.5)
 			end
 			Bezier.drawBezierCurve (bezier)
-			Bezier.drawControlPoints (bezier, layer.snapRadius)
+			Bezier.drawControlPoints (bezier, layer.snapRadius, isActiveBezier)
 		end
+		love.graphics.setColor(1,1,1, 0.5)
 		if layer.hoveredControlPoint and 
 			layer.hoveredControlPoint.point then
 				local point = layer.hoveredControlPoint.point
@@ -146,20 +179,12 @@ function Bezier.getSnapPosition (layer, x, y)
 end
 
 
-function Bezier.newBezier (layer, x, y)
-	local point = {x=x, y=y}
-	local points = {point}
-	local beziers = layer.beziers
-	
-	local bezier = {line={}, points = points, curve = {}}
-	table.insert(beziers, bezier)
-	bezier.index = #beziers -- must be updated by setting activeBezier
-	return bezier
-end
-
 function Bezier.addPoint (bezier, x, y)
 	table.insert(bezier.points, {x=x,y=y})
 end
+
+
+
 
 function Bezier.createLine (bezier)
 	local line = {}
