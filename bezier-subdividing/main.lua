@@ -77,8 +77,8 @@ end
 
 function newBezier (vertices)
 	local curve = love.math.newBezierCurve(vertices)
-	local line = curveRender (curve, 3)
-	local cList, cMax = getCurvatureList (curve, 3)
+	local line = curveRender (curve, 5)
+	local cList, cMax = getCurvatureList (curve, 5)
 	
 	local bezier = {
 		vertices = vertices, -- control points
@@ -253,7 +253,7 @@ function cutBezier (beziers, bezierIndex, t)
 	
 	for i = 1, #points do
 		local points2 = {}
-		table.insert (first, 1, points[1])
+		table.insert (first, points[1])
 		table.insert (second, 1, points[#points])
 --		table.insert (second, points[#points])
 		for j = 1, #points-1 do
