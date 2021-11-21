@@ -55,7 +55,7 @@ function getCurvatureList (BezierCurve, depth) -- BezierCurve is BezierCurve
 			cx = x - sign*r * math.sin(angle)
 			cy = y + sign*r * math.cos(angle)
 		end
-		print (x, y, x1, y1, x2, y2, cx, cy, r)
+--		print (x, y, x1, y1, x2, y2, cx, cy, r)
 		table.insert (cList, {x=x,y=y,k=k,cx=cx, cy=cy, r=r})
 	end
 	return cList, cMax
@@ -75,6 +75,21 @@ function curveRender (BezierCurve, depth)
 end
 
 
+function newBezier (vertices)
+	local curve = love.math.newBezierCurve(vertices)
+	local line = curveRender (curve, 3)
+	local cList, cMax = getCurvatureList (curve, 3)
+	
+	local bezier = {
+		vertices = vertices, -- control points
+		curve = curve, -- Löve's BezierCurve
+		line = line, -- list of pairs
+		cList = cList,
+		cMax = cMax,
+	}
+	return bezier
+end
+
 function love.load()
 	local ddwidth, ddheight = love.window.getDesktopDimensions( display )
 	if ddheight > 1080 then
@@ -86,27 +101,20 @@ function love.load()
 	width, height = love.graphics.getDimensions()
 
 	local vertices = {
-		100,100, 100,600, 600,600, 600,100, 1100,100, 600,600,
---		100,100, 100,600, 600,600, 600,100, 1000,100, 
---		100,100, 100,600, 600,600, 600,100,
---		100,100, 100,600, 600,600,
-	}
-	local curve = love.math.newBezierCurve(vertices)
-	
-
-	local line = curveRender (curve, 3)
-	
-	local cList, cMax = getCurvatureList (curve, 3)
-	
-	bezier = {
-		vertices = vertices,
-		curve = curve,
-		line = line,
-		cList = cList,
-		cMax = cMax,
+		100,100, 100,1000, 1000,1000, 1000,100, 1800,100
 	}
 	
-	selector = {x=0, y=0}
+	beziers = {}
+	table.insert (beziers, newBezier (vertices))
+	
+--	vertices = {
+--			200,700, 700,700, 1000,400, 1000,100, 1600,100, 
+--	}
+--	table.insert (beziers, newBezier (vertices))
+	
+	selector = {x=0, y=0, t=0, 
+		bezierIndex=0,
+		bezier = beziers[1]}
 end
 
  
@@ -118,38 +126,58 @@ end
 
 function love.draw()
 
-	
-	love.graphics.setLineWidth (1)
-	love.graphics.setColor(1,1,0)
-	love.graphics.line(bezier.vertices)
-	
-	love.graphics.setLineWidth (3)
-	love.graphics.setColor(0,1,0)
-	love.graphics.line(bezier.line)
-	
-	love.graphics.setLineWidth (1)
-	for i = 1, #bezier.line-1, 2 do
-		local x, y = bezier.line[i], bezier.line[i+1]
-		love.graphics.circle ('line', x,y, 10)
-	end
-	
-	love.graphics.setColor(1,1,1, 0.5)
-	for i, point in ipairs (bezier.cList) do
-		local x, y = point.x, point.y
-		love.graphics.print (i..' '..(point.k), x-20,y+20)
-		love.graphics.circle ('line', point.cx, point.cy, point.r)
+	for iBezier, bezier in ipairs (beziers) do
+		
+--		print (iBezier, )
+		if selector.bezierIndex and selector.bezierIndex == iBezier then
+			love.graphics.setLineWidth (3)
+			love.graphics.setColor(1,1,0)
+		else
+			love.graphics.setLineWidth (2)
+			love.graphics.setColor(1,1,0, 0.5)
+		end
+		
+		love.graphics.line(bezier.vertices)
+		
+		if selector.bezierIndex and selector.bezierIndex == iBezier then
+			love.graphics.setLineWidth (5)
+			love.graphics.setColor(0,1,0)
+		else
+			love.graphics.setLineWidth (3)
+			love.graphics.setColor(0,1,0, 0.5)
+		end
+		
+		love.graphics.line(bezier.line)
+		
+		love.graphics.setLineWidth (1)
+		for i = 1, #bezier.line-1, 2 do
+			local x, y = bezier.line[i], bezier.line[i+1]
+			love.graphics.circle ('line', x,y, 10)
+		end
+		
+--		love.graphics.setColor(1,1,1, 0.5)
+--		for i, point in ipairs (bezier.cList) do
+--			local x, y = point.x, point.y
+--			love.graphics.print (i..' '..(point.k), x-20,y+20)
+--			love.graphics.circle ('line', point.cx, point.cy, point.r)
+--		end
+
+--		love.graphics.setLineWidth (1)
+--		love.graphics.setColor(1,1,1)
+--		love.graphics.line(bezier.curve:render())
+		
+
 	end
 
-	love.graphics.setLineWidth (1)
 	love.graphics.setColor(1,1,1)
-	love.graphics.line(bezier.curve:render())
-	
 	love.graphics.setLineWidth (1)
 	if selector.t then
-		love.graphics.circle ('fill', selector.tx, selector.ty, 10)
-		love.graphics.print (selector.t, 20, 80)
+		love.graphics.circle ('fill', selector.x, selector.y, 8)
+		love.graphics.print (selector.t, 20, 20)
+		love.graphics.print (selector.x, 20, 40)
+		love.graphics.print (selector.y, 20, 60)
+		love.graphics.print (selector.bezierIndex, 20, 80)
 	end
-
 end
 
 function love.keypressed(key, scancode, isrepeat)
@@ -159,14 +187,9 @@ function love.keypressed(key, scancode, isrepeat)
 	end
 end
 
-function love.mousepressed( x, y, button, istouch, presses )
-	if button == 1 then -- left mouse button
-	elseif button == 2 then -- right mouse button
-	end
-end
 
 function getNearestPoint (line, x, y)
-	local nx, ny, nDist -- nearest point, distance
+	local nx, ny, nDist, nIndex -- nearest point, distance
 	for i = 1, #line-1, 2 do
 		local px, py = line[i], line[i+1]
 		local dx, dy = px-x, py-y
@@ -174,45 +197,93 @@ function getNearestPoint (line, x, y)
 		if (not nDist) or nDist > dist then
 			nDist = dist
 			nx, ny = px, py
+			nIndex = i
 		end
 	end
-	return nx, ny
+	local t = ((nIndex-1)/2)/(#line/2-1)
+--	print (t)
+	return nx, ny, t, nDist
 end
 
 
 
-function getBezierValue (line, x, y)
-	local nx, ny = getNearestPoint (line, x, y)
-	local nt = 0 -- nearest t
-	local ntx, nty = bezier.curve:evaluate(nt)
-	local ndx, ndy = ntx-nx, nty-ny
-	local nDist = (ndx*ndx+ndy*ndy)^0.5
-	local amount = (#line)/2
---	print (amount)
-	for i = 1, amount-1 do
-		local t = (i)/(amount-1)
-		local tx, ty = bezier.curve:evaluate(t)
-		local dx, dy = tx-nx, ty-ny
-		if (dx == 0) and (dy == 0) then
---			print (i)
-			return t, tx, ty
-		elseif dx < nDist and dy < nDist then
-			local dist = (dx*dx+dy*dy)^0.5
-			if dist < nDist then
-				nDist = dist
-				nt = t
-				ntx, nty = tx, ty
-				ndx, ndx = dx, dy
-			end
+function updateSelectedBezierValue (beziers, x, y)
+	local bestBezierIndex, bestBezier
+	local bX, bY, t, bestDist
+	for iBezier, bezier in ipairs (beziers) do
+		local line = bezier.line
+		local nx, ny, nt, nDist = getNearestPoint (line, x, y)
+		if not bestDist or bestDist > nDist then
+			bestDist = nDist
+			bestBezierIndex, bestBezier = iBezier, bezier
+			bX, bY, t = nx, ny, nt
 		end
 	end
---	print (nt)
-	return nt, nx, ny
+	
+	selector = {x=bX, y=bY, t=t, bezier = bestBezier, bezierIndex = bestBezierIndex}
+end
+
+function lerp (a, b, t)
+	return a + t*(b-a)
+end
+
+function pointsToVertices (points) -- as pairs {{x=x1,y=y1}, {x=x2,y=y2}, }
+--	print ('points', #points)
+	local vertices = {}
+	for i, point in ipairs (points) do
+		table.insert (vertices, point.x)
+		table.insert (vertices, point.y)
+	end
+	return vertices
+end
+
+function cutBezier (beziers, bezierIndex, t)
+	local bezier = beziers[bezierIndex]
+	table.remove (beziers, bezierIndex)
+	selector = {}
+	
+	local vertices = bezier.vertices
+	local points = {}
+	for i = 1, #vertices-1, 2 do
+		local x, y = vertices[i], vertices[i+1]
+		table.insert (points, {x=x,y=y})
+	end
+	
+	local first, second = {}, {}
+	
+	for i = 1, #points do
+		local points2 = {}
+		table.insert (first, 1, points[1])
+		table.insert (second, 1, points[#points])
+--		table.insert (second, points[#points])
+		for j = 1, #points-1 do
+			local x1, y1 = points[j].x, points[j].y
+			local x2, y2 = points[j+1].x, points[j+1].y
+			local x = lerp (x1, x2, t)
+			local y = lerp (y1, y2, t)
+			table.insert (points2, {x=x,y=y})
+		end
+		points = points2
+	end
+	
+	local verticesFirst = pointsToVertices (first)
+	local verticesSecond = pointsToVertices (second)
+	
+	table.insert (beziers, newBezier (verticesFirst))
+	table.insert (beziers, newBezier (verticesSecond))
+end
+
+function love.mousepressed( x, y, button, istouch, presses )
+	if button == 1 then -- left mouse button
+		cutBezier (beziers, selector.bezierIndex, selector.t)
+	elseif button == 2 then -- right mouse button
+	end
 end
 
 function love.mousemoved( x, y, dx, dy, istouch )
 	
-	selector.t, selector.tx, selector.ty = getBezierValue (bezier.line, x, y, 1)
+	
+	updateSelectedBezierValue (beziers, x, y, 1)
 
 end
 
