@@ -18,7 +18,9 @@ function love.load()
 	
 --	bezier = {line = {x1, y1, x2, y2}, controlPoints = {{x, y}}}
 
+	bezCurves = nil
 	
+	colors = {}
 end
 
  
@@ -28,7 +30,29 @@ end
 
 
 function love.draw()
-	DrawPolyline.draw(line)
+	
+	
+	if bezCurves then
+		for i, verticles in ipairs (bezCurves) do
+			if not colors[i] then
+				colors[i] = {0.7+0.5*math.random(),0.5+0.5*math.random(),0.5+0.5*math.random()}
+			end
+			love.graphics.setColor(colors[i])
+			local x, y = verticles[1], verticles[2]
+			love.graphics.circle ('line', x, y, 3)
+--			print ('#verticles', #verticles)
+			local curve = love.math.newBezierCurve(verticles)
+			
+			
+			love.graphics.line(curve:render())
+--			DrawPolyline.draw(verticles)
+		end
+		local verticles = bezCurves[#bezCurves]
+		local x, y = verticles[#verticles-1], verticles[#verticles]
+		love.graphics.circle ('line', x, y, 3)
+	else
+		DrawPolyline.draw(line)
+	end
 end
 
 function love.keypressed(key, scancode, isrepeat)
@@ -39,6 +63,7 @@ function love.keypressed(key, scancode, isrepeat)
 end
 
 function love.mousepressed( x, y, button, istouch, presses )
+	bezCurves = nil
 	if button == 1 then -- left mouse button
 		line = {}
 		DrawPolyline.mousepressed(line, x, y, button, istouch, presses )
@@ -54,6 +79,7 @@ function love.mousereleased( x, y, button, istouch, presses )
 	if button == 1 then -- left mouse button
 		DrawPolyline.mousereleased(line, x, y, button, istouch, presses )
 		
+		bezCurves = P2B.polyline2bezier (line, 5000, true)
 	elseif button == 2 then -- right mouse button
 	end
 end

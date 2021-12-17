@@ -7,8 +7,16 @@ DrawPolyline.pressed = false
 	
 	
 function DrawPolyline.addPoint (line, x, y)
-	table.insert(line, x)
-	table.insert(line, y)
+--	if not (x == line[#line-1] and y == line[#line]) then
+	if #line == 0 then
+		table.insert(line, x)
+		table.insert(line, y)
+	elseif math.abs(x-line[#line-1])>5 or math.abs(y-line[#line])>5 then
+		table.insert(line, x)
+		table.insert(line, y)
+	else -- impossible mouse movement
+--		print (#line .. ' same position: ' .. x ..' '..y..' '.. line[#line-1] ..' '..line[#line])
+	end
 end
 
 function DrawPolyline.mousepressed(line, x, y, button, istouch, presses)
@@ -23,9 +31,7 @@ function DrawPolyline.mousemoved(line, x, y, dx, dy, istouch)
 end
 
 function DrawPolyline.mousereleased(line, x, y, button, istouch, presses)
-	if #line == 0 or not (x == line[#line-1] and y == line[#line]) then
-		DrawPolyline.addPoint (line, x, y)
-	end
+	DrawPolyline.addPoint (line, x, y)
 	DrawPolyline.pressed = false
 end
 
