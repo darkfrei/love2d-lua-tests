@@ -14,13 +14,17 @@ function love.load()
 	width, height = love.graphics.getDimensions( )
 
 --	line = {x1, y1, x2, y2...}
-	line = {}
+--	line = {}
+--	line = {100,100, 1600,100, 500,400, 200,600, 300,900, 600,900, 1400,200, 1600,200, 900,1000}
+	line = {100,100, 1600,300, 1500,600, 200,900}
 	
 --	bezier = {line = {x1, y1, x2, y2}, controlPoints = {{x, y}}}
 
 	bezCurves = nil
 	
 	colors = {}
+	
+	bezCurves = P2B.polyline2bezier (line, 5000, true)
 end
 
  
@@ -30,29 +34,35 @@ end
 
 
 function love.draw()
-	
+	love.graphics.setLineWidth (1)
+	love.graphics.setColor(0,1,1)
+	DrawPolyline.draw(line)
 	
 	if bezCurves then
 		for i, verticles in ipairs (bezCurves) do
+			love.graphics.setLineWidth (1)
+			love.graphics.setColor(1,1,1, 0.75)
+			DrawPolyline.draw(verticles)
+			
 			if not colors[i] then
 				colors[i] = {0.7+0.5*math.random(),0.5+0.5*math.random(),0.5+0.5*math.random()}
 			end
+			love.graphics.setLineWidth (2)
 			love.graphics.setColor(colors[i])
+
 			local x, y = verticles[1], verticles[2]
 			love.graphics.circle ('line', x, y, 3)
 --			print ('#verticles', #verticles)
 			local curve = love.math.newBezierCurve(verticles)
-			
-			
 			love.graphics.line(curve:render())
---			DrawPolyline.draw(verticles)
 		end
 		local verticles = bezCurves[#bezCurves]
 		local x, y = verticles[#verticles-1], verticles[#verticles]
 		love.graphics.circle ('line', x, y, 3)
 	else
-		DrawPolyline.draw(line)
+		
 	end
+
 end
 
 function love.keypressed(key, scancode, isrepeat)

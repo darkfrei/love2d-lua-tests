@@ -157,7 +157,8 @@ local function generateBezier (d, first, last, uPrime, tHat1, tHat2)
 		C[2][2] = C[2][2] + v2Dot(A[i][2], A[i][2])
 		
 		-- check it
-		local temp = getTemp (d[first+i-1], d[first], d[last], uPrime[i])
+		local j = first+i-1
+		local temp = getTemp (d[j], d[first], d[last], uPrime[i])
 		
 		X[1] = X[1] + v2Dot (A[i][1], temp)
 		X[2] = X[2] + v2Dot (A[i][2], temp)
@@ -172,8 +173,9 @@ local function generateBezier (d, first, last, uPrime, tHat1, tHat2)
 	
 	local segLength = v2DistanceBetween2Points(d[last], d[first])
 	local epsilon = (1/2^20) * segLength
+--	local epsilon = (1/2^10) * segLength
 	
-	if (alpha_l < epsilon or alpha_r < epsilon) then
+	if (alpha_l < epsilon) or (alpha_r < epsilon) then
 		
 		local dist = segLength / 3
 		local p1 = d[first]
@@ -188,7 +190,7 @@ local function generateBezier (d, first, last, uPrime, tHat1, tHat2)
 		local p4 = d[last]
 		
 		local p2 = v2Add(p1, v2Scale(tHat1, alpha_l))
-		local p3 = v2Add(p4, v2Scale(tHat1, alpha_r))
+		local p3 = v2Add(p4, v2Scale(tHat2, alpha_r))
 		local bezCurve = {p1, p2, p3, p4}
 		return bezCurve
 	end
@@ -305,6 +307,8 @@ end
 local function v2Negate(v)
 	return {x=-v.x, y=-v.y}
 end
+
+
   
 local function fitCubic (bezCurves, d, first, last, tHat1, tHat2, err, ignore)
 --	local bezCurve
@@ -319,17 +323,23 @@ local function fitCubic (bezCurves, d, first, last, tHat1, tHat2, err, ignore)
 	
 	if nPts == 2 then
 		-- line
+		local dist = v2DistanceBetween2Points(d[last], d[first]) / 3.0
 		local x1, y1 = d[first].x, d[first].y
 		local x4, y4 = d[last].x, d[last].y
-		local x2, y2 = lerp(x1, x4, 1/3), lerp(y1, y4, 1/3)
-		local x3, y3 = lerp(x1, x4, 2/3), lerp(y1, y4, 2/3)
+		tHat1 = v2Scale(tHat1, dist)
+		tHat2 = v2Scale(tHat2, dist)
+--		local x2, y2 = lerp(x1, x4, 1/3), lerp(y1, y4, 1/3)
+--		local x3, y3 = lerp(x1, x4, 2/3), lerp(y1, y4, 2/3)
+		local p2 = {x=x1+tHat1.x*dist, y=y1+tHat1.y*dist}
+		local p3 = {x=x4+tHat2.x*dist, y=y4+tHat2.y*dist}
 		local bezCurve = {
 			{x=x1, y=y1}, 
-			{x=x2, y=y2}, 
-			{x=x3, y=y3}, 
+			p2, 
+			p3, 
 			{x=x4, y=y4}, 
 		}
 		table.insert(bezCurves, bezCurve)
+		print ('line')
 		return
 	elseif nPts == 3 then
 		-- quadratic
@@ -345,14 +355,15 @@ local function fitCubic (bezCurves, d, first, last, tHat1, tHat2, err, ignore)
 			{x=x4, y=y4}, 
 		}
 		table.insert(bezCurves, bezCurve)
---		print ('quadratic')
+		print ('quadratic')
 		return
 	elseif nPts == 4 then
 		-- cubic
 		local u =  chordLengthParameterize(d, first, last)
 		local bezCurve =  generateBezier(d, first, last, u, tHat1, tHat2)
+--		local bezCurve =  generateBezier(d, first, last, u, tHat1, {x=1, y=0})
 		table.insert(bezCurves, bezCurve)
---		print ('cubic')
+		print ('cubic')
 		return
 	end
 	
@@ -439,7 +450,7 @@ function P2B.polyline2bezier (line, err, ignore)
 		end
 	end
 	
-	print ('#bezierSegments', #bezierSegments)
+--	print ('#bezierSegments', #bezierSegments)
 	
 	return bezierSegments
 end

@@ -11,7 +11,7 @@ function DrawPolyline.addPoint (line, x, y)
 	if #line == 0 then
 		table.insert(line, x)
 		table.insert(line, y)
-	elseif math.abs(x-line[#line-1])>5 or math.abs(y-line[#line])>5 then
+	elseif math.abs(x-line[#line-1])>50 or math.abs(y-line[#line])>50 then
 		table.insert(line, x)
 		table.insert(line, y)
 	else -- impossible mouse movement
