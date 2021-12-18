@@ -1,5 +1,7 @@
 -- polyline2bezier
 -- how to convert polyline to bezier
+-- (c) darkfrei 2021
+
 
 -- https://github.com/ynakajima/polyline2bezier
 -- https://github.com/ynakajima/polyline2bezier/blob/39186756eb7524f6797b27f798129d95e6459abc/src/polyline2bezier.js
@@ -10,8 +12,6 @@ local P2B = {}
 local function v2SubII(a, b)
 	local x, y = a.x-b.x, a.y-b.y
 	return {x=x, y=y}
---	local x, y = b.x-a.x, b.y-a.y
---	return {x=-x, y=-y}
 end
 
 local function v2Normalize(v)
@@ -21,15 +21,12 @@ end
 
 local function computeLeftTangent(d, e)
     local tHat1 = v2SubII(d[e+1], d[e])
---    local tHat1 = {x=1, y=0}
     tHat1 = v2Normalize(tHat1)
     return tHat1
 end
 
 local function computeRightTangent(d, e)
---    local tHat2 = v2SubII(d[e], d[e-1])
     local tHat2 = v2SubII(d[e-1], d[e])
---    local tHat2 = {x=1, y=0}
     tHat2 = v2Normalize(tHat2)
     return tHat2
 end
@@ -49,13 +46,11 @@ local function  chordLengthParameterize(d, first, last)
 	local uMax = 0
 	for i = 2, nPts do -- from second to last
 		local j = i+first-1
---		print (i, j, first, last)
 		u[i] = u[i-1] + v2DistanceBetween2Points(d[j-1], d[j])
 		uMax = u[i]
 	end
 	for i = 1, nPts do
 		local t = u[i]/uMax
---		print (i, 'chordLengthParameterize', nPts, t, uMax)
 		u[i] = t
 	end
 	return u
@@ -85,8 +80,6 @@ local function v2Scale (v, newLen)
 	local lenght = v2Length (v)
 	if lenght > 0 then
 		return {x=v.x*newLen/lenght, y=v.y*newLen/lenght}
---	else
---		return v
 	end
 end
 
@@ -104,27 +97,13 @@ end
 
 local function getTemp (d1, d2, d3, u)
 	local b0, b1, b2, b3 = B0(u), B1(u), B2(u), B3(u)
---	local temp = - d1 (+ (* d2 b0) (+ (* d2 b1) (+ (* d3 b2) (* d3 b3))))
---	local temp = d1 - (d2*b0 + d2*b1 + d3*b2 + d3 * b3)
 
 	local xi, xf, xl = d1.x, d2.x, d3.x
 	local yi, yf, yl = d1.y, d2.y, d3.y
 	
 	local x = xi - (xf*b0 + xf*b1 + xl*b2 + xl*b3)
 	local y = yi - (yf*b0 + yf*b1 + yl*b2 + yl*b3)
-
---	local temp = v2SubII (d1,
---		v2AddII (
---			v2ScaleIII (d2,b0),
---			v2AddII (
---				v2ScaleIII (d2, b1),
---					v2AddII (
---						v2ScaleIII (d3, b2),
---						v2ScaleIII (d3, b3)))))
-	
---	return temp
 	return {x=x, y=y}
-
 end
 
 local function v2Add(a, b) -- same as v2AddII(a, b)
@@ -146,15 +125,21 @@ local function generateBezier (d, first, last, uPrime, tHat1, tHat2)
 		A[i] = {v1, v2}
 	end
 	
-	local C = {{0,0}, {0,0}}
+--	local C = {{0,0}, {0,0}}
 	local X = {0, 0}
 	
+	-- matrix c
+	local c11, c12, c22 = 0, 0, 0
+	
 	for i = 1, nPts do
-		C[1][1] = C[1][1] + v2Dot(A[i][1], A[i][1])
-		C[1][2] = C[1][1] + v2Dot(A[i][1], A[i][2])
+		c11 = c11 + v2Dot(A[i][1], A[i][1])
+		c12 = c11 + v2Dot(A[i][1], A[i][2])
+		c22 = c22 + v2Dot(A[i][2], A[i][2])
+--		C[1][1] = C[1][1] + v2Dot(A[i][1], A[i][1])
+--		C[1][2] = C[1][1] + v2Dot(A[i][1], A[i][2])
 		
-		C[2][1] = C[1][2]
-		C[2][2] = C[2][2] + v2Dot(A[i][2], A[i][2])
+--		C[2][1] = C[1][2]
+--		C[2][2] = C[2][2] + v2Dot(A[i][2], A[i][2])
 		
 		-- check it
 		local j = first+i-1
@@ -164,9 +149,12 @@ local function generateBezier (d, first, last, uPrime, tHat1, tHat2)
 		X[2] = X[2] + v2Dot (A[i][2], temp)
 	end
 	
-    local det_C0_C1 = C[1][1] * C[2][2] - C[2][1] * C[1][2]
-    local det_C0_X  = C[1][1] * X[2]    - C[2][1] * X[1]
-    local det_X_C1  = X[1]    * C[2][2] - X[2]    * C[1][2]
+--    local det_C0_C1 = C[1][1] * C[2][2] - C[2][1] * C[1][2]
+--    local det_C0_X  = C[1][1] * X[2]    - C[2][1] * X[1]
+--    local det_X_C1  = X[1]    * C[2][2] - X[2]    * C[1][2]
+    local det_C0_C1 = c11  * c22  - c12  * c12
+    local det_C0_X  = c11  * X[2] - c12  * X[1]
+    local det_X_C1  = X[1] * c22  - X[2] * c12
 	
 	local alpha_l = det_X_C1 / det_C0_C1
 	local alpha_r = det_C0_X / det_C0_C1
@@ -250,29 +238,31 @@ local function newtonRaphsonRootFind(bezCurve, point, u) -- (_Q, _P, u)
 	local Q2 = {} -- {{x=0, y=0}, {x=0, y=0}}
 	
 	local Q = bezCurve
+	
 	local P = {x=point.x, y=point.y}
     
-    
-    local Q_u = bezierII(3, Q, u);
+	local nPts = #bezCurve
+    local Q_u = bezierII(nPts-1, Q, u);
+	
     
 --    /* Generate control vertices for Q'  */
-    for i = 1, 3 do
+    for i = 1, #Q-1 do
 		Q1[i] = {x=(Q[i+1].x-Q[i].x)*3, y=(Q[i+1].y-Q[i].y)*3}
 	end
     
 --    /* Generate control vertices for Q'' */
-    for i = 1, 2 do
-		Q2[i]= {x=(Q1[i+1].x - Q1[i].x) * 2.0, y = (Q1[i+1].y - Q1[i].y) * 2.0}
+    for i = 1, #Q1-1 do
+		Q2[i]= {x=(Q1[i+1].x - Q1[i].x)*2, y = (Q1[i+1].y - Q1[i].y)*2}
     end
     
 --    /* Compute Q'(u) and Q''(u)  */
-    local Q1_u = bezierII(2, Q1, u);
-    local Q2_u = bezierII(1, Q2, u);
+    local Q1_u = bezierII(nPts-2, Q1, u);
+    local Q2_u = bezierII(nPts-3, Q2, u);
     
 --    /* Compute f(u)/f'(u) */
     local numerator = (Q_u.x - P.x) * (Q1_u.x) + (Q_u.y - P.y) * (Q1_u.y)
-    local denominator = (Q1_u.x)*(Q1_u.x)+(Q1_u.y)*(Q1_u.y)
-		+(Q_u.x-P.x)*(Q2_u.x)+(Q_u.y-P.y)*(Q2_u.y)
+    local denominator =  (Q1_u.x)   *(Q1_u.x)+(Q1_u.y)   *(Q1_u.y)
+						+(Q_u.x-P.x)*(Q2_u.x)+(Q_u.y-P.y)*(Q2_u.y)
     if denominator == 0 then return u end
 
 --    /* u = u - f(u)/f'(u) */
@@ -281,16 +271,23 @@ local function newtonRaphsonRootFind(bezCurve, point, u) -- (_Q, _P, u)
 end
 
 local function reparameterize(d, first, last, u, bezCurve)
-    local uPrime = {}
+    local uPrime = {0}
 
-    for i = first, last do
-		local newBezCurve = {
-			{x=bezCurve[1].x, y=bezCurve[1].y},
-			{x=bezCurve[2].x, y=bezCurve[2].y},
-			{x=bezCurve[3].x, y=bezCurve[3].y},
-			{x=bezCurve[4].x, y=bezCurve[4].y},
-		}
-		uPrime[i-first+1] = newtonRaphsonRootFind(newBezCurve, d[i], u[i-first+1])
+	local nPts = last-first+1
+	
+    for i = 1, nPts do
+		local newBezCurve = {}
+		for j, point in ipairs (bezCurve) do
+			table.insert (newBezCurve, {x=point.x, y=point.y})
+		end
+		local j = i+first-1
+		
+		uPrime[i] = newtonRaphsonRootFind(newBezCurve, d[j], u[i])
+--		print ('reparameterize', i, uPrime[i], j, first, last)
+	end
+	local uMax = uPrime[#uPrime]
+	for i = 1, #uPrime do
+		uPrime[i] = uPrime[i]/uMax
 	end
     return uPrime
 end
@@ -323,11 +320,11 @@ local function fitCubic (bezCurves, d, first, last, tHat1, tHat2, err, ignore)
 	
 	if nPts == 2 then
 		-- line
-		local dist = v2DistanceBetween2Points(d[last], d[first]) / 3.0
+		local dist = v2DistanceBetween2Points(d[last], d[first]) / 3
 		local x1, y1 = d[first].x, d[first].y
 		local x4, y4 = d[last].x, d[last].y
-		tHat1 = v2Scale(tHat1, dist)
-		tHat2 = v2Scale(tHat2, dist)
+--		tHat1 = v2Scale(tHat1, dist)
+--		tHat2 = v2Scale(tHat2, dist)
 --		local x2, y2 = lerp(x1, x4, 1/3), lerp(y1, y4, 1/3)
 --		local x3, y3 = lerp(x1, x4, 2/3), lerp(y1, y4, 2/3)
 		local p2 = {x=x1+tHat1.x*dist, y=y1+tHat1.y*dist}
@@ -339,32 +336,39 @@ local function fitCubic (bezCurves, d, first, last, tHat1, tHat2, err, ignore)
 			{x=x4, y=y4}, 
 		}
 		table.insert(bezCurves, bezCurve)
-		print ('line')
+		print ('line', first, last)
 		return
 	elseif nPts == 3 then
 		-- quadratic
-		local x1, y1 = d[first].x, d[first].y
-		local x4, y4 = d[last].x, d[last].y
-		local xi, yi = d[first+1].x, d[first+1].y
-		local x2, y2 = x1+(2/3)*(xi-x1), y1+(2/3)*(yi-y1)
-		local x3, y3 = x4+(2/3)*(xi-x4), y4+(2/3)*(yi-y4)
-		local bezCurve = {
-			{x=x1, y=y1}, 
-			{x=x2, y=y2}, 
-			{x=x3, y=y3}, 
-			{x=x4, y=y4}, 
-		}
-		table.insert(bezCurves, bezCurve)
-		print ('quadratic')
-		return
-	elseif nPts == 4 then
-		-- cubic
+--		local x1, y1 = d[first].x, d[first].y
+--		local x4, y4 = d[last].x, d[last].y
+--		local xi, yi = d[first+1].x, d[first+1].y
+--		local x2, y2 = x1+(2/3)*(xi-x1), y1+(2/3)*(yi-y1)
+--		local x3, y3 = x4+(2/3)*(xi-x4), y4+(2/3)*(yi-y4)
+--		local bezCurve = {
+--			{x=x1, y=y1}, 
+--			{x=x2, y=y2}, 
+--			{x=x3, y=y3}, 
+--			{x=x4, y=y4}, 
+--		}
 		local u =  chordLengthParameterize(d, first, last)
 		local bezCurve =  generateBezier(d, first, last, u, tHat1, tHat2)
---		local bezCurve =  generateBezier(d, first, last, u, tHat1, {x=1, y=0})
+		
+		-- check it
+		local uPrime = reparameterize(d, first, last, u, bezCurve)
+		bezCurve = generateBezier(d, first, last, uPrime, tHat1, tHat2)
+		
 		table.insert(bezCurves, bezCurve)
-		print ('cubic')
+		print ('quadratic', first, last)
 		return
+--	elseif nPts == 4 then
+--		-- cubic
+--		local u =  chordLengthParameterize(d, first, last)
+--		local bezCurve =  generateBezier(d, first, last, u, tHat1, tHat2)
+----		local bezCurve =  generateBezier(d, first, last, u, tHat1, {x=1, y=0})
+--		table.insert(bezCurves, bezCurve)
+--		print ('cubic')
+--		return
 	end
 	
 	local u =  chordLengthParameterize(d, first, last)
@@ -404,7 +408,7 @@ local function fitCubic (bezCurves, d, first, last, tHat1, tHat2, err, ignore)
 		end
 	end
 	
-	local splitPoint = math.floor((last + first + 1)/2)+1
+	local splitPoint = math.floor((last + first)/2)+1
 	
 --	print ('split', first, splitPoint, last)
 	local tHatCenter = computeCenterTangent(d, splitPoint)
@@ -450,7 +454,7 @@ function P2B.polyline2bezier (line, err, ignore)
 		end
 	end
 	
---	print ('#bezierSegments', #bezierSegments)
+	print ('#bezierSegments', #bezierSegments)
 	
 	return bezierSegments
 end
