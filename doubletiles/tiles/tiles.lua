@@ -7,6 +7,8 @@
 
 --	7	8	9
 
+unpack = unpack or table.unpack
+
 local source = {
 	{name = '1',	5, 6, 8, 9},
 	{name = '2', 	4, 5, 6, 7, 8, 9},
@@ -33,22 +35,22 @@ local source = {
 local types = {}
 for i, tile in ipairs (source) do
 	local name = tile.name
-	local v = 0
+	local nr = 0
 	for j, value in ipairs (tile) do
 		if value < 5 then
-			v = v + 2^(value-1)
+			nr = nr + 2^(value-1)
 		elseif value > 5 then
-			v = v + 2^(value-2)
+			nr = nr + 2^(value-2)
 		end
 	end
-	if not types[v] then types[v] = {} end
---	types[v][name] = tile
-	table.insert (types[v], tile)
+	if not types[nr] then types[nr] = {} end
+	table.insert (types[nr], tile)
 end
 
 for nr, typ in pairs (types) do
-	for i, tile in pairs (typ) do
-		print (i, nr, '"'..tile.name..'"', table.unpack (tile))
+	for i, tile in ipairs (typ) do
+--		print (i, nr, '"'..tile.name..'"')
+		print (i, nr, '"'..tile.name..'"', unpack (tile))
 	end
 end
 
@@ -75,11 +77,16 @@ local function bitsToNumber (bits)
 	return math.floor(nr)
 end
 
-local function toTyp (map, i, j) -- map, x, y
+local function toTyp (map, j, i) -- map, x, y
+--	local bits = {
+--		map[i-1][j-1],	map[i][j-1], map[i+1][j-1], 
+--		map[i-1][j], 				 map[i+1][j], 
+--		map[i-1][j+1], 	map[i][j+1], map[i+1][j+1], 
+--	}
 	local bits = {
-		map[i-1][j-1],	map[i][j-1], map[i+1][j-1], 
-		map[i-1][j], 				 map[i+1][j], 
-		map[i-1][j+1], 	map[i][j+1], map[i+1][j+1], 
+		map[i-1][j-1],	map[i-1][j], map[i-1][j+1], 
+		map[i][j-1], 				 map[i][j+1], 
+		map[i+1][j-1], 	map[i+1][j], map[i+1][j+1], 
 	}
 	return bitsToNumber (bits)
 end
@@ -100,8 +107,8 @@ local allTypes = {}
 local validTypes = {0,2,3,6,7,8,9,10,11,14,15,16,18,19,20,22,23,24,25,26,27,28,29,30,31,40,41,42,43,46,47,56,57,58,59,60,61,62,63,64,66,67,70,71,72,73,74,75,78,79,80,82,83,84,86,87,88,89,90,91,92,93,94,95,96,98,99,102,103,104,105,106,107,110,111,112,114,115,116,118,119,120,121,122,123,124,125,126,127,144,146,147,148,150,151,152,153,154,155,156,157,158,159,168,169,170,171,174,175,184,185,186,187,188,189,190,191,208,210,211,212,214,215,216,217,218,219,220,221,222,223,224,226,227,230,231,232,233,234,235,238,239,240,242,243,244,246,247,248,249,250,251,252,253,254,255}
 
 local tiles = {}
-for n = 0, 255 do
-	local bits = toBits(n)
+for nr = 0, 255 do
+	local bits = toBits(nr)
 	
 	
 	if isBitsValid (bits) then
@@ -116,7 +123,7 @@ for n = 0, 255 do
 		}
 		
 		local tileValid = true
-		local tile = {}
+		local tile = {nr=nr}
 		for i = 2, 3 do -- x
 			for j = 2, 3 do -- y
 				local typNr = toTyp (map, i, j)
@@ -141,6 +148,11 @@ print ('#tiles', #tiles)
 for i, tile in ipairs (tiles) do
 	print('{', table.concat(tile, ','),'},')
 end
+
+--print (unpack(tiles))
+
+
+return {types=types, tiles=tiles}
 
 --print (table.concat(validTypes, ','))
 
