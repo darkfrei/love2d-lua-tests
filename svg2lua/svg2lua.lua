@@ -51,20 +51,27 @@ local function parsePath (input)
     return output
 end
 
-local function svg2lua (input)
+local function svg2lua (tabl, input)
 	local list = parsePath (input)
---	local str = '{'
---	for i, component in ipairs (list) do 
---		str = str .. '{'.. table.concat(component, ',') ..'},'
---	end
---	str = str:sub(1, -2) -- remove last comma
---	str = str .. '}'
---	print (str)
+	local str = '{'
+	for i, component in ipairs (list) do 
+		str = str .. '{'.. table.concat(component, ',') ..'},'
+	end
+	str = str:sub(1, -2) -- remove last comma
+	str = str .. '}'
+	print (str)
 	
 	local x, y
 	local vertices = {}
+	local road = false
+	local bezier = false
+	local fill = false
 	for i, c in ipairs (list) do 
 		if c[1] == "M" then
+			if #vertices > 2 then
+				table.insert (tabl, vertices)
+			end
+			vertices = {road=road, fill=fill, bezier=bezier}
 			for j = 2, #c-1, 2 do
 				x, y = c[j], c[j+1]
 				table.insert (vertices, x)
@@ -94,13 +101,18 @@ local function svg2lua (input)
 				table.insert (vertices, y)
 			end
 		elseif c[1] == "F" then
-			vertices.fill = true
+			fill = true
 		elseif c[1] == "R" then
-			vertices.road = true
+			road = c[2]
 		end
 	end
-	return vertices
+	if #vertices > 2 then
+		
+		table.insert (tabl, vertices)
+	end
 end
+
+
 
 return svg2lua
 

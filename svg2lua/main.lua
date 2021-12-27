@@ -9,7 +9,7 @@ love.window.setMode(1920, 1080, {resizable=true, borderless=false})
 mr:load ()
 
 
-local ds = require ('level-1')
+local ds = require ('level-2')
 
 
 
@@ -18,12 +18,14 @@ local ds = require ('level-1')
 local luapaths = {}
 
 for i, d in ipairs (ds) do
-	local luapath = svg2lua(d)
+	svg2lua(luapaths, d)
+end
+
+for i, luapath in ipairs (luapaths) do
 	if luapath.bezier then
 		local curve = love.math.newBezierCurve(luapath)
 		luapath.curve = curve:render()
 	end
-	table.insert (luapaths, luapath)
 end
 
 local nodeMap = {}
@@ -80,7 +82,7 @@ function love.update(dt)
 end
 
 local function drawBackground ()
-	love.graphics.setColor(bckGrcolor)
+	love.graphics.setColor(bckGrColor)
 	love.graphics.rectangle ('fill', 0,0, 1920, 960)
 	love.graphics.setLineWidth(1)
 	love.graphics.setColor(1,1,1,0.4)
@@ -99,12 +101,14 @@ local function drawBackground ()
 	end
 end
 
-local function drawRoads (lines)
+local function drawRoads (lines, layer)
+	local roadColor = roadColor
+	if layer == 2 then roadColor = BridgeRoadColor end
+	
 	love.graphics.setLineWidth (40)
 	love.graphics.setColor (roadColor)
 	for i, road in ipairs (lines) do
-		if road.road then 
-
+		if road.road and (road.road==layer) then
 			if road.curve then
 				love.graphics.line (road.curve)
 			else
@@ -116,8 +120,7 @@ local function drawRoads (lines)
 	love.graphics.setLineWidth (35)
 	love.graphics.setColor (lineColor)
 	for i, road in ipairs (lines) do
-		if road.road then 
-
+		if road.road and (road.road==layer) then
 			if road.curve then
 				love.graphics.line (road.curve)
 			else
@@ -129,8 +132,7 @@ local function drawRoads (lines)
 	love.graphics.setLineWidth (29)
 	love.graphics.setColor (roadColor)
 	for i, road in ipairs (lines) do
-		if road.road then 
-
+		if road.road and (road.road==layer) then
 			if road.curve then
 				love.graphics.line (road.curve)
 			else
@@ -142,8 +144,7 @@ local function drawRoads (lines)
 	love.graphics.setLineWidth (1)
 	love.graphics.setColor (1,1,1,0.20)
 	for i, road in ipairs (lines) do
-		if road.road then 
-
+		if road.road and (road.road==layer) then
 			if road.curve then
 				love.graphics.line (road.curve)
 			else
@@ -168,7 +169,7 @@ local function drawArrows ()
 	love.graphics.setColor(1,1,1)
 	local w, h = arrowImage:getDimensions ()
 	for i, node in ipairs (nodes) do
-		love.graphics.draw(arrowImage, node.x, node.y, node.angle, 0.65,0.65, w, h/2)
+		love.graphics.draw(arrowImage, node.x, node.y, node.angle, 0.65,0.65, 0.56*w, h/2)
 	end
 end
 
@@ -211,11 +212,17 @@ end
 function love.draw()
 	mr.draw()
 	drawBackground ()
-	drawRoads (luapaths)
 	drawBuildings (luapaths)
-	drawArrows ()
 	
-	drawCars ()
+	drawRoads (luapaths, 1)
+	drawArrows (1)
+	drawCars (1)
+	
+	drawRoads (luapaths, 2)
+	drawArrows (2)
+	drawCars (2)
+	
+	
 	
 	drawSelectorPoint ()
 	
