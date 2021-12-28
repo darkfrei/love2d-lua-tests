@@ -5,11 +5,13 @@
 
 local svg2lua = require ('svg2lua')
 local mr = require ('multiresolution')
+local RailW = require ('railways')
+
 love.window.setMode(1920, 1080, {resizable=true, borderless=false})
 mr:load ()
 
 
-local ds = require ('level-2')
+local ds = require ('level-3')
 
 
 
@@ -21,12 +23,40 @@ for i, d in ipairs (ds) do
 	svg2lua(luapaths, d)
 end
 
+local railroads = {}
 for i, luapath in ipairs (luapaths) do
+	for j, luapath2 in ipairs (luapath) do
+		if type(luapath2) == "table" then
+			if luapath2.bezier then
+				local curve = love.math.newBezierCurve(luapath2)
+				luapath2.curve = curve:render(3)
+			end
+		end
+	end
+
 	if luapath.bezier then
 		local curve = love.math.newBezierCurve(luapath)
-		luapath.curve = curve:render()
+		luapath.curve = curve:render(4)
+	end
+	
+	if luapath.railroad then
+		if luapath.curve then
+			table.insert (railroads, luapath.curve)
+			print (i, 'railroad curve')
+		else
+			table.insert (railroads, luapath)
+			print (i, 'luapath.railroad')
+		end
 	end
 end
+
+local crossTieCanvas = love.graphics.newCanvas(nil, nil, {dpiscale=2})
+local railroadCanvas = love.graphics.newCanvas(nil, nil, {dpiscale=2})
+for i, railroad in ipairs (railroads) do
+	RailW.drawRails (crossTieCanvas, railroadCanvas, railroad)
+end
+
+
 
 local nodeMap = {}
 for i, line in ipairs (luapaths) do
@@ -103,12 +133,20 @@ end
 
 local function drawRoads (lines, layer)
 	local roadColor = roadColor
-	if layer == 2 then roadColor = BridgeRoadColor end
+	local lineColor = lineColor
+	if layer == 2 then 
+		roadColor = bridgeRoadColor 
+		lineColor = bridgeLineColor
+	end
 	
 	love.graphics.setLineWidth (40)
 	love.graphics.setColor (roadColor)
 	for i, road in ipairs (lines) do
 		if road.road and (road.road==layer) then
+			if layer == 2 then 
+				love.graphics.setLineWidth (44)
+				love.graphics.setColor (0,0,0)
+			end
 			if road.curve then
 				love.graphics.line (road.curve)
 			else
@@ -151,16 +189,21 @@ local function drawRoads (lines, layer)
 				love.graphics.line (road)
 			end
 		end
+--		love.graphics.line (road)
 	end
 end
 
 local function drawBuildings (lines)
+	
 	love.graphics.setLineWidth (2)
 	love.graphics.setColor (buildingColor)
-	for i, building in ipairs (lines) do
+	for i, building in ipairs (luapaths) do
 		if building.fill then
-			
-			love.graphics.polygon('fill', building)
+			for j, part in ipairs (building) do
+				if #part > 4 then 
+					love.graphics.polygon('fill', part)
+				end
+			end
 		end
 	end
 end
@@ -169,7 +212,7 @@ local function drawArrows ()
 	love.graphics.setColor(1,1,1)
 	local w, h = arrowImage:getDimensions ()
 	for i, node in ipairs (nodes) do
-		love.graphics.draw(arrowImage, node.x, node.y, node.angle, 0.65,0.65, 0.56*w, h/2)
+		love.graphics.draw(arrowImage, node.x, node.y, node.angle, 0.65,0.65, 0.52*w, h/2)
 	end
 end
 
@@ -209,12 +252,26 @@ local function drawCars ()
 	end
 end
 
+local function drawRailroads ()
+	love.graphics.setColor(1,1,1)
+--	love.graphics.setLineWidth(2)
+--	for i, vertices in ipairs (railroads) do
+--		love.graphics.line (vertices)
+--	end
+
+	love.graphics.draw(crossTieCanvas)
+	love.graphics.draw(railroadCanvas)
+end
+
 function love.draw()
 	mr.draw()
 	drawBackground ()
-	drawBuildings (luapaths)
 	
 	drawRoads (luapaths, 1)
+	drawRailroads (1)
+	drawBuildings ()
+	
+	
 	drawArrows (1)
 	drawCars (1)
 	
@@ -222,7 +279,7 @@ function love.draw()
 	drawArrows (2)
 	drawCars (2)
 	
-	
+
 	
 	drawSelectorPoint ()
 	
