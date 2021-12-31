@@ -142,7 +142,8 @@ local function svg2lua (tabl, input)
 				table.insert (vertices, x)
 				table.insert (vertices, y)
 			end
-			table.insert (tabl, vertices)
+--			table.insert (tabl, vertices)
+--			vertices = nil
 		elseif c[1] == "R" then
 			road = c[2]
 		elseif c[1] == "RR" then

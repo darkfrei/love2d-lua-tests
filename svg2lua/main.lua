@@ -11,7 +11,7 @@ love.window.setMode(1920, 1080, {resizable=true, borderless=false})
 mr:load ()
 
 
-local ds = require ('level-3')
+local ds = require ('level-4')
 
 
 
@@ -29,14 +29,14 @@ for i, luapath in ipairs (luapaths) do
 		if type(luapath2) == "table" then
 			if luapath2.bezier then
 				local curve = love.math.newBezierCurve(luapath2)
-				luapath2.curve = curve:render(3)
+				luapath2.curve = curve:render()
 			end
 		end
 	end
 
 	if luapath.bezier then
 		local curve = love.math.newBezierCurve(luapath)
-		luapath.curve = curve:render(4)
+		luapath.curve = curve:render()
 	end
 	
 	if luapath.railroad then
@@ -66,14 +66,17 @@ for i, line in ipairs (luapaths) do
 		local x3, y3 = line[#line-3], line[#line-2]
 		local x4, y4 = line[#line-1], line[#line]
 		if not nodeMap[x1] then nodeMap[x1] = {} end
-		if not nodeMap[x1][y1] then nodeMap[x1][y1] = {x=x1, y=y1, dx=0,dy=0} end
+		if not nodeMap[x1][y1] then nodeMap[x1][y1] = {x=x1, y=y1, dx=0,dy=0, starts=0, ends=0} end
 		nodeMap[x1][y1].dx = nodeMap[x1][y1].dx + (x2-x1)
 		nodeMap[x1][y1].dy = nodeMap[x1][y1].dy + (y2-y1)
+		nodeMap[x1][y1].starts = nodeMap[x1][y1].starts + 1
 		
 		if not nodeMap[x4] then nodeMap[x4] = {} end
-		if not nodeMap[x4][y4] then nodeMap[x4][y4] = {x=x4, y=y4, dx=0,dy=0} end
+		if not nodeMap[x4][y4] then nodeMap[x4][y4] = {x=x4, y=y4, dx=0,dy=0, starts=0, ends=0} end
 		nodeMap[x4][y4].dx = nodeMap[x4][y4].dx + (x4-x3)
 		nodeMap[x4][y4].dy = nodeMap[x4][y4].dy + (y4-y3)
+		nodeMap[x4][y4].ends = nodeMap[x4][y4].ends + 1
+		
 	end
 end
 
@@ -131,21 +134,32 @@ local function drawBackground ()
 	end
 end
 
+local function drawDots (color, radius)
+	love.graphics.setColor(color)
+	love.graphics.setLineWidth(1)
+	for i, node in ipairs (nodes) do
+		love.graphics.circle('fill', node.x, node.y, radius)
+	end
+end
+
+
 local function drawRoads (lines, layer)
 	local roadColor = roadColor
 	local lineColor = lineColor
+	
 	if layer == 2 then 
 		roadColor = bridgeRoadColor 
 		lineColor = bridgeLineColor
 	end
-	
-	love.graphics.setLineWidth (40)
-	love.graphics.setColor (roadColor)
+
 	for i, road in ipairs (lines) do
 		if road.road and (road.road==layer) then
 			if layer == 2 then 
 				love.graphics.setLineWidth (44)
 				love.graphics.setColor (0,0,0)
+			else
+				love.graphics.setLineWidth (40)
+				love.graphics.setColor (roadColor)
 			end
 			if road.curve then
 				love.graphics.line (road.curve)
@@ -155,8 +169,14 @@ local function drawRoads (lines, layer)
 		end
 	end
 	
+	if layer == 1 then
+		drawDots (roadColor, 40/2)
+		drawDots (lineColor, 35/2)
+	end
+	
 	love.graphics.setLineWidth (35)
 	love.graphics.setColor (lineColor)
+	
 	for i, road in ipairs (lines) do
 		if road.road and (road.road==layer) then
 			if road.curve then
@@ -165,6 +185,10 @@ local function drawRoads (lines, layer)
 				love.graphics.line (road)
 			end
 		end
+	end
+	
+	if layer == 1 then
+		drawDots (roadColor, 29/2)
 	end
 
 	love.graphics.setLineWidth (29)
@@ -212,7 +236,11 @@ local function drawArrows ()
 	love.graphics.setColor(1,1,1)
 	local w, h = arrowImage:getDimensions ()
 	for i, node in ipairs (nodes) do
-		love.graphics.draw(arrowImage, node.x, node.y, node.angle, 0.65,0.65, 0.52*w, h/2)
+		if (node.starts > 1) or (node.ends > 1) then
+			love.graphics.draw(arrowImage, node.x, node.y, node.angle, 0.65,0.65, 0.52*w, h/2)
+			
+		end
+--		love.graphics.print (node.starts..' '..node.ends, node.x, node.y)
 	end
 end
 
