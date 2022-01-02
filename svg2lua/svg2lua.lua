@@ -67,16 +67,20 @@ local function svg2lua (tabl, input)
 	print (str)
 	
 	local x, y
-	local vertices = {}
-	local road = false
+	local vertices
+	
 	local railroad = false
 	
 	
---	local fill = false
-	local fill = list[1][1] == "F"
+	local fill = list[1][1] == "F" and list[1][2] or false
+	
+	local road = list[1][1] == "R" and list[1][2] or false
+	
+	print ("road", tostring(road))
+	-- 
 	
 	print (1, tostring(tabl))
-	local filltable = {fill = true}
+	local filltable = {fill = fill, withGaps = false}
 	if fill then
 		
 		table.insert (tabl, filltable)
@@ -86,9 +90,14 @@ local function svg2lua (tabl, input)
 	
 	for i, c in ipairs (list) do 
 		if c[1] == "M" then
+			
 			-- move
-			if vertices then
+			if vertices and #vertices > 0 then
+				filltable.withGaps = true
 				table.insert (tabl, vertices)
+				print (i, "#M vertices saved", #vertices, unpack(vertices), #tabl)
+				vertices = {road=road, fill=fill, railroad=railroad}
+			elseif not vertices then
 				vertices = {road=road, fill=fill, railroad=railroad}
 			end
 			for j = 2, #c-1, 2 do
@@ -96,7 +105,13 @@ local function svg2lua (tabl, input)
 				table.insert (vertices, x)
 				table.insert (vertices, y)
 			end
+			print ("M #vertices", #vertices)
 		elseif c[1] == "H" then
+--			if vertices and vertices.bezier and #vertices > 2 then
+			if vertices and vertices.bezier then
+				table.insert (tabl, vertices)
+				vertices = nil
+			end
 			if not vertices then
 				vertices = {road=road, fill=fill, railroad=railroad}
 				table.insert (vertices, x)
@@ -105,7 +120,12 @@ local function svg2lua (tabl, input)
 			x = c[2]
 			table.insert (vertices, x)
 			table.insert (vertices, y)
+			print ("H #vertices", #vertices)
 		elseif c[1] == "V" then
+			if vertices and vertices.bezier and #vertices > 2 then
+				table.insert (tabl, vertices)
+				vertices = nil
+			end
 			if not vertices then
 				vertices = {road=road, fill=fill, railroad=railroad}
 				table.insert (vertices, x)
@@ -117,7 +137,12 @@ local function svg2lua (tabl, input)
 			
 		elseif c[1] == "L" then
 --			if not vertices then
-			if (not vertices) or (vertices.bezier) then
+			if vertices and vertices.bezier and #vertices > 2 then
+--			if vertices and #vertices > 2 then
+				table.insert (tabl, vertices)
+				vertices = nil
+			end
+			if (not vertices) then
 				vertices = {road=road, fill=fill, railroad=railroad}
 				table.insert (vertices, x)
 				table.insert (vertices, y)
@@ -138,20 +163,29 @@ local function svg2lua (tabl, input)
 			table.insert (vertices, x)
 			table.insert (vertices, y)
 			for j = 2, #c-1, 2 do
+--				print (j, 'bezier', x, y)
 				x, y = c[j], c[j+1]
 				table.insert (vertices, x)
 				table.insert (vertices, y)
 			end
+--			print (j, 'bezier', x, y)
 --			table.insert (tabl, vertices)
 --			vertices = nil
 		elseif c[1] == "R" then
 			road = c[2]
+		elseif c[1] == "F" then
+			fill = c[2]
 		elseif c[1] == "RR" then
 			railroad = true
 		end
 	end
+	
 	if #vertices > 2 then
 		table.insert (tabl, vertices)
+		print ('saved last  #vertices	', #vertices, unpack(vertices), #tabl)
+		
+	else
+		print ('not enougth #vertices', #vertices, unpack(vertices), #tabl)
 	end
 end
 

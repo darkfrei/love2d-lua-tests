@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1920pt"
+   height="960pt"
+   viewBox="0 0 1920 960"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.1 r15371"
+   sodipodi:docname="level-5a.svg">
+  <defs
+     id="defs2">
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lend"
+       style="overflow:visible;"
+       inkscape:isstock="true">
+      <path
+         id="path4522"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:black;stroke-width:1pt;stroke-opacity:0.50196078"
+         transform="scale(0.8) rotate(180) translate(12.5,0)" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.5749816"
+     inkscape:cx="1227.246"
+     inkscape:cy="138.54239"
+     inkscape:document-units="pt"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     units="pt"
+     viewbox-width="480"
+     borderlayer="false"
+     showborder="true"
+     inkscape:showpageshadow="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="2066"
+     inkscape:window-x="1909"
+     inkscape:window-y="-11"
+     inkscape:window-maximized="0"
+     showguides="false"
+     inkscape:snap-grids="true"
+     inkscape:snap-smooth-nodes="false"
+     inkscape:snap-intersection-paths="false"
+     inkscape:object-paths="false"
+     inkscape:snap-text-baseline="false">
+    <inkscape:grid
+       type="xygrid"
+       id="grid5510"
+       units="pt"
+       spacingx="40"
+       spacingy="40" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+        <cc:license
+           rdf:resource="http://creativecommons.org/publicdomain/zero/1.0/" />
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/publicdomain/zero/1.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="opacity:1;fill:#3000ff;fill-opacity:0.49803922;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
+       d="M 360,600 C 480,600 480,360 800,360 V 240 C 480,240 480,400 360,400 Z"
+       id="path4533"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccc" />
+    <path
+       id="path4525"
+       style="opacity:1;fill:#3000ff;fill-opacity:0.49803922;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
+       d="M 1360,560 C 1600,560 1800,360 1920,360 V 240 C 1800,240 1600,440 1360,440 Z"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccc" />
+    <path
+       id="path4523"
+       style="opacity:1;fill:#3000ff;fill-opacity:0.49803922;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
+       d="M 800,360 C 1120,360 1120,560 1360,560 V 440 C 1120,440 1120,240 800,240 Z"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccc" />
+    <path
+       style="opacity:1;fill:#3000ff;fill-opacity:0.49803922;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
+       d="M 360,400 C 240,400 160,360 0,360 V 480 C 160,480 240,600 360,600"
+       id="path4603" />
+    <path
+       style="opacity:1;fill:#3000ff;fill-opacity:0.49803922;fill-rule:evenodd;stroke:black;stroke-width:1.08411968;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
+       d="M 1440,960 H 1520 C 1400,840 1240,640 800,640 V 720 C 1160,720 1320,840 1440,960 Z"
+       id="path4516" />
+    <path
+       style="opacity:1;fill:#3000ff;fill-opacity:0.49803922;fill-rule:evenodd;stroke:black;stroke-width:1.08411968;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
+       d="M 800,720 C 520,720 640,600 360,600 L 440,520 C 640,520 600,640 800,640 Z"
+       id="path4603-0" />
+    <path
+       id="rect4504"
+       style="opacity:1;fill:red;fill-opacity:0.49803922;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
+       d="M 1680,80 H 1840 V 240 H 1680 Z M 1680,720 H 1840 V 880 H 1680 Z M 800,440 H 960 V 600 H 800 Z M 80,720 H 240 V 880 H 80 Z M 80,80 H 240 V 240 H 80 Z" />
+    <path
+       id="path4497-98-2"
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:lime;stroke-width:40;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.49803922;paint-order:fill markers stroke"
+       d="M 840,520 H 760 M 1720,760 H 1640 M 1720,120 H 1640 M 200,200 H 280 M 200,840 H 280" />
+    <path
+       id="path4593-34"
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:aqua;stroke-width:40;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.49803922;paint-order:fill markers stroke"
+       d="M 1000,520 H 920 M 1640,840 H 1720 M 1640,200 H 1720 M 280,120 H 200 M 280,760 H 200" />
+    <path
+       id="path4642"
+       style="opacity:1;fill:none;fill-opacity:0.50196078;fill-rule:evenodd;stroke:#dc00ff;stroke-width:40;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.50196081;paint-order:fill markers stroke"
+       d="M 1200,360 L 1080,480 M 680,400 V 200 M 640,560 L 520,680 M 360,360 V 640 M 1280,880 H 1480 M 1560,560 V 360 M 1080,800 V 640" />
+    <path
+       id="path4644"
+       style="opacity:1;fill:none;fill-opacity:0.50196078;fill-rule:evenodd;stroke:black;stroke-width:40;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.50196078;paint-order:fill markers stroke"
+       d="M 680,200 C 680,160 680,80 560,80 M 520,920 C 680,920 800,880 960,880 M 960,880 C 1040,880 1080,840 1080,800 M 1080,640 C 1080,560 1040,520 1000,520 M 1480,880 C 1520,880 1560,840 1560,680 M 1480,880 C 1560,880 1560,840 1640,840 M 1640,760 C 1600,760 1560,720 1560,680 M 1560,680 V 560 M 1560,360 C 1560,240 1600,200 1640,200 M 1640,120 C 1520,120 1560,80 1400,80 M 960,880 H 1280 M 1560,360 C 1560,240 1600,80 1400,80 M 1400,80 H 560 M 560,80 C 400,80 360,120 280,120 M 280,200 C 320,200 360,240 360,360 M 360,640 C 360,760 360,920 520,920 M 360,640 C 360,720 320,760 280,760 M 280,840 C 360,840 400,920 520,920 M 560,80 C 400,80 360,200 360,360 M 760,520 C 720,520 680,480 680,400 M 760,520 C 720,520 680,520 640,560 M 520,680 C 480,720 360,760 280,760 M 520,680 C 440,760 360,920 520,920 M 1400,80 C 1200,80 1280,280 1200,360 M 1080,480 C 1040,520 1040,520 1000,520" />
+  </g>
+</svg>

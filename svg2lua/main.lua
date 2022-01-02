@@ -11,7 +11,7 @@ love.window.setMode(1920, 1080, {resizable=true, borderless=false})
 mr:load ()
 
 
-local ds = require ('level-4')
+local ds = require ('level-5')
 
 
 
@@ -23,20 +23,80 @@ for i, d in ipairs (ds) do
 	svg2lua(luapaths, d)
 end
 
+for i, luapath in ipairs (luapaths)  do
+	print (i, 'luapath', #luapath, unpack(luapath), tostring(luapath.road))
+end
+
+local function render (b, depth)
+	local x1, y1, x2, y2, x3, y3, x4, y4 = b[1], b[2], b[3], b[4], b[5], b[6], b[7], b[8]
+	local nPoints = 2^depth
+	local curve = {}
+	for i = 0, nPoints do
+		local t = i/nPoints
+		local t1, t2, t3, t4 = (1-t)^3, 3*t*(1-t)^2, 3*t*t*(1-t), t*t*t
+		local x = t1*x1 + t2*x2 + t3*x3 + t4*x4
+		local y = t1*y1 + t2*y2 + t3*y3 + t4*y4
+		table.insert(curve, x)
+		table.insert(curve, y)
+	end
+	return curve
+end
+
 local railroads = {}
+
+local function curveInsert (vertices, curve)
+	local iStart = 1
+	if (#vertices > 1) 
+	and (vertices[#vertices-1] == curve[1])
+	and (vertices[#vertices] == curve[2]) then
+		iStart = 3
+	end
+	for i = iStart, #curve-1, 2 do
+		table.insert (vertices, curve[i])
+		table.insert (vertices, curve[i+1])
+	end
+end
+
+
 for i, luapath in ipairs (luapaths) do
-	for j, luapath2 in ipairs (luapath) do
-		if type(luapath2) == "table" then
-			if luapath2.bezier then
-				local curve = love.math.newBezierCurve(luapath2)
-				luapath2.curve = curve:render()
+	if luapath.road then
+		print (i, 'luapath.road', tostring(luapath.road))
+	end
+	
+	if luapath.fill then
+		print (i, 'luapath.fill', #luapath)
+		if #luapath == 1  then
+--			print ('#luapath == 1')
+			luapath.polygon = luapath[1]
+--		else
+		else
+--			print ('#luapath == ', #luapath)
+			local vertices = {}
+			for j, luapath2 in ipairs (luapath) do
+--				print ('#luapath2', #luapath2)
+				local curve = luapath2
+				if luapath2.bezier then
+	--				local curve = love.math.newBezierCurve(luapath2)
+	--				luapath2.curve = curve:render()
+					curve = render(luapath2, 4)
+				end
+				curveInsert (vertices, curve)
+				print (j, '#vertices', #vertices, unpack(curve))
+			end
+			
+			print ('#vertices	', #vertices, unpack(vertices))
+			luapath.polygon = vertices
+			if not love.math.isConvex (vertices) then
+				luapath.triangles = love.math.triangulate(vertices)
 			end
 		end
+		
 	end
 
 	if luapath.bezier then
-		local curve = love.math.newBezierCurve(luapath)
-		luapath.curve = curve:render()
+--		local curve = love.math.newBezierCurve(luapath)
+--		luapath.curve = curve:render()
+		luapath.curve = render(luapath, 4)
 	end
 	
 	if luapath.railroad then
@@ -217,16 +277,24 @@ local function drawRoads (lines, layer)
 	end
 end
 
-local function drawBuildings (lines)
-	
+local function drawBuildings (layer)
 	love.graphics.setLineWidth (2)
 	love.graphics.setColor (buildingColor)
 	for i, building in ipairs (luapaths) do
-		if building.fill then
-			for j, part in ipairs (building) do
-				if #part > 4 then 
-					love.graphics.polygon('fill', part)
+		if building.fill and building.fill == layer then
+			if building.triangles then
+				love.graphics.setColor (buildingColor)
+				for j, triangle in ipairs (building.triangles) do
+					love.graphics.polygon('fill', triangle)
 				end
+--				love.graphics.setColor (1,1,1)
+--				love.graphics.polygon('line', building.polygon)
+			elseif building.polygon then
+				love.graphics.setColor (buildingColor)
+				love.graphics.polygon('fill', building.polygon)
+				love.graphics.setColor (1,1,1)
+				love.graphics.polygon('line', building.polygon)
+				
 			end
 		end
 	end
@@ -291,23 +359,36 @@ local function drawRailroads ()
 	love.graphics.draw(railroadCanvas)
 end
 
+local function drawLines ()
+	love.graphics.setColor(1,1,1)
+	love.graphics.setLineWidth(2)
+	for i, line in ipairs (luapaths) do
+		if line.curve then
+			love.graphics.line(line.curve)
+		elseif #line > 2 and not line.fill then
+			love.graphics.line(line)
+		end
+	end
+end
+
 function love.draw()
 	mr.draw()
 	drawBackground ()
 	
+	drawLines ()
+	
+	drawBuildings (1)
 	drawRoads (luapaths, 1)
 	drawRailroads (1)
-	drawBuildings ()
 	
 	
 	drawArrows (1)
 	drawCars (1)
 	
+	drawBuildings (2)
 	drawRoads (luapaths, 2)
 	drawArrows (2)
 	drawCars (2)
-	
-
 	
 	drawSelectorPoint ()
 	
@@ -368,7 +449,7 @@ local function nearestSegmentInLine (x, y, line)
 end
 
 function love.mousemoved( x, y, dx, dy, istouch )
-	local x,y = mr.getPosition()
+	x,y = mr.getPosition()
 	selectorPoint = nil
 	local gap = 40
 	local point
