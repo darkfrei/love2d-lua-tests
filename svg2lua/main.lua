@@ -11,7 +11,7 @@ love.window.setMode(1920, 1080, {resizable=true, borderless=false})
 mr:load ()
 
 
-local ds = require ('level-5')
+local ds = require ('level-6')
 
 
 
@@ -76,8 +76,8 @@ for i, luapath in ipairs (luapaths) do
 --				print ('#luapath2', #luapath2)
 				local curve = luapath2
 				if luapath2.bezier then
-	--				local curve = love.math.newBezierCurve(luapath2)
-	--				luapath2.curve = curve:render()
+--					local curve = love.math.newBezierCurve(luapath2)
+--					luapath2.curve = curve:render()
 					curve = render(luapath2, 4)
 				end
 				curveInsert (vertices, curve)
@@ -94,9 +94,9 @@ for i, luapath in ipairs (luapaths) do
 	end
 
 	if luapath.bezier then
---		local curve = love.math.newBezierCurve(luapath)
---		luapath.curve = curve:render()
-		luapath.curve = render(luapath, 4)
+		local curve = love.math.newBezierCurve(luapath)
+		luapath.curve = curve:render()
+--		luapath.curve = render(luapath, 5)
 	end
 	
 	if luapath.railroad then
@@ -212,13 +212,14 @@ local function drawRoads (lines, layer)
 		lineColor = bridgeLineColor
 	end
 
+	
 	for i, road in ipairs (lines) do
 		if road.road and (road.road==layer) then
 			if layer == 2 then 
 				love.graphics.setLineWidth (44)
 				love.graphics.setColor (0,0,0)
 			else
-				love.graphics.setLineWidth (40)
+				love.graphics.setLineWidth (roadWidth1)
 				love.graphics.setColor (roadColor)
 			end
 			if road.curve then
@@ -234,7 +235,8 @@ local function drawRoads (lines, layer)
 		drawDots (lineColor, 35/2)
 	end
 	
-	love.graphics.setLineWidth (35)
+--	love.graphics.setLineWidth (35)
+	love.graphics.setLineWidth (roadWidth2)
 	love.graphics.setColor (lineColor)
 	
 	for i, road in ipairs (lines) do
@@ -251,7 +253,8 @@ local function drawRoads (lines, layer)
 		drawDots (roadColor, 29/2)
 	end
 
-	love.graphics.setLineWidth (29)
+--	love.graphics.setLineWidth (29)
+	love.graphics.setLineWidth (roadWidth3)
 	love.graphics.setColor (roadColor)
 	for i, road in ipairs (lines) do
 		if road.road and (road.road==layer) then
@@ -333,7 +336,7 @@ end
 local function drawSelectorPoint ()
 	if selectorPoint then
 		local x, y, angle = selectorPoint.x, selectorPoint.y, selectorPoint.angle
-		local width, height = 40, 20
+		local width, height = carScale*50, carScale*24
 		drawRotatedRectangle('line', x, y, width, height, angle)
 		drawTriangle ('line', x, y, width, height, angle)
 	end
@@ -344,7 +347,7 @@ local function drawCars ()
 	local w, h = carsImage:getDimensions()
 	w=w/8
 	for i, car in ipairs (cars) do
-		love.graphics.draw(carsImage, car.quad, car.x, car.y, car.angle, 0.6,0.6, w/2, h/2)
+		love.graphics.draw(carsImage, car.quad, car.x, car.y, car.angle, carScale*0.6,carScale*0.6, w/2, h/2)
 	end
 end
 
