@@ -85,8 +85,8 @@ function Screen:touchmoved (id, x, y, dx, dy, pressure)
 		local sign = (self.touches[2].id == id) and 1 or -1
 		local dx1 = self.touches[2].x - self.touches[1].x
 		local dy1 = self.touches[2].y - self.touches[1].y
-		local dx2 = self.touches[2].x - self.touches[1].x + sign*dx
-		local dy2 = self.touches[2].y - self.touches[1].y + sign*dy
+		local dx2 = self.touches[2].x - self.touches[1].x + sign*dx/2
+		local dy2 = self.touches[2].y - self.touches[1].y + sign*dy/2
 		
 		local dscale = (dx2*dx2+dy2*dy2)^0.5/(dx1*dx1+dy1*dy1)^0.5
 		self.scale = self.scale*dscale
@@ -98,7 +98,7 @@ end
 function Screen:touchreleased (id, x, y, dx, dy, pressure)
 	for i, touch in ipairs (self.touches) do
 		if touch.id == id then
-			table.remove (self.touches, id)
+			table.remove (self.touches, i)
 		end
 	end
 end
