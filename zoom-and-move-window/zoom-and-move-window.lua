@@ -78,8 +78,8 @@ function Screen:touchmoved (id, x, y, dx, dy, pressure)
 	local dpiScale = love.window.getDPIScale( ) -- 1.875
 	if #self.touches == 1 then
 		-- translate
-		self.translate.x = self.translate.x + dx / dpiScale
-		self.translate.y = self.translate.y + dy / dpiScale
+		self.translate.x = self.translate.x + dx
+		self.translate.y = self.translate.y + dy
 		self.touches[1].x = x
 		self.touches[1].y = y
 	elseif #self.touches == 2 then
