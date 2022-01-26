@@ -85,6 +85,13 @@ function Screen:touchmoved (id, x, y, dx, dy, pressure)
 	elseif #self.touches == 2 then
 		self.translate.x = self.translate.x + dx/2
 		self.translate.y = self.translate.y + dy/2
+		if self.touches[1].id == id then
+			self.touches[1].x = x
+			self.touches[1].y = y
+		else
+			self.touches[2].x = x
+			self.touches[2].y = y
+		end
 		local sign = (self.touches[2].id == id) and 1 or -1
 		local dx1 = self.touches[2].x - self.touches[1].x
 		local dy1 = self.touches[2].y - self.touches[1].y
