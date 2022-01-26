@@ -50,6 +50,7 @@ function love.draw()
 	
 	love.graphics.print('zoom ' .. Screen.scale, 1, 45) 
 	love.graphics.print('tr ' .. Screen.translate.x ..', '.. Screen.translate.y, 1, 60) 
+	love.graphics.print('DPIScale ' .. love.window.getDPIScale( ), 1, 100) 
 end
 
  
