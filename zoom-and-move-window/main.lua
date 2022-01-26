@@ -43,14 +43,14 @@ function love.draw()
 	local my = love.mouse.getY()
 	love.graphics.origin()
 	love.graphics.setColor(0,1,0)
-	love.graphics.print ('Debug GUI:', 1, 0)
-	love.graphics.print('x: ' .. mx ..', y: '.. my, 1, 15) 
+	love.graphics.print ('Debug GUI:', 1, 30)
+	love.graphics.print('x: ' .. mx ..', y: '.. my, 1, 45) 
 	love.graphics.print('x: ' .. (mx-Screen.translate.x)/Screen.scale ..
-		', y: '.. (my-Screen.translate.y)/Screen.scale, 1, 30) 
-	
-	love.graphics.print('zoom ' .. Screen.scale, 1, 45) 
-	love.graphics.print('tr ' .. Screen.translate.x ..', '.. Screen.translate.y, 1, 60) 
-	love.graphics.print('DPIScale ' .. love.window.getDPIScale( ), 1, 100) 
+		', y: '.. (my-Screen.translate.y)/Screen.scale, 1, 60) 
+	love.graphics.print('x:'..Screen.x..' y:'..Screen.y..' w:'..Screen.w..' h:'..Screen.h, 1, 75) 
+	love.graphics.print('zoom ' .. Screen.scale, 1, 90) 
+	love.graphics.print('tr ' .. Screen.translate.x ..', '.. Screen.translate.y, 1, 105) 
+	love.graphics.print('DPIScale ' .. love.window.getDPIScale( ), 1, 120) 
 end
 
  

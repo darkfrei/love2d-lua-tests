@@ -25,13 +25,15 @@ end
 
 
 function Screen:mousepressed (x, y, button, istouch, presses)
-	if button == 1 then
-		self.mouse_pressed = true
-	elseif button == 3 then
-		-- middle mouse button: reset translate and scale
-		self.translate.x = 0
-		self.translate.y = 0
-		self.scale = 1
+	if not istouch then
+		if button == 1 then
+			self.mouse_pressed = true
+		elseif button == 3 then
+			-- middle mouse button: reset translate and scale
+			self.translate.x = 0
+			self.translate.y = 0
+			self.scale = 1
+		end
 	end
 end
 
