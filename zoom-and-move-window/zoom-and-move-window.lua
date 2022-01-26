@@ -95,7 +95,9 @@ function Screen:touchmoved (id, x, y, dx, dy, pressure)
 		local x1, y1 = self.touches[1].x, self.touches[1].y
 		local x2, y2 = self.touches[2].x, self.touches[2].y
 		x, y=(x1+x2)/2, (y1+y2)/2
-		local dx, dy = x2-x1, y2-y1
+		local dx1, dy1 = x2-x1, y2-y1
+		local sign = (self.touches[1].id == id) and 1 or -1
+		local dx2, dy2 = dx1+dx*sign, dy1+dy*sign
 		
 		local dscale = (dx2*dx2+dy2*dy2)^0.5/(dx1*dx1+dy1*dy1)^0.5
 		self.scale = self.scale*dscale
