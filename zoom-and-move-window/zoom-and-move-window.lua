@@ -85,6 +85,9 @@ function Screen:touchmoved (id, x, y, dx, dy, pressure)
 		self.touches[1].x = x
 		self.touches[1].y = y
 	elseif #self.touches == 2 then
+		self.translate.x = self.translate.x + dx/2
+		self.translate.y = self.translate.y + dy/2
+		
 		local index = self.touches[1].id == id and 1 or 2
 		self.touches[index].x = x
 		self.touches[index].y = y
