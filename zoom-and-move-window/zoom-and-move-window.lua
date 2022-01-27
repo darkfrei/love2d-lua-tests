@@ -50,17 +50,19 @@ function Screen:mousereleased (x, y, button)
 	end
 end
 
-function Screen:wheelmoved(x, y)
-	local mx = love.mouse.getX()
-	local my = love.mouse.getY()
-    if not (y == 0) then -- mouse wheel moved up or down
+function Screen:zoomToPoint (x, y, dscale)
+	self.scale = self.scale*dscale
+	self.translate.x = math.floor(self.translate.x+(x-self.translate.x)*(1-dscale)+0.5)
+	self.translate.y = math.floor(self.translate.y+(y-self.translate.y)*(1-dscale)+0.5)
+end
+
+function Screen:wheelmoved(wheelX, wheelY)
+	local x, y = love.mouse.getPosition()
+    if not (wheelY == 0) then -- mouse wheel moved up or down
 --		scale in to point or scale out of point
-		local mouse_x = mx - self.translate.x
-		local mouse_y = my - self.translate.y
-		local dscale = self.dscale^y
-		self.scale = self.scale*dscale
-		self.translate.x = math.floor(self.translate.x + mouse_x*(1-dscale)+0.5)
-		self.translate.y = math.floor(self.translate.y + mouse_y*(1-dscale)+0.5)
+		local dscale = self.dscale^wheelY
+		
+		Screen:zoomToPoint (x, y, dscale)
     end
 end
 
@@ -83,27 +85,25 @@ function Screen:touchmoved (id, x, y, dx, dy, pressure)
 		self.touches[1].x = x
 		self.touches[1].y = y
 	elseif #self.touches == 2 then
-		self.translate.x = self.translate.x + dx/2
-		self.translate.y = self.translate.y + dy/2
-		if self.touches[1].id == id then
-			self.touches[1].x = x
-			self.touches[1].y = y
-		else
-			self.touches[2].x = x
-			self.touches[2].y = y
-		end
+		local index = self.touches[1].id == id and 1 or 2
+		self.touches[index].x = x
+		self.touches[index].y = y
+		self.touches[index].dx = dx
+		self.touches[index].dy = dy
+
 		local x1, y1 = self.touches[1].x, self.touches[1].y
 		local x2, y2 = self.touches[2].x, self.touches[2].y
-		x, y=(x1+x2)/2, (y1+y2)/2
-		local dx1, dy1 = x2-x1, y2-y1
---		local sign = (self.touches[1].id == id) and -1 or 1
---		local dx2, dy2 = dx1+dx*sign, dy1+dy*sign
-		local dx2, dy2 = dx1+dx, dy1+dy
 		
+		local dx1, dy1, dx2, dy2 = x2-x1, y2-y1
+		if index == 1 then
+			dx2, dy2 = x2-x1-dx, y2-y1-dy
+		else
+			dx2, dy2 = x2-x1+dx, y2-y1+dy
+		end
+		
+		local mx, my=(x1+x2)/2, (y1+y2)/2
 		local dscale = (dx2*dx2+dy2*dy2)^0.5/(dx1*dx1+dy1*dy1)^0.5
-		self.scale = self.scale*dscale
-		self.translate.x = math.floor(self.translate.x + (x-self.translate.x)*(1-dscale)+0.5)
-		self.translate.y = math.floor(self.translate.y + (y-self.translate.y)*(1-dscale)+0.5)
+		Screen:zoomToPoint (mx, my, dscale)
 	end
 end
 
