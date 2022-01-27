@@ -107,8 +107,8 @@ function Screen:touchmoved (id, x, y, dx, dy, pressure)
 		local dscale = (dx2*dx2+dy2*dy2)^0.5/(dx1*dx1+dy1*dy1)^0.5
 		Screen:zoomToPoint (mx, my, dscale)
 		
-		self.translate.x = self.translate.x + (dx2-dx1)
-		self.translate.y = self.translate.y + (dy2-dy1)
+--		self.translate.x = self.translate.x + (dx2-dx1)
+--		self.translate.y = self.translate.y + (dy2-dy1)
 	end
 end
 
