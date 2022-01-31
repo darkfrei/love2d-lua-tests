@@ -7,6 +7,12 @@ pb.grigSize = 40 -- pixels or units
 pb.grigWidth = 48-1 -- tiles
 pb.grigHeight = 24  -- tiles
 
+local white = {1,1,1}
+local lightgreen = {0.75,1,0.75}
+local green = {0,1,0}
+local yellow = {1,1,0}
+local red = {1,0,0}
+
 
 pb.blocks = {
 	{	
@@ -18,9 +24,10 @@ pb.blocks = {
 			{0,1,0}, -- y=2
 			{0,1,0}, -- y=3
 		},
-		sizeX = 3,
-		sizeY = 3,
+		w = 3,
+		h = 3,
 		movable = true,
+		color = yellow,
 	},
 	{	
 		tx = 14,  -- position horizontal position in tiles
@@ -31,22 +38,24 @@ pb.blocks = {
 			{1,1,1}, -- y=2
 			{0,1,0}, -- y=3
 		},
-		sizeX = 3,
-		sizeY = 3,
+		w = 3,
+		h = 3,
 		movable = true,
+		color = yellow,
 	},
 	{	
 		tx = 6,  -- position horizontal position in tiles
 		ty = 16,
-		name = 'plus-block-3x3',
+		name = 'H-block-3x3',
 		form = {
 			{1,1,1}, -- y=1
 			{0,1,0}, -- y=2
 			{1,1,1}, -- y=3
 		},
-		sizeX = 3,
-		sizeY = 3,
+		w = 3,
+		h = 3,
 		movable = true,
+		color = yellow,
 	},
 }
 
@@ -63,8 +72,8 @@ pb.agent = {
 	form = {
 		{1,1,1},
 	},
-	sizeX = 3,
-	sizeY = 1,
+	w = 3,
+	h = 1,
 }
 
 function pb:drawBackgroundGrid ()
@@ -86,28 +95,67 @@ local function isCollision (x1, y1, x2, y2)
 	return x1<x2+1 and x2<x1+1 and y1<y2+1 and y2<y1+1
 end
 
-function pb:canMove (agent, dx, dy)
---	if dx>0 then dx = 0.25
---	elseif dx<0 then dx = -0.25
---	end
---	if dy>0 then dy = 0.25
---	elseif dy<0 then dy = -0.25
---	end
+
+
+local function isRoughAgentBlockCollision (agent, block, dx, dy)
+--	if bounding boxes can overlap
+	return	agent.tx+dx < block.tx+block.w and
+			block.tx < agent.tx+dx+agent.w and
+			agent.ty+dy < block.ty+block.h and
+			block.ty < agent.ty+dy+agent.h
+end
+
+local function isFineAgentBlockCollision (agent, block, dx, dy)
+--	if any of tiles of agent has collision with any tile of block
 	for aty, atxs in ipairs (agent.form) do
 		for atx, value in ipairs (atxs) do
 			if value == 1 then
-				for i, block in ipairs (self.blocks) do
-					for bty, btxs in ipairs (block.form) do
-						for btx, bvalue in ipairs (btxs) do
-							if bvalue == 1 then
-								if isCollision (agent.tx+atx+dx, agent.ty+aty+dy, block.tx+btx, block.ty+bty) then
-									return false, block
-								end
+				for bty, btxs in ipairs (block.form) do
+					for btx, bvalue in ipairs (btxs) do
+						if bvalue == 1 then
+							if isCollision (agent.tx+atx+dx, agent.ty+aty+dy, block.tx+btx, block.ty+bty) then
+								return true
 							end
 						end
 					end
 				end
 			end
+		end
+	end
+end
+
+function pb:canMoveBlock (blockA, dx, dy)
+	for i, block in ipairs (self.blocks) do
+		if not (blockA == block) then
+			if isRoughAgentBlockCollision (blockA, block, dx, dy) then
+				block.color = lightgreen
+				if isFineAgentBlockCollision (blockA, block, dx, dy) then
+					block.color = green
+					return false, block
+				end
+			else
+				block.color = white
+			end
+		end
+	end
+	return true
+end
+	
+function pb:canMove (agent, dx, dy)
+	for i, block in ipairs (self.blocks) do
+		if isRoughAgentBlockCollision (agent, block, dx, dy) then
+			block.color = lightgreen
+			if isFineAgentBlockCollision (agent, block, dx, dy) then
+				if pb:canMoveBlock (block, dx, dy) then
+					block.color = green
+					return false, block
+				else
+					block.color = red
+					return false, nil
+				end
+			end
+		else
+			block.color = white
 		end
 	end
 	return true
@@ -126,7 +174,7 @@ function pb:updateAgents (dt)
 		if canMove then
 			self.agent.y = self.agent.y + tdy*pb.grigSize
 			self.agent.ty = math.floor(self.agent.y*4/self.grigSize+0.5)/4
-		elseif block.movable then
+		elseif block and block.movable then
 			self.agent.y = self.agent.y + tdy*pb.grigSize
 			local ty = self.agent.ty
 			self.agent.ty = math.floor(self.agent.y*4/self.grigSize+0.5)/4
@@ -139,7 +187,7 @@ function pb:updateAgents (dt)
 		if canMove then
 			self.agent.y = self.agent.y + tdy*pb.grigSize
 			self.agent.ty = math.floor(self.agent.y*4/self.grigSize+0.5)/4
-		elseif block.movable then
+		elseif block and block.movable then
 			self.agent.y = self.agent.y + tdy*pb.grigSize
 			local ty = self.agent.ty
 			self.agent.ty = math.floor(self.agent.y*4/self.grigSize+0.5)/4
@@ -152,7 +200,7 @@ function pb:updateAgents (dt)
 		if canMove then
 			self.agent.x = self.agent.x + tdx*pb.grigSize
 			self.agent.tx = math.floor(self.agent.x*4/self.grigSize+0.5)/4
-		elseif block.movable then
+		elseif block and block.movable then
 			self.agent.x = self.agent.x + tdx*pb.grigSize
 			local tx = self.agent.tx
 			self.agent.tx = math.floor(self.agent.x*4/self.grigSize+0.5)/4
@@ -165,7 +213,7 @@ function pb:updateAgents (dt)
 		if canMove then
 			self.agent.x = self.agent.x + tdx*pb.grigSize
 			self.agent.tx = math.floor(self.agent.x*4/self.grigSize+0.5)/4
-		elseif block.movable then
+		elseif block and block.movable then
 			self.agent.x = self.agent.x + tdx*pb.grigSize
 			local tx = self.agent.tx
 			self.agent.tx = math.floor(self.agent.x*4/self.grigSize+0.5)/4
@@ -180,11 +228,12 @@ end
 
 function pb:drawBlocks ()
 	love.graphics.setLineWidth(2)
-	love.graphics.setColor(1,1,1)
+	
 	local tileSize = self.grigSize
 	for i, block in ipairs (self.blocks) do
 		local btx = block.tx
 		local bty = block.ty 
+		love.graphics.setColor(block.color)
 		for ty, txs in ipairs (block.form) do
 			for tx, value in ipairs (txs) do
 				if value == 1 then
