@@ -4,7 +4,7 @@
 local pb = {}
 
 pb.grigSize = 40 -- pixels or units
-pb.grigWidth = 48-1 -- tiles
+pb.grigWidth = 48-2 -- tiles
 pb.grigHeight = 24  -- tiles
 
 local white = {1,1,1}
@@ -60,6 +60,73 @@ pb.blocks = {
 }
 
 
+-- create random static tiles
+pb.staticTilesMap = {}
+
+local function createMapTile (map, y, x)
+	if not pb.staticTilesMap[y] then pb.staticTilesMap[y] = {} end
+	pb.staticTilesMap[y][x] = 1
+end
+
+for i = 1, 30 do
+	local x = math.random(pb.grigWidth)
+	local y = math.random(pb.grigHeight)
+	createMapTile (pb.staticTilesMap, y, x)
+end
+
+-- horizontal border
+for x = 1, pb.grigWidth do
+	local y1 = 1
+	local y2 = pb.grigHeight
+	createMapTile (pb.staticTilesMap, y1, x)
+	createMapTile (pb.staticTilesMap, y2, x)
+end
+
+-- vertical border
+for y = 1, pb.grigHeight do
+	if not pb.staticTilesMap[y] then pb.staticTilesMap[y] = {} end
+	local x1 = 1
+	local x2 = pb.grigWidth
+	createMapTile (pb.staticTilesMap, y, x1)
+	createMapTile (pb.staticTilesMap, y, x2)
+end
+
+createMapTile (pb.staticTilesMap, 2, 6)
+createMapTile (pb.staticTilesMap, 3, 5)
+createMapTile (pb.staticTilesMap, 4, 4)
+createMapTile (pb.staticTilesMap, 5, 3)
+createMapTile (pb.staticTilesMap, 6, 2)
+
+
+
+local function isMapCollision (x1, y1, w1, h1, x2, y2, w2, h2)
+--	thanks to https://love2d.org/wiki/BoundingBox.lua
+	return x1<x2+w2
+		and x2<x1+w1
+		and y1<y2+h2
+		and y2<y1+h1
+end
+
+function pb.isRoughCollisionWithMap (x1, y1, w, h)
+	local map = pb.staticTilesMap
+	local x2 = x1+w+1
+	local y2 = y1+h+1
+	for y = y1, y2 do
+		for x = x1, x2 do
+			local x3 = math.floor(x)
+			local y3 = math.floor(y)
+			if map[y3] and map[y3][x3] then
+				-- beware of +1!
+				if isMapCollision (x1+1, y1+1, w, h, x3, y3, 1, 1) then
+					return true
+				end
+			end
+		end
+	end
+	return false
+end
+
+
 
 pb.agent = {
 	tx = 10, -- position horizontal position in tiles
@@ -76,19 +143,6 @@ pb.agent = {
 	h = 1,
 }
 
-function pb:drawBackgroundGrid ()
-	local grigSize = self.grigSize
-	local grigWidth = self.grigWidth
-	local grigHeight = self.grigHeight
-	love.graphics.setLineWidth(1)
-	love.graphics.setColor(0.3,0.4,0.4)
-	for i = 1, grigWidth+1 do
-		love.graphics.line (i*grigSize, grigSize, i*grigSize, grigHeight*grigSize)
-	end
-	for i = 1, grigHeight do
-		love.graphics.line (grigSize, i*grigSize, grigWidth*grigSize, i*grigSize)
-	end
-end
 
 local function isCollision (x1, y1, x2, y2)
 --	thanks to https://love2d.org/wiki/BoundingBox.lua
@@ -125,6 +179,9 @@ local function isFineAgentBlockCollision (agent, block, dx, dy)
 end
 
 function pb:canMoveBlock (blockA, dx, dy)
+	if self.isRoughCollisionWithMap (blockA.tx+dx, blockA.ty+dy, blockA.w, blockA.h) then
+		return false, nil
+	end
 	for i, block in ipairs (self.blocks) do
 		if not (blockA == block) then
 			if isRoughAgentBlockCollision (blockA, block, dx, dy) then
@@ -142,6 +199,11 @@ function pb:canMoveBlock (blockA, dx, dy)
 end
 	
 function pb:canMove (agent, dx, dy)
+	if self.isRoughCollisionWithMap (agent.tx+dx, agent.ty+dy, agent.w, agent.h) then
+		-- collision with map tiles
+--		print ('collision with map')
+		return false, nil
+	end
 	for i, block in ipairs (self.blocks) do
 		if isRoughAgentBlockCollision (agent, block, dx, dy) then
 			block.color = lightgreen
@@ -224,6 +286,33 @@ end
 
 function pb:update (dt)
 	pb:updateAgents (dt)
+end
+
+
+function pb:drawBackgroundGrid ()
+	local grigSize = self.grigSize
+	local grigWidth = self.grigWidth
+	local grigHeight = self.grigHeight
+	love.graphics.setLineWidth(1)
+	love.graphics.setColor(0.3,0.4,0.4)
+	for i = 1, grigWidth+1 do
+		love.graphics.line (i*grigSize, grigSize, i*grigSize, grigHeight*grigSize)
+	end
+	for i = 1, grigHeight do
+		love.graphics.line (grigSize, i*grigSize, grigWidth*grigSize, i*grigSize)
+	end
+end
+
+function pb:drawMap ()
+	local map = self.staticTilesMap
+	local tileSize = self.grigSize
+	love.graphics.setLineWidth(2)
+	love.graphics.setColor(yellow)
+	for y, xs in pairs (map) do
+		for x, value in pairs (xs) do
+			love.graphics.rectangle ('fill', x*tileSize, y*tileSize, tileSize, tileSize)
+		end
+	end
 end
 
 function pb:drawBlocks ()

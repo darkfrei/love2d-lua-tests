@@ -25,6 +25,8 @@ end
 function love.draw()
 	love.graphics.print ('WASD to move')
 	pb:drawBackgroundGrid ()
+	pb:drawMap ()
+	
 	pb:drawBlocks ()
 	
 	pb:drawAgent ()
