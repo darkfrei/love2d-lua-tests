@@ -1,6 +1,30 @@
 -- License CC0 (Creative Commons license) (c) darkfrei, 2022
 
 local imageData = love.image.newImageData ('image.png')
+
+local function tint ( x, y, r, g, b, a )
+--	print (x, y, r, g, b, a)   
+	local c = {r=0,g=0,b=0.5}
+	local t = (r+g+b)/3 -- grayscale value in range [0, 1]
+	if t < 0.5 then
+		r = 2*t*c.r
+		g = 2*t*c.g
+		b = 2*t*c.b
+	else
+		r = 2*(t + c.r - t*c.r) - 1
+		g = 2*(t + c.g - t*c.g) - 1
+		b = 2*(t + c.b - t*c.b) - 1
+	end
+	--	print (r, g, b, a)   
+	return r,g,b,a
+end
+
+imageData:mapPixel( tint )
+
+imageData:encode( 'png', 'david.png' )
+
+
+
 local image = love.graphics.newImage (imageData)
 local w, h = image:getDimensions()
 local scale = 3
@@ -43,6 +67,12 @@ local canvas = love.graphics.newCanvas (w, h)
 
 local canvasData = canvas:newImageData( )
 
+
+
+
+
+
+
 map = {}
 for x = 1, w do
 	map[x] = {}
@@ -68,6 +98,9 @@ for y = 1, h-1 do
 		map[x+1][y+1] = correctPixel (x+1, y+1, rgbaErr, 1/16)
 	end
 end
+
+
+
 
 
 	
