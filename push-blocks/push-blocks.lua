@@ -3,180 +3,38 @@
 
 local pb = {}
 
-pb.grigSize = 40 -- pixels or units
-pb.grigWidth = 48-2 -- tiles
-pb.grigHeight = 24  -- tiles
-
-local white = {1,1,1}
-local lightgreen = {0.75,1,0.75}
-local green = {0,1,0}
-local yellow = {1,1,0}
-local red = {1,0,0}
-
-
-pb.blocks = {
-	{	
-		tx = 10,  -- position horizontal position in tiles
-		ty = 12,
-		name = 't-block-3x3',
-		form = {
-			{1,1,1}, -- y=1
-			{0,1,0}, -- y=2
-			{0,1,0}, -- y=3
-		},
-		w = 3,
-		h = 3,
-		movable = true,
-		color = yellow,
-	},
-	{	
-		tx = 14,  -- position horizontal position in tiles
-		ty = 12,
-		name = 'plus-block-3x3',
-		form = {
-			{0,1,0}, -- y=1
-			{1,1,1}, -- y=2
-			{0,1,0}, -- y=3
-		},
-		w = 3,
-		h = 3,
-		movable = true,
-		color = yellow,
-	},
-	{	
-		tx = 6,  -- position horizontal position in tiles
-		ty = 16,
-		name = 'H-block-3x3',
-		form = {
-			{1,1,1}, -- y=1
-			{0,1,0}, -- y=2
-			{1,1,1}, -- y=3
-		},
-		w = 3,
-		h = 3,
-		movable = true,
-		color = yellow,
-	},
-}
-
-
--- create random static tiles
-pb.staticTilesMap = {}
-
-local function createMapTile (map, y, x)
-	if not pb.staticTilesMap[y] then pb.staticTilesMap[y] = {} end
-	pb.staticTilesMap[y][x] = 1
+function pb:load (level)
+--	print (level.name)
+	local width, height = love.graphics.getDimensions()
+	self.map = level.map
+	self.gridWidth = level.w
+	self.gridHeight = level.h
+	self.gridSize = math.min(width/(level.w), height/(level.h))
+	print ('self.gridWidth', self.gridWidth)
+	
+	self.blocks = level.blocks
+	self.agents = level.agents
+	self.activeAgentIndex = 1
+	self.agent = self.agents[self.activeAgentIndex]
+	self.agent.active = true
 end
 
-for i = 1, 30 do
-	local x = math.random(pb.grigWidth)
-	local y = math.random(pb.grigHeight)
-	createMapTile (pb.staticTilesMap, y, x)
-end
-
--- horizontal border
-for x = 1, pb.grigWidth do
-	local y1 = 1
-	local y2 = pb.grigHeight
-	createMapTile (pb.staticTilesMap, y1, x)
-	createMapTile (pb.staticTilesMap, y2, x)
-end
-
--- vertical border
-for y = 1, pb.grigHeight do
-	if not pb.staticTilesMap[y] then pb.staticTilesMap[y] = {} end
-	local x1 = 1
-	local x2 = pb.grigWidth
-	createMapTile (pb.staticTilesMap, y, x1)
-	createMapTile (pb.staticTilesMap, y, x2)
-end
-
-createMapTile (pb.staticTilesMap, 2, 6)
-createMapTile (pb.staticTilesMap, 3, 5)
-createMapTile (pb.staticTilesMap, 4, 4)
-createMapTile (pb.staticTilesMap, 5, 3)
-createMapTile (pb.staticTilesMap, 6, 2)
-
-
-
-local function isMapCollision (x1, y1, w1, h1, x2, y2, w2, h2)
---	thanks to https://love2d.org/wiki/BoundingBox.lua
-	return x1<x2+w2
-		and x2<x1+w1
-		and y1<y2+h2
-		and y2<y1+h1
-end
-
-function pb.isRoughCollisionWithMap (x1, y1, w, h)
-	local map = pb.staticTilesMap
-	local x2 = x1+w+1
-	local y2 = y1+h+1
-	for y = y1, y2 do
-		for x = x1, x2 do
-			local x3 = math.floor(x)
-			local y3 = math.floor(y)
-			if map[y3] and map[y3][x3] then
-				-- beware of +1!
-				if isMapCollision (x1+1, y1+1, w, h, x3, y3, 1, 1) then
-					return true
-				end
-			end
-		end
+function pb:switchAgent ()
+	self.agent.active = false
+	local index = self.activeAgentIndex + 1
+	if index > #self.agents then
+		index = 1
 	end
-	return false
+	self.activeAgentIndex = index
+	self.agent = self.agents[self.activeAgentIndex]
+	self.agent.active = true
 end
 
-
-
-pb.agent = {
-	tx = 10, -- position horizontal position in tiles
-	ty = 10,
-	x = 10*pb.grigSize, -- smooth position
-	y = 10*pb.grigSize, -- smooth position
-	vx = 8, -- horizontal speed, tiles per second
-	vup = 5,
-	vdown = 6,
-	form = {
-		{1,1,1},
-	},
-	w = 3,
-	h = 1,
-}
-
-
-local function isCollision (x1, y1, x2, y2)
+local function checkCollision(x1,y1,w1,h1, x2,y2,w2,h2)
 --	thanks to https://love2d.org/wiki/BoundingBox.lua
-	return x1<x2+1 and x2<x1+1 and y1<y2+1 and y2<y1+1
+	return x1<x2+w2 and x2<x1+w1 and y1<y2+h2 and y2<y1+h1
 end
 
-
-
-local function isRoughAgentBlockCollision (agent, block, dx, dy)
---	if bounding boxes can overlap
-	return	agent.tx+dx < block.tx+block.w and
-			block.tx < agent.tx+dx+agent.w and
-			agent.ty+dy < block.ty+block.h and
-			block.ty < agent.ty+dy+agent.h
-end
-
-local function isFineAgentBlockCollision (agent, block, dx, dy)
---	if any of tiles of agent has collision with any tile of block
-	for aty, atxs in ipairs (agent.form) do
-		for atx, value in ipairs (atxs) do
-			if value == 1 then
-				for bty, btxs in ipairs (block.form) do
-					for btx, bvalue in ipairs (btxs) do
-						if bvalue == 1 then
-							if isCollision (agent.tx+atx+dx, agent.ty+aty+dy, block.tx+btx, block.ty+bty) then
-								return true
-							end
-						end
-					end
-				end
-			end
-		end
-	end
-end
 
 function pb:canMoveBlock (blockA, dx, dy)
 	if self.isRoughCollisionWithMap (blockA.tx+dx, blockA.ty+dy, blockA.w, blockA.h) then
@@ -198,162 +56,287 @@ function pb:canMoveBlock (blockA, dx, dy)
 	return true
 end
 	
-function pb:canMove (agent, dx, dy)
-	if self.isRoughCollisionWithMap (agent.tx+dx, agent.ty+dy, agent.w, agent.h) then
-		-- collision with map tiles
---		print ('collision with map')
-		return false, nil
+--function pb:canMove (dx, dy)
+--	if self.isRoughCollisionWithMap (agent.tx+dx, agent.ty+dy, agent.w, agent.h) then
+--		-- collision with map tiles
+----		print ('collision with map')
+--		return false, nil
+--	end
+--	for i, block in ipairs (self.blocks) do
+--		if isRoughAgentBlockCollision (agent, block, dx, dy) then
+--			block.color = lightgreen
+--			if isFineAgentBlockCollision (agent, block, dx, dy) then
+--				if pb:canMoveBlock (block, dx, dy) then
+--					block.color = green
+--					return false, block
+--				else
+--					block.color = red
+--					return false, nil
+--				end
+--			end
+--		else
+--			block.color = white
+--		end
+--	end
+--	return true
+--end
+
+local function isValueInList (value, list)
+	for i, element in ipairs (list) do
+		if element == value then return true end
 	end
-	for i, block in ipairs (self.blocks) do
-		if isRoughAgentBlockCollision (agent, block, dx, dy) then
-			block.color = lightgreen
-			if isFineAgentBlockCollision (agent, block, dx, dy) then
-				if pb:canMoveBlock (block, dx, dy) then
-					block.color = green
-					return false, block
-				else
-					block.color = red
-					return false, nil
-				end
+	return false
+end
+
+function pb:isBlockToMapCollision (block, dx, dy)
+	local x, y = block.x, block.y
+	local map = self.map
+	for i = 1, #block.tiles-1, 2 do
+		local mapX = x + block.tiles[i]   + dx
+		local mapY = y + block.tiles[i+1] + dy
+		if map[mapY][mapX] then return true end
+	end
+end
+
+function pb:isBlockToBlockCollision (blockA, blockB, dx, dy)
+	-- fine tile to tile collision detection
+	-- check if blockA moves to dx, dy an collides with blockB
+	local xA, yA = blockA.x + dx, blockA.y + dy
+	local xB, yB = blockB.x, blockB.y
+	local tilesA = blockA.tiles
+	local tilesB = blockB.tiles
+	for i = 1, #tilesA-1, 2 do
+		local dXA, dYA = tilesA[i], tilesA[i+1]
+		for j = 1, #tilesB-1, 2 do
+			local dXB, dYB = tilesB[j], tilesB[j+1]
+			if (xA+dXA == xB+dXB) and (yA+dYA == yB+dYB) then
+				-- same x AND same y means collision
+				return true
 			end
-		else
-			block.color = white
+		end
+	end
+	return false
+end
+
+
+	
+function pb:getCollisionBlocks (blockA, blocks, dx, dy)
+	-- agent to map or block to map collision
+	if self:isBlockToMapCollision (blockA, dx, dy) then
+		return false
+	end
+	
+	for i, agent in ipairs (self.agents) do
+		if not (agent == blockA) 
+		and self:isBlockToBlockCollision (blockA, agent, dx, dy) then
+			return false -- cannot move any agent
+		end
+	end
+	
+	for i, block in ipairs (self.blocks) do
+		if block == blockA then
+			-- self collision: do nothing
+		elseif isValueInList (block, blocks) then
+			-- block is already in list: do nothing
+		elseif self:isBlockToBlockCollision (blockA, block, dx, dy) then
+			table.insert (blocks, block)
+			if not self:getCollisionBlocks (block, blocks, dx, dy) then
+				return false
+			end
+--			return false -- cannot move any block
+			
+--			pb:getCollisionBlocks (block, blocks, dx, dy)
+			
 		end
 	end
 	return true
 end
 
-function pb:updateAgents (dt)
-	local up =    love.keyboard.isScancodeDown('w', 'up')
-	local down =  love.keyboard.isScancodeDown('s', 'down')
-	local right = love.keyboard.isScancodeDown('d', 'right')
-	local left =  love.keyboard.isScancodeDown('a', 'left')
-	
-	if up and not (down or right or left) then
-		-- move up
-		local tdy = - dt*self.agent.vup -- delta Y in tiles
-		local canMove, block = pb:canMove (self.agent, 0, tdy)
-		if canMove then
-			self.agent.y = self.agent.y + tdy*pb.grigSize
-			self.agent.ty = math.floor(self.agent.y*4/self.grigSize+0.5)/4
-		elseif block and block.movable then
-			self.agent.y = self.agent.y + tdy*pb.grigSize
-			local ty = self.agent.ty
-			self.agent.ty = math.floor(self.agent.y*4/self.grigSize+0.5)/4
-			block.ty = block.ty + self.agent.ty - ty
+
+
+function pb:getBlocksToMove (agent, dx, dy)
+	local blocks = {}
+	local canMove = self:getCollisionBlocks (agent, blocks, dx, dy)
+	return blocks, canMove
+end
+
+
+function pb:moveAgent (agent, dx, dy)
+	self.agent.x = self.agent.x + dx
+	self.agent.y = self.agent.y + dy
+end
+
+function pb:moveBlocks (blocks, dx, dy)
+	for i, block in ipairs (blocks) do
+		block.x = block.x + dx
+		block.y = block.y + dy
+	end
+end
+
+function pb:isCollisionBlockToAllBlocks (blockA, dx, dy)
+	for i, block in ipairs (self.blocks) do
+		if not (block == blockA) 
+		and self:isBlockToBlockCollision (blockA, block, dx, dy) then
+			return true
 		end
-	elseif down and not (up or right or left) then
-		-- move down
-		local tdy = dt*self.agent.vdown -- delta Y in tiles
-		local canMove, block = pb:canMove (self.agent, 0, tdy)
-		if canMove then
-			self.agent.y = self.agent.y + tdy*pb.grigSize
-			self.agent.ty = math.floor(self.agent.y*4/self.grigSize+0.5)/4
-		elseif block and block.movable then
-			self.agent.y = self.agent.y + tdy*pb.grigSize
-			local ty = self.agent.ty
-			self.agent.ty = math.floor(self.agent.y*4/self.grigSize+0.5)/4
-			block.ty = block.ty + self.agent.ty - ty
+	end
+	return false
+end
+
+function pb:isCollisionBlockToAllAgents (blockA, dx, dy)
+	for i, agent in ipairs (self.agents) do
+		if self:isBlockToBlockCollision (blockA, agent, dx, dy) then
+			return agent -- dead agent :(
 		end
-	elseif right and not (up or down or left) then
-		-- move right
-		local tdx = dt*self.agent.vx -- delta X in tiles
-		local canMove, block = pb:canMove (self.agent, tdx, 0)
-		if canMove then
-			self.agent.x = self.agent.x + tdx*pb.grigSize
-			self.agent.tx = math.floor(self.agent.x*4/self.grigSize+0.5)/4
-		elseif block and block.movable then
-			self.agent.x = self.agent.x + tdx*pb.grigSize
-			local tx = self.agent.tx
-			self.agent.tx = math.floor(self.agent.x*4/self.grigSize+0.5)/4
-			block.tx = block.tx + self.agent.tx-tx
-		end
-	elseif left and not (up or down or right) then
-		-- move left
-		local tdx = -dt*self.agent.vx -- delta X in tiles
-		local canMove, block = pb:canMove (self.agent, tdx, 0)
-		if canMove then
-			self.agent.x = self.agent.x + tdx*pb.grigSize
-			self.agent.tx = math.floor(self.agent.x*4/self.grigSize+0.5)/4
-		elseif block and block.movable then
-			self.agent.x = self.agent.x + tdx*pb.grigSize
-			local tx = self.agent.tx
-			self.agent.tx = math.floor(self.agent.x*4/self.grigSize+0.5)/4
-			block.tx = block.tx + self.agent.tx-tx
+	end
+	return false
+end
+
+function pb:fallBlocks (blocks)
+	local dx, dy = 0, 1 -- no horizontal speed, but positive (down) vertical
+	for i = 1, self.gridWidth do
+		for i, block in ipairs (blocks) do
+			if self:isBlockToMapCollision (block, dx, dy) then
+				-- not falling
+				block.deadly = false
+--				table.remove (blocks, i)
+			elseif self:isCollisionBlockToAllBlocks (block, dx, dy) then
+				block.deadly = false
+				-- collision to block: probably not falling
+			elseif block.deadly and self:isCollisionBlockToAllAgents (block, dx, dy) then
+				local deadAgent = self:isCollisionBlockToAllAgents (block, dx, dy)
+				deadAgent.dead = true
+				block.deadly = false
+--				table.remove (blocks, i)
+			elseif self:isCollisionBlockToAllAgents (block, dx, dy) then
+				-- the block is on fish
+			else
+				-- sure falling
+				block.x = block.x + dx -- never changes
+				block.y = block.y + dy
+				block.deadly = true
+			end
 		end
 	end
 end
 
-function pb:update (dt)
-	pb:updateAgents (dt)
+function pb:mainMoving (dx, dy)
+	local agent = self.agent -- active agent
+	local blocks, canMove = self:getBlocksToMove (agent, dx, dy)
+	if canMove then
+		self:moveAgent (agent, dx, dy)
+		self:moveBlocks (blocks, dx, dy)
+		self:fallBlocks (self.blocks, dx, dy)
+	end
 end
 
+
+function pb:keypressedMoving (scancode)
+	if scancode == 'w' or scancode == 'a' or scancode == 's' or scancode == 'd' then
+		-- d means 1; a means -1; otherwise 0
+		local dx = scancode == 'd' and 1 or scancode == 'a' and -1 or 0
+		-- s means 1; w means -1; otherwise 0
+		local dy = scancode == 's' and 1 or scancode == 'w' and -1 or 0
+		pb:mainMoving (dx, dy)
+	end
+end
+
+---------------------------------------------------------------------------------------------------
+-- draw
+---------------------------------------------------------------------------------------------------
 
 function pb:drawBackgroundGrid ()
-	local grigSize = self.grigSize
-	local grigWidth = self.grigWidth
-	local grigHeight = self.grigHeight
+	local gridSize = self.gridSize
+	local gridWidth = self.gridWidth
+	local gridHeight = self.gridHeight
 	love.graphics.setLineWidth(1)
 	love.graphics.setColor(0.3,0.4,0.4)
-	for i = 1, grigWidth+1 do
-		love.graphics.line (i*grigSize, grigSize, i*grigSize, grigHeight*grigSize)
+	for i = 0, gridWidth do
+		love.graphics.line (i*gridSize, gridSize, i*gridSize, gridHeight*gridSize)
 	end
-	for i = 1, grigHeight do
-		love.graphics.line (grigSize, i*grigSize, grigWidth*grigSize, i*grigSize)
+	for i = 0, gridHeight do
+		love.graphics.line (gridSize, i*gridSize, gridWidth*gridSize, i*gridSize)
 	end
 end
 
 function pb:drawMap ()
-	local map = self.staticTilesMap
-	local tileSize = self.grigSize
+	local map = self.map
+	local tileSize = self.gridSize
 	love.graphics.setLineWidth(2)
-	love.graphics.setColor(yellow)
-	for y, xs in pairs (map) do
-		for x, value in pairs (xs) do
-			love.graphics.rectangle ('fill', x*tileSize, y*tileSize, tileSize, tileSize)
+	
+	for y, xs in ipairs (map) do
+		for x, value in ipairs (xs) do
+			-- value is boolean: true or false
+			if value then -- map tile
+				-- beware of -1
+				love.graphics.setColor(0.5,0.5,0.5)
+				love.graphics.rectangle ('fill', (x-1)*tileSize, (y-1)*tileSize, tileSize, tileSize)
+				
+				love.graphics.setColor(0,0,0)
+				love.graphics.print ((x)..' '..(y), (x-1)*tileSize, (y-1)*tileSize)
+			end
 		end
+	end
+end
+
+function pb:drawBlock (block)
+	local x, y = block.x, block.y
+	local tileSize = self.gridSize
+	for i = 1, #block.tiles-1, 2 do
+		local dx, dy = block.tiles[i], block.tiles[i+1]
+		-- beware of -1
+		love.graphics.rectangle ('fill', (x+dx-1)*tileSize, (y+dy-1)*tileSize, tileSize, tileSize)
 	end
 end
 
 function pb:drawBlocks ()
 	love.graphics.setLineWidth(2)
-	
-	local tileSize = self.grigSize
+	love.graphics.setColor(1,1,0.5)
 	for i, block in ipairs (self.blocks) do
-		local btx = block.tx
-		local bty = block.ty 
-		love.graphics.setColor(block.color)
-		for ty, txs in ipairs (block.form) do
-			for tx, value in ipairs (txs) do
-				if value == 1 then
-					love.graphics.rectangle ('fill', (btx+tx)*tileSize, (bty+ty)*tileSize, tileSize, tileSize)
-				end
-			end
+		self:drawBlock (block)
+	end
+end
+
+function pb:drawDeadAgent (agent)
+	local tileSize = self.gridSize 
+	local x = (agent.x-1)*tileSize
+	local y = (agent.y-1)*tileSize
+	local w = agent.w*tileSize
+	local h = agent.h*tileSize
+	
+	love.graphics.line (x, y, x+w, y+h)
+	love.graphics.line (x, y+h, x+w, y)
+end
+
+function pb:drawAgents ()
+	local activeAgent = self.agent
+	local tileSize = self.gridSize 
+	for i, agent in ipairs (self.agents) do
+		if agent == activeAgent then
+			love.graphics.setColor(1,1,1)
+			self:drawBlock (agent)
+			local x, y = agent.x, agent.y
+			love.graphics.setColor (0, 0, 0)
+			love.graphics.print (agent.x..' '..agent.y, (agent.x-1)*tileSize, (agent.y-1)*tileSize)
+		else
+			love.graphics.setColor(0.75,0.75,0.5)
+			self:drawBlock (agent)
+		end
+		if agent.dead then
+			love.graphics.setColor(0,0,0)
+			self:drawDeadAgent (agent)
 		end
 	end
 end
 
-function pb:drawAgent ()
-	love.graphics.setLineWidth(2)
-	love.graphics.setColor(0,1,0)
-	local tileSize = self.grigSize
-	local agent = self.agent
-	local atx = agent.tx
-	local aty = agent.ty 
-	love.graphics.print(atx..' '..aty, (atx+1)*tileSize, (aty+1)*tileSize-20)
-	for ty, txs in ipairs (agent.form) do
-		for tx, value in ipairs (txs) do
-			if value == 1 then
---				love.graphics.setColor(1,1,1)
---				love.graphics.rectangle ('line', agent.x+tx*tileSize, agent.y+ty*tileSize, tileSize, tileSize)
-				love.graphics.setColor(0,1,0)
-				love.graphics.rectangle ('fill', (atx+tx)*tileSize, (aty+ty)*tileSize, tileSize, tileSize)
-			end
-		end
-	end
+function pb:drawMouse ()
+	local mx, my = love.mouse.getPosition()
+	local tileSize = self.gridSize 
+	local x = math.floor(mx/tileSize)+1
+	local y = math.floor(my/tileSize)+1
+	love.graphics.setColor (0, 1, 0)
+	love.graphics.print (x..' '..y, (x-1)*tileSize, (y-1)*tileSize) -- beware of -1
 end
-
-
 
 
 return pb

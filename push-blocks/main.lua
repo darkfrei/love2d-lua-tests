@@ -1,55 +1,42 @@
 -- License CC0 (Creative Commons license) (c) darkfrei, 2022
 
 local pb = require ('push-blocks')
+local level = require ('levels.level-1')
+
 
 function love.load()
-	local ddwidth, ddheight = love.window.getDesktopDimensions( display )
-	if ddheight > 1080 then
-		print('ddheight: ' .. ddheight)
-		love.window.setMode(1920, 1080, {resizable=true, borderless=false})
-	else
-		love.window.setMode(ddwidth, ddheight-200, {resizable=true, borderless=false})
-	end
-	width, height = love.graphics.getDimensions( )
-
+	love.window.setMode(1920, 1080, {resizable=true, borderless=false})
+--	width, height = love.graphics.getDimensions( )
+	
+	pb:load (level)
 	
 end
 
  
 function love.update(dt)
-	if dt > 0.05 then dt = 0.05 end
-	pb:update (dt)
+	-- nothing to update
 end
 
 
 function love.draw()
-	love.graphics.print ('WASD to move')
 	pb:drawBackgroundGrid ()
 	pb:drawMap ()
-	
 	pb:drawBlocks ()
+	pb:drawAgents ()
+	pb:drawMouse ()
 	
-	pb:drawAgent ()
+	love.graphics.print ('WASD to move')
 end
 
 function love.keypressed(key, scancode, isrepeat)
-	if false then
+	pb:keypressedMoving (scancode)
+	if key == 'space' then
+		pb:switchAgent ()
+	elseif key == 'return' then
+		package.loaded['levels.level-1'] = nil
+		level = require ('levels.level-1')
+		pb:load (level)
 	elseif key == "escape" then
 		love.event.quit()
-	end
-end
-
-function love.mousepressed( x, y, button, istouch, presses )
-	if button == 1 then -- left mouse button
-	elseif button == 2 then -- right mouse button
-	end
-end
-
-function love.mousemoved( x, y, dx, dy, istouch )
-end
-
-function love.mousereleased( x, y, button, istouch, presses )
-	if button == 1 then -- left mouse button
-	elseif button == 2 then -- right mouse button
 	end
 end
