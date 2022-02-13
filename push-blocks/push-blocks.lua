@@ -3,6 +3,46 @@
 
 local pb = {}
 
+local function setBlockOutline (block)
+	local m = {} -- map of outlines
+	local tiles = block.tiles -- list of tiles as {x1,y1, x2,y2, x3,y3 ...}
+	for i = 1, #tiles, 2 do
+		local x, y = tiles[i], tiles[i+1]
+		if not m[y] then m[y] = {} end
+		if not m[y][x] then 
+			m[y][x] = {v=true, h=true} 
+		else
+			m[y][x].v = not m[y][x].v
+			m[y][x].h = not m[y][x].h
+		end
+		
+		if not m[y][x+1] then 
+			m[y][x+1] = {v=true, h=false} 
+		else
+			m[y][x+1].v = not m[y][x+1].v
+		end
+		
+		if not m[y+1] then m[y+1] = {} end
+		if not m[y+1][x] then 
+			m[y+1][x] = {v=false, h=true} 
+		else
+			m[y+1][x].h = not m[y+1][x].h
+		end
+	end
+	local lines = {}
+	for y, xs in pairs (m) do
+		for x, tabl in pairs (xs) do
+			if m[y][x].v then
+				table.insert (lines, {x,y, x,y+1})
+			end
+			if m[y][x].h then
+				table.insert (lines, {x,y, x+1,y})
+			end
+		end
+	end
+	block.lines = lines
+end
+
 function pb:load (level)
 --	print (level.name)
 	local width, height = love.graphics.getDimensions()
@@ -13,7 +53,13 @@ function pb:load (level)
 	print ('self.gridWidth', self.gridWidth)
 	
 	self.blocks = level.blocks
+	for i, block in ipairs (self.blocks) do
+		setBlockOutline (block)
+	end
 	self.agents = level.agents
+	for i, agent in ipairs (self.agents) do
+		setBlockOutline (agent)
+	end
 	self.activeAgentIndex = 1
 	self.agent = self.agents[self.activeAgentIndex]
 	self.agent.active = true
@@ -30,56 +76,6 @@ function pb:switchAgent ()
 	self.agent.active = true
 end
 
-local function checkCollision(x1,y1,w1,h1, x2,y2,w2,h2)
---	thanks to https://love2d.org/wiki/BoundingBox.lua
-	return x1<x2+w2 and x2<x1+w1 and y1<y2+h2 and y2<y1+h1
-end
-
-
-function pb:canMoveBlock (blockA, dx, dy)
-	if self.isRoughCollisionWithMap (blockA.tx+dx, blockA.ty+dy, blockA.w, blockA.h) then
-		return false, nil
-	end
-	for i, block in ipairs (self.blocks) do
-		if not (blockA == block) then
-			if isRoughAgentBlockCollision (blockA, block, dx, dy) then
-				block.color = lightgreen
-				if isFineAgentBlockCollision (blockA, block, dx, dy) then
-					block.color = green
-					return false, block
-				end
-			else
-				block.color = white
-			end
-		end
-	end
-	return true
-end
-	
---function pb:canMove (dx, dy)
---	if self.isRoughCollisionWithMap (agent.tx+dx, agent.ty+dy, agent.w, agent.h) then
---		-- collision with map tiles
-----		print ('collision with map')
---		return false, nil
---	end
---	for i, block in ipairs (self.blocks) do
---		if isRoughAgentBlockCollision (agent, block, dx, dy) then
---			block.color = lightgreen
---			if isFineAgentBlockCollision (agent, block, dx, dy) then
---				if pb:canMoveBlock (block, dx, dy) then
---					block.color = green
---					return false, block
---				else
---					block.color = red
---					return false, nil
---				end
---			end
---		else
---			block.color = white
---		end
---	end
---	return true
---end
 
 local function isValueInList (value, list)
 	for i, element in ipairs (list) do
@@ -127,8 +123,9 @@ function pb:getCollisionBlocks (blockA, blocks, dx, dy)
 	end
 	
 	for i, agent in ipairs (self.agents) do
-		if not (agent == blockA) 
-		and self:isBlockToBlockCollision (blockA, agent, dx, dy) then
+		if agent == self.agent then
+			-- no collision detection with active agent
+		elseif self:isBlockToBlockCollision (blockA, agent, dx, dy) then
 			return false -- cannot move any agent
 		end
 	end
@@ -139,14 +136,16 @@ function pb:getCollisionBlocks (blockA, blocks, dx, dy)
 		elseif isValueInList (block, blocks) then
 			-- block is already in list: do nothing
 		elseif self:isBlockToBlockCollision (blockA, block, dx, dy) then
+			-- checks if the agent is strong
+			if block.heavy and not self.agent.heavy then
+				return false
+			end
 			table.insert (blocks, block)
+			
+			-- make it deeper!
 			if not self:getCollisionBlocks (block, blocks, dx, dy) then
 				return false
 			end
---			return false -- cannot move any block
-			
---			pb:getCollisionBlocks (block, blocks, dx, dy)
-			
 		end
 	end
 	return true
@@ -239,6 +238,11 @@ function pb:keypressedMoving (scancode)
 		local dy = scancode == 's' and 1 or scancode == 'w' and -1 or 0
 		pb:mainMoving (dx, dy)
 	end
+	if scancode == 'right' or scancode == 'left' or scancode == 'up' or scancode == 'down' then
+		local dx = scancode == 'right' and 1 or scancode == 'left' and -1 or 0
+		local dy = scancode == 'down' and 1 or scancode == 'up' and -1 or 0
+		pb:mainMoving (dx, dy)
+	end
 end
 
 ---------------------------------------------------------------------------------------------------
@@ -279,6 +283,15 @@ function pb:drawMap ()
 	end
 end
 
+function pb:drawOutline  (block)
+	local lines = block.lines
+	local tileSize = self.gridSize
+	local x, y = block.x-1, block.y-1
+	for i, line in ipairs (lines) do
+		love.graphics.line ((x+line[1])*tileSize, (y+line[2])*tileSize, (x+line[3])*tileSize, (y+line[4])*tileSize)
+	end
+end
+
 function pb:drawBlock (block)
 	local x, y = block.x, block.y
 	local tileSize = self.gridSize
@@ -290,10 +303,21 @@ function pb:drawBlock (block)
 end
 
 function pb:drawBlocks ()
-	love.graphics.setLineWidth(2)
 	love.graphics.setColor(1,1,0.5)
 	for i, block in ipairs (self.blocks) do
+		-- draw filled block
+		love.graphics.setLineWidth(1)
+		love.graphics.setColor(1,1,0.5)
 		self:drawBlock (block)
+		
+		-- outline
+		love.graphics.setLineWidth(3)
+		if block.heavy then
+			love.graphics.setColor(0,1,1)
+		else
+			love.graphics.setColor(0,1,0)
+		end
+		self:drawOutline  (block)
 	end
 end
 
@@ -322,10 +346,20 @@ function pb:drawAgents ()
 			love.graphics.setColor(0.75,0.75,0.5)
 			self:drawBlock (agent)
 		end
+
 		if agent.dead then
 			love.graphics.setColor(0,0,0)
 			self:drawDeadAgent (agent)
 		end
+		
+		-- outline
+		love.graphics.setLineWidth(3)
+		if agent.heavy then
+			love.graphics.setColor(0,1,1)
+		else
+			love.graphics.setColor(0,1,0)
+		end
+		self:drawOutline  (agent)
 	end
 end
 
