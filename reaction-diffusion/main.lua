@@ -19,19 +19,30 @@ function createMap (width, height)
 			grid[x][y] = {a=a, b=b}
 		end
 	end
+	
+	for x = width/4-11, width/4+11 do
+		for y = height/4-20, height/4+10 do
+			local a = 0.9+ 0.1*math.random()
+			local b = 0
+			grid[x][y] = {a=a, b=b}
+		end
+	end
 end
 
 function love.load()
-
 	love.window.setMode(1200, 1200, {resizable=true, borderless=false})
 
-	width, height = 200, 200
+	width, height = 1200, 1200
 
 	createMap (width, height)
 	da = 1
 	db = 0.5
 	feed = 0.055
 	k = 0.062
+	
+	getinfo = false
+	
+	n = 0
 end
 
 
@@ -70,8 +81,9 @@ function laplaceB (x, y)
 end
  
 function love.update(dt)
-	dt = 5*dt
-	for i = 1, 10 do
+	dt = 1.1
+	for i = 1, 50 do
+		n = n+1
 		for x = 1, width do
 			for y = 1, height do
 				local cell = getValue (x, y)
@@ -82,23 +94,52 @@ function love.update(dt)
 			end
 		end
 		grid, ngrid = ngrid, grid
+		
 	end
 end
 
 
 function love.draw()
+	local scale = 1
 	for x = 1, width do
 		for y = 1, height do
 			local cell = getValue (x, y)
-			local a, b = cell.a, cell.b
-			love.graphics.setColor (a,(a+b)/2,b)
-			love.graphics.rectangle ('fill', (x-1)*6, (y-1)*6, 6, 6)
+			local color = math.abs(cell.a - cell.b)
+			
+--			high sigmoid:
+--			https://www.desmos.com/calculator/sllolyvy2e
+			local a = 0.45
+			if color < a then color = 0
+			elseif color > (1-a) then color = 1
+			else 
+				color = 0.5/(0.5-a)*color-4.5
+				color = 3*color*color - 2*color*color*color
+			end
+			
+
+			love.graphics.setColor (color, color, color)
+			love.graphics.rectangle ('fill', (x-1)*scale, (y-1)*scale, scale, scale)
 		end
+	end
+	
+	love.graphics.captureScreenshot( 'caprure_' .. string.format("%06d", n) .. '.png')
+
+	
+	if getinfo then 
+		love.graphics.setColor (0,1,0)
+		love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 10, 10)
+		local x, y = love.mouse.getPosition()
+		x = math.floor (x/scale)
+		y = math.floor (y/scale)
+		local value = getValue     (x, y)
+		love.graphics.print(value.a .. '\n' ..value.b, x*scale, y*scale-50)
 	end
 end
 
 function love.keypressed(key, scancode, isrepeat)
 	if false then
+	elseif key == "space" then
+		getinfo = not getinfo
 	elseif key == "escape" then
 		love.event.quit()
 	end
