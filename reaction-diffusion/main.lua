@@ -2,6 +2,8 @@
 
 function createMap (width, height)
 	grid, ngrid = {}, {}
+	
+	-- everywhere b
 	for x = 1, width do
 		if not grid[x] then grid[x] = {} end
 		if not ngrid[x] then ngrid[x] = {} end
@@ -12,6 +14,8 @@ function createMap (width, height)
 			ngrid[x][y] = {a=a, b=b}
 		end
 	end
+	
+	-- spot of a
 	for x = width/2-11, width/2+11 do
 		for y = height/2-10, height/2+10 do
 			local a = 0.9+ 0.1*math.random()
@@ -20,6 +24,7 @@ function createMap (width, height)
 		end
 	end
 	
+	-- spot of a
 	for x = width/4-11, width/4+11 do
 		for y = height/4-20, height/4+10 do
 			local a = 0.9+ 0.1*math.random()
@@ -30,9 +35,11 @@ function createMap (width, height)
 end
 
 function love.load()
-	love.window.setMode(1200, 1200, {resizable=true, borderless=false})
+	width, height = 1920, 1080
+	
+	love.window.setMode(width, height, {resizable=true, borderless=false})
 
-	width, height = 1200, 1200
+	
 
 	createMap (width, height)
 	da = 1
@@ -43,6 +50,8 @@ function love.load()
 	getinfo = false
 	
 	n = 0
+	points = {}
+	pause = true
 end
 
 
@@ -79,50 +88,73 @@ function laplaceB (x, y)
 			getValue (x-1, y-1).b * 0.05
 	return summ
 end
+
+
+local function getColor (a, b)
+	local color = math.abs(a - b)
+--			high sigmoid:
+--			https://www.desmos.com/calculator/sllolyvy2e
+	local c = 0.45
+	if color < c then color = 0
+	elseif color > (1-c) then color = 1
+	else 
+		color = 0.5/(0.5-c)*color-4.5
+		color = 3*color*color - 2*color*color*color
+	end
+	return color, color, color
+end
+
+
  
 function love.update(dt)
 	dt = 1.1
-	for i = 1, 50 do
-		n = n+1
-		for x = 1, width do
-			for y = 1, height do
-				local cell = getValue (x, y)
-				local a, b = cell.a, cell.b
-				
-				ngrid[x][y].a = a + (da*laplaceA(x, y)-a*b*b+feed*(1-a))*dt
-				ngrid[x][y].b = b + (db*laplaceB(x, y)+a*b*b-(k+feed)*b)*dt
+	
+	if not pause then
+		points = {}
+		for i = 1, 30 do
+			n = n+1
+			for x = 1, width do
+				for y = 1, height do
+					local cell = getValue (x, y)
+					local a, b = cell.a, cell.b
+					ngrid[x][y].a = a + (da*laplaceA(x, y)-a*b*b+feed*(1-a))*dt
+					ngrid[x][y].b = b + (db*laplaceB(x, y)+a*b*b-(k+feed)*b)*dt
+					
+					if i == 30 then
+						local r, g, b = getColor (a, b)
+						local point = {x, y, r, g, b}
+						table.insert (points, point)
+					end
+				end
 			end
+			grid, ngrid = ngrid, grid
 		end
-		grid, ngrid = ngrid, grid
 		
 	end
+	
 end
 
 
 function love.draw()
 	local scale = 1
-	for x = 1, width do
-		for y = 1, height do
-			local cell = getValue (x, y)
-			local color = math.abs(cell.a - cell.b)
-			
---			high sigmoid:
---			https://www.desmos.com/calculator/sllolyvy2e
-			local a = 0.45
-			if color < a then color = 0
-			elseif color > (1-a) then color = 1
-			else 
-				color = 0.5/(0.5-a)*color-4.5
-				color = 3*color*color - 2*color*color*color
-			end
+	love.graphics.setColor (1,1,1)
+	love.graphics.points (points)
+--	for x = 1, width do
+--		for y = 1, height do
+--			local cell = getValue (x, y)
+
 			
 
-			love.graphics.setColor (color, color, color)
-			love.graphics.rectangle ('fill', (x-1)*scale, (y-1)*scale, scale, scale)
-		end
-	end
+--			love.graphics.setColor (color, color, color)
+--			love.graphics.rectangle ('fill', (x-1)*scale, (y-1)*scale, scale, scale)
+--		end
+--	end
 	
-	love.graphics.captureScreenshot( 'caprure_' .. string.format("%06d", n) .. '.png')
+	if not pause then
+		love.graphics.captureScreenshot( 'caprure_' .. string.format("%06d", n) .. '.png')
+	else
+		love.graphics.print("pause, press space", 10, 30)
+	end
 
 	
 	if getinfo then 
@@ -139,15 +171,33 @@ end
 function love.keypressed(key, scancode, isrepeat)
 	if false then
 	elseif key == "space" then
+		pause = not pause
+	elseif key == "i" then
 		getinfo = not getinfo
 	elseif key == "escape" then
 		love.event.quit()
 	end
 end
 
+function updatePoints ()
+	points = {}
+	for x = 1, width do
+		for y = 1, height do
+			local cell = getValue (x, y)
+			local r, g, b = getColor (cell.a, cell.bb)
+			local point = {x, y, r, g, b}
+			table.insert (points, point)
+		end
+	end
+end
+
 function love.mousepressed( x, y, button, istouch, presses )
-	if button == 1 then -- left mouse button
-	elseif button == 2 then -- right mouse button
+	local s = math.random (20, 50)
+	
+	for i = x-s, x+s do
+		for j = y-s, y+s do
+			grid[i][j] = {a=1, b=0}
+		end
 	end
 end
 
