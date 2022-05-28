@@ -124,10 +124,9 @@ local function isSameList (listA, listB)
 	return true
 end
 
-local function isTileInRules (tile, rules)
-	for i, t in ipairs(rules) do
-		if (tile.index == t.index)
-		and isSameList (t, tile) then
+local function isTileInRules (tile, tiles)
+	for i, t in ipairs(tiles) do
+		if isSameList (t, tile) then
 			return true
 		end
 	end
@@ -158,6 +157,7 @@ function pwfc:createRules (imageData, hConnected, vConnected)
 	-- 
 	
 	local rules = {}
+	local tiles = {} -- list of tiles
 	
 	local ymin, ymax = 2, height-1
 	local xmin, xmax = 2, width-1
@@ -168,13 +168,21 @@ function pwfc:createRules (imageData, hConnected, vConnected)
 	for y = ymin, ymax do
 		for x = xmin, xmax do
 			local tile = getTile (sourceMap, x, y)
-			if not isTileInRules (tile, rules) then
+			local tileIndex = tile.index -- index of main color
+			local rules2 = rules[tileIndex]
+			if not rules2 then
+				rules2 = {}
+				rules[tileIndex] = rules2
+			end
+			if not isTileInRules (tile, rules2) then
 				print (tile.index, table.concat(tile, ','))
-				table.insert(rules, tile)
+				table.insert(tiles, tile)
+				table.insert(rules2, tile)
 			end
 		end
 	end
-	return rules
+	self.rules = rules
+	self.tiles = tiles
 end
 
 
@@ -197,9 +205,11 @@ function pwfc:load (path)
 	
 	self.respectBorders = false -- border pixels have their border place
 	
-	local rules = self:createRules (sourceImageData)
-	print('#rules: ' .. #rules)
-	self.rules = rules
+	self:createRules (sourceImageData)
+	
+	-- new generated map
+	self.map = {}
+	
 end
 
 
@@ -223,11 +233,11 @@ local function oldSetColor (t, g, b)
 	end
 end
 
-function pwfc:drawRules (px, py, psize)
+function pwfc:drawTiles (px, py, psize)
 	local px0 = px
 --	local w = love.graphics.getWidth()
 	local w = 300
-	for i, tile in ipairs (self.rules) do
+	for i, tile in ipairs (self.tiles) do
 		local x = px + psize
 		local y = py + psize
 		local index = tile.index
@@ -249,7 +259,7 @@ function pwfc:drawRules (px, py, psize)
 end
 	
 function pwfc:draw ()
-	pwfc:drawRules (10, 10, 10)
+	pwfc:drawTiles (10, 10, 10)
 end
 
 return pwfc
