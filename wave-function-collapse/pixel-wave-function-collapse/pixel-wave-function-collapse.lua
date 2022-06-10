@@ -24,7 +24,7 @@ local N2 = {
 	{ 1,-1}, { 1, 1}, {-1, 1}, {-1,-1}, -- tr br bl tl
 }
 
-local NeigbourCells = N1
+local NeigbourCells = N2
 
 
 local function isValueInList (value, list)
@@ -255,29 +255,66 @@ local function filterColors (cell)
 	cell.pColors = pColors
 end
 
-local function filterTiles (cell)
-	-- color was removed, update list of possible tiles
-	-- other colors cannot be removed
-	local pColors = cell.pColors
-	for i = #cell.pTiles, 1, -1 do -- backwards
-		local pTile = cell.pTiles[i]
-		if not isValueInList (pTile.index, pColors) then
-			table.remove (cell.pTiles, i)
-		end
-	end
-end
+--local function filterTiles (cell)
+--	-- color was removed, update list of possible tiles
+--	-- other colors cannot be removed
+--	local pColors = cell.pColors
+--	for i = #cell.pTiles, 1, -1 do -- backwards
+--		local pTile = cell.pTiles[i]
+--		if not isValueInList (pTile.index, pColors) then
+--			table.remove (cell.pTiles, i)
+--		end
+--	end
+--end
 
 function pwfc:deleteOneTileFromCell (cell)
 	local pTiles = cell.pTiles
 	if #pTiles > 1 then
 		table.remove (pTiles, math.random(#pTiles))
---		print ('load: one variant was removed from: x='..cell.x..' y='..cell.y)
-		filterColors (cell)
+--		filterColors (cell)
+	end
+end
+
+function pwfc:deleteOneColorFromCell (cell)
+	local pColors = cell.pColors
+	if #pColors > 1 then
+		table.remove (pColors, math.random(#pColors))
+--		filterTiles (cell)
 	end
 end
 
 
 
+function pwfc:reload ()
+	self.map = {}
+	local h = self.h
+	local w = self.w
+	-- fill map with cells with all tiles
+	for y = 1, h do
+		self.map[y] = {}
+		for x = 1, w do
+			local pTiles = table.copy(self.tiles)
+			local cell = {
+				x = x,
+				y = y,
+				pTiles = pTiles, -- possible tiles
+				pColors = {}, -- possible colors
+			}
+			filterColors (cell)
+			self.map[y][x] = cell
+		end
+	end
+	-- one cell has one tiles less
+	local a = math.random (w) -- just skip one number, sorry
+	local x, y = math.random (w), math.random (h)
+--	y = h-1
+	local cell = self:getCell(x, y)
+	
+	self.solved = false
+	self:collapseOneTile ()
+end
+	
+	
 function pwfc:load (path, w, h)
 	local sourceImage = self:loadSourceImage (path)
 	self.sourceImage = sourceImage
@@ -302,32 +339,19 @@ function pwfc:load (path, w, h)
 	-- new generated map w wide and h height
 	self.w = w
 	self.h = h
-	self.map = {}
-	
-	-- fill map with cells with all tiles
-	for y = 1, h do
-		self.map[y] = {}
-		for x = 1, w do
-			local pTiles = table.copy(self.tiles)
-			local cell = {
-				x = x,
-				y = y,
-				pTiles = pTiles, -- possible tiles
-				pColors = {}, -- possible colors
-			}
-			filterColors (cell)
-			self.map[y][x] = cell
-		end
-	end
-	-- one cell has one tiles less
-	local a = math.random (w) -- just skip one number, sorry
-	local x, y = math.random (w), math.random (h)
-	local cell = self:getCell(x, y)
-	
-	self.solved = false
-	self:deleteOneTileFromCell (cell)
+
+	self:reload ()
 end
 
+
+function pwfc:collapseOneTile ()
+	local w, h = self.w, self.h
+	local x, y = math.random(w), math.random(h)
+	local cell = self:getCell(x, y)
+	local colorIndex = cell.pColors[math.random(#cell.pColors)]
+	cell.pColors = {colorIndex}
+	
+end
 
 
 function pwfc:findLowestEntropy ()
@@ -338,13 +362,14 @@ function pwfc:findLowestEntropy ()
 	for y = 1, h do
 		for x = 1, w do
 			local cell = self:getCell(x, y)
-			local pTiles = cell.pTiles
-			if #pTiles > 1 then
-				if not lowestValue or (#pTiles < lowestValue) then
+			local p = cell.pTiles
+--			local p = cell.pColors
+			if #p > 1 then
+				if not lowestValue or (#p < lowestValue) then
 					-- new best value
-					lowestValue = #pTiles
+					lowestValue = #p
 					lowestCellList = {cell}
-				elseif (#pTiles == lowestValue) then
+				elseif (#p == lowestValue) then
 					-- same best value, insert candidate
 					table.insert (lowestCellList, cell)
 				else
@@ -354,7 +379,44 @@ function pwfc:findLowestEntropy ()
 		end
 	end
 	local r = math.random (#lowestCellList)
+--	print ('lowestValue:'..lowestValue)
 	return lowestCellList[r], lowestValue
+end
+
+
+local function checkTiles (cellA, cellB, iNeigbour)
+	-- remove not possible tiles from neigbour's pTiles
+	local nRemovedTiles = 0
+	for i = #cellB.pTiles, 1, -1 do
+		local tile = cellB.pTiles[i]
+		local colorIndex = tile[iNeigbour]
+		if not isValueInList (colorIndex, cellA.pColors) then
+			table.remove(cellB.pTiles, i)
+			nRemovedTiles = nRemovedTiles + 1
+		end
+	end
+	return nRemovedTiles
+end
+
+local function checkColors (cellA, cellB, iNeigbour)
+-- check which colors the neighbour cellB 
+-- can have cellA as neigbour color
+-- other colors are not valid and must be deleted
+	local nRemovedColors = 0
+	local validColors = {} -- an niegbour in cellB
+	local tileList = cellB.pTiles
+	for i, tile in ipairs (tileList) do
+		local colorIndex = tile[iNeigbour]
+		table.insertUnique (validColors, colorIndex)
+	end
+	for i = #cellA.pColors, 1, -1 do
+		local color = cellA.pColors[i]
+		if not isValueInList (color, validColors) then
+			table.remove (cellA.pColors, i)
+			nRemovedColors = nRemovedColors + 1
+		end
+	end
+	return nRemovedColors
 end
 
 function pwfc:solveCell (cellA)
@@ -368,39 +430,14 @@ function pwfc:solveCell (cellA)
 		local dx, dy = NeigbourCells[iNeigbour][1], NeigbourCells[iNeigbour][2]
 		local cellB = self:getCell(x-dx, y-dy)
 		if cellB then
-			-- validOptions: possible colors in THIS cell
-			local validOptions = {}
-			-- pColors: list of possible colors in neigbour cell
-			for j, iColor in ipairs (cellB.pColors) do
-	--			local tileList = rules[iColor]
-				local tileList = cellB.pTiles
-	--			for iTile, tile in ipairs (tileList) do
-				for iTile = #tileList, 1, -1 do -- backwards
-					local tile = tileList[iTile]
-					local possibleColorIndex = tile[iNeigbour]
-	--				print ('possibleColorIndex:'..possibleColorIndex, 
-	--					"iColor:"..iColor, 
-	--					"iTile:"..iTile..' ', 
-	--					"iNeigbour:"..iNeigbour,
-	--					'dx:'..dx..' dy:'..dy)
-					if isValueInList (possibleColorIndex, cellA.pColors) then
-						table.insertUnique (validOptions, possibleColorIndex)
-					else
-						-- tile in cellB is not valid
-						table.remove (tileList, iTile)
-						filterColors (cellB)
-						nRemovedTiles = nRemovedTiles + 1
-					end
-				end
-			end
-		
-			if #cellA.pColors > #validOptions then
-				nRemovedColors = nRemovedColors + (#cellA.pColors - #validOptions)
-			end
-			if #validOptions >= 1 then
-				cellA.pColors = validOptions
-			end
-			filterTiles (cellA)
+			nRemovedColors = nRemovedColors 
+				+ checkColors (cellA, cellB, iNeigbour)
+			
+			nRemovedTiles = nRemovedTiles 
+				+ checkTiles (cellA, cellB, iNeigbour)
+
+--			nRemovedColors = nRemovedColors 
+--				+ checkColors (cellA, cellB, iNeigbour)
 		end
 	end
 	return nRemovedTiles, nRemovedColors
@@ -414,8 +451,8 @@ function pwfc:updateOnce ()
 		for x = 1, self.w do
 			local cellA = self:getCell(x, y)
 			-- pTiles or pColors?
---			if #cellA.pTiles > 1 then
-			if #cellA.pColors > 1 then
+			if #cellA.pTiles > 1 then
+--			if #cellA.pColors > 1 then
 				-- not collapsed
 				local nRT, nRC = pwfc:solveCell (cellA)
 				nRemovedTiles = nRemovedTiles + nRT
@@ -431,26 +468,36 @@ end
 
 
 function pwfc:solveToProgress ()
-	for i = 1, 10000 do
+	for i = 1, 100 do
 		local nRemovedTiles, nRemovedColors = self:updateOnce ()
-		if nRemovedTiles == 0 and nRemovedColors == 0 then
+		if (nRemovedTiles == 0) and (nRemovedColors == 0) then
 			local cell = self:findLowestEntropy ()
 			if not cell then 
-				self.solved = true
+--				self.solved = true
 				return 
 			end -- no not collapsed cells
 			self:deleteOneTileFromCell (cell)
-		elseif nRemovedColors > 0 then
---			print ('nRemovedColors:'..nRemovedColors)
+--			self:deleteOneColorFromCell (cell)
+--			return
+		elseif nRemovedColors > 0 and nRemovedTiles > 0 then
 			return
-		else
---			print ('nRemovedTiles:'..nRemovedTiles)
+		elseif nRemovedColors > 0 then
+			return
 		end
 	end
 end
 
 function pwfc:update ()
-	pwfc:solveToProgress ()
+	self:solveToProgress ()
+	
+	local nRestTiles = - (self.w * self.h)
+	for y = 1, self.h do
+		for x = 1, self.w do
+			local cell = self:getCell(x,y)
+			nRestTiles = nRestTiles + #cell.pTiles
+		end
+	end
+	self.nRestTiles = nRestTiles
 end
 
 ---------------------------------------------------------------
@@ -553,13 +600,31 @@ function pwfc:drawMapCollapsedCells (px, py, psize)
 					px+(x-1)*psize, 
 					py+(y-1)*psize, 
 					psize, psize)
-			end
+			else
+				-- mixed color
+				local r, g, b, n = 0,0,0,0
+				local colors = self.colors
+				for i, colorIndex in ipairs (cell.pColors) do
+					n=n+1
+					r=r+colors[colorIndex][1]
+					g=g+colors[colorIndex][2]
+					b=b+colors[colorIndex][3]
+				end
+				r, g, b = r/n, g/n, b/n
+				oldSetColor ({r,g,b})
+				
+				love.graphics.rectangle ('fill', 
+					px+(x-1)*psize, 
+					py+(y-1)*psize, 
+					psize, psize)
+				
 			-- outline
-			love.graphics.setColor(0.5,0.5,0.5)
-			love.graphics.rectangle ('line', 
-				(px+(x-1)*psize)+0.5, 
-				(py+(y-1)*psize)+0.5, 
-				psize-1, psize-1)
+				love.graphics.setColor(0.5,0.5,0.5)
+				love.graphics.rectangle ('line', 
+					(px+(x-1)*psize)+0.5, 
+					(py+(y-1)*psize)+0.5, 
+					psize-1, psize-1)
+			end
 		end
 	end
 end
@@ -595,12 +660,13 @@ function pwfc:draw ()
 --	self:drawRules (10, 10, 10)
 	
 	-- draw amount off possible tiles
-	local px, py, psize = 10, 10, 25
+	local px, py, psize = 10, 10, 15
 	self:drawMapCollapsedCells (px, py, psize)
 	if (not self.solved) and psize > 30 then
 		self:drawMapNumbers (px, py, psize)
 	end
-	
+	love.graphics.setColor(1,1,1)
+	love.graphics.print (self.nRestTiles, 0, 400)
 	
 end
 
@@ -611,7 +677,8 @@ function pwfc:keypressed (key, scancode, isrepeat)
 	-- one cell has one tiles less
 --	local x, y = math.random (w), math.random (h)
 	
-	self:solveToProgress ()
+--	self:solveToProgress ()
+	self:reload ()
 end
 
 

@@ -2,11 +2,21 @@
 
 local pwfc = require ('pixel-wave-function-collapse')
 
+math.randomseed(love.math.random(65536))
+
 function love.load()
---	pwfc:load ('input/city-night.png')
-	local w = 30
+--	
+	local w = 50
 	local h = 20
-	pwfc:load ('input/chain-squares.png', w, h)
+--	pwfc:load ('input/chain-squares-01.png', w, h)
+	pwfc:load ('input/chain-squares-02.png', w, h)
+--	pwfc:load ('input/city-night.png', w, h)
+--	pwfc:load ('input/01.png', w, h)
+--	pwfc:load ('input/02.png', w, h)
+	
+--	pwfc:load ('input/03.png', w, h)
+--	pwfc:load ('input/04.png', w, h) -- ok
+
 	
 	
 	
