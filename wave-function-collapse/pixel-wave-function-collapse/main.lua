@@ -4,8 +4,8 @@ local pwfc = require ('pixel-wave-function-collapse')
 
 function love.load()
 --	pwfc:load ('input/city-night.png')
-	local w = 6
-	local h = 5
+	local w = 30
+	local h = 20
 	pwfc:load ('input/chain-squares.png', w, h)
 	
 	
