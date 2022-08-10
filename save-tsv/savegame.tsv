@@ -1,0 +1,15 @@
+b	yes
+d	text
+c	false
+a	true
+e	2	3	4	true	text
+1	1
+2	true
+3	false
+4	text
+true	yes
+false	no
+
+--	comment example
+also comment while no tabs
+this file has priority while not saved
