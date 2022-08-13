@@ -1,4 +1,6 @@
 -- tiled roads
+-- License CC0 (Creative Commons license) (c) darkfrei, 2022
+
 
 love.window.setTitle( 'tiled roads' )
 
@@ -6,48 +8,52 @@ love.window.setTitle( 'tiled roads' )
 local TR = {}
 
 function toColor (k)
-	k = k/8
+--	k = k
 	k = math.abs(k)^0.5 * (k>0 and 1 or -1)
-	local r, g, b = -k*2, math.abs(k)/2, k*2
+	local r, g, b = -k, math.abs(k)*0.5-0.5, k
 	return r, g, b
 end
 
+local function evaluate (curve, t)
+	local ccpc = curve:getControlPointCount( )
+	if ccpc > 1 then
+		return curve:evaluate(t)
+	elseif ccpc == 1 then
+		return curve:getControlPoint(1)
+	else
+		return 0, 0
+	end
+end
+
 function newTile (name, points)
-	local curve = love.math.newBezierCurve(points)
-	local dcurve = curve:getDerivative ()
 	local colorPoints = {}
-	if dcurve:getControlPointCount( ) > 2 then
+	
+	local curve = love.math.newBezierCurve(points)
+	local ccpc = curve:getControlPointCount ()
+	if ccpc == 2 then
+-- line
+		for i = 0, 8 do
+			local t = i/8
+			local x, y = evaluate (curve, t)
+			local r, g, b = toColor (0)
+			table.insert (colorPoints, {x, y, r, g, b, 1})
+		end
+	elseif ccpc > 2 then
+-- quadratic curve and higher
+		local dcurve = curve:getDerivative ()
 		local ddcurve = dcurve:getDerivative ()
 		for i = 0, 8 do
 			local t = i/8
-			local x,y = curve:evaluate(t)
-			local dx,dy = dcurve:evaluate(t)
-			local ddx,ddy = ddcurve:evaluate(t)
+			local x, y = evaluate (curve, t)
+			local dx,dy = evaluate(dcurve, t)
+			local ddx,ddy = evaluate(ddcurve, t)
 			local k = (ddx*dy-ddy*dx)/((dx*dx+dy*dy)^(3/2))
---			print (k, ddx, ddy)
+			print (k)
 			local r, g, b = toColor (k)
-			
 			table.insert (colorPoints, {x, y, r, g, b, 1})
 		end
-	elseif dcurve:getControlPointCount( ) == 2 then
-		local ddcurve = dcurve:getDerivative ()
-		local ddx,ddy = ddcurve:getControlPoint(1)
-		for i = 0, 8 do
-			local t = i/8
-			local x,y = curve:evaluate(t)
-			local dx,dy = dcurve:evaluate(t)
-			
-			
-			local k = (ddx*dy-ddy*dx)/((dx*dx+dy*dy)^(3/2))
-			print (k, dx, dy)
-			local r, g, b = toColor (k)
-			
-			table.insert (colorPoints, {x, y, r, g, b, 1})
-		end
-		
 	end
 	
-	print ('colorPoints', #colorPoints)
 	local tile ={
 		name = name,
 		bezierPoints = points,
@@ -72,6 +78,7 @@ function TR.load ()
 		newTile ("road-cur-5", {1,1, 0.7,0.7, 0.7,0.3, 1,0}),
 		newTile ("road-cur-6", {1,1, 0.6,0.6, 0.6,0.4, 1,0}),
 		newTile ("road-cur-7", {0,1, 0.4,0.6, 0.4,0.4, 0,0}),
+		newTile ("road-cur-8", {0,1, 0.5,0.5, 0.5,0.5, 0,0}),
 		
 	}
 	TR.tiles = tiles
@@ -116,6 +123,7 @@ function TR.draw()
 	drawTile (TR.tiles[10], 2, 4, s)
 	drawTile (TR.tiles[11], 3, 4, s)
 	drawTile (TR.tiles[12], 5, 4, s)
+	drawTile (TR.tiles[13], 5, 3, s)
 end
 
 function TR.mousepressed( x, y, button, istouch, presses )
