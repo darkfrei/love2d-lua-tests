@@ -1,6 +1,5 @@
 -- License CC0 (Creative Commons license) (c) darkfrei, 2022
 
-
 local dndo = {}
 
 function dndo.load (objects)
@@ -58,7 +57,6 @@ function collisionWith.circle (x, y, object)
 	end
 	return false
 end
-
 
 function dndo.mousepressed( x, y, button, istouch, presses )
 	if dndo.hovered then
