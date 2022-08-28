@@ -2,8 +2,12 @@
 
 local cl = require ('color-lines')
 
+
 function love.load()
 	love.window.setMode (1280, 800) -- 8*160, 5*160
+	love.window.setTitle(table.concat ({'Color Lines', love.graphics.getDimensions()}, ' '))
+	love.graphics.setLineWidth(2)
+
 	cl.load()
 end
 
