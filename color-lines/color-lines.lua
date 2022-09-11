@@ -27,7 +27,7 @@ local function drawField (x, y, w, h, isPressed)
 		
 		love.graphics.setColor (1,1,1)
 		love.graphics.rectangle ('fill', x+3, y+3, w-4, h-4)
-		love.graphics.setColor (0.60,0.60,0.65)
+		love.graphics.setColor (0.70,0.70,0.65)
 		love.graphics.rectangle ('fill', x+3, y+3, w-6, h-6)
 	else
 		love.graphics.setColor (0,0,0)
@@ -100,8 +100,14 @@ local function drawCircle (x, y, tileSize, color)
 	love.graphics.setColor (color[1]*2/3, color[2]*2/3, color[3]*2/3)
 	hexadecagonMoon ('fill', x, y, 0.4*tileSize)
 	
-	love.graphics.setColor (1,1,1)
+	love.graphics.setColor ((color[1]+0.5)/1.5, (color[2]+0.5)/1.5, (color[3]+0.5)/1.5)
+	hexadecagon ('fill', x-tileSize/8, y-tileSize/8, 0.16*tileSize)
+	
+	love.graphics.setColor ((color[1]+7)/8, (color[2]+7)/8, (color[3]+7)/8)
 	hexadecagon ('fill', x-tileSize/8, y-tileSize/8, 0.1*tileSize)
+	
+--	love.graphics.setColor (1,1,1)
+--	hexadecagon ('fill', x-tileSize/8, y-tileSize/8, 0.1*tileSize)
 --	hexadecagonMoon ('fill', x-0.1*tileSize, y-0.1*tileSize, 0.1*tileSize)
 	
 end
@@ -118,14 +124,26 @@ local function drawCenteredText(rectX, rectY, rectWidth, rectHeight, text, isPre
 	love.graphics.print(text, rectX+rectWidth/2, rectY+rectHeight/2, 0, 1, 1, textWidth/2, textHeight/2)
 end
 
+--local colors = {
+--	[0] = {1, 1, 1}, -- 0
+--	{1, 0, 0}, -- 1
+--	{1, 1, 0}, -- 2
+--	{0, 1, 0}, -- 3
+--	{0, 1, 1}, -- 4
+--	{0, 0, 1}, -- 5
+--	{1, 0, 1}, -- 6
+--}
+
 local colors = {
 	[0] = {1, 1, 1}, -- 0
-	{1, 0, 0}, -- 1
-	{1, 1, 0}, -- 2
-	{0, 1, 0}, -- 3
-	{0, 1, 1}, -- 4
-	{0, 0, 1}, -- 5
-	{1, 0, 1}, -- 6
+	{220/255,  40/255,  50/255}, -- 1
+	{230/255, 170/255,  40/255}, -- 2
+	{230/255, 220/255,  40/255}, -- 3
+	{60/255,  170/255,  80/255}, -- 4
+	{100/255, 200/255, 200/255}, -- 5
+	{60/255,   70/255, 130/255}, -- 6
+	{160/255,  70/255, 120/255}, -- 7
+	{100/255,  50/255,  80/255}, -- 8
 }
 
 
@@ -272,9 +290,7 @@ game.load = function ()
 		end
 	end
 	
-	addBalls (5, 6) -- amount, nColors
-	addBalls (5, 6) -- amount, nColors
-	addBalls (5, 6) -- amount, nColors
+	addBalls (25, #colors) -- amount, nColors
 
 	game.font = love.graphics.newFont(0.6*h/8)
 end
