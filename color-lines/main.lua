@@ -1,7 +1,7 @@
 -- License CC0 (Creative Commons license) (c) darkfrei, 2022
 
 local cl = require ('color-lines')
-local pf = require ('pathfinding')
+
 
 
 function love.load()
