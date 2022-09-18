@@ -64,7 +64,7 @@ function pf.getNodeMap (map, x1, y1, x2, y2)
 					
 					if x == x2 and y == y2 then
 						solutionFound = true
-						print ('solved', a)
+--						print ('solved', a)
 					end
 				end
 			end

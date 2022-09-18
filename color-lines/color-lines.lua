@@ -94,18 +94,18 @@ local function hexadecagonMoon (mode, x, y, radius) -- same as love.graphics.cir
 end
 
 local function drawCircle (x, y, tileSize, color, isPressed)
-	
+	tileSize = math.floor (tileSize)+0.5
 	local dy = 0
 	if isPressed then
 		dy = 1
 	end
 	love.graphics.setColor (0,0,0)
-	hexadecagon ('fill', x, y+dy, 0.4*tileSize+0.9)
+	hexadecagon ('fill', x, y+dy, 0.4*tileSize+.96)
 	love.graphics.setColor (color)
-	hexadecagon ('fill', x, y+dy, 0.4*tileSize)
+	hexadecagon ('fill', x, y+dy, 0.4*tileSize+0.05)
 	
 	love.graphics.setColor (color[1]*2/3, color[2]*2/3, color[3]*2/3)
-	hexadecagonMoon ('fill', x, y+dy, 0.4*tileSize)
+	hexadecagonMoon ('fill', x, y+dy, 0.4*tileSize+0.05)
 	
 	love.graphics.setColor ((color[1]+0.5)/1.5, (color[2]+0.5)/1.5, (color[3]+0.5)/1.5)
 	hexadecagon ('fill', x-tileSize/8, y-tileSize/8+dy, 0.16*tileSize)
@@ -151,7 +151,7 @@ local colors = {
 	{60/255,   70/255, 130/255}, -- 6 blue
 	{230/255, 170/255,  40/255}, -- 2 orange
 	{160/255,  70/255, 120/255}, -- 7 magenta
-	{100/255,  50/255,  80/255}, -- 8 brown
+	{80/255,  40/255,  50/255}, -- 8 brown
 }
 
 
@@ -168,11 +168,15 @@ menu.load = function ()
 	
 	
 	local w, h = love.graphics.getDimensions()
+	menu.w, menu.h = w, h
 	menu.buttons = {
-	{name = "start", x=w/4, y=h/2,   w=w/2, h=h/8, text='Start'},
-	{name = "exit",  x=w/4, y=h*3/4, w=w/2, h=h/8, text='Exit'},
+	{name = "start", x=w/4, y=h*0.5, w=w/2, h=h/8, text='Start'},
+	{name = "settings", x=w/4, y=h*0.65, w=w/2, h=h/8, text='Settings'},
+	{name = "exit",  x=w/4, y=h*0.8, w=w/2, h=h/8, text='Exit'},
 	}
+
 	menu.font = love.graphics.newFont(0.6*h/8)
+	menu.font2 = love.graphics.newFont(0.6*h/5)
 end
 
 menu.update = function (dt)
@@ -182,13 +186,36 @@ end
 menu.draw = function ()
 	love.graphics.setFont(menu.font)
 	for i, button in ipairs (menu.buttons) do
-		if button.hovered then
-			love.graphics.setColor (0.3, 0.4, 0.5)
-			love.graphics.rectangle ('fill', button.x, button.y, button.w, button.h)
-		end
-		love.graphics.setColor (1,1,1)
-		love.graphics.rectangle ('line', button.x, button.y, button.w, button.h)
-		drawCenteredText(button.x, button.y, button.w, button.h, button.text)
+--		if button.hovered then
+--			love.graphics.setColor (0.3, 0.4, 0.5)
+--			love.graphics.rectangle ('fill', button.x, button.y, button.w, button.h)
+--		end
+--		love.graphics.setColor (1,1,1)
+--		love.graphics.rectangle ('line', button.x, button.y, button.w, button.h)
+		drawField (button.x, button.y, button.w, button.h, button.hovered)
+		love.graphics.setColor (0,0,0)
+		
+		drawCenteredText(button.x, button.y, button.w, button.h, button.text, button.hovered)
+		
+		
+	end
+	
+	love.graphics.setColor (1,1,1)
+	love.graphics.setFont(menu.font2)
+	drawCenteredText(0, 0, menu.w, menu.h/4, "Color Balls and Lines")
+	
+	for i = 1, #colors do
+--		drawCircle (i*menu.w/(#colors+1), menu.h/3, menu.h/4, colors[i])
+		local x, y = i*menu.w/(#colors+1), menu.h/3
+		local color = colors[i]
+		local tileSize = menu.h/4
+		love.graphics.setColor(color)
+		love.graphics.circle ("fill", x, y, 0.4*tileSize)
+		love.graphics.setColor ((color[1]+0.5)/1.5, (color[2]+0.5)/1.5, (color[3]+0.5)/1.5)
+		love.graphics.circle ('fill', x-tileSize/8, y-tileSize/8, 0.16*tileSize)
+	
+		love.graphics.setColor ((color[1]+7)/8, (color[2]+7)/8, (color[3]+7)/8)
+		love.graphics.circle ('fill', x-tileSize/8, y-tileSize/8, 0.1*tileSize)
 	end
 end
 
@@ -253,11 +280,12 @@ local function getSafeMouseTile (x, y)
 	return field.tx, field.ty
 end
 
-local function addBalls (amount, nColors)
+
+local function generateNextBalls (amount, nColors)
 	local emptyList = {}
-	local field = game.field
-	for y, xs in ipairs (field) do
-		for x, value in ipairs (xs) do
+	for y = 1, 9 do
+		for x = 1, 9 do
+			local value = game.field[y][x]
 			if value == 0 then
 				table.insert (emptyList, {x=x, y=y})
 			end
@@ -267,15 +295,26 @@ local function addBalls (amount, nColors)
 	if #emptyList <  amount then
 		amount = #emptyList
 	end
-	print ('added ' .. amount .. ' balls' )
 	
+	local nextBalls = {}
 	for i = 1, amount do
 		local iColor = math.random (nColors)
 		local emptyCell = table.remove (emptyList, math.random(#emptyList))
 		local x, y = emptyCell.x, emptyCell.y
-		field[y][x] = iColor
+		table.insert (nextBalls, {x=x, y=y, color = iColor})
+	end
+	return nextBalls
+end
+
+
+local function addBalls (amount, nColors)
+	local nextBalls = generateNextBalls (amount, nColors)
+	for i, v in ipairs (nextBalls) do 
+		local x, y, iColor = v.x, v.y, v.color
+		game.field[y][x] = iColor
 	end
 end
+
 
 game.load = function ()
 	cl.update = game.update 
@@ -285,22 +324,40 @@ game.load = function ()
 	cl.mousereleased = game.mousereleased
 	
 	local w, h = love.graphics.getDimensions()
---	game.test1 = {x=0, y=0, w=w/8, h=h/8, text = "Game"}
---	game.test1.font = love.graphics.newFont(0.6*h/8)
+	local tSize = h/10
+	local fieldSize = 9*tSize
 	
 	game.buttons = {
-		{name = "exit", x=w*7/8, y=16, w=128+16, h=64+16, text='Exit'},
+		{
+			name = "exit", 
+			x=w/2+fieldSize/2 + tSize/2, 
+			y=math.floor(0.5*tSize), 
+			w=w-(w/2+fieldSize/2 + tSize), 
+			h=tSize, 
+			text='Exit'
+		},
 	}
 	
+	game.scoreArea = 
+		{
+			x=tSize/2, 
+			y=tSize/2, 
+			w=w-(w/2+fieldSize/2 + tSize), 
+			h=2*tSize, 
+		}
+
+	game.score = 0
+
 	game.w, game.h = w, h
 	
-	game.nColors = 3
+	game.nColors = 4
 	
 	game.field = {}
-	game.field.x = 64*5.5
-	game.field.y = 64*2
-	game.field.tileSize = 64
-	game.field.tx, game.field.ty = 0, 0
+	game.field.x = w/2-fieldSize/2
+	game.field.y = math.floor(0.5*tSize)
+	game.field.tileSize = tSize
+	
+--	game.field.tx, game.field.ty = 100, 0 -- mouse tile position
 	
 	for y = 1, 9 do
 		game.field[y] = {}
@@ -310,6 +367,8 @@ game.load = function ()
 	end
 	
 	addBalls (25, game.nColors) -- amount, nColors
+	
+	game.nextBalls = generateNextBalls (3, game.nColors)
 
 	game.font = love.graphics.newFont(0.6*h/8)
 end
@@ -317,58 +376,137 @@ end
 local function checkSituation ()
 	-- too complicated, but we can make cross!
 	local results = {}
+	local w, h = 9, 9
+	
 	
 	-- horizontal
-	for y = 1, #game.field do
-		local c, list = nil, {}
-		for x = 1, #game.field[1] do
+	for y = 1, h do
+		local c, list = 0, {}
+		for x = 1, w do
 			local color = game.field[y][x]
-			if color == 0 then
-				if #list >=5 then
+			if (x == w) and (color == c) then
+				table.insert (list, {x=x, y=y})
+				if (#list >=5) then
 					for i, v in ipairs (list) do
 						table.insert (results, v)
 					end
 				end
+			elseif not (color == c) then
+				-- color was changed
+				if (#list >=5) then
+					for i, v in ipairs (list) do
+						table.insert (results, v)
+					end
+				end
+				if (color == 0) then
+					list = {}
+				else
+					list = {{x=x, y=y}}
+				end
+				c = color
+			elseif not (color == 0) then
+				table.insert (list, {x=x, y=y})
 			else
-				
+				c = color
 			end
+		end
+	end
+	
+-- vertical
+	for x = 1, w do
+		local c, list = 0, {}
+		for y = 1, h do
+			local color = game.field[y][x]
+			if (y == h) and (color == c) then
+				table.insert (list, {x=x, y=y})
+				if (#list >=5) then
+					print ('vertical last', x, y, #list)
+					for i, v in ipairs (list) do
+						table.insert (results, v)
+					end
+				end
+			elseif not (color == c) then
+				-- color was changed
+				if (#list >=5) then
+					print ('vertical', x, y, #list)
+					for i, v in ipairs (list) do
+						table.insert (results, v)
+					end
+				end
+				if (color == 0) then
+					list = {}
+				else
+					list = {{x=x, y=y}}
+				end
+				c = color
+			elseif not (color == 0) then
+				table.insert (list, {x=x, y=y})
+			else
+				c = color
+			end
+		end
+	end
+	
+	print (#results)
+	if #results >=5 then
+		local delta = (#results - 4)
+		delta = delta * delta
+		game.score = game.score + delta
+		for i, p in ipairs (results) do
+			local x, y = p.x, p.y
+			game.field[y][x] = 0
 		end
 	end
 end
 
-game.update = function (dt)
 
-	
+
+game.update = function (dt)
 	if game.animation then
---		local field = game.field
---		local fx, fy, fTileSize = field.x, field.y, field.tileSize
-		local pathNodes = game.animation.path
-		local node1 = pathNodes[1]
-		local node2 = pathNodes[2]
-		if node2 then
-			if not node1.t then 
-				node1.t = 0 
-				beep ()
-			end
-			node1.t = node1.t + 4*dt
-			if node1.t >= 1 then
-				-- node is done
-				node2.t = 0
-				table.remove (pathNodes, 1)
-				beep ()
+		if game.animation.path then
+			local pathNodes = game.animation.path
+			local node1 = pathNodes[1]
+			local node2 = pathNodes[2]
+			if node2 then
+				if not node1.t then 
+					node1.t = 0 
+					beep ()
+				end
+				node1.t = node1.t + 4*dt
+				if node1.t >= 1 then
+					-- node is done
+					node2.t = 0
+					table.remove (pathNodes, 1)
+					beep ()
+				else
+					-- (draw animation)
+				end
 			else
-				-- (draw animation)
+				-- no node2
+				local x, y = node1.x, node1.y
+				game.field[y][x] = game.animation.color
+				
+--				game.animation = nil
+				game.animation.path = nil
+				game.pathNodes = nil
+				beep ()
+				-- check the situation
+				
 			end
+		elseif game.animation.creatingBalls then
+			
 		else
-			-- no node2
-			local x, y = node1.x, node1.y
-			game.field[y][x] = game.animation.color
-			
 			game.animation = nil
-			game.pathNodes = nil
-			beep ()
-			-- check the situation
+--			addBalls (3, game.nColors)
+			for i, ball in ipairs (game.nextBalls) do
+				local x, y, c = ball.x, ball.y, ball.color
+				if (game.field[y][x] == 0) then
+					game.field[y][x] = ball.color
+				end
+			end
+			checkSituation ()
 			
+			game.nextBalls = generateNextBalls (3, game.nColors)
 		end
 	end
 end
@@ -403,21 +541,23 @@ local function drawAnimation ()
 	local animation = game.animation
 	local pathNodes = animation.path
 	
-	local node1 = pathNodes[1]
-	local node2 = pathNodes[2]
-	local color = animation.color
-	local t = node1.t or 0
-	local dy = 4*(t-0.5)*(t-0.5)-1
-	if node2 then
-		local x = node1.x + t*(node2.x-node1.x)
-		local y = node1.y + t*(node2.y-node1.y) + dy/4
-		local rectX, rectY, rectWidth, rectHeight = fx+(x-1)*fTileSize, fy+(y-1)*fTileSize, fTileSize, fTileSize
-		drawCircle (rectX+fTileSize/2, rectY+fTileSize/2, fTileSize, colors[color], false) 
-	else
-		local x = node1.x
-		local y = node1.y
-		local rectX, rectY, rectWidth, rectHeight = fx+(x-1)*fTileSize, fy+(y-1)*fTileSize, fTileSize, fTileSize
-		drawCircle (rectX+fTileSize/2, rectY+fTileSize/2, fTileSize, colors[color], false) 
+	if pathNodes then
+		local node1 = pathNodes[1]
+		local node2 = pathNodes[2]
+		local color = animation.color
+		local t = node1.t or 0
+		local dy = 4*(t-0.5)*(t-0.5)-1
+		if node2 then
+			local x = node1.x + t*(node2.x-node1.x)
+			local y = node1.y + t*(node2.y-node1.y) + dy/4
+			local rectX, rectY, rectWidth, rectHeight = fx+(x-1)*fTileSize, fy+(y-1)*fTileSize, fTileSize, fTileSize
+			drawCircle (rectX+fTileSize/2, rectY+fTileSize/2, fTileSize, colors[color], false) 
+		else
+			local x = node1.x
+			local y = node1.y
+			local rectX, rectY, rectWidth, rectHeight = fx+(x-1)*fTileSize, fy+(y-1)*fTileSize, fTileSize, fTileSize
+			drawCircle (rectX+fTileSize/2, rectY+fTileSize/2, fTileSize, colors[color], false) 
+		end
 	end
 end
 
@@ -428,15 +568,19 @@ game.draw = function ()
 	drawField (0, 0, game.w, fy-16)
 	
 	love.graphics.setFont(game.font)
---	drawCenteredText(100,100,100,100, "aAa " .. #game.buttons .. ' ' .. game.buttons[1].text)
 	for i, button in ipairs (game.buttons) do
 		drawField (button.x, button.y, button.w, button.h, button.hovered)
 		
 		love.graphics.setColor (0,0,0)
 		drawCenteredText(button.x, button.y, button.w, button.h, button.text, button.hovered)
 	end
+	
+	
 
-	drawField (fx-8, fy-8, 9*fTileSize+16, 9*fTileSize+16)
+	drawField (game.scoreArea.x, game.scoreArea.y, game.scoreArea.w, game.scoreArea.h)
+	love.graphics.setColor(0.95,0.9,0.2)
+	drawCenteredText (game.scoreArea.x, game.scoreArea.y, game.scoreArea.w, game.scoreArea.h/2, 'Score:\n'..game.score)
+	
 	
 	for y, xs in ipairs (game.field) do
 		for x, value in ipairs (xs) do
@@ -446,9 +590,18 @@ game.draw = function ()
 		end
 	end
 	
+	if game.nextBalls then
+		for i, ball in ipairs (game.nextBalls) do
+			local x, y, value = ball.x, ball.y, ball.color
+			local rectX, rectY = fx+(x-1)*fTileSize, fy+(y-1)*fTileSize
+			
+			drawCircle (rectX+fTileSize/2, rectY+fTileSize/2, fTileSize/4, colors[value]) 
+		end
+	end
+	
 	for y, xs in ipairs (game.field) do
 		for x, value in ipairs (xs) do
-			local rectX, rectY, rectWidth, rectHeight = fx+(x-1)*fTileSize, fy+(y-1)*fTileSize, fTileSize, fTileSize
+			local rectX, rectY = fx+(x-1)*fTileSize, fy+(y-1)*fTileSize
 			local pressed = isTilePressed (x, y)
 			if value > 0 then
 				drawCircle (rectX+fTileSize/2, rectY+fTileSize/2, fTileSize, colors[value], pressed) 
@@ -460,8 +613,11 @@ game.draw = function ()
 		drawAnimation ()
 	end
 	
-	local tx, ty = getSafeMouseTile (love.mouse.getPosition())
-	love.graphics.print (tx .. ' ' .. ty, 0, 50)
+--	local tx, ty = getSafeMouseTile (love.mouse.getPosition())
+--	love.graphics.print (tx .. ' ' .. ty, 0, 50)
+
+	
+	
 end
 
 
