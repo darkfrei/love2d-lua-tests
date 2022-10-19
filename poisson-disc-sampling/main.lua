@@ -2,69 +2,98 @@
 
 -- License CC0 (Creative Commons license) (c) darkfrei, 2022
 
+love.window.setMode( 1920, 1080)
+love.window.setTitle( "poisson-disc-sampling-02.love" )
+
+
 local width, height = love.graphics.getDimensions( )
-local w, h = 20, 15
+local w, h = 20*2, 15*2
 local tileSize = math.floor(math.min (width/w, height/h))
-local tileRadius = tileSize*math.sqrt(2)/2
+w = math.floor(width/tileSize)
+h = math.floor(height/tileSize)
+local tileRadius = tileSize*math.sqrt(2)
 print ('tileSize', tileSize)
 local point = {x=tileSize*w/2+tileSize/2, y=tileSize*h/2}
 local points = {point}
 
 local gridMap = {}
+local gx = math.floor(point.x/tileSize)
+local gy = math.floor(point.y/tileSize)
+gridMap[gy]={}
+gridMap[gy][gx]=point
+
 showMode = {value = 1, circles = true, points = true, grid = true, squares = true}
 
-love.graphics.setPointSize( 2 )
+love.graphics.setPointSize( 4 )
+
+
+
 
 
 local function tryCreateCircle (gx, gy)
+--	print (gx, gy)
 	if gridMap[gy] and gridMap[gy][gx] then
 		-- impossible to create on busy grid tile
 		return false
 	end
 	local x = (gx+math.random())*tileSize
 	local y = (gy+math.random())*tileSize
+	local notTooFar = false
 	for j = -2, 2 do
 		for i = -2, 2 do
 			if not (i == 0 and j == 0) then
 				if gridMap[gy+j] and gridMap[gy+j][gx+i] then
 					local dx = x-gridMap[gy+j][gx+i].x
 					local dy = y-gridMap[gy+j][gx+i].y
+--					print ("1")
+--					print ((dx*dx+dy*dy), 4*tileRadius*tileRadius)
 					if dx*dx+dy*dy < tileRadius*tileRadius then
 						-- collision
 						return false
+					elseif (dx*dx+dy*dy) < 4*tileRadius*tileRadius then
+--						print ('notTooFar')
+						notTooFar = true
+					else
+--						print ('TooFar', (dx*dx+dy*dy), 4*tileRadius*tileRadius)
 					end
 				end
 			end
 		end
 	end
-	-- new point!
-	local point = {x=x, y=y}
-	gridMap[gy] = gridMap[gy] or {}
-	gridMap[gy][gx] = point
-	table.insert (points, point)
-	return true
+	if notTooFar then
+		-- new point!
+		local point = {x=x, y=y}
+		gridMap[gy] = gridMap[gy] or {}
+		gridMap[gy][gx] = point
+		table.insert (points, point)
+		return true
+	else
+		return false -- too far
+	end
 end
 
-local amount = 0
-for j = -2, 2 do
-	for i = -2, 2 do
-		if not (i == 0 and j == 0) then
-			-- not same cell
-			local gx = math.floor(point.x/tileSize) + i
-			local gy = math.floor(point.y/tileSize) + j
-			for k = 1, 30 do
-				-- trying to create new circle
-				if tryCreateCircle (gx, gy) then
-					-- created
-					amount = amount + 1
-					print ('break on ', k)
-					break
-				end
+local function createNewPoints (x, y)
+	local gx = math.floor(x/tileSize)
+	local gy = math.floor(y/tileSize)
+	local amount = 0
+	local seq = {{x=0, y=-1}, {x=1, y=-1}, {x=1, y=0}, {x=1, y=1}, {x=0, y=1}, {x=-1, y=1}, {x=-1, y=0}, {x=-1, y=-1}}
+	for ii = 1, #seq do
+		local dxy = table.remove (seq, math.random (#seq))
+		local i = dxy.x
+		local j = dxy.y
+		for k = 1, 30 do
+			-- trying to create new circle
+			if tryCreateCircle (gx+i, gy+j) then
+				-- created
+				amount = amount + 1
+--				print ('break on ', k)
+				break
 			end
 		end
 	end
 end
-print ('created new points: ', amount)
+
+createNewPoints (point.x, point.y)
 
 function love.load()
 	
@@ -79,10 +108,11 @@ end
 
 
 function love.draw()
+	
 	-- draw grid
 	if showMode.grid then
 		love.graphics.setColor (0.5,0.5,0.5)
-		for i = 1, w-1 do
+		for i = 1, w do
 			love.graphics.line (i*tileSize, 0, i*tileSize, h*tileSize)
 		end
 		for j = 1, h-1 do
@@ -91,9 +121,7 @@ function love.draw()
 	end
 	
 	-- draw squares
-	
 	if showMode.squares then
-		
 		for i, point in ipairs (points) do
 			local gx = math.floor(point.x/tileSize)
 			local gy = math.floor(point.y/tileSize)
@@ -105,6 +133,7 @@ function love.draw()
 			love.graphics.rectangle ('fill', gx*tileSize, gy*tileSize, tileSize, tileSize)
 		end
 	end
+	
 	-- draw circles
 	if showMode.circles then
 		love.graphics.setColor (1,1,1)
@@ -120,8 +149,8 @@ function love.draw()
 			love.graphics.points (point.x, point.y)
 		end
 	end
-	love.graphics.setColor (1,1,1)
-	love.graphics.print (showMode.value..'\nPress Space to change view\nPress G for grid')
+--	love.graphics.setColor (1,1,1)
+--	love.graphics.print (showMode.value..'\nPress Space to change view\nPress G for grid')
 end
 
 function love.keypressed(key, scancode, isrepeat)
@@ -131,6 +160,13 @@ function love.keypressed(key, scancode, isrepeat)
 		showMode.points = (showMode.value%2 == 0) and true or false
 		showMode.circles = (showMode.value%3 == 0) and true or false
 		showMode.squares = (showMode.value%5 == 0) and true or false
+	elseif key == "s" then
+		-- erasing
+		local point = points[1]
+		points = {point}
+		gridMap ={}
+		gridMap[gy]={}
+		gridMap[gy][gx]=point
 	elseif key == "g" then
 		showMode.grid = not showMode.grid
 	elseif key == "escape" then
@@ -145,6 +181,7 @@ function love.mousepressed( x, y, button, istouch, presses )
 end
 
 function love.mousemoved( x, y, dx, dy, istouch )
+	createNewPoints (x, y)
 end
 
 function love.mousereleased( x, y, button, istouch, presses )
