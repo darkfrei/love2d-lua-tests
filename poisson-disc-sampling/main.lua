@@ -1,13 +1,14 @@
 -- poisson-disc-sampling
 
 -- License CC0 (Creative Commons license) (c) darkfrei, 2022
+-- https://youtu.be/SdPaPliAi7s
 
 love.window.setMode( 1920, 1080)
-love.window.setTitle( "poisson-disc-sampling-03.love" )
+love.window.setTitle( "poisson-disc-sampling-04.love" )
 
 
 local width, height = love.graphics.getDimensions( )
-local w, h = 20*2, 15*2
+local w, h = 20*5, 15*5
 local tileSize = math.floor(math.min (width/w, height/h))
 w = math.floor(width/tileSize)
 h = math.floor(height/tileSize)
@@ -22,7 +23,7 @@ local gy = math.floor(point.y/tileSize)
 gridMap[gy]={}
 gridMap[gy][gx]=point
 
-showMode = {value = 1, circles = true, points = true, grid = true, squares = true, connections = true}
+showMode = {value = 1, circles = true, points = true, grid = false, squares = false, connections = true}
 
 love.graphics.setPointSize( 4 )
 
@@ -40,21 +41,20 @@ local function tryCreateCircle (gx, gy)
 	local y = (gy+math.random())*tileSize
 	local notTooFar = false
 	local connections = {}
-	for j = -2, 2 do
-		for i = -2, 2 do
+	local shortestCon
+	for j = -3, 3 do
+		for i = -3, 3 do
 			if not (i == 0 and j == 0) then
 				if gridMap[gy+j] and gridMap[gy+j][gx+i] then
 					local dx = x-gridMap[gy+j][gx+i].x
 					local dy = y-gridMap[gy+j][gx+i].y
---					print ("1")
---					print ((dx*dx+dy*dy), 4*tileRadius*tileRadius)
 					if dx*dx+dy*dy < tileRadius*tileRadius then
 						-- collision
 						return false
 					elseif (dx*dx+dy*dy) < 4*tileRadius*tileRadius then
 --						print ('notTooFar')
 						notTooFar = true
-						table.insert (connections, {x, y, gridMap[gy+j][gx+i].x, gridMap[gy+j][gx+i].y})
+						table.insert (connections, {x, y, gridMap[gy+j][gx+i].x, gridMap[gy+j][gx+i].y, sqrdist = (dx*dx+dy*dy)})
 					else
 --						print ('TooFar', (dx*dx+dy*dy), 4*tileRadius*tileRadius)
 					end
@@ -62,7 +62,26 @@ local function tryCreateCircle (gx, gy)
 			end
 		end
 	end
-	if notTooFar and #connections < 2 then
+	
+	if #connections > 2 then
+		for i = 1, #connections-1 do
+			local index = 1
+			local longest = connections[index].sqrdist
+			
+			for j = 2, #connections do
+				if longest < connections[j].sqrdist  then 
+					index = j
+					longest = connections[j].sqrdist
+				end
+			end
+			-- remove longest
+			table.remove (connections, index)
+		end
+	end
+	
+	
+	
+	if notTooFar then
 		-- new point!
 		local point = {x=x, y=y, connections=connections}
 		gridMap[gy] = gridMap[gy] or {}
@@ -74,13 +93,26 @@ local function tryCreateCircle (gx, gy)
 	end
 end
 
+--[[
+local seq3 = {}
+for i = -3, 3 do
+	for j = -3, 3 do
+		if not (i == 0 and j == 0) then
+			table.insert (seq2, "{x="..i..", y="..j.."}")
+		end
+	end
+end
+print (table.concat (seq3, ", "))
+--]]
+
 local function createNewPoints (x, y)
 	local gx = math.floor(x/tileSize)
 	local gy = math.floor(y/tileSize)
 	local amount = 0
-	local seq = {{x=0, y=-1}, {x=1, y=-1}, {x=1, y=0}, {x=1, y=1}, {x=0, y=1}, {x=-1, y=1}, {x=-1, y=0}, {x=-1, y=-1}}
-	for ii = 1, #seq do
-		local dxy = table.remove (seq, math.random (#seq))
+	local seq1 = {{x=0, y=-1}, {x=1, y=-1}, {x=1, y=0}, {x=1, y=1}, {x=0, y=1}, {x=-1, y=1}, {x=-1, y=0}, {x=-1, y=-1},}
+	local seq3 = {{x=-3, y=-3}, {x=-3, y=-2}, {x=-3, y=-1}, {x=-3, y=0}, {x=-3, y=1}, {x=-3, y=2}, {x=-3, y=3}, {x=-2, y=-3}, {x=-2, y=-2}, {x=-2, y=-1}, {x=-2, y=0}, {x=-2, y=1}, {x=-2, y=2}, {x=-2, y=3}, {x=-1, y=-3}, {x=-1, y=-2}, {x=-1, y=-1}, {x=-1, y=0}, {x=-1, y=1}, {x=-1, y=2}, {x=-1, y=3}, {x=0, y=-3}, {x=0, y=-2}, {x=0, y=-1}, {x=0, y=1}, {x=0, y=2}, {x=0, y=3}, {x=1, y=-3}, {x=1, y=-2}, {x=1, y=-1}, {x=1, y=0}, {x=1, y=1}, {x=1, y=2}, {x=1, y=3}, {x=2, y=-3}, {x=2, y=-2}, {x=2, y=-1}, {x=2, y=0}, {x=2, y=1}, {x=2, y=2}, {x=2, y=3}, {x=3, y=-3}, {x=3, y=-2}, {x=3, y=-1}, {x=3, y=0}, {x=3, y=1}, {x=3, y=2}, {x=3, y=3}}
+	for ii = 1, #seq3 do
+		local dxy = table.remove (seq3, math.random (#seq3))
 		local i = dxy.x
 		local j = dxy.y
 		for k = 1, 30 do
@@ -95,7 +127,7 @@ local function createNewPoints (x, y)
 	end
 end
 
-createNewPoints (point.x, point.y)
+--createNewPoints (point.x, point.y)
 
 function love.load()
 	
@@ -138,7 +170,7 @@ function love.draw()
 	
 	-- draw circles
 	if showMode.circles then
-		love.graphics.setColor (1,1,1)
+		love.graphics.setColor (0,0.4,0)
 		for i, point in ipairs (points) do
 			love.graphics.circle ('line', point.x, point.y, tileRadius)
 		end
@@ -156,8 +188,20 @@ function love.draw()
 	
 	-- draw points
 	if showMode.points then
-		love.graphics.setColor (1,1,1)
+		
 		for i, point in ipairs (points) do
+			
+			if #point.connections == 0 then
+				love.graphics.setColor (1,1,1)
+			elseif #point.connections == 1 then
+				love.graphics.setColor (0,1,0)
+			elseif #point.connections == 2 then
+				love.graphics.setColor (1,1,0)
+			elseif #point.connections == 3 then
+				love.graphics.setColor (1,0,0)
+			else
+				love.graphics.setColor (0,1,1)
+			end
 			love.graphics.points (point.x, point.y)
 		end
 	end
