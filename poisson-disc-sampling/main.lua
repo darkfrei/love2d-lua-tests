@@ -3,7 +3,7 @@
 -- License CC0 (Creative Commons license) (c) darkfrei, 2022
 
 love.window.setMode( 1920, 1080)
-love.window.setTitle( "poisson-disc-sampling-02.love" )
+love.window.setTitle( "poisson-disc-sampling-03.love" )
 
 
 local width, height = love.graphics.getDimensions( )
@@ -13,7 +13,7 @@ w = math.floor(width/tileSize)
 h = math.floor(height/tileSize)
 local tileRadius = tileSize*math.sqrt(2)
 print ('tileSize', tileSize)
-local point = {x=tileSize*w/2+tileSize/2, y=tileSize*h/2}
+local point = {x=tileSize*w/2+tileSize/2, y=tileSize*h/2, connections = {}}
 local points = {point}
 
 local gridMap = {}
@@ -22,7 +22,7 @@ local gy = math.floor(point.y/tileSize)
 gridMap[gy]={}
 gridMap[gy][gx]=point
 
-showMode = {value = 1, circles = true, points = true, grid = true, squares = true}
+showMode = {value = 1, circles = true, points = true, grid = true, squares = true, connections = true}
 
 love.graphics.setPointSize( 4 )
 
@@ -39,6 +39,7 @@ local function tryCreateCircle (gx, gy)
 	local x = (gx+math.random())*tileSize
 	local y = (gy+math.random())*tileSize
 	local notTooFar = false
+	local connections = {}
 	for j = -2, 2 do
 		for i = -2, 2 do
 			if not (i == 0 and j == 0) then
@@ -53,6 +54,7 @@ local function tryCreateCircle (gx, gy)
 					elseif (dx*dx+dy*dy) < 4*tileRadius*tileRadius then
 --						print ('notTooFar')
 						notTooFar = true
+						table.insert (connections, {x, y, gridMap[gy+j][gx+i].x, gridMap[gy+j][gx+i].y})
 					else
 --						print ('TooFar', (dx*dx+dy*dy), 4*tileRadius*tileRadius)
 					end
@@ -60,9 +62,9 @@ local function tryCreateCircle (gx, gy)
 			end
 		end
 	end
-	if notTooFar then
+	if notTooFar and #connections < 2 then
 		-- new point!
-		local point = {x=x, y=y}
+		local point = {x=x, y=y, connections=connections}
 		gridMap[gy] = gridMap[gy] or {}
 		gridMap[gy][gx] = point
 		table.insert (points, point)
@@ -142,6 +144,16 @@ function love.draw()
 		end
 	end
 	
+	-- draw connections
+	if showMode.connections then
+		love.graphics.setColor (1,1,1)
+		for i, point in ipairs (points) do
+			for j, line in ipairs (point.connections) do
+				love.graphics.line (line)
+			end
+		end
+	end
+	
 	-- draw points
 	if showMode.points then
 		love.graphics.setColor (1,1,1)
@@ -160,6 +172,7 @@ function love.keypressed(key, scancode, isrepeat)
 		showMode.points = (showMode.value%2 == 0) and true or false
 		showMode.circles = (showMode.value%3 == 0) and true or false
 		showMode.squares = (showMode.value%5 == 0) and true or false
+		showMode.connections = (showMode.value%7 == 0) and true or false
 	elseif key == "s" then
 		-- erasing
 		local point = points[1]
