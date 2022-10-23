@@ -20,7 +20,10 @@ end
 
 
 function love.draw()
-	mp.drawPolygon (Polygon)
+--	mp.drawPolygon (Polygon)
+	mp.drawPolygons ()
+	love.graphics.setColor (1,1,1)
+	mp.drawTemp ()
 end
 
 function love.keypressed(key, scancode, isrepeat)
@@ -31,16 +34,18 @@ function love.keypressed(key, scancode, isrepeat)
 end
 
 function love.mousepressed( x, y, button, istouch, presses )
-	if button == 1 then -- left mouse button
-	elseif button == 2 then -- right mouse button
-	end
+	mp.verticesCreating ("mousepressed", x, y)
 end
 
 function love.mousemoved( x, y, dx, dy, istouch )
+	mp.verticesCreating ("mousemoved", x, y, 30)
 end
 
 function love.mousereleased( x, y, button, istouch, presses )
-	if button == 1 then -- left mouse button
-	elseif button == 2 then -- right mouse button
+	local vertices = mp.verticesCreating ("mousereleased", x, y)
+	if vertices then
+		local lineColor = {1,1,1}
+		local fillColor = {math.random (), math.random (), math.random ()}
+		mp.newPolygon (vertices, fillColor, lineColor, 8)
 	end
 end
