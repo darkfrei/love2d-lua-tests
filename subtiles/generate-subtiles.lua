@@ -47,6 +47,7 @@ local function drawLines (ab,bc,cd,da, x,y, subtileSize)
 	end
 end
 
+-- main function:
 local function getCanvas()
 	local subtileSize = 4 -- pixels in tile
 	local dpiscale = 8 -- subpixels per pixel
@@ -97,15 +98,19 @@ local function getCanvas()
 		}
 		
 		for j, variant in ipairs (variations) do
+			local alltrue = true
 			for k, bool in ipairs (variant) do
-				break
+				if not bool then
+					alltrue = false
+					break
+				end
 			end
-			if i >= 16 then
+			if alltrue then
 				drawLines (ab,bc,cd,da, x,y, subtileSize)
 				drawPoints (a,b,c,d, x,y, subtileSize)
 				n = n+1
 				break
-			else
+			elseif i < 16 then
 				drawPoints (a,b,c,d, x,y, subtileSize)
 				n = n+1
 				break
