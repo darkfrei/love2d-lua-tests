@@ -8,6 +8,7 @@ Width, Height = love.graphics.getDimensions( )
 
 function love.load()
 	Canvas = getCanvas ()
+	Canvas:newImageData():encode("png","sprites-47.png")
 end
 
  
@@ -17,7 +18,7 @@ end
 
 
 function love.draw()
-	love.graphics.scale (5)
+	love.graphics.scale (8)
 	love.graphics.setColor (1,1,1)
 	love.graphics.draw (Canvas)
 end
