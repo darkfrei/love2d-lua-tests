@@ -2,12 +2,27 @@
 
 local slope = {}
 
-local function getMovingBoundungBox (x, y, w, h, dx, dy)
-	local x1 = math.min (x, x+dx)
-	local y1 = math.min (y, y+dy)
-	local w1 = math.max (w, w+dx)
-	local h1 = math.max (h, h+dy)
-	return x1, y1, x+w1, y+h1
+local function isIntersection (x1, y1, x2, y2, x3, y3, x4, y4)
+-- line segments AB: x1, y1, x2, y2 and CD: x3, y3, x4, y4
+	local abx, aby = (x2-x1), (y2-y1) -- main vector ab
+	local acx, acy = (x3-x1), (y3-y1) -- vector ac
+	local adx, ady = (x4-x1), (y4-y1) -- vector ad
+	local u = (abx*acy - aby*acx)*(abx*ady - aby*adx)
+	if u > 0 then return false end
+	local bcx, bcy = (x3-x2), (y3-y2) -- vector bc 
+	local dcx, dcy = (x3-x4), (y3-y4) -- main vector dc (vector ac is above)
+	local v = (dcx*acy - dcy*acx)*(dcx*bcy - dcy*bcx)
+	if v > 0 then return false end
+	return true
+end
+
+local function getMovingBoundungBox (x, y, w, h, tx, ty)
+--	tx, ty - target position
+	local x1 = math.min (x, tx)
+	local y1 = math.min (y, ty)
+	local x2 = math.max (x, tx)
+	local y2 = math.max (y, ty)
+	return x1, y1, x2-x1+w, y2-y1+h
 end
 
 local function getLineBoundungBox (line)
@@ -32,98 +47,79 @@ local function worldAddLines (self, line)
 	for i = 1, #line-3, 2 do
 		local lineSegment = {line[i], line[i+1], line[i+2], line[i+3]}
 		local x, y, w, h = getLineBoundungBox (lineSegment)
-		local newLine = {
-			profile = lineSegment,
+		local objLine = {
+			line = lineSegment,
 			x=x, y=y, w=w, h=h,
 			vx = 0, vy = 0,
 		}
-		table.insert (self.lines, newLine)
+		table.insert (self.objLines, objLine)
 	end
 end
 
-local function worldAddPlayer (self, d)
-	local newPlayer = {
-		x=d.x, y=d.y, w=d.w, h=d.h,
-		vx = 0, vy = 0,
-	}
-	table.insert (self.players, newPlayer)
+
+local function isRoughCollision(a, b)
+  return a.x < b.x+b.w and a.y < b.y+b.h and 
+         b.x < a.x+a.w and b.y < a.y+a.h
 end
 
-local function checkCollisionBB (xmin,ymin,xmax,ymax, BB)
-	if xmin < BB.x+BB.w and
-		BB.x < xmax and
-		ymin < BB.y+BB.h and
-		BB.y < ymax then
-		return true
-	end
-	return false
+local function psm (ax, ay, bx, by) -- pseudoScalarMutiplication
+	return ax*by-ay*bx
 end
 
-local function getSlide (world, x1, y1, x2, y2)
-	local xmin, xmax = math.min (x1, x2), math.max (x1, x2)
-	local ymin, ymax = math.min (y1, y2), math.max (y1, y2)
-	for i, line in ipairs (world.lines) do
-		if checkCollisionBB (xmin,ymin,xmax,ymax, line) then
---			print ('collision rough')
-			return x1, y1
-		end
-	end
-	return x2, y2
-end
-
-local function worldUpdate (self, dt)
-	local maxSpeed = self.maxSpeed
-	for i, p in ipairs (self.players) do
-		-- update velocity
-		local vx=p.vx+self.gravX*dt
-		local vy=p.vy+self.gravY*dt
-		if vx > maxSpeed then 
-			vx = maxSpeed
-		elseif vx < -maxSpeed then
-			vx = -maxSpeed 
-		end
-		if vy > maxSpeed then 
-			vy = maxSpeed
-		elseif vy < -maxSpeed then
-			vy = -maxSpeed 
-		end
-		p.vx = vx
-		p.vy = vy
-		
-		local goalX = p.x + p.vx*dt
-		local goalY = p.y + p.vy*dt
-		
-		-- check collision:
-		local slideX, slideY = getSlide (self, p.x, p.y, goalX, goalY)
-		
-		
---		p.x = goalX; p.y = goalY
-		p.x = slideX; p.y = slideY
-	end
-end
-
-function slope.newWorld (meter)
-	meter = meter or 100
-	local world = {
-		meter			= meter,
-		maxSpeed		= 6*meter,
-		gravX			= 0,
-		gravY			= 9.81*meter, -- m / s^2
-		lines			= {},
-		players			= {},
---		rows			= {},
---		nonEmptyCells	= {},
---		responses 		= {},
-	}
-	world.addLines = worldAddLines
-	world.addPlayer = worldAddPlayer
-	world.update = worldUpdate
-
---	world:addResponse('touch', touch)
---	world:addResponse('cross', cross)
---	world:addResponse('slide', slide)
---	world:addResponse('bounce', bounce)
+local function isFineCollision(ps, objLine) -- points
+  local line = objLine.line
+	local x, y = objLine.x, objLine.y
+	local x1, y1 = x+line[1], y+line[2]
+	local x2, y2 = x+line[3], y+line[4]
 	
+	local v1 = psm (x2-x1, y2-y1, ps[1].x-x1, ps[1].y-y1)
+	local v2 = psm (x2-x1, y2-y1, ps[2].x-x1, ps[2].y-y1)
+	local v3 = psm (x2-x1, y2-y1, ps[3].x-x1, ps[3].y-y1)
+	local v4 = psm (x2-x1, y2-y1, ps[4].x-x1, ps[4].y-y1)
+	if math.min (v1, v2, v3, v4) > 0 then
+		-- no collision
+	elseif math.max (v1, v2, v3, v4) < 0 then
+		-- no collision
+	else
+		return true, v1, v2, v3, v4 -- collision
+	end
+end
+
+local function worldMove (self, obj, tX, tY)
+	-- world, object, target position
+	-- 
+	print ('obj.x, obj.y, obj.w, obj.h, tX, tY', obj.x, obj.y, obj.w, obj.h, tX, tY)
+	local ax, ay, aw, ah = getMovingBoundungBox (obj.x, obj.y, obj.w, obj.h, tX, tY)
+	print ('ax, ay, aw, ah', ax, ay, aw, ah)
+	local movingObj = {x=ax, y=ay, w=aw, h=ah, dx=tX-obj.x, dy=tY-obj.y}
+	
+	local points = {{x=ax, y=ay}, {x=ax+aw, y=ay}, {x=ax+aw, y=ay+ah}, {x=ax, y=ay+ah}}
+	local cols = {} 
+	local len = 0
+	for i, objLine in ipairs (self.objLines) do
+		if isRoughCollision(obj, objLine) then
+			objLine.rough = true
+			local fineCol, v1, v2, v3, v4 = isFineCollision(points, objLine)
+			if fineCol then
+				objLine.fine = true
+				objLine.values = {v1, v2, v3, v4}
+			else
+				objLine.fine = false
+			end
+		else
+			objLine.rough = false
+			objLine.fine = false
+		end
+	end
+	return tX, tY
+end
+
+function slope.newWorld ()
+	local world = {}
+	world.meter = 100 -- pixels / units per meter
+	world.objLines = {}
+	world.addLines = worldAddLines
+	world.move = worldMove
 	return world
 end
 

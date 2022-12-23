@@ -6,12 +6,12 @@ local slope = require 'slope'
 love.window.setMode(1280, 800) -- Steam Deck resolution
 Width, Height = love.graphics.getDimensions( )
 
-local world = slope.newWorld(100) -- size of meter
+local world = slope.newWorld() -- size of meter
 
-local line1 = {0,600, 200,600, 400,400, 600,400, 800,500}
-world:addLines(line1)
+local lines1 = {200,600, 400,400, 600,400}
+world:addLines(lines1)
 
-world:addPlayer({x=10, y=10, w=10, h=10}, 1)
+player ={x=300, y=10, w=10, h=10, vx=0, vy=0}
 
 
 
@@ -21,32 +21,57 @@ end
 
  
 function love.update(dt)
-	if dt > 1/16 then dt = 1/16 end
-	world:update (dt)
+--	player.vx = player.vx*0.99*dt
+--	player.vy = (player.vy + dt*world.meter)
+--	local targetX = player.x + player.vx
+--	local targetY = player.y + player.vy*dt
+	local targetX = love.mouse.getX()
+	local targetY = love.mouse.getY()
+	
+	if not (player.x == targetX and player.y == targetY) then
+		local actualX, actualY, cols, len = world:move(player, targetX, targetY)
+
+
+		player.x = actualX
+		player.y = actualY
+	end
 end
 
 
 function love.draw()
-	for i, line in ipairs (world.lines) do
+	for i, objLine in ipairs (world.objLines) do
+		local line = objLine.line
 		love.graphics.push()
-			love.graphics.translate(line.x, line.y)
-			love.graphics.line (line.profile)
+			love.graphics.translate(objLine.x, objLine.y)
+			if objLine.fine then 
+				love.graphics.setColor(0,1,0)
+			elseif objLine.rough then 
+				love.graphics.setColor(1,0,0)
+			else
+				love.graphics.setColor(1,1,1)
+			end
+			love.graphics.line (line)
+			if objLine.values then
+				for i, v in ipairs (objLine.values) do
+					love.graphics.print (v, 0, 20*i-20)
+				end
+			end
 		love.graphics.pop()
+--		love.graphics.rectangle('line', line.x, line.y, line.w, line.h)
 	end
-	for i, player in ipairs (world.players) do
-		love.graphics.rectangle('line', player.x, player.y, player.w, player.h)
-	end
-	love.graphics.print (world.players[1].vx ..' ' .. world.players[1].vy)
+	love.graphics.rectangle('line', player.x, player.y, player.w, player.h)
+	
+	love.graphics.print (player.vx ..' ' .. player.vy)
 end
 
 function love.keypressed(key, scancode, isrepeat)
 	if false then
 	elseif key == "space" then
-	world.players[1].vy = -10*world.meter
+		player.vy = -10*world.meter
 	elseif key == "d" then
-	world.players[1].vx = 10*world.meter
+		player.vx = 4*world.meter
 	elseif key == "a" then
-	world.players[1].vx = -10*world.meter
+		player.vx = -4*world.meter
 	elseif key == "escape" then
 		love.event.quit()
 	end
