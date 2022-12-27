@@ -11,7 +11,7 @@ local world = slope.newWorld() -- size of meter
 local lines1 = {200,600, 400,400, 600,400}
 world:addLines(lines1)
 
-player ={x=300, y=10, w=10, h=10, vx=0, vy=0}
+player ={x=300, y=10, w=20, h=10, vx=0, vy=0}
 
 
 
@@ -40,27 +40,19 @@ end
 
 function love.draw()
 	for i, objLine in ipairs (world.objLines) do
-		local line = objLine.line
 		love.graphics.push()
 			love.graphics.translate(objLine.x, objLine.y)
 			if objLine.fine then 
 				love.graphics.setColor(0,1,0)
-			elseif objLine.rough then 
-				love.graphics.setColor(1,0,0)
+--			elseif objLine.rough then 
+--				love.graphics.setColor(1,0,0)
 			else
 				love.graphics.setColor(1,1,1)
 			end
-			love.graphics.line (line)
-			if objLine.values then
-				for i, v in ipairs (objLine.values) do
-					love.graphics.print (v, 0, 20*i-20)
-				end
-			end
+			love.graphics.line (objLine.line)
 		love.graphics.pop()
---		love.graphics.rectangle('line', line.x, line.y, line.w, line.h)
 	end
 	love.graphics.rectangle('line', player.x, player.y, player.w, player.h)
-	
 	love.graphics.print (player.vx ..' ' .. player.vy)
 end
 

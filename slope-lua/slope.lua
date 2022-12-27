@@ -2,20 +2,6 @@
 
 local slope = {}
 
-local function isIntersection (x1, y1, x2, y2, x3, y3, x4, y4)
--- line segments AB: x1, y1, x2, y2 and CD: x3, y3, x4, y4
-	local abx, aby = (x2-x1), (y2-y1) -- main vector ab
-	local acx, acy = (x3-x1), (y3-y1) -- vector ac
-	local adx, ady = (x4-x1), (y4-y1) -- vector ad
-	local u = (abx*acy - aby*acx)*(abx*ady - aby*adx)
-	if u > 0 then return false end
-	local bcx, bcy = (x3-x2), (y3-y2) -- vector bc 
-	local dcx, dcy = (x3-x4), (y3-y4) -- main vector dc (vector ac is above)
-	local v = (dcx*acy - dcy*acx)*(dcx*bcy - dcy*bcx)
-	if v > 0 then return false end
-	return true
-end
-
 local function getMovingBoundungBox (x, y, w, h, tx, ty)
 --	tx, ty - target position
 	local x1 = math.min (x, tx)
@@ -43,66 +29,81 @@ local function getLineBoundungBox (line)
 	return x1, y1, x2-x1, y2-y1 -- x, y, w, h
 end
 
+local function newObjLine (line)
+	local x1, y1, x2, y2 = line[1], line[2], line[3], line[4] -- two points of love line
+	local x, y = math.min (x1, x2), math.min (y1, y2)
+	local w, h = math.max (x1, x2) - x, math.max (y1, y2) - y
+	local objLine = {
+		line = {x1-x, y1-y, x2-x, y2-y},
+		x=x, y=y, w=w, h=h -- bounding box of the line's object
+	}
+	return objLine
+end
+
+local function worldAddLine (self, lineSegment)
+	local objLine = newObjLine (lineSegment)
+	table.insert (self.objLines, objLine)
+end
+
 local function worldAddLines (self, line)
 	for i = 1, #line-3, 2 do
 		local lineSegment = {line[i], line[i+1], line[i+2], line[i+3]}
-		local x, y, w, h = getLineBoundungBox (lineSegment)
-		local objLine = {
-			line = lineSegment,
-			x=x, y=y, w=w, h=h,
-			vx = 0, vy = 0,
-		}
-		table.insert (self.objLines, objLine)
+		worldAddLine (self, lineSegment)
 	end
 end
 
 
 local function isRoughCollision(a, b)
-  return a.x < b.x+b.w and a.y < b.y+b.h and 
-         b.x < a.x+a.w and b.y < a.y+a.h
+	return a.x < b.x+b.w and a.y < b.y+b.h and 
+				 b.x < a.x+a.w and b.y < a.y+a.h
 end
 
 local function psm (ax, ay, bx, by) -- pseudoScalarMutiplication
 	return ax*by-ay*bx
 end
 
-local function isFineCollision(ps, objLine) -- points
-  local line = objLine.line
+local function isFineCollision(obj, objLine)
+	local line = objLine.line
 	local x, y = objLine.x, objLine.y
+-- points of line:
 	local x1, y1 = x+line[1], y+line[2]
 	local x2, y2 = x+line[3], y+line[4]
-	
-	local v1 = psm (x2-x1, y2-y1, ps[1].x-x1, ps[1].y-y1)
-	local v2 = psm (x2-x1, y2-y1, ps[2].x-x1, ps[2].y-y1)
-	local v3 = psm (x2-x1, y2-y1, ps[3].x-x1, ps[3].y-y1)
-	local v4 = psm (x2-x1, y2-y1, ps[4].x-x1, ps[4].y-y1)
-	if math.min (v1, v2, v3, v4) > 0 then
+-- 4 vertices of rectangle:
+	local p1x, p1y = obj.x, obj.y
+	local p2x, p2y = obj.x+obj.w, obj.y
+	local p3x, p3y = obj.x+obj.w, obj.y+obj.h
+	local p4x, p4y = obj.x, obj.y+obj.h
+
+	local v1 = psm (x2-x1, y2-y1, p1x-x1, p1y-y1)
+	local v2 = psm (x2-x1, y2-y1, p2x-x1, p2y-y1)
+	local v3 = psm (x2-x1, y2-y1, p3x-x1, p3y-y1)
+	local v4 = psm (x2-x1, y2-y1, p4x-x1, p4y-y1)
+
+	if math.min (v1, v2, v3, v4) > 0 then -- all positive
 		-- no collision
-	elseif math.max (v1, v2, v3, v4) < 0 then
+	elseif math.max (v1, v2, v3, v4) < 0 then -- all negative
 		-- no collision
 	else
-		return true, v1, v2, v3, v4 -- collision
+		return true -- collision
 	end
 end
 
 local function worldMove (self, obj, tX, tY)
 	-- world, object, target position
 	-- 
-	print ('obj.x, obj.y, obj.w, obj.h, tX, tY', obj.x, obj.y, obj.w, obj.h, tX, tY)
+--	print ('obj.x, obj.y, obj.w, obj.h, tX, tY', obj.x, obj.y, obj.w, obj.h, tX, tY)
 	local ax, ay, aw, ah = getMovingBoundungBox (obj.x, obj.y, obj.w, obj.h, tX, tY)
-	print ('ax, ay, aw, ah', ax, ay, aw, ah)
+--	print ('ax, ay, aw, ah', ax, ay, aw, ah)
 	local movingObj = {x=ax, y=ay, w=aw, h=ah, dx=tX-obj.x, dy=tY-obj.y}
 	
-	local points = {{x=ax, y=ay}, {x=ax+aw, y=ay}, {x=ax+aw, y=ay+ah}, {x=ax, y=ay+ah}}
 	local cols = {} 
 	local len = 0
 	for i, objLine in ipairs (self.objLines) do
 		if isRoughCollision(obj, objLine) then
 			objLine.rough = true
-			local fineCol, v1, v2, v3, v4 = isFineCollision(points, objLine)
+			local fineCol = isFineCollision(obj, objLine)
 			if fineCol then
 				objLine.fine = true
-				objLine.values = {v1, v2, v3, v4}
 			else
 				objLine.fine = false
 			end
