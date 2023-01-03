@@ -10,10 +10,11 @@ local world = slope.newWorld() -- size of meter
 
 local lines1 = {200,600, 400,400, 600,400}
 world:addLines(lines1)
+local line2 = {100,100, 400,200}
+world:addLine(line2)
 
-player ={x=300, y=10, w=20, h=10, vx=0, vy=0}
 
-
+player ={x=300, y=10, w=20, h=30, vx=0, vy=0}
 
 function love.load()
 	
@@ -23,34 +24,35 @@ end
 function love.update(dt)
 --	player.vx = player.vx*0.99*dt
 --	player.vy = (player.vy + dt*world.meter)
---	local targetX = player.x + player.vx
---	local targetY = player.y + player.vy*dt
-	local targetX = love.mouse.getX()
-	local targetY = love.mouse.getY()
+--	local goalX = player.x + player.vx
+--	local goalY = player.y + player.vy*dt
+	local goalX = love.mouse.getX() - player.w
+	local goalY = love.mouse.getY() - player.h
 	
-	if not (player.x == targetX and player.y == targetY) then
-		local actualX, actualY, cols, len = world:move(player, targetX, targetY)
+	if not (player.x == goalX and player.y == goalY) then
+		local actualX, actualY, cols, len = world:move(player, goalX, goalY)
 
-
+		
 		player.x = actualX
 		player.y = actualY
+		player.collision = len > 0 and true or false
 	end
 end
 
 
 function love.draw()
+	love.graphics.setColor(1,1,1)
 	for i, objLine in ipairs (world.objLines) do
 		love.graphics.push()
 			love.graphics.translate(objLine.x, objLine.y)
-			if objLine.fine then 
-				love.graphics.setColor(0,1,0)
---			elseif objLine.rough then 
---				love.graphics.setColor(1,0,0)
-			else
-				love.graphics.setColor(1,1,1)
-			end
 			love.graphics.line (objLine.line)
 		love.graphics.pop()
+	end
+	
+	if player.collision then
+		love.graphics.setColor(1,0,0)
+	else
+		love.graphics.setColor(1,1,1)
 	end
 	love.graphics.rectangle('line', player.x, player.y, player.w, player.h)
 	love.graphics.print (player.vx ..' ' .. player.vy)

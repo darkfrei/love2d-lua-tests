@@ -2,33 +2,6 @@
 
 local slope = {}
 
-local function getMovingBoundungBox (x, y, w, h, tx, ty)
---	tx, ty - target position
-	local x1 = math.min (x, tx)
-	local y1 = math.min (y, ty)
-	local x2 = math.max (x, tx)
-	local y2 = math.max (y, ty)
-	return x1, y1, x2-x1+w, y2-y1+h
-end
-
-local function getLineBoundungBox (line)
-	local x1, y1 = line[1], line[2]
-	local x2, y2 = line[1], line[2]
-	for i = 3, #line-1, 2 do
-		local x = line [i]
-		local y = line [i+1]
-		if x1 > x then x1 = x end
-		if y1 > y then y1 = y end
-		if x2 < x then x2 = x end
-		if y2 < y then y2 = y end
-	end
-	for i = 1, #line-1, 2 do
-		line [i] = line [i] - x1
-		line [i+1] = line [i+1] - y1
-	end
-	return x1, y1, x2-x1, y2-y1 -- x, y, w, h
-end
-
 local function newObjLine (line)
 	local x1, y1, x2, y2 = line[1], line[2], line[3], line[4] -- two points of love line
 	local x, y = math.min (x1, x2), math.min (y1, y2)
@@ -88,31 +61,36 @@ local function isFineCollision(obj, objLine)
 	end
 end
 
-local function worldMove (self, obj, tX, tY)
-	-- world, object, target position
-	-- 
---	print ('obj.x, obj.y, obj.w, obj.h, tX, tY', obj.x, obj.y, obj.w, obj.h, tX, tY)
-	local ax, ay, aw, ah = getMovingBoundungBox (obj.x, obj.y, obj.w, obj.h, tX, tY)
---	print ('ax, ay, aw, ah', ax, ay, aw, ah)
-	local movingObj = {x=ax, y=ay, w=aw, h=ah, dx=tX-obj.x, dy=tY-obj.y}
-	
-	local cols = {} 
-	local len = 0
+
+local function worldCheck (self, item, goalX, goalY)
+	local x, y = math.min (item.x, goalX), math.min (item.y, goalY)
+	local w = item.w+math.max (item.x, goalX)-x
+	local h = item.h+math.max (item.y, goalY)-y
+	local cols = {}
 	for i, objLine in ipairs (self.objLines) do
-		if isRoughCollision(obj, objLine) then
-			objLine.rough = true
-			local fineCol = isFineCollision(obj, objLine)
-			if fineCol then
-				objLine.fine = true
-			else
-				objLine.fine = false
-			end
-		else
-			objLine.rough = false
-			objLine.fine = false
+		if isRoughCollision(item, objLine) and isFineCollision(item, objLine) then
+			-- collision
+			table.insert(cols, objLine)
 		end
 	end
-	return tX, tY
+	
+	local actualX, actualY = goalX, goalY
+	
+	return actualX, actualY, cols, #cols
+end
+
+local function worldUpdate (self, item, x2, y2, w2, h2)
+	local x1, y1, w1, h1 = item.x, item.y, item.w, item.h
+	w2,h2 = w2 or w1, h2 or h1
+	if x1 ~= x2 or y1 ~= y2 or w1 ~= w2 or h1 ~= h2 then
+		-- bump optimization here
+	end
+end
+
+local function worldMove (self, item, goalX, goalY)
+	local actualX, actualY, cols, len = self:check(item, goalX, goalY)
+	self:update(item, actualX, actualY)
+	return actualX, actualY, cols, len
 end
 
 function slope.newWorld ()
@@ -120,7 +98,10 @@ function slope.newWorld ()
 	world.meter = 100 -- pixels / units per meter
 	world.objLines = {}
 	world.addLines = worldAddLines
+	world.addLine = worldAddLine
+	world.check = worldCheck
 	world.move = worldMove
+	world.update = worldUpdate -- todo: add bump optimization
 	return world
 end
 
