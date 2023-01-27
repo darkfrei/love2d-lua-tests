@@ -1,4 +1,4 @@
--- License CC0 (Creative Commons license) (c) darkfrei, 2022
+-- License CC0 (Creative Commons license) (c) darkfrei, 2023
 
 
 -- just require it:
@@ -47,19 +47,38 @@ local function drawLines (ab,bc,cd,da, x,y, subtileSize)
 	end
 end
 
+local function boolsToNumber (a,b,c,d, ab,bc,cd,da)
+	local n = 0
+	if a then n = n + 1 end
+	if b then n = n + 2 end
+	if c then n = n + 2^2 end
+	if d then n = n + 2^3 end
+	
+	if ab then n = n + 2^4 end
+	if bc then n = n + 2^5 end
+	if cd then n = n + 2^6 end
+	if da then n = n + 2^7 end
+	
+	return n
+end
+
 -- main function:
 local function getCanvas()
 	local subtileSize = 4 -- pixels in tile
 	local dpiscale = 8 -- subpixels per pixel
-	local canvasWidth = 7*(subtileSize+1)+1
+	local canvasWidth = 3*(subtileSize+1)+1
 	local canvasHeight = 16*(subtileSize+1)+1
 	local canvas = love.graphics.newCanvas (canvasWidth, canvasHeight, {dpiscale = dpiscale})
+	
 	canvas:setFilter("linear", "nearest")
 	love.graphics.setLineStyle("rough")
 	love.graphics.setLineWidth(1)
 	love.graphics.setCanvas(canvas)
+	love.graphics.rectangle ("fill",0,0, canvasWidth, canvasHeight)
 	love.graphics.setPointSize (1)
 	local n = 0
+	
+	local variationMap = {}
 	for i = 0, 255 do
 		local a = not(i%2 == 0)
 		local b = not(math.floor(i/2)%2 == 0)
@@ -105,12 +124,16 @@ local function getCanvas()
 					break
 				end
 			end
-			if alltrue then
+			local name = boolsToNumber (a,b,c,d, ab,bc,cd,da)
+			if alltrue and not variationMap[name] then
+				-- drawing tiles with lines
 				drawLines (ab,bc,cd,da, x,y, subtileSize)
 				drawPoints (a,b,c,d, x,y, subtileSize)
 				n = n+1
+				variationMap[name] = true
 				break
 			elseif i < 16 then
+				-- drawing tiles without lines
 				drawPoints (a,b,c,d, x,y, subtileSize)
 				n = n+1
 				break

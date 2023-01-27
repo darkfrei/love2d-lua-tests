@@ -1,4 +1,4 @@
--- License CC0 (Creative Commons license) (c) darkfrei, 2022
+-- License CC0 (Creative Commons license) (c) darkfrei, 2023
 
 local getCanvas = require ('generate-subtiles')
 
