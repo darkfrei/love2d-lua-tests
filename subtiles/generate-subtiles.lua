@@ -64,10 +64,21 @@ end
 
 -- main function:
 local function getCanvas()
-	local subtileSize = 4 -- pixels in tile
-	local dpiscale = 8 -- subpixels per pixel
-	local canvasWidth = 3*(subtileSize+1)+1
-	local canvasHeight = 16*(subtileSize+1)+1
+	local nTiles = 47 -- constant
+	local inLines = true
+	
+	local nCols = 3
+	local nRows = math.ceil(nTiles/nCols)
+	
+	if inLines then
+		nCols = 16
+		nRows = math.ceil(nTiles/nCols)
+	end
+--	nCols, nRows
+	local subtileSize = 8 -- pixels in tile
+	local dpiscale = 1 -- subpixels per pixel; just for higher dpi
+	local canvasWidth = nCols*(subtileSize+1)+1
+	local canvasHeight = nRows*(subtileSize+1)+1
 	local canvas = love.graphics.newCanvas (canvasWidth, canvasHeight, {dpiscale = dpiscale})
 	
 	canvas:setFilter("linear", "nearest")
@@ -79,7 +90,14 @@ local function getCanvas()
 	local n = 0
 	
 	local variationMap = {}
-	for i = 0, 255 do
+	local variationsList = {
+		  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15,
+		 19, 23, 27, 31, 38, 39, 46, 47, 55, 63, 76, 77, 78, 79, 95, 110,
+		111,127,137,139,141,143,155,159,175,191,205,207,223,239,255
+		}
+--	for i = 0, 255 do
+	for _, i in ipairs (variationsList) do
+		print (i, #variationsList)
 		local a = not(i%2 == 0)
 		local b = not(math.floor(i/2)%2 == 0)
 		local c = not(math.floor(i/4)%2 == 0)
@@ -88,8 +106,16 @@ local function getCanvas()
 		local bc = not((math.floor(i/32)%2 == 0)) and b and c
 		local cd = not((math.floor(i/64)%2 == 0)) and c and d
 		local da = not((math.floor(i/128)%2 == 0)) and d and a
-		local x = 1.5 + math.floor ((n)/16)*(subtileSize+1)
-		local y = (n-16)%16*(subtileSize+1)+1.5
+		
+--		nCols, nRows
+
+		local x = 1.5 + math.floor (n/nRows)*(subtileSize+1)
+		local y = (n-nRows)%nRows*(subtileSize+1)+1.5
+		
+		if inLines then
+			x = (n-nCols)%nCols*(subtileSize+1)+1.5
+			y = 1.5 + math.floor (n/nCols)*(subtileSize+1)
+		end
 		
 		-- outline
 		love.graphics.setColor (1,0,1)
@@ -118,12 +144,12 @@ local function getCanvas()
 		
 		for j, variant in ipairs (variations) do
 			local alltrue = true
-			for k, bool in ipairs (variant) do
-				if not bool then
-					alltrue = false
-					break
-				end
-			end
+--			for k, bool in ipairs (variant) do
+--				if not bool then
+--					alltrue = false
+--					break
+--				end
+--			end
 			local name = boolsToNumber (a,b,c,d, ab,bc,cd,da)
 			if alltrue and not variationMap[name] then
 				-- drawing tiles with lines
@@ -131,6 +157,7 @@ local function getCanvas()
 				drawPoints (a,b,c,d, x,y, subtileSize)
 				n = n+1
 				variationMap[name] = true
+				print (a, b, c, d, ab, bc, cd, da)
 				break
 			elseif i < 16 then
 				-- drawing tiles without lines
@@ -140,6 +167,8 @@ local function getCanvas()
 			end
 		end
 	end
+	
+	-- disable canvas:
 	love.graphics.setCanvas()
 	return canvas
 end
