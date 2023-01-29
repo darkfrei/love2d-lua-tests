@@ -1,11 +1,11 @@
--- License CC0 (Creative Commons license) (c) darkfrei, 2022
+-- License CC0 (Creative Commons license) (c) darkfrei, 2023
 
+-- outside of love.load
+love.window.setMode(240, 320) -- QVGA, but vertical
+love.window.setMode(240, 320) -- double it!
+safeX, safeY, safeW, safeH = love.window.getSafeArea( )
 function love.load()
-	--love.window.setMode(1920, 1080, {resizable=true, borderless=false})
-	love.window.setMode(240, 320) -- QVGA, but vertical
-	love.window.setMode(240, 320) -- double it!
---	love.timer.sleep(1)
-	safeX, safeY, safeW, safeH = love.window.getSafeArea( )
+	
 end
 
 function love.draw()
