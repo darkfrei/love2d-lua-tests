@@ -3,13 +3,16 @@ d	text
 c	false
 a	true
 e	2	3	4	true	text
+also	list of values is nice
 1	1
 2	true
 3	false
 4	text
+5	long text with spaces
+6	list	with	tabs
 true	yes
 false	no
 
 --	comment example
 also comment while no tabs
-this file has priority while not saved
+this file has priority while not saved to the appdata

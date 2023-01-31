@@ -1,10 +1,10 @@
---	CC0 “No Rights Reserved” / darkfrei 2022
+--	CC0 “No Rights Reserved” / darkfrei 2023
 --	https://creativecommons.org/share-your-work/public-domain/cc0/
 --	load and save table separeted values;
 --	for LÖVE (Love2d), Lua
 
 --[[ it can save a table with one list layer as
-	{	-- table of values
+	NicsTable = {	-- table of values
 		b="yes",
 		d="text",
 		c=false,
@@ -57,19 +57,17 @@ function ST.load (filename)
 	for line in lines do -- row iterator
 		local list = getList (line)
 		if list[1] and list[1] == "--" then
-			-- exception
+			-- exception: commented
 		elseif #list < 2 then
-			-- exception
+			-- exception: no value
 		elseif #list == 2 then
 			tabl[list[1]] = list[2]
---			print (list[1], list[2])
 		elseif #list > 2 then
 			local list2 = {}
 			for i = 2, #list do
 				table.insert (list2, list[i])
 			end
 			tabl[list[1]] = list2
-			print (list[1], table.concat2 (list2, ', '))
 		end
 	end
 	return tabl
@@ -92,12 +90,21 @@ function ST.save (filename, tabl)
 	end
 end
 
+function ST.remove (filename)
+	love.filesystem.remove( filename .. '.tsv' )
+end
+
 function ST.print (index, strtabl, x, y)
-	local str = ""
+	if type (index) == "string" then
+		index = '"'..index..'"'
+	end
 	if type (strtabl) == "table" then
-		love.graphics.print (index..'	'..table.concat2(strtabl, ', '), x, y)
+		love.graphics.print (index..' = {'..table.concat2(strtabl, ', ')..'}', x, y)
+	elseif type (strtabl) == "string" then
+		love.graphics.print (tostring(index)..' = "'..tostring(strtabl)..'"', x, y)
 	else
-		love.graphics.print (tostring(index)..'	'..tostring(strtabl), x, y)
+		love.graphics.print (tostring(index)..' = '..tostring(strtabl), x, y)
+		
 	end
 end
 
