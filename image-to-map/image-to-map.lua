@@ -29,8 +29,9 @@ end
 
 local function createPalette (imageData, paletteHash, palette)
 	local width = imageData:getWidth()-1
-	-- read the whole line for all colors:
-	for x = 0, width do
+	-- read the first (0-th) for the palette:
+	-- (1-based as the palette list)
+	for x = 1, width do
 		-- [r g b a] as color [0..1]
 		local r, g, b, a = imageData:getPixel(x, 0)
 		-- [rb gb bb ab] as byte color [0..255]
@@ -118,11 +119,29 @@ local function imageToMap (filename, withPalette)
 		print (i, '#'.. hex(color[1]*255) .. hex(color[2]*255) .. hex(color[3]*255) .. hex(color[4]*255))
 	end
 	
+	local str = "local map = {\n"
 	print ('{ -- rows:'.. #map,'cols: ' .. #map[1])
+	str = str .. '-- rows:'.. #map .. '	cols: ' .. #map[1] .. '\n'
 	for y = 1, #map do
 		print ('	{'..table.concat (map[y], ', ') .. '},')
+		str = str .. '	{'..table.concat (map[y], ',') .. '},' .. '\n'
 	end
 	print ('}')
+	str = str .. '}	\n	return map'
+	
+	local pre, after = 'map-', '.lua'
+	local number = 1
+	while love.filesystem.getInfo( 'map-'.. number ..'.lua') do
+		number = number + 1
+	end
+
+	local success, message =love.filesystem.write('map-'.. number ..'.lua', str)
+	if success then 
+		print ('file created', 'map-'.. number ..'.lua')
+	else 
+		print ('file not created: '..message)
+	end
+	
 	return map, palette
 end
 
