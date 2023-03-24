@@ -1,4 +1,6 @@
 -- map tiles to rectangles
+-- license cc0, darkfrei 2023
+
 
 local function isRectangle (hashMap, x0, y0, w, h)
 	for y = y0, y0+h-1 do
