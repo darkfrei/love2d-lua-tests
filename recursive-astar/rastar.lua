@@ -9,25 +9,40 @@ local function isTileFree (grid, x, y)
 	return false
 end
 
+local listNeighbors4 = {
+	{ 0, -1},
+	{ 1,  0},
+	{ 0,  1},
+	{-1,  0},
+}
+
+local listNeighbors8 = {
+	{ 0, -1},
+	{ 1,  0},
+	{ 0,  1},
+	{-1,  0},
+	
+	{-1, -1},
+	{ 1, -1},
+	{ 1,  1},
+	{-1,  1},
+}
+
 local function getNeighbors(grid, current, goal)
 	local neighbors = {}
 	local x, y = current.x, current.y
-	for dy = -1, 1 do
-		for dx = -1, 1 do
-			if dx ~= 0 or dy ~= 0 then
-				local nx, ny = x + dx, y + dy
-				if isTileFree (grid, x, y) then
-					local neighbor = {x=nx, y=ny} -- new node
-					if dx == 0 or dy == 0 then
-						neighbor.g = current.g + 1
-					else
-						neighbor.g = current.g + 1.41
-					end
-					neighbor.h = math.sqrt((nx - goal.x) ^ 2 + (ny - goal.y) ^ 2)
-					neighbor.f = neighbor.g + neighbor.h
-					table.insert(neighbors, neighbor)
-				end
+	for iDirection, d in ipairs (listNeighbors8) do
+		local nx, ny = x + d[1], y + d[2]
+		if isTileFree (grid, x, y) then
+			local neighbor = {x=nx, y=ny} -- new node
+			if dx == 0 or dy == 0 then
+				neighbor.g = current.g + 1
+			else
+				neighbor.g = current.g + 1.41
 			end
+			neighbor.h = math.sqrt((nx - goal.x) ^ 2 + (ny - goal.y) ^ 2)
+			neighbor.f = neighbor.g + neighbor.h
+			table.insert(neighbors, neighbor)
 		end
 	end
 	return neighbors
