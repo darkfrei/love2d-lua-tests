@@ -3,6 +3,21 @@
 point = {x=200, y=200, tx=100, ty=100, speed=200}
 segment = {200, 200, 400, 100}
 
+local function sticking (px, py, x1, y1, x2, y2, t)
+	local segmentDX = x2 - x1
+	local segmentDY = y2 - y1
+	local dx = (x1 + segmentDX * t) - px
+	local dy = (y1 + segmentDY * t) - py
+	return dx, dy
+end
+
+local function sliding (segmentDX, segmentDY, dx, dy)
+	local dotProduct = dx * segmentDX + dy * segmentDY
+	dx  = segmentDX * dotProduct
+	dy  = segmentDY * dotProduct
+	return dx, dy
+end
+
 local function handlePointCollision(px, py, x1, y1, x2, y2, dx, dy)
   local segmentDX = x2 - x1
   local segmentDY = y2 - y1
@@ -20,12 +35,15 @@ local function handlePointCollision(px, py, x1, y1, x2, y2, dx, dy)
 	local segmentDot = (px - x1) * (x2 - x1) + (py - y1) * (y2 - y1)
 	local t = segmentDot / (segmentLength * segmentLength)
 
+	
 	if t >= 0 and t <= 1 then
 		-- collision with segment
-		dx = (x1 + segmentLength*segmentDX * t)-px
-		dy = (y1 + segmentLength*segmentDY * t)-py
-		love.window.setTitle (dx..' '..dy)
-		return dx, dy
+		local isSliding = true
+		if isSliding then
+			return sliding (segmentDX, segmentDY, dx, dy)
+		else
+			return sticking (px, py, x1, y1, x2, y2, t)
+		end
 	else
 		-- no collision with segment
 		return dx, dy
