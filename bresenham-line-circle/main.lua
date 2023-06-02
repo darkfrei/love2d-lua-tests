@@ -1,3 +1,6 @@
+-- bresenham-line-circle
+-- cc0, darkfrei 2023
+
 local function bresenhamLine(x1, y1, x2, y2, step)
 	step = step or 1
 	x1 = math.floor (x1/step+0.5)*step
@@ -90,12 +93,14 @@ end
 
 function love.load()
 	scale = 1
-	step = 8
+	step = 16
 	startPoint = {400/scale, 300/scale}
-	linePoints = bresenhamLine(startPoint[1], startPoint[2], 400+2*step, 300, step)
-	circlePoints = bresenhamCircle(startPoint[1], startPoint[2], 400+100, 300, step)
+	startPoint[1] = math.floor (startPoint[1]/step)*step
+	startPoint[2] = math.floor (startPoint[2]/step)*step
+	linePoints = bresenhamLine(startPoint[1], startPoint[2], startPoint[1]+2*step, startPoint[2], step)
+	circlePoints = bresenhamCircle(startPoint[1], startPoint[2], startPoint[1]+100, startPoint[2], step)
 	
-	love.graphics.setPointSize (step/2)
+	love.graphics.setPointSize (step/4)
 end
 
 
@@ -103,15 +108,16 @@ end
 function love.update()
 	local t = love.timer.getTime ()
 	local p = 8
-	local dx = 2*math.abs (t/p - math.floor (t/p + 1/2)) 
+	dx = 2*math.abs (t/p - math.floor (t/p + 1/2)) 
 	
-	circlePoints = bresenhamCircle(startPoint[1], startPoint[2], 400+300*dx, 300, step)
+	circlePoints = bresenhamCircle(startPoint[1], startPoint[2], startPoint[1]+startPoint[2]*dx, startPoint[2], step)
 end
 
 function love.draw()
 	love.graphics.scale (scale)
 	love.graphics.points(linePoints)
 	love.graphics.points(circlePoints)
+	love.graphics.circle ('line', startPoint[1], startPoint[2], startPoint[2]*dx)
 end
 
 function love.mousemoved (x, y)
