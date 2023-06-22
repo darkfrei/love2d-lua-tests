@@ -56,7 +56,7 @@ local function createTpSet4Procedural()
 -- edges
 	local amount = #vertices
 
-	for iCorner = 1, 1 do
+	for iCorner = 1, 4 do
 --	local iCorner = 1
 		local v0 = edges[(iCorner+2)%4+1]
 		print ('corner', iCorner, 'edge', v0)
