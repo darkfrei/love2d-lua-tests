@@ -244,7 +244,7 @@ local function createStretchConstraints (vertices)
 			length = math.sqrt(dx*dx + dy*dy),
 			lambda = 0,
 			damper = 0,
-			spring = 0
+			spring = 1
 		}
 		table.insert (stretchConstraints, stretch)
 		px1 = px2
@@ -393,13 +393,12 @@ function b2Rope:setTuning()
 		local stretch = self.stretchConstraints[iStretch]
 		local invMass1 = self.invMasses[iStretch]
 		local invMass2 = self.invMasses[iStretch+1]
-		if invMass1 * invMass2 ~= 0 then
-			local sum = 1/invMass1 + 1/invMass2
-			if sum ~= 0 then
-				stretch.spring = stretchOmega * stretchOmega / sum
-				stretch.damper = 2 * stretchDamping * stretchOmega / sum
-			end
+		local sum = invMass1 + invMass2
+		if sum ~= 0 then
+			stretch.spring = stretchOmega * stretchOmega / sum
+			stretch.damper = 2 * stretchDamping * stretchOmega / sum
 		end
+		print ((i+1)/2, 'stretch.spring', stretch.spring)
 	end
 	
 	------------ bend --------------
@@ -423,13 +422,15 @@ function b2Rope:setTuning()
 		if L1sqr * L2sqr ~= 0 then
 			-- Flatten the triangle formed by the two edges
 			local J2 = 1 / L1 + 1 / L2
-			local sum = invMass1/ (L1sqr) + J2*J2*invMass2 + invMass3/ (L2sqr)
+			local sum = invMass1/ L1sqr + J2*J2*invMass2 + invMass3/L2sqr
 			if sum ~= 0 then
-				local mass = 1 / sum
-				bend.spring = bendOmega * bendOmega * mass
-				bend.damper = 2 * bendDamping * bendOmega * mass
+--				local mass = 1 / sum
+				bend.spring = bendOmega * bendOmega / sum
+				bend.damper = 2 * bendDamping * bendOmega / sum
 			end
 		end
+		
+		print ((i+1)/2, 'bend.spring', bend.spring)
 	end
 
 	self.stretchSolver = b2Rope.stretchingSolvers[tuning.stretchingModel]
@@ -443,13 +444,7 @@ end
 -----------------------------------------
 
 function b2Rope:step(dt, iterations, x, y)
-	if dt == 0 then
-		return
-	elseif dt > 0.05 then -- 20 fps
-		local iterations2 = math.ceil(dt / 0.05)
-		dt = dt/iterations2
-		iterations = math.max (iterations, iterations2)
-	end
+	
 
 	local tuning = self.tuning
 	local bendingModel = tuning.bendingModel
@@ -538,7 +533,15 @@ end
 function b2Rope:update(dt, x, y)
 	x = x or self.x
 	y = y or self.y
-	self:step(dt, 1, x, y)
+	
+	local iterations = 1
+	if dt == 0 then
+		return
+	elseif dt > 0.05 then -- 20 fps
+		iterations = math.ceil(dt / 0.05)
+		dt = dt/iterations
+	end
+	self:step(dt, iterations, x, y)
 end
 
 -----------------------------------------
@@ -583,11 +586,14 @@ function b2Rope:solveStretch_PBD()
 	local stiffness = self.tuning.stretchStiffness
 
 	for i = 1, #self.stretchConstraints do
+		-- Retrieve the stretch constraint
 		local stretch = self.stretchConstraints[i]
 
+		-- Retrieve the nodes involved in the constraint
 		local node1 = self.nodes[i]
 		local node2 = self.nodes[i+1]
 
+		-- Retrieve the current positions of the nodes
 		local p1X = node1.pX
 		local p1Y = node1.pY
 		local p2X = node2.pX
@@ -599,28 +605,29 @@ function b2Rope:solveStretch_PBD()
 		local L = math.sqrt(dX * dX + dY * dY)
 
 		-- Calculate desired change in length and apply stiffness
-		if L > 0 then
---			print ('L:'..L)
+--		print (i, 'Stretch_PBD', 'L', L)
+		if L ~= 0 then
 			local dL = stiffness * (stretch.length - L) / L
---			print ('L:'..L, 'dL:'..dL)
+--			print (i, 'Stretch_PBD', 'dL', dL)
 			dX = dL * dX
 			dY = dL * dY
---			print ('dX:'..dX, 'dY:'..dY)
 
 	-- Calculate inverse mass sum
-			local sum = node1.invMass + node2.invMass
+			local invMass1 = self.invMasses[i]
+			local invMass2 = self.invMasses[i+1]
+			local sum = invMass1 + invMass2
 
 	-- Check if the sum is non-zero to avoid division by zero
+--			print (i, 'Stretch_PBD', 'sum', sum)
 			if sum ~= 0 then 
-				local s1 = node1.invMass / sum
-				local s2 = node2.invMass / sum
+				invMass1 = invMass1 / sum
+				invMass2 = invMass2 / sum
 
 				-- Update node positions based on stiffness and inverse mass ratios
---				print ('dx1:'.. dX*s1, 'dy1:'.. dY*s1, 'dx2:'.. dX*s2, 'dy2:'.. dY*s2)
-				node1.pX = p1X - dX*s1
-				node1.pY = p1Y - dY*s1
-				node2.pX = p2X + dX*s2
-				node2.pY = p2Y + dY*s2
+				node1.pX = p1X - dX*invMass1
+				node1.pY = p1Y - dY*invMass1
+				node2.pX = p2X + dX*invMass2
+				node2.pY = p2Y + dY*invMass2
 			end
 		end
 	end
@@ -629,29 +636,39 @@ end
 function b2Rope:solveStretch_XPBD(dt)
 	-- Position-Based Dynamics with Extended Position Correction
 	assert(dt > 0)
+--	print ('dt', dt)
 
-	for i = 1, self.stretchCount do
+		for i = 1, #self.stretchConstraints do
 		-- Retrieve the stretch constraint
 		local stretch = self.stretchConstraints[i]
 
 		-- Retrieve the nodes involved in the constraint
-		local node1 = self.nodes[stretch.i1]
-		local node2 = self.nodes[stretch.i2]
+		local node1 = self.nodes[i]
+		local node2 = self.nodes[i+1]
+
+		-- Retrieve the current positions of the nodes
+		local p1X = node1.pX
+		local p1Y = node1.pY
+		local p2X = node2.pX
+		local p2Y = node2.pY
 
 		-- Calculate the total mass of the nodes
-		local sum = node1.invMass + node2.invMass
+			-- Calculate inverse mass sum
+		local invMass1 = self.invMasses[i]
+		local invMass2 = self.invMasses[i+1]
+--		print ('invMass1', invMass1, 'invMass2', invMass2)
+			
+		local sum = invMass1 + invMass2
+		
 		if sum ~= 0 then
-			-- Retrieve the current positions of the nodes
-			local p1X = node1.pX
-			local p1Y = node1.pY
-			local p2X = node2.pX
-			local p2Y = node2.pY
+		
+--			print (i, 'p1X', p1X)
 
 			-- Calculate the position differences from the original positions
-			local dp1X = p1X - node1.pX0
-			local dp1Y = p1Y - node1.pY0
-			local dp2X = p2X - node2.pX0
-			local dp2Y = p2Y - node2.pY0 
+			local dp1X = p1X - node1.p0x
+			local dp1Y = p1Y - node1.p0y
+			local dp2X = p2X - node2.p0x
+			local dp2Y = p2Y - node2.p0y 
 
 			-- Calculate the direction vector between the nodes
 			local uX = p2X - p1X
@@ -660,42 +677,59 @@ function b2Rope:solveStretch_XPBD(dt)
 			-- Calculate the current distance between the nodes
 			local L = math.sqrt(uX * uX + uY * uY)
 
-			-- Calculate the Jacobian vectors
-			local J1X = -uX / L
-			local J1Y = -uY / L
-			local J2X = uX / L
-			local J2Y = uY / L
+			if L ~= 0 then
+				-- Calculate the Jacobian vectors
+				local J1X = -uX / L
+				local J1Y = -uY / L
+				local J2X = uX / L
+				local J2Y = uY / L
 
-			-- Calculate the stiffness coefficient
-			local alpha = 1 / (stretch.spring * dt * dt)
-			-- Calculate the damping coefficient
-			local beta = dt * dt * stretch.damper
-			-- Calculate the correction coefficient
-			local sigma = alpha * beta / dt
+				-- Calculate the stiffness coefficient
+				local alpha = 1 / (stretch.spring * dt * dt)
+				
+				-- Calculate the damping coefficient
+				local beta = dt * dt * stretch.damper
+				
+				-- Calculate the correction coefficient
+				local sigma = alpha * beta / dt
 
-			-- Calculate the position error
-			local C = L - stretch.L
+				-- Calculate the position error
+				local C = L - stretch.length
 
-			-- Calculate the velocity error
-			local Cdot = J1X * dp1X + J1Y * dp1Y + J2X * dp2X + J2Y * dp2Y
+				-- Calculate the velocity error
+				local Cdot = J1X * dp1X + J1Y * dp1Y + J2X * dp2X + J2Y * dp2Y
 
-			-- Calculate the impulse magnitude
-			local B = C + alpha * stretch.lambda + sigma * Cdot
+				-- Calculate the impulse magnitude
+				local B = C + alpha * stretch.lambda + sigma * Cdot
 
-			-- Calculate the denominator term
-			local sum2 = (1 + sigma) * sum + alpha
+				-- Calculate the denominator term
+				local sum2 = (1 + sigma) * sum + alpha
+	--			print ('sum2', sum2)
+				if sum2 ~= 0 then
+					-- Calculate the impulse
+--					print ('B', B, 'sum', sum)
+					local impulse = B / sum2 -- It may be negative
 
-			-- Calculate the impulse
-			local impulse = B / sum2 -- It may be negative
+					-- Update the positions of the nodes
+--					print ('p1X', p1X, 'invMass1', invMass1, 'impulse', 'J1X', J1X)
+--					print ('p2X', p2X, 'invMass2', invMass2, 'impulse', impulse, 'J2X', J2X)
+--					print ('p2Y', p2Y, 'invMass2', invMass2, 'impulse', impulse, 'J2Y', J2Y)
+					
+					node1.pX = p1X - invMass1 * impulse * J1X
+					node1.pY = p1Y - invMass1 * impulse * J1Y
+					
+					local pX = (p2X - invMass2 * impulse * J2X)
+					local pY = (p2Y - invMass2 * impulse * J2Y)
+					
+					node2.pX = (p2X - invMass2 * impulse * J2X)
+					node2.pY = (p2Y - invMass2 * impulse * J2Y)
+					
+--					print ('node2', pX, pY)
 
-			-- Update the positions of the nodes
-			node1.pX = p1X - node1.invMass * impulse * J1X
-			node1.pY = p1Y - node1.invMass * impulse * J1Y
-			node2.pX = p2X - node2.invMass * impulse * J2X
-			node2.pY = p2Y - node2.invMass * impulse * J2Y
-
-			-- Update the accumulated lambda
-			stretch.lambda = stretch.lambda + impulse
+					-- Update the accumulated lambda
+					stretch.lambda = stretch.lambda + impulse
+				end
+			end
 		end
 	end
 end

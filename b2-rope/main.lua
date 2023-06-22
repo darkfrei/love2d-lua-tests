@@ -25,20 +25,22 @@ local gravity = {x=0, y=9.81*10}
 
 local tuning = {
 	stretchingModel = "pbd",
+--	stretchingModel = "xpbd",
 	
-	damping = 0.2,
+	damping = 0.01,
 	
 	stretchStiffness = 0.85,
 	stretchDamping = 0.5,
-	stretchHertz = 1,
+	stretchHertz = 60,
 	
 	
 --	bendingModel = "springAngle",
 --	bendingModel = "pbdAngle",
 	bendingModel = "xpbdAngle",
 	bendStiffness = 0.1,
-	bendHertz = 1,
+	
 	bendDamping = 0.2,
+	bendHertz = 600,
 	
 	isometric = false, 
 	fixedEffectiveMass = true,
