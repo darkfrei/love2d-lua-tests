@@ -2,11 +2,23 @@
 -- v. 2023-11-09 1
 -- (MIT license)
 
--- prepare metatable
+-- myButtons.lua
 local myButtons = {}
-myButtons.__index = myButtons
 
-myButtons.buttons = {}
+myButtons.buttons = {} -- default button set
+myButtons.buttonSets = {myButtons.buttons}
+
+function myButtons:newButtonsSet ()
+	local buttonSet = {}
+	myButtons.buttons = buttonSet
+	table.insert (myButtons.buttonSets, buttonSet)
+	return buttonSet
+end
+
+function myButtons:setButtonsSet (buttonSet)
+	myButtons.buttons = buttonSet
+	return buttonSet
+end
 
 function myButtons:new (data)
 	local button = {}
@@ -16,7 +28,6 @@ function myButtons:new (data)
 	if not (button.enabled == false) then
 		button.enabled = true
 	end
-	setmetatable(button, myButtons)
 	if button.onButtonNotHovered then
 		button:onButtonNotHovered ()
 	end
@@ -81,6 +92,8 @@ function myButtons.draw ()
 	for i, button in ipairs(myButtons.buttons) do
 		if button.enabled and button.drawButton then
 			button:drawButton ()
+		elseif button.drawDisabledButton then
+			button:drawDisabledButton ()
 		end
 	end
 end

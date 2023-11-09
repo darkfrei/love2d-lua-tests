@@ -23,8 +23,8 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
 THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 --]]
 
-myButtons = require ('myButtons')
-
+-- main.lua
+local myButtons = require ('myButtons')
 
 function love.load()
 	local color = {1,1,1}
@@ -45,13 +45,13 @@ function love.load()
 		else
 			button.color = {1,0,0}
 		end
+		myButtons.buttons[2].enabled = button.toggled
 	end
 
 	local function drawButton (button)
 		love.graphics.setColor (button.color)
 		love.graphics.setLineWidth (button.lineWidth)
 		love.graphics.rectangle ('line', button.x, button.y, button.w, button.h)
-
 		if button.textColor  then
 			love.graphics.setColor (button.textColor)
 		end
@@ -60,16 +60,24 @@ function love.load()
 		end
 	end
 
+	local function drawDisabledButton (button)
+		love.graphics.setColor ({0.5,0.5,0.5})
+		love.graphics.setLineWidth (button.lineWidth)
+		love.graphics.rectangle ('line', button.x, button.y, button.w, button.h)
+		if button.textColor  then
+			love.graphics.setColor (button.textColor)
+		end
+		if button.text then
+			love.graphics.print (button.text, button.x, button.y)
+		end
+	end
 
 	local function drawButton2 (button)
 		love.graphics.setColor (1,1,1)
-
 		love.graphics.draw (button.image, button.x, button.y)
-
 		if button.hovered then
 			love.graphics.rectangle ('line', button.x, button.y, button.w, button.h)
 		end
-
 		if button.text then
 			love.graphics.print (button.text, button.x, button.y)
 		end
@@ -89,26 +97,27 @@ function love.load()
 		text = "First",
 		textColor = {1,1,1},
 	}
-	
+
 	myButtons:new {x=200, y=10, w=100, h=100, color=color, 
 		drawButton=drawButton, 
 		onButtonHovered=onButtonHovered, 
 		onButtonNotHovered=onButtonNotHovered,
 		onToggle = onToggle,
-		text = "Second"}
+		text = "Second",
+		enabled = false,
+		drawDisabledButton = drawDisabledButton,
+	}
 
 	myButtons:new {
-		x=350, y=10, 
-		w=100, h=100, 
+		x=350, y=10, w=100, h=100, 
 		drawButton=drawButton2,
 		image=image, 
 		onButtonHovered = onButtonHovered,
 		onButtonNotHovered=onButtonNotHovered,
 		text = "Third"}
-	
+
 	myButtons:new {
-		x=500, y=10, 
-		w=100, h=100,
+		x=500, y=10, w=100, h=100,
 		color={0,1,1},
 		drawButton=drawButton,
 		onButtonHovered = onButtonHovered,
@@ -116,14 +125,12 @@ function love.load()
 		onButtonPressed = love.event.quit,
 		text = "Exit",
 		textColor = {1,1,1},
-		}
+	}
 end
-
 
 function love.update(dt)
 	myButtons.update (dt)
 end
-
 
 function love.draw()
 	myButtons.draw ()
