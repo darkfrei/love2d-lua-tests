@@ -29,13 +29,15 @@ myButtons = require ('myButtons')
 function love.load()
 	local color = {1,1,1}
 	local function onButtonHovered (button)
+		button.hovered = true
 		button.lineWidth = 4
 	end
-	
+
 	local function onButtonNotHovered (button)
+		button.hovered = false
 		button.lineWidth = 2
 	end
-	
+
 	local function onToggle (button)
 		button.toggled = not button.toggled
 		if button.toggled then
@@ -44,12 +46,12 @@ function love.load()
 			button.color = {1,0,0}
 		end
 	end
-	
+
 	local function drawButton (button)
 		love.graphics.setColor (button.color)
 		love.graphics.setLineWidth (button.lineWidth)
 		love.graphics.rectangle ('line', button.x, button.y, button.w, button.h)
-		
+
 		if button.textColor  then
 			love.graphics.setColor (button.textColor)
 		end
@@ -57,21 +59,64 @@ function love.load()
 			love.graphics.print (button.text, button.x, button.y)
 		end
 	end
-	
-	myButtons:new {x=10, y=10, w=100, h=100, color=color, 
+
+
+	local function drawButton2 (button)
+		love.graphics.setColor (1,1,1)
+
+		love.graphics.draw (button.image, button.x, button.y)
+
+		if button.hovered then
+			love.graphics.rectangle ('line', button.x, button.y, button.w, button.h)
+		end
+
+		if button.text then
+			love.graphics.print (button.text, button.x, button.y)
+		end
+	end
+
+	local image = love.graphics.newCanvas (100, 100)
+	love.graphics.setCanvas (image)
+	love.graphics.setLineStyle ('rough')
+	love.graphics.line (10,20, 90,20, 55,90)
+	love.graphics.setCanvas ()
+
+	myButtons:new {x=50, y=10, w=100, h=100, color=color, 
 		drawButton=drawButton, 
 		onButtonHovered=onButtonHovered, 
 		onButtonNotHovered=onButtonNotHovered,
 		onToggle = onToggle,
 		text = "First",
 		textColor = {1,1,1},
-		}
-	myButtons:new {x=150, y=10, w=100, h=100, color=color, 
+	}
+	
+	myButtons:new {x=200, y=10, w=100, h=100, color=color, 
 		drawButton=drawButton, 
 		onButtonHovered=onButtonHovered, 
 		onButtonNotHovered=onButtonNotHovered,
 		onToggle = onToggle,
 		text = "Second"}
+
+	myButtons:new {
+		x=350, y=10, 
+		w=100, h=100, 
+		drawButton=drawButton2,
+		image=image, 
+		onButtonHovered = onButtonHovered,
+		onButtonNotHovered=onButtonNotHovered,
+		text = "Third"}
+	
+	myButtons:new {
+		x=500, y=10, 
+		w=100, h=100,
+		color={0,1,1},
+		drawButton=drawButton,
+		onButtonHovered = onButtonHovered,
+		onButtonNotHovered=onButtonNotHovered,
+		onButtonPressed = love.event.quit,
+		text = "Exit",
+		textColor = {1,1,1},
+		}
 end
 
 
