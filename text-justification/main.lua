@@ -2,7 +2,7 @@ blackString = [[I'm trying to implement the effect you see in many games where t
 
 The only workaround I can think of is to print all the text in one go, properly justified, but have it start out covered by black rectangles over each line, then shrink the rectangles a character at a time until all the text is revealed. This should work, but it seems a bit convoluted and might cause problems later down the line if, say, I want a semi-transparent textbox.]]
 
---love.graphics.setDefaultFilter( "nearest", "nearest")
+love.graphics.setDefaultFilter( "nearest", "nearest")
 
 
 local font = love.graphics.getFont ()
