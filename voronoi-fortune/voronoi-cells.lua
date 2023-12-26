@@ -23,6 +23,7 @@ end
 local function linkNodes(...)
 	local nodes = { ... }
 	for i = 1, #nodes - 1 do
+		print ('link node', nodes[i].id, 'to', nodes[i+1].id)
 		nodes[i].next = nodes[i + 1]
 		nodes[i + 1].prev = nodes[i]
 	end
@@ -120,6 +121,7 @@ local function specialCaseNode2 (node3, node4, dirY)
 	local x1, x2 = getFocusParabolaRoots (focusX, focusY, dirY)
 	node3.x = x1
 	node3.point.x = x1
+	return x1, x2
 end
 
 local function specialCaseNode4 (node3, node2, dirY)
@@ -130,6 +132,7 @@ local function specialCaseNode4 (node3, node2, dirY)
 	local x1, x2 = getFocusParabolaRoots (focusX, focusY, dirY)
 	node3.x = x2
 	node3.point.x = x2
+	return x1, x2
 end
 
 local function updatePoints(beachline, dirY)
@@ -143,10 +146,13 @@ local function updatePoints(beachline, dirY)
 	while node4 do
 		if node2.placeholder and node4.placeholder then
 			-- Case: Placeholder followed by Placeholder (Ignore)
+			print ('placeholder to placeholder, impossible')
 		elseif node2.placeholder then
-			specialCaseNode2 (node3, node4, dirY)
+			local x1, x2 = specialCaseNode2 (node3, node4, dirY)
+			print ('placeholder case node2', x1, x2)
 		elseif node4.placeholder then
-			specialCaseNode4 (node3, node2, dirY)
+			local x1, x2 = specialCaseNode4 (node3, node2, dirY)
+			print ('placeholder case node4', x1, x2)
 		else
 			-- Case: Arc followed by Arc
 			-- main point event
@@ -171,33 +177,39 @@ local function updatePoints(beachline, dirY)
 --	print ('updated points:', n)
 end
 
-local function findArcs(beachline, siteX)
+local function findArc (beachline, siteX)
+
 	local currentPoint = beachline.headPointNode
 	local currentArc = currentPoint.next
-	local nextPoint = currentArc.nextPoint
+	local nextPoint = currentArc.next
+
 	while currentArc do
 		print ('currentArc id', currentArc.id)
-		nextPoint = currentArc.nextPoint
-		if nextPoint and siteX == nextPoint.x then
-			local nextArc = nextPoint.next
-			if nextArc then
-				-- special case: 
-				-- add point to both cells,
-				-- create two new parabolas
-				return nil, nextPoint
+		nextPoint = currentArc.next
+--		print (nextPoint.point.x)
+		if nextPoint then
+			local x = nextPoint.point.x
+			print ('siteX', siteX, 'x', x)
+			if siteX == nextPoint.point.x then
+				local nextArc = nextPoint.next
+				if nextArc then
+					-- special case: 
+					-- add point to both cells,
+					-- create two new parabolas
+					return nil, nextPoint
+				end
+			elseif siteX < nextPoint.x then
+				-- break current arc
+				print ('case 2, arc:', currentArc)
+				return currentArc, nil
 			end
-		elseif nextPoint and siteX < nextPoint.x then
-			-- break current arc
-			return currentArc, true
 		end
-
 		currentPoint = nextPoint
 		currentArc = beachline.next
-
 	end
 
 	-- out of border
-	return currentArc, true
+	return currentArc, nil
 end
 
 
@@ -236,11 +248,21 @@ local function insertArc (beachline, arc, cell, siteX, siteY, arcY)
 	print ('arc.cell', arc.cell)
 	local node2, node6
 
+	print ('break arc id', arc.id)
+
+	-- insert vertex point to cell.vertexPoints
+	table.insert (cell.vertexPoints, newpoint1)
+	table.insert (cell.vertexPoints, newpoint2)
+
 	if arc.cell then
 		node2 = createNode('cell', arc.cell)
 		node6 = createNode('cell', arc.cell)
-		
+
+		-- insert vertex point to cell.vertexPoints
+		table.insert (arc.cell.vertexPoints, newpoint1)
+		table.insert (arc.cell.vertexPoints, newpoint2)
 	else
+		print ('arc id', arc.id, 'was placeholder')
 		node2 = createNode('placeholder', true)
 		node6 = createNode('placeholder', true)
 	end
@@ -254,6 +276,9 @@ local function insertArc (beachline, arc, cell, siteX, siteY, arcY)
 
 	arc.cell = nil
 	arc.valid = false
+
+	print ('created point, arc, point:', node3.id, node4.id, node5.id)
+
 end
 
 local function evaluateParabola(fx, fy, x, dirY)
@@ -277,6 +302,8 @@ local function findCircleCenter (x1, y1, x2, y2, x3, y3)
 end
 
 local function checkForCircleEvents(beachline, arc, eventQueue)
+	print (' ------- checkForCircleEvents ------- ')
+	print ('arc id', arc.id)
 	local leftArc, rightArc = getNeighborArcs(arc)
 
 	if leftArc and rightArc then
@@ -287,13 +314,17 @@ local function checkForCircleEvents(beachline, arc, eventQueue)
 		local x2, y2 = c2.siteX, c2.siteY
 		local x3, y3 = c3.siteX, c3.siteY
 		local x, y, r = findCircleCenter(x1, y1, x2, y2, x3, y3)
-			local sortY = y + r
-			local circleEvent = {
-				circle = true,
-				arc = arc,
-				sortY = y+r,
-			}
-			table.insert(eventQueue, circleEvent)
+
+		local sortY = y + r
+		local circleEvent = createCircleEvent(arc, x, y, sortY)
+		print ('added circle event:', sortY)
+		table.insert(eventQueue, circleEvent)
+	elseif leftArc then
+		print ("no rightArc")
+	elseif rightArc then
+		print ("no leftArc")
+	else
+		print ("no circle arc")
 	end
 end
 
@@ -305,27 +336,28 @@ local function processPointEvent(event, beachline, eventQueue)
 
 	printBeachlineLength (beachline)
 
-	local arc, point = findArcs (beachline, siteX)
+	local arc, point = findArc (beachline, siteX)
+	print ('arc, point', arc, point)
 
 	if arc then
 		-- Insert new arc into the beachline
 		local arcY = 0
-		if not arc.placeholder then
+		if arc.placeholder then
+			print ('arc is placeholder')
+		else
+			print ('not placeholder')
 			arcY = evaluateParabola(arc.cell.siteX, arc.cell.siteY, siteX, siteY)
 		end
 
-		-- beachline, arc, cell, siteX, siteY, arcY
+
 		insertArc(beachline, arc, cell, siteX, siteY, arcY)
 
 		checkForCircleEvents(beachline, arc, eventQueue)
-	elseif point then
-		-- if x of vertex == x of point event
-		-- remove old point
-		-- 
-	end
 
-	-- Check for circle events and add them to the event queue
---	checkForCircleEvents(newArc, beachline, eventQueue)
+	elseif point then
+		-- special case for vertical alligned site and vertex point
+		-- insert new arc to two arcs, not one
+	end	
 end
 
 
@@ -343,8 +375,8 @@ local function voronoiMainLoop (eventQueue, beachline)
 			updatePoints(beachline, dirY)
 			-- Process site event
 			processPointEvent(event, beachline, eventQueue)
-		elseif event.circle
-
+		elseif event.circle then
+			print (' -------- circle event')
 			-- Process circle event
 			processCircleEvent(event, beachline)
 		end

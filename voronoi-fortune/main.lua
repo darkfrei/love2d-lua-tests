@@ -33,9 +33,17 @@ local function drawCell (cell)
 	local polygon = cell.polygon
 	love.graphics.setColor (0,0,0)
 	love.graphics.circle ('line', cell.siteX-0.5, cell.siteY-0.5, 4)
+	
+	
 --	love.graphics.polygon ('fill', polygon)
 --	love.graphics.setColor (1,1,1)
 --	love.graphics.polygon ('line', polygon)
+
+	-- draw vertex points
+	love.graphics.setColor (1,1,1)
+	for i, vertexPoint in ipairs (cell.vertexPoints) do
+		love.graphics.line (cell.siteX, cell.siteY, vertexPoint.x, vertexPoint.y)
+	end
 end
 	
 local function drawCells (cells)
