@@ -161,7 +161,7 @@ local function updatePoints(beachline, dirY)
 		local x1, y1 = node2.cell.siteX, node2.cell.siteY
 		local x2, y2 = node4.cell.siteX, node4.cell.siteY
 		local x, y = findParabolaCrossing (x1, y1, x2, y2, dirY)
-		
+
 		node3.x = x
 		node3.point.x = x
 		node3.point.y = y
@@ -179,29 +179,30 @@ local function findArc (beachline, siteX)
 
 	local currentPoint = beachline.headPointNode
 	local currentArc = currentPoint.next
-	local nextPoint = currentArc.next
 
+	print ('search x higher than siteX', siteX)
 	while currentArc do
-		nextPoint = currentArc.next
---		print (nextPoint.point.x)
-		if nextPoint then
-			local x = nextPoint.point.x
-			if siteX == nextPoint.point.x then
-				local nextArc = nextPoint.next
-				if nextArc then
-					-- special case: 
-					-- add point to both cells,
-					-- create two new parabolas
-					return nil, nextPoint
-				end
-			elseif siteX < nextPoint.x then
-				-- break current arc
-				print ('current arc', currentArc.id)
-				return currentArc, nil
+		print ('currentArc.id', currentArc.id)
+		local nextPoint = currentArc.next
+		local x = nextPoint.point.x
+		print ('next point x:', x)
+		if siteX == x then
+			local nextArc = nextPoint.next
+			if nextArc then
+				-- special case: 
+				-- add point to both cells,
+				-- create two new parabolas
+
+				return nil, nextPoint
 			end
+		elseif siteX < x then
+			-- break current arc
+			print ('found arc', currentArc.id)
+			print ('x', x)
+			return currentArc, nil
 		end
-		currentPoint = nextPoint
-		currentArc = beachline.next
+
+		currentArc = nextPoint.next
 	end
 
 	-- out of border
@@ -257,7 +258,7 @@ local function insertArc (beachline, arc, cell, siteX, siteY, arcY)
 	-- insert vertex point to cell.vertexPoints
 	table.insert (arc.cell.vertexPoints, newpoint1)
 	table.insert (arc.cell.vertexPoints, newpoint2)
-	
+
 	local node2 = createNode('cell', arc.cell)
 	local node3 = createNode ('point', newpoint1, siteX)
 	local node4 = createNode('cell', cell)
@@ -346,8 +347,9 @@ local function processPointEvent(event, beachline, eventQueue)
 	printBeachlineLength (beachline)
 
 	-- old arc, tat must be replaced by same two new arcs
+	print ('new site: x, y', siteX, siteY)
 	local arc, point = findArc (beachline, siteX)
-	
+
 
 	if arc then
 		print ('point event, arc.id', arc.id)
@@ -360,7 +362,7 @@ local function processPointEvent(event, beachline, eventQueue)
 		print ('arcY', arcY)
 
 		local arcC = insertArc(beachline, arc, cell, siteX, siteY, arcY)
-		
+
 		if arcC then
 			print ('arcC.id', arcC.id)
 			printBeachline (beachline)
@@ -392,7 +394,7 @@ end
 local function processCircleEvent(event, beachline)
 	table.insert (CIRCLEEVENTLINESS, event.sortY)
 	table.insert (CIRCLEEVENTCIRCLES, {x=event.x, y=event.y, r=event.r})
-	
+
 	local arc = event.arc
 	if arc.prev and arc.next then
 		local point = {x=event.x, y=event.y}
@@ -402,7 +404,7 @@ local function processCircleEvent(event, beachline)
 		linkNodes (node1, node2, node3)
 		removeNodeLinks (arc.prev)
 		removeNodeLinks (arc.next)
-		
+
 		print ('circle event complete')
 		printBeachline (beachline)
 	end
@@ -427,13 +429,12 @@ local function voronoiMainLoop (eventQueue, beachline)
 			updatePoints(beachline, dirY)
 			lastDir = dirY
 		end
-		
+
 		if event.point then
-			
-			-- Process site event
+			print ('Process point event')
 			processPointEvent(event, beachline, eventQueue)
 		elseif event.circle then
-			-- Process circle event
+			print ('Process circle event')
 			processCircleEvent(event, beachline)
 		end
 	end
@@ -451,7 +452,7 @@ local function generateVoronoiCells (cells, width, height)
 	for id, cell in ipairs (cells) do
 		cell.id = id
 	end
-	
+
 	local beachline = getEmptyBeachline(width, height)
 	local eventQueue = createEventQueue (cells)
 
