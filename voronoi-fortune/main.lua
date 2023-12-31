@@ -11,14 +11,14 @@ function love.load()
 	
 	-- pointas as love points {x1,y1, x2,y2 ...}
 --	local points = voronoi.createPoints(numberCells, width, height)
-	local points = {200,100, 400,200, 600,300, 500,350, 300,400, 100,450}
+	local points = {200,200, 410,250, 500,300, 500,450, 300,500, 100,550}
 	
 	diagram = voronoi.newDiagram (points, width, height)
 	
 	voronoiCanvas = generateVoronoiCanvas (diagram)
 
 	voronoi.processNextEvent (diagram)
-	voronoi.processNextEvent (diagram)
+--	voronoi.processNextEvent (diagram)
 		
 	
 end

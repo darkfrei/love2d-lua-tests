@@ -17,7 +17,8 @@ local function createNode (key, value, x)
 		[key] = value,
 		id = getID (),
 	}
-	print ('created node', node.id, key)
+	local str = (key == "cell") and 'cell.id: ' .. tostring (value.id) or ""
+	print ('created node', node.id, key, str)
 	return node
 end
 
@@ -48,6 +49,8 @@ local function createPointEvent(cell)
 end
 
 local function createCircleEvent(arc, x, y, sortY, r)
+	-- 
+	print ('----------- createCircleEvent', x, y, sortY) 
 	return { circle = true, arc = arc, 
 		x=x, y=y, r=r, -- crossing point
 		sortY = sortY}
@@ -66,8 +69,7 @@ end
 local function removeNodeLinks (node)
 	node.prev = nil
 	node.next = nil
-	node.cell = nil
-	node.valid = false
+	node.removed = true
 end
 
 local function sortQueue(queue)
@@ -120,36 +122,52 @@ local function findParabolaCrossing(fx1, fy1, fx2, fy2, dirY) -- focus1, focus2,
 		local c1 = fx1^2/z1+fy1-z1/4
 		local k = c2-c1 - b^2 / (4 * a)
 		local x = -b / (2 * a) - math.sqrt (-k/a)
+		local x2 = -b / (2 * a) + math.sqrt (-k/a)
 		local y = (x-fx1)^2 / z1 + fy1 - z1/4
+		local y2 = (x2-fx1)^2 / z1 + fy1 - z1/4
 --		print ('a='..a..' x, y', x, y)
-		return x, y -- the point between two parabolas
+		return x, y, x2, y2 -- the point between two parabolas
 	end
 end
 
 -------------------------
 
+
+local function evaluateParabola(fx, fy, x, dirY)
+-- focus, current x, directrixY
+--returns the y value
+	local z = 2*(fy-dirY)
+	return (x-fx)^2 / z + fy - z/4
+end
+
+
 local function updateBeachline(beachline, dirY)
-	print ('update beachline, dirY', dirY)
+	print ('---- update beachline, dirY', dirY)
 	local node1 = beachline.headPointNode -- point 1
 	local node2 = node1.next -- arc 1
 	local node3 = node2.next -- point 2
 	local node4 = node3.next -- arc 2
 
+	print ('node3', node3.x)
 	local i = 1
 	while node4 do
 		local x1, y1 = node2.cell.siteX, node2.cell.siteY
 		local x2, y2 = node4.cell.siteX, node4.cell.siteY
 
-		local x, y
+		local x, y, x22, y22
 
-		if y1 == dirY then
-			x = x1
-			y = y1
-		elseif y2 == dirY then
+		if y2 == dirY then
 			x = x2
-			y = y2
+			y = evaluateParabola (x1, y1, x, dirY)
+		elseif y1 == dirY then
+			x = x1
+			y = node1.y
 		else
-			x, y = findParabolaCrossing (x1, y1, x2, y2, dirY)
+			print ('findParabolaCrossing')
+			x, y, x22, y22 = findParabolaCrossing (x1, y1, x2, y2, dirY)
+			if x1 > x2 then
+				x, y = x22, y22
+			end
 		end
 
 		print ('crossing', x, y)
@@ -165,6 +183,8 @@ local function updateBeachline(beachline, dirY)
 		node4 = node3.next -- arc 2, can be nil
 		i = i + 1
 	end
+
+
 end
 
 --------------------
@@ -175,12 +195,10 @@ local function findArc (beachline, siteX)
 	local currentPoint = beachline.headPointNode
 	local currentArc = currentPoint.next
 
-	print ('search x higher than siteX', siteX)
+
 	while currentArc do
-		print ('currentArc.id', currentArc.id)
 		local nextPoint = currentArc.next
 		local x = nextPoint.point.x
-		print ('next point x:', x)
 		if siteX == x then
 			local nextArc = nextPoint.next
 			if nextArc then
@@ -192,8 +210,7 @@ local function findArc (beachline, siteX)
 			end
 		elseif siteX < x then
 			-- break current arc
-			print ('found arc', currentArc.id)
-			print ('x', x)
+			print ('found arc', currentArc.id, 'site x'..siteX..' < x='..x)
 			return currentArc, nil
 		end
 
@@ -232,39 +249,33 @@ end
 --   siteX: The x-coordinate of the current site.
 --   siteY: The y-coordinate of the current site.
 --   arcY: The y-coordinate on the existing arc.
-local function insertArc (beachline, arc, cell, siteX, siteY, arcY)
-	if arc.placeholder then
-		arc.placeholder = false
-		arc.cell = cell
+local function insertArc (beachline, oldArc, cell, siteX, siteY, arcY)
+	if oldArc.placeholder then
+		oldArc.placeholder = false
+		oldArc.cell = cell
+		print ('oldArc', oldArc.id, 'was placeholder')
 		return
 	end
-	local node1 = arc.prev -- point
-	local newpoint1 = {x=siteX,y=arcY}
-	local newpoint2 = {x=siteX,y=arcY}
-	print ('cell', cell)
-	print ('arc.cell', arc.cell)
+	local x, y = siteX, arcY
+	print ('cut points to', x, y)
+	local node1 = oldArc.prev -- point
+	local newpoint1 = {x=x,y=y}
+	local newpoint2 = {x=x,y=y}
+	local oldCell = oldArc.cell
 
-	print ('break arc id', arc.id)
-
-	-- insert vertex point to cell.vertexPoints
-	table.insert (cell.vertexPoints, newpoint1)
-	table.insert (cell.vertexPoints, newpoint2)
-
-	-- insert vertex point to cell.vertexPoints
-	table.insert (arc.cell.vertexPoints, newpoint1)
-	table.insert (arc.cell.vertexPoints, newpoint2)
-
-	local node2 = createNode('cell', arc.cell)
+	local node2 = createNode('cell', oldCell)
 	local node3 = createNode ('point', newpoint1, siteX)
 	local node4 = createNode('cell', cell)
 	local node5 = createNode ('point', newpoint2, siteX)
-	local node6 = createNode('cell', arc.cell)
-	local node7 = arc.next -- point
+	local node6 = createNode('cell', oldCell)
+	local node7 = oldArc.next -- point
 
 	linkNodes(node1, node2, node3, node4, node5, node6, node7)
+
+	print ('new beach line, one removed, added 5')
 	printBeachlineLength (beachline)
 
-	removeNodeLinks (arc)
+	removeNodeLinks (oldArc)
 
 
 	print ('created nodes:', node2.id, node3.id, node4.id, node5.id, node6.id)
@@ -272,16 +283,14 @@ local function insertArc (beachline, arc, cell, siteX, siteY, arcY)
 	return node4 -- new arc
 end
 
-local function evaluateParabola(fx, fy, x, dirY)
--- focus, current x, directrixY
---returns the y value
-	local z = 2*(fy-dirY)
-	return (x-fx)^2 / z + fy - z/4
-end
 
 
 local function findCircleCenter (x1, y1, x2, y2, x3, y3)
 	local d = 2*(x1*(y2-y3)+x2*(y3-y1)+x3*(y1-y2))
+	if d == 0 then
+		-- parallel
+		return nil
+	end
 	local t1, t2, t3 = x1*x1+y1*y1, x2*x2+y2*y2, x3*x3+y3*y3
 	local x = (t1*(y2-y3)+t2*(y3-y1)+t3*(y1-y2)) / d
 	local y = (t1*(x3-x2)+t2*(x1-x3)+t3*(x2-x1)) / d
@@ -299,12 +308,15 @@ local function checkForCircleEvents(beachline, eventQueue, leftArc, arc, rightAr
 	local x1, y1 = c1.siteX, c1.siteY
 	local x2, y2 = c2.siteX, c2.siteY
 	local x3, y3 = c3.siteX, c3.siteY
+	print ('-------- findCircleCenter', x1, y1, x2, y2, x3, y3)
 	local x, y, r = findCircleCenter(x1, y1, x2, y2, x3, y3)
 
-	local sortY = y + r
-	local circleEvent = createCircleEvent(arc, x, y, sortY, r)
-	print ('added circle event:', sortY, 'currend dirY:', dirY)
-	table.insert(eventQueue, circleEvent)
+	if x then
+		local sortY = y + r
+		local circleEvent = createCircleEvent(arc, x, y, sortY, r)
+		print ('added circle event:', sortY, 'currend dirY:', dirY)
+		table.insert(eventQueue, circleEvent)
+	end
 end
 
 local function mergeParabolas (arc1, arc2, arc3, dirY)
@@ -335,28 +347,29 @@ end
 
 local function processPointEvent(event, beachline, eventQueue)
 	local cell = event.cell
+
 	local siteX = cell.siteX -- current x
 	local siteY = cell.siteY -- current directrix
+	print ('--- processPointEvent ---', 'site: '..siteX..' '..siteY)
 	local dirY = siteY
 
 	printBeachlineLength (beachline)
 
-	-- old arc, tat must be replaced by same two new arcs
-	print ('new site: x, y', siteX, siteY)
-	local arc, point = findArc (beachline, siteX)
+	local oldArc, point = findArc (beachline, siteX)
 
 
-	if arc then
-		print ('point event, arc.id', arc.id)
+	if oldArc then
+		print ('point event, arc.id', oldArc.id)
 		-- Insert new arc into the beachline
 		local arcY = 0
-		if arc.cell then
+		if oldArc.cell then
 			-- (fx, fy, x, dirY)
-			arcY = evaluateParabola(arc.cell.siteX, arc.cell.siteY, siteX, siteY)
+			-- not sure
+			arcY = evaluateParabola(oldArc.cell.siteX, oldArc.cell.siteY, siteX, siteY)
 		end
 		print ('arcY', arcY)
 
-		local arcC = insertArc(beachline, arc, cell, siteX, siteY, arcY)
+		local arcC = insertArc(beachline, oldArc, cell, siteX, siteY, arcY)
 
 		if arcC then
 			print ('arcC.id', arcC.id)
@@ -389,8 +402,9 @@ end
 local function processCircleEvent(event, beachline)
 
 	local arc = event.arc
-	if arc.prev and arc.next then
+	if not arc.removed then
 		local point = {x=event.x, y=event.y}
+		print ('circle event', event.x, event.y)
 		local node2 = createNode('point', point, event.x)
 		local node1 = arc.prev.prev
 		local node3 = arc.next.next
@@ -453,6 +467,7 @@ local function newDiagram (points, width, height)
 	diagram.beachline = getEmptyBeachline(width, height)
 	diagram.eventQueue = createEventQueue (cells)
 	diagram.dirY = 0
+	diagram.iEvent = 0
 
 	return diagram
 end
@@ -469,15 +484,18 @@ local function processEvent (eventQueue, beachline)
 	if event.point then
 		print ('Process point event')
 		processPointEvent(event, beachline, eventQueue)
+		return dirY, 'point'
 	elseif event.circle then
 		print ('Process circle event')
 		processCircleEvent(event, beachline)
+		return dirY, 'circle'
 	else
 		print ('Process edge event')
 --		on given dirY add edge point and add vertex point to the cell
+		return dirY, 'edge'
 	end
 
-	return dirY
+
 end
 
 
@@ -486,10 +504,17 @@ local function getLine(point1, cell, point2, dirY)
 	local x3, y3 = point2.x, point2.y
 	local fx, fy= cell.siteX, cell.siteY
 
-	if fy == dirY then
-		-- current dir Y is on focus
+--	print ('getLine 1', x1, y1)
+--	print ('getLine 3', x3, y3)
+--	print ('getLine f', fx, fy)
 
-		return {x1, y1, fx, fy}
+	if fy == dirY  then
+		-- current dir Y is on focus
+		print ('vertical line', fx, y1, fx, fy)
+
+		return {fx, y1, fx, fy}
+	else
+		
 	end
 
 
@@ -504,7 +529,7 @@ local function getLine(point1, cell, point2, dirY)
 		table.insert(line, y)
 	end
 
-	print ('line, x1, y1, x2, y2', x1, y1, x3, y3)
+--	print ('line, x1, y1, x2, y2', x1, y1, x3, y3)
 
 	return line
 end
@@ -516,8 +541,12 @@ local function getDrawableBeachLine (beachline, dirY)
 	local node1 = beachline.headPointNode
 	local arc = node1.next
 
+	print ('getDrawableBeachLine')
 	while arc do
+		print ('arc.id', arc.id, 'site:', arc.cell.siteX, arc.cell.siteY)
+		
 		local node2 = arc.next
+		print ('arc', arc.id, 'from ', node1.point.x, 'to', node2.point.x)
 		local line = getLine (node1.point, arc.cell, node2.point, dirY)
 		table.insert (lines, line)
 		node1 = node2
@@ -530,17 +559,25 @@ end
 
 
 local function processNextEvent (diagram)
-	print ('voronoi event')
+	diagram.iEvent = diagram.iEvent + 1
+	print ('\n -------- next voronoi event', diagram.iEvent)
+
 	local eventQueue = diagram.eventQueue
-	local beachline = diagram.beachline
-	local dirY = processEvent (eventQueue, beachline)
-	diagram.dirY = dirY
+	if #eventQueue > 0 then
+		local beachline = diagram.beachline
+		local dirY, str = processEvent (eventQueue, beachline)
+		diagram.dirY = dirY
 
-	updateBeachline(beachline, dirY)
+		updateBeachline(beachline, dirY)
+		
+		
+		
+		diagram.drawableBeachLines = getDrawableBeachLine (beachline, dirY)
 
-	diagram.drawableBeachLines = getDrawableBeachLine (beachline, dirY)
-	
-	love.window.setTitle ('dirY: '..dirY)
+		love.window.setTitle ('dirY: '..dirY..' '..str)
+	else
+		diagram.drawableBeachLines = nil
+	end
 end
 
 local function processResult (diagram)
@@ -555,15 +592,52 @@ local function processResult (diagram)
 end
 
 
+local function getColor (t)
+	t = t%1
+	-- https://github.com/darkfrei/love2d-lua-tests/blob/main/ore-patches/main.lua
+	if t<0.25 then
+		return {(t)/0.25,0.25-t,0.25-t}
+	elseif t<0.75 then
+		return {1,(t-0.25)/0.55,0}
+	elseif t>=1 then
+		return {0,1,1}
+	end
+
+	return {1,1,(t-0.75)/0.25}
+end
+
 local function drawBeachline (diagram)
+	if diagram.beachline then
+		local p1 = diagram.beachline.headPointNode
+		love.graphics.line (p1.x, 0, p1.x, diagram.height)
+		love.graphics.print (p1.id, p1.x, diagram.dirY)
+		local i = 1
+		while p1.next do
+			p1 = p1.next.next
+			love.graphics.line (p1.x, 0, p1.x, diagram.height)
+			local dy = 0
+			if (i-1)%2 == 0 then dy = -20 end
+			love.graphics.print (p1.id..' '..p1.x, p1.x, diagram.dirY + dy)
+			i = i + 1
+		end
+	end
+
 	local lines = diagram.drawableBeachLines
+	
 	if lines then
 		for i, line in ipairs (lines) do
+			local t = i/#lines
+--			love.graphics.setColor (birdColors (t))
+			love.graphics.setColor (getColor (t))
+			love.graphics.print (i, 10,20*i)
 			if #line > 3 then
 				love.graphics.line (line)
 			end
+
 		end
+		love.graphics.setColor (1,1,1)
 		love.graphics.line (0, diagram.dirY, diagram.width, diagram.dirY)
+
 	end
 end
 
