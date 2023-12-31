@@ -1,7 +1,12 @@
 
 
 
-local function generateVoronoiCanvas (cells, width, height)
+local function generateVoronoiCanvas (diagram)
+	
+	local cells = diagram.cells
+	local width = diagram.width
+	local height = diagram.height
+	
 	local function dot(ax, ay, bx, by)
 		return ax*bx + ay*by
 	end

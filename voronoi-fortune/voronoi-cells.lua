@@ -126,30 +126,9 @@ local function findParabolaCrossing(fx1, fy1, fx2, fy2, dirY) -- focus1, focus2,
 	end
 end
 
+-------------------------
 
---local function specialCaseNode2 (node3, node4, dirY)
---	-- Case: Placeholder followed by Arc
---	-- find left x and set to node3
---	local cell = node4.cell
---	local focusX, focusY = cell.siteX, cell.siteY
---	local x1, x2 = getFocusParabolaRoots (focusX, focusY, dirY)
---	node3.x = x1
---	node3.point.x = x1
---	return x1, x2
---end
-
---local function specialCaseNode4 (node3, node2, dirY)
---	-- Case: Arc followed by Placeholder
---	-- find right x and set to node3
---	local cell = node2.cell
---	local focusX, focusY = cell.siteX, cell.siteY
---	local x1, x2 = getFocusParabolaRoots (focusX, focusY, dirY)
---	node3.x = x2
---	node3.point.x = x2
---	return x1, x2
---end
-
-local function updatePoints(beachline, dirY)
+local function updateBeachline(beachline, dirY)
 	print ('update beachline, dirY', dirY)
 	local node1 = beachline.headPointNode -- point 1
 	local node2 = node1.next -- arc 1
@@ -160,9 +139,22 @@ local function updatePoints(beachline, dirY)
 	while node4 do
 		local x1, y1 = node2.cell.siteX, node2.cell.siteY
 		local x2, y2 = node4.cell.siteX, node4.cell.siteY
-		local x, y = findParabolaCrossing (x1, y1, x2, y2, dirY)
 
+		local x, y
+
+		if y1 == dirY then
+			x = x1
+			y = y1
+		elseif y2 == dirY then
+			x = x2
+			y = y2
+		else
+			x, y = findParabolaCrossing (x1, y1, x2, y2, dirY)
+		end
+
+		print ('crossing', x, y)
 		node3.x = x
+		node3.y = y
 		node3.point.x = x
 		node3.point.y = y
 		print (i, 'moved node', node3.id, 'to', x, y)
@@ -174,6 +166,9 @@ local function updatePoints(beachline, dirY)
 		i = i + 1
 	end
 end
+
+--------------------
+
 
 local function findArc (beachline, siteX)
 
@@ -392,8 +387,6 @@ local function processPointEvent(event, beachline, eventQueue)
 end
 
 local function processCircleEvent(event, beachline)
-	table.insert (CIRCLEEVENTLINESS, event.sortY)
-	table.insert (CIRCLEEVENTCIRCLES, {x=event.x, y=event.y, r=event.r})
 
 	local arc = event.arc
 	if arc.prev and arc.next then
@@ -410,61 +403,177 @@ local function processCircleEvent(event, beachline)
 	end
 end
 
-local function voronoiMainLoop (eventQueue, beachline)
-	print ('voronoiMainLoop')
-	print ('#eventQueue'.. #eventQueue)
-	local eventNumber = 0
-	CIRCLEEVENTLINESS = {}
-	CIRCLEEVENTCIRCLES = {}
 
-	local lastDir = 0
-	while #eventQueue > 0 do
-		sortQueue(eventQueue)
-		eventNumber = eventNumber + 1
-		print ('\n' .. 'event number', eventNumber)
-		local event = table.remove (eventQueue) -- take the last element, it's faster
-		print ((event.point and 'point event' or 'circle event'))
-		local dirY = event.sortY -- current directrix
-		if not (lastDir == dirY) then
-			updatePoints(beachline, dirY)
-			lastDir = dirY
-		end
 
-		if event.point then
-			print ('Process point event')
-			processPointEvent(event, beachline, eventQueue)
-		elseif event.circle then
-			print ('Process circle event')
-			processCircleEvent(event, beachline)
-		end
+
+
+
+
+local function createPoints (number_cells, width, height)
+	local points = {}
+	for i = 1, number_cells do
+		table.insert (points, math.random(0, width))
+		table.insert (points, math.random(0, height))
 	end
+	return points
 end
 
-local function generateVoronoiCells (cells, width, height)
+local function newCell (x, y)
+	local cell = {
+		siteX = x,
+		siteY = y,
+		color = {
+			math.random ()/2+0.5,
+			math.random ()/2+0.5,
+			math.random ()/2+0.5,
+		},
+		vertexPoints = {},
+		neighbourCells = {},
+		sortY = y,
+	}
+	return cell
+end
 
-	for i, cell in ipairs (cells) do
-		-- vertexPoint: {x=x,y=y}
-		cell.vertexPoints = {}
-		cell.neighbourCells = {}
-		cell.sortY = cell.siteY
+local function newDiagram (points, width, height)
+	local diagram = {width=width, height=height}
+	local cells = {}
+	for i = 1, #points-1, 2 do
+		local cell = newCell (points[i], points[i+1])
+		table.insert (cells, cell)
 	end
+
 	sortCells(cells)
+
 	for id, cell in ipairs (cells) do
 		cell.id = id
 	end
 
-	local beachline = getEmptyBeachline(width, height)
-	local eventQueue = createEventQueue (cells)
+	diagram.cells = cells
 
-	voronoiMainLoop (eventQueue, beachline)
+	diagram.beachline = getEmptyBeachline(width, height)
+	diagram.eventQueue = createEventQueue (cells)
+	diagram.dirY = 0
 
-
-	-- by return the each cell contains:
-	-- siteX, siteY (position of site)
-	-- color (cell color)
-	-- polygon (vertices in array of pairs as {x1, y1, x2, y2 ...})
-	-- (in the clockwise direction from top left corner: negative x and y)
-	return cells
+	return diagram
 end
 
-return generateVoronoiCells
+
+local function processEvent (eventQueue, beachline)
+	sortQueue(eventQueue)
+
+	local event = table.remove (eventQueue) -- take the last element, it's faster
+	local dirY = event.sortY -- current directrix Y
+
+	updateBeachline(beachline, dirY)
+
+	if event.point then
+		print ('Process point event')
+		processPointEvent(event, beachline, eventQueue)
+	elseif event.circle then
+		print ('Process circle event')
+		processCircleEvent(event, beachline)
+	else
+		print ('Process edge event')
+--		on given dirY add edge point and add vertex point to the cell
+	end
+
+	return dirY
+end
+
+
+local function getLine(point1, cell, point2, dirY)
+	local x1, y1 = point1.x, point1.y
+	local x3, y3 = point2.x, point2.y
+	local fx, fy= cell.siteX, cell.siteY
+
+	if fy == dirY then
+		-- current dir Y is on focus
+
+		return {x1, y1, fx, fy}
+	end
+
+
+	local line = {}
+	local dx = x3-x1
+	local nSteps = 10
+
+	for t = 0, nSteps do
+		local x = x1 + dx*t/nSteps
+		local y = evaluateParabola (fx, fy, x, dirY)
+		table.insert(line, x)
+		table.insert(line, y)
+	end
+
+	print ('line, x1, y1, x2, y2', x1, y1, x3, y3)
+
+	return line
+end
+
+
+local function getDrawableBeachLine (beachline, dirY)
+	local lines = {}
+
+	local node1 = beachline.headPointNode
+	local arc = node1.next
+
+	while arc do
+		local node2 = arc.next
+		local line = getLine (node1.point, arc.cell, node2.point, dirY)
+		table.insert (lines, line)
+		node1 = node2
+		arc = node1.next
+	end
+
+	print ('beachlines drawable:', #lines)
+	return lines
+end
+
+
+local function processNextEvent (diagram)
+	print ('voronoi event')
+	local eventQueue = diagram.eventQueue
+	local beachline = diagram.beachline
+	local dirY = processEvent (eventQueue, beachline)
+	diagram.dirY = dirY
+
+	updateBeachline(beachline, dirY)
+
+	diagram.drawableBeachLines = getDrawableBeachLine (beachline, dirY)
+	
+	love.window.setTitle ('dirY: '..dirY)
+end
+
+local function processResult (diagram)
+	print ('voronoiMainLoop')
+
+	local eventQueue = diagram.eventQueue
+	local beachline = diagram.beachline
+
+	while #eventQueue > 0 do
+		processEvent (eventQueue, beachline)
+	end
+end
+
+
+local function drawBeachline (diagram)
+	local lines = diagram.drawableBeachLines
+	if lines then
+		for i, line in ipairs (lines) do
+			if #line > 3 then
+				love.graphics.line (line)
+			end
+		end
+		love.graphics.line (0, diagram.dirY, diagram.width, diagram.dirY)
+	end
+end
+
+local voronoi = {}
+voronoi.createPoints = createPoints -- (number_cells, width, height)
+voronoi.newDiagram = newDiagram -- (points, width, height)
+
+voronoi.processNextEvent = processNextEvent -- (diagram)
+voronoi.processResult = processResult -- (diagram)
+
+voronoi.drawBeachline = drawBeachline
+
+return voronoi
