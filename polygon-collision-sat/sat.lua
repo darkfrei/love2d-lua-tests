@@ -34,47 +34,53 @@ local function checkSAT(poly1, poly2)
 		nx = nx / d
 		ny = ny / d
 
-		local baseU = x1 * nx + y1 * ny
+		local uBase = x1 * nx + y1 * ny
 
-		local max_r1 = -math.huge
+		local u1min = 0
+		local u1max = -math.huge
 		for j = 1, #poly1 - 1, 2 do
 			local px, py = poly1[j], poly1[j + 1]
-			local q = px * nx + py * ny - baseU
-			max_r1 = math.max(max_r1, q)
+			local q = px * nx + py * ny - uBase
+			u1max = math.max(u1max, q)
 		end
+--		print ('u1max', u1max) -- 150 (positive)
 
-		local min_r2, max_r2 = math.huge, -math.huge
+		local min_r2 = math.huge
+		local max_r2 = -math.huge
+		
+		local min_u2 = math.huge
 
-		local x, y
+		local x, y = 0, 0
 		for j = 1, #poly2 - 1, 2 do
-			local px, py = poly2[j], poly2[j + 1]
-			local q = px * nx + py * ny - baseU
-			if min_r2 > q then
-				min_r2 = q
-				if q > 0 then
-					x, y = px, py
-				end
-			end
-			if max_r2 < q then
-				max_r2 = q
+			local px, py = poly2[j], poly2[j+1]
+			local q = px * nx + py * ny - uBase
+			min_r2 = math.min (min_r2, q)
+			max_r2 = math.max (max_r2, q)
+			
+			if (q > 0) then -- collision possible
+				min_u2 = math.min (q, min_u2)
 				x = px
 				y = py
-
+--				print ('min_u2', min_u2)
 			end
 		end
 
-		if not (max_r2 >= 0 and max_r1 >= min_r2) then
+		min_u2 = math.min (min_u2, max_r2)
+
+		if not (max_r2 >= 1e-10 and min_r2 < u1max) then
 			return false
-		else
 
-			local max_r = math.min (0, max_r2)
-			local	min_r = math.max (0, min_r2)
+	elseif min_u2 == math.huge then
+	
+		-- do nothing
+	else
+--		print ('not huge', min_u2)
 
-			local overlap = max_r-min_r
-			if overlap < result.length and overlap < 0 then
-				result.length = overlap
-				result.dx = - nx * overlap
-				result.dy = - ny * overlap
+
+			if min_u2 < result.length and max_r2 > 0 and min_r2 < 0 then
+				result.length = min_u2
+				result.dx = - nx * min_u2
+				result.dy = - ny * min_u2
 				result.x = x
 				result.y = y
 				result.x1 = x1
@@ -95,8 +101,14 @@ local function checkCollision (poly1, poly2) -- vertices
 	local overlap2 = checkSAT (poly2, poly1)
 
 	if overlap1 and overlap2 then
-		love.window.setTitle (overlap1.length..' '..overlap2.length)
-		return overlap1, overlap2
+		
+		if overlap1.length < overlap2.length then
+			love.window.setTitle ('real overlap1 '..overlap1.length)
+			return overlap1, -1
+		else
+			love.window.setTitle ('real overlap2 '..overlap1.length)
+			return overlap2, 1
+		end
 	elseif overlap1 then
 		love.window.setTitle ('overlap1 '..overlap1.length)
 		return
