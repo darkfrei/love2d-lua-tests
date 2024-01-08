@@ -8,62 +8,106 @@ to check for collisions between convex polygons.
 
 
 
-local function checkSATCollision(vertices1, vertices2)
-	-- Separating Axis Theorem with Minimum Translation Vector
-	local function projectVertices(vertices, dx, dy)
-		local min, max = math.huge, -math.huge
-		local indexMin, indexMax
-		for i = 1, #vertices-1, 2 do
-			local dotProduct = vertices[i]*dy-vertices[i+1]*dx
-			if dotProduct < min then 
-				min = dotProduct 
-				indexMin = i
+local function checkSAT(poly1, poly2)
+	local result = {
+		length = math.huge,
+		edge = {},
+		dx = 0,
+		dy = 0,
+		nx = 0,
+		ny = 0,
+		x = 0,
+		y = 0,
+		x1 = 0,
+		y1 = 0,
+		x2 = 0,
+		y2 = 0,
+	}
+
+	for index1 = 1, #poly1 - 1, 2 do
+		local x1, y1 = poly1[index1], poly1[index1 + 1]
+		local index2 = ((index1 + 1) % #poly1) + 1
+		local x2, y2 = poly1[index2], poly1[index2 + 1]
+		local nx = y1 - y2
+		local ny = x2 - x1
+		local d = math.sqrt(nx * nx + ny * ny)
+		nx = nx / d
+		ny = ny / d
+
+		local baseU = x1 * nx + y1 * ny
+
+		local max_r1 = -math.huge
+		for j = 1, #poly1 - 1, 2 do
+			local px, py = poly1[j], poly1[j + 1]
+			local q = px * nx + py * ny - baseU
+			max_r1 = math.max(max_r1, q)
+		end
+
+		local min_r2, max_r2 = math.huge, -math.huge
+
+		local x, y
+		for j = 1, #poly2 - 1, 2 do
+			local px, py = poly2[j], poly2[j + 1]
+			local q = px * nx + py * ny - baseU
+			if min_r2 > q then
+				min_r2 = q
+				if q > 0 then
+					x, y = px, py
+				end
 			end
-			if dotProduct > max then 
-				max = dotProduct 
-				indexMax = i
+			if max_r2 < q then
+				max_r2 = q
+				x = px
+				y = py
+
 			end
 		end
-		return min, max, indexMin, indexMax
-	end
-	
-	local minDist = math.huge
-	local dx, dy
-	local x1, y1, x2, y2 = vertices1[#vertices1-1], vertices1[#vertices1],vertices1[1], vertices1[2]
-	for i = 1, #vertices1-1, 2 do
-    local nx, ny = x2-x1, y2-y1
-		local length = math.sqrt(nx*nx+ny*ny)
-    nx, ny = nx/length, ny/length
-    local min1, max1, indexMin1, indexMax1 = projectVertices(vertices1, nx, ny)
-    local min2, max2, indexMin2, indexMax2 = projectVertices(vertices2, nx, ny)
-		local dist = math.min (max2-min1, max1-min2)
-    if dist < 0 then
-      return false -- no collision
-		elseif minDist >= dist then
-			minDist = dist
-			dx, dy = ny, -nx
+
+		if not (max_r2 >= 0 and max_r1 >= min_r2) then
+			return false
+		else
+
+			local max_r = math.min (0, max_r2)
+			local	min_r = math.max (0, min_r2)
+
+			local overlap = max_r-min_r
+			if overlap < result.length and overlap < 0 then
+				result.length = overlap
+				result.dx = - nx * overlap
+				result.dy = - ny * overlap
+				result.x = x
+				result.y = y
+				result.x1 = x1
+				result.y1 = y1
+				result.x2 = x2
+				result.y2 = y2
+			end
 		end
-		x1, y1, x2, y2 = x2, y2, vertices1[i+2], vertices1[i+3]
-  end
-	if minDist*2^45 < 1 then
-		minDist = 0
 	end
-  return minDist, minDist*dx, minDist*dy -- collision and direction
+
+	return result
 end
 
--- example: 
-local vertices1 = {0,0, 200,0, 0,100}
-local vertices2 = {50,50, 60,80, 80,60}
-local dist, dx, dy = checkSATCollision(vertices1, vertices2)
-print (dist, dx, dy) -- 24.149534156998	10.8	21.6
-local str = ''
-for i = 1, #vertices2-1, 2 do
-	vertices2[i] = vertices2[i] + dx
-	vertices2[i+1] = vertices2[i+1] + dy
-	str = str .. vertices2[i] .. ', ' .. vertices2[i+1] .. ', '
-end
-print (str) -- 58.8, 70.6, 70.8, 101.6, 90.8, 81.6, 
-dist, dx, dy = checkSATCollision(vertices1, vertices2)
-print (dist, dx, dy) -- 0	0.0	0.0
 
-return checkSATCollision
+
+local function checkCollision (poly1, poly2) -- vertices
+	local overlap1 = checkSAT (poly1, poly2)
+	local overlap2 = checkSAT (poly2, poly1)
+
+	if overlap1 and overlap2 then
+		love.window.setTitle (overlap1.length..' '..overlap2.length)
+		return overlap1, overlap2
+	elseif overlap1 then
+		love.window.setTitle ('overlap1 '..overlap1.length)
+		return
+	elseif overlap2 then
+		love.window.setTitle ('overlap2 '..overlap2.length)
+		return
+	end
+	love.window.setTitle ('no overlap')
+end
+
+local sat = {
+	checkCollision = checkCollision,
+}
+return sat
