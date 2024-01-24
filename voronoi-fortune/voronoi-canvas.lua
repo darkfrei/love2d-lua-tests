@@ -45,7 +45,7 @@ local function generateVoronoiCanvas (diagram)
 			local bx, by = site2x-x, site2y-y
 			local nbx, nby = normalize(site2x-site1x, site2y-site1y)
 			local d = dot(ax+bx, ay+by, nbx, nby)
-			if d < 4 then
+			if d < 5 then
 				color = {0,0,0}
 			end
 			table.insert (points, {x, y, color[1], color[2], color[3]})
