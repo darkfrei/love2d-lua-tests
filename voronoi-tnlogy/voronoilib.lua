@@ -23,7 +23,11 @@ http://www.cs.hmc.edu/~mbrubeck/voronoi.html
 
 -- https://github.com/TomK32/iVoronoi/tree/working
 
-
+|highlight|
+`code`
+**bold text**
+#Header
+_italic_
 ]]--
 
 --------
@@ -700,11 +704,6 @@ function Tools:dirtyPolygon ( invoronoi )
 				removetheline = true
 				local px, py, onlines = self:intersectionPoint(boundary, {segment.startPoint.x, segment.startPoint.y, segment.endPoint.x, segment.endPoint.y})
 				isects[#isects+1] = { x=px, y=py, on=onlines }
-
---				local segment1 = {startPoint = segment.startPoint, endPoint = {x=px, y=py}}
-
---				table.insert (invoronoi.segments, segment1)
---				table.insert (invoronoi.segments, segment2)
 			end
 		end
 
@@ -714,8 +713,6 @@ function Tools:dirtyPolygon ( invoronoi )
 			end 
 		end
 	end
-
-
 
 	for _, v in pairs(otherpoints) do 
 		table.insert(processingpoints,v) 
