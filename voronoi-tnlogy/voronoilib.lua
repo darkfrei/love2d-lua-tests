@@ -33,77 +33,68 @@ local constants = {zero = 0.1}
 --------
 --------
 
-local heap = {}
-
-function heap:new()
-	local o = { heap = {}, nodes = {} }
+local Heap = {}
+function Heap:new()
+	local o = { Heap = {}, nodes = {} }
 	setmetatable(o, self)
 	self.__index = self
 	return o
 end
 
-function heap:push(k, v)
+function Heap:push(k, v)
 	assert(v ~= nil, "cannot push nil")
-	local heap_pos = #self.heap + 1
-	self.heap[heap_pos] = k
+	local Heap_pos = #self.Heap + 1
+	self.Heap[Heap_pos] = k
 	self.nodes[k] = v
-
-	while heap_pos > 1 do
-		local parent_pos = math.floor(heap_pos / 2)
-		if self.nodes[self.heap[parent_pos]] > v then
-			self.heap[parent_pos], self.heap[heap_pos] = self.heap[heap_pos], self.heap[parent_pos]
-			heap_pos = parent_pos
+	while Heap_pos > 1 do
+		local parent_pos = math.floor(Heap_pos / 2)
+		if self.nodes[self.Heap[parent_pos]] > v then
+			self.Heap[parent_pos], self.Heap[Heap_pos] = self.Heap[Heap_pos], self.Heap[parent_pos]
+			Heap_pos = parent_pos
 		else
 			break
 		end
 	end
-
 	return k
 end
 
-function heap:pop()
-	local heap_pos = #self.heap
-	assert(heap_pos > 0, "cannot pop from empty heap")
-
-	local heap_root = self.heap[1]
-	local heap_root_pos = self.nodes[heap_root]
-	local current_heap = self.nodes[self.heap[heap_pos]]
-
-	self.heap[1] = self.heap[heap_pos]
-	self.heap[heap_pos] = nil
-	self.nodes[heap_root] = nil
-	heap_pos = heap_pos - 1
-
+function Heap:pop()
+	local Heap_pos = #self.Heap
+	assert(Heap_pos > 0, "cannot pop from empty Heap")
+	local Heap_root = self.Heap[1]
+	local Heap_root_pos = self.nodes[Heap_root]
+	local current_Heap = self.nodes[self.Heap[Heap_pos]]
+	self.Heap[1] = self.Heap[Heap_pos]
+	self.Heap[Heap_pos] = nil
+	self.nodes[Heap_root] = nil
+	Heap_pos = Heap_pos - 1
 	local node_pos = 1
-
 	while true do
 		local parent_pos = 2 * node_pos
-		if heap_pos < parent_pos then
+		if Heap_pos < parent_pos then
 			break
 		end
-
-		if parent_pos < heap_pos and self.nodes[self.heap[parent_pos + 1]] < self.nodes[self.heap[parent_pos]] then
+		if parent_pos < Heap_pos and self.nodes[self.Heap[parent_pos + 1]] < self.nodes[self.Heap[parent_pos]] then
 			parent_pos = parent_pos + 1
 		end
-
-		if self.nodes[self.heap[parent_pos]] < current_heap then
-			self.heap[parent_pos], self.heap[node_pos] = self.heap[node_pos], self.heap[parent_pos]
+		if self.nodes[self.Heap[parent_pos]] < current_Heap then
+			self.Heap[parent_pos], self.Heap[node_pos] = self.Heap[node_pos], self.Heap[parent_pos]
 			node_pos = parent_pos
 		else
 			break
 		end
 	end
-
-	return heap_root, heap_root_pos
+	return Heap_root, Heap_root_pos
 end
 
-function heap:isEmpty()
-	return not next(self.heap)
+function Heap:isEmpty()
+	return not next(self.Heap)
 end
 
 --------
 --------
 --------
+
 local doubleLinkedList = {}
 
 function doubleLinkedList:new()
@@ -115,14 +106,13 @@ end
 
 function doubleLinkedList:insertAfter(node, data)
 	local new = {prev = node, next = node.next, x = data.x, y = data.y} -- creates a new node
-	node.next = new -- the node after node is the new node
-	if node == self.last then -- check if the old node is the last node...
-		self.last = new -- ...and set the new node as the last node
+	node.next = new
+	if node == self.last then
+		self.last = new
 	else
-		-- otherwise set the next node's previous node to the new one
 		new.next.prev = new
 	end
-	return new -- return the new node
+	return new 
 end
 
 function doubleLinkedList:insertAtStart(data)
@@ -131,27 +121,23 @@ function doubleLinkedList:insertAtStart(data)
 		self.first = new -- the new node is the first and the last in this case
 		self.last = new
 	else
-		-- the node before the old first node is the new first node
 		self.first.prev = new
-		self.first = new -- update the list's first field
+		self.first = new
 	end
 	return new
 end
 
 function doubleLinkedList:delete(node)
-	if node == self.first then -- check if the node is the first one...
-		-- ...and set the new first node if we remove the first
+	if node == self.first then
 		self.first = node.next
 	else
-		-- set the previous node's next node to the next node
 		node.prev.next = node.next
 	end
 
-	if node == self.last then -- check if the node is the last one...
-		-- ...the new last node is the node before the deleted node
+	if node == self.last then
 		self.last = node.prev
 	else
-		node.next.prev = node.prev -- update the next node's prev field
+		node.next.prev = node.prev
 	end
 end
 
@@ -163,8 +149,8 @@ end
 --------
 --------
 
-local tools = { }
-function tools:processEvent(event, ivoronoi)
+local Tools = { }
+function Tools:processEvent(event, ivoronoi)
 	if event.valid then
 		local segment = {
 			startPoint = {x = event.x, y = event.y},
@@ -194,12 +180,9 @@ function tools:processEvent(event, ivoronoi)
 		if event.arc.seg1 then
 			event.arc.seg1.endPoint = {x = event.x, y = event.y}
 			event.arc.seg1.done = true
-		end    
-
-		-- Debugging vertex list!!!
-		table.insert(ivoronoi.vertex, {x = event.x, y = event.y})
-
-		-- Recheck circle events on either side of p
+		end
+		local v = {x = event.x, y = event.y}
+		table.insert(ivoronoi.vertex, v)
 		if event.arc.prev then
 			self:check_circle_event(event.arc.prev, event.x, ivoronoi)
 		end
@@ -211,7 +194,7 @@ function tools:processEvent(event, ivoronoi)
 end
 
 
-function tools:processPoint(point,ivoronoi)
+function Tools:processPoint(point,ivoronoi)
 	--Adds a point to the beachline
 	--local intersect = self:intersect
 	if not ivoronoi.beachline.first then
@@ -281,7 +264,7 @@ end
 
 
 
-function tools:check_circle_event(arc, x0, ivoronoi)
+function Tools:check_circle_event(arc, x0, ivoronoi)
 	--Look for a new circle event for arc i.
 	--Invalidate any old event.
 
@@ -333,7 +316,7 @@ end
 
 
 
-function tools:intersect(point, arc)
+function Tools:intersect(point, arc)
 	--Will a new parabola at point p intersect with arc i?
 	local res = {}
 	if (arc.x == point.x) then 
@@ -359,7 +342,7 @@ function tools:intersect(point, arc)
 end
 
 
-function tools:interSectionTool(p0, p1, l)
+function Tools:interSectionTool(p0, p1, l)
 	-- Where do two parabolas intersect?
 
 	local res = {}
@@ -388,7 +371,7 @@ function tools:interSectionTool(p0, p1, l)
 	return res
 end
 
-function tools:finishEdges(ivoronoi, rightDoubleBoundary)
+function Tools:finishEdges(ivoronoi, rightDoubleBoundary)
 
 
 	--Extend each remaining segment to the new parabola interSectionTools.
@@ -410,13 +393,14 @@ end
 --------
 --------
 
-function tools:sortthepoints(points)
+function Tools:sortthepoints(points)
+--	print ('tables', table.concat (points, ','))
 	local sortedpoints = self:sorttable(points,'x',true)
 	sortedpoints = self:sorttable(sortedpoints,'y',true)
 	return sortedpoints
 end
 
-function tools:tablecontains(tablename,attributename,value)
+function Tools:tableContains(tablename,attributename,value)
 	if attributename == nil then
 		for i,v in pairs(tablename) do
 			if v == value then return true end
@@ -438,7 +422,7 @@ function tools:tablecontains(tablename,attributename,value)
 
 end
 
-function tools:sortpolydraworder(listofpoints)
+function Tools:sortpolydraworder(listofpoints)
 
 	local returner = { }
 
@@ -492,8 +476,8 @@ function tools:sortpolydraworder(listofpoints)
 	return returner
 end
 
-function tools:polyoncentroid(listofpoints)
-	-- formula here http://en.wikipedia.org/wiki/Centroid#Centroid_of_polygon
+function Tools:polyoncentroid(listofpoints)
+	-- formula here http://en.wikipedia.org/wiki/Centroid#Centroid_of_Polygon
 	local A = 0
 	for i = 1,#listofpoints,2 do
 		--print('point',listofpoints[i],listofpoints[i+1])
@@ -526,10 +510,13 @@ function tools:polyoncentroid(listofpoints)
 	cy = cy / (6*A)
 	--print('cx',cx,'cy',cy,'A',A)
 
+--	cx = math.floor (cx+0.5)
+--	cy = math.floor (cy+0.5)
+
 	return cx,cy
 end
 
-function tools:sorttable(datable,parameter,sortbyasending)
+function Tools:sorttable(datable,parameter,sortbyasending)
 	local count = 0
 	local startingvalue = nil
 	local startingvalueindex = 0
@@ -568,8 +555,8 @@ function tools:sorttable(datable,parameter,sortbyasending)
 	return sortedtable
 end
 
-function tools:sortpolydraworder(listofpoints)
-	-- gets the angle from some point in the center of the polygon and sorts by angle
+function Tools:sortpolydraworder(listofpoints)
+	-- gets the angle from some point in the center of the Polygon and sorts by angle
 
 	local returner = nil
 	local mainpoint = { x=0, y=0 }
@@ -584,7 +571,7 @@ function tools:sortpolydraworder(listofpoints)
 	mainpoint.x = (mainpoint.x/count)
 	mainpoint.y = (mainpoint.y/count)
 
-	-- sets the angle of each point with respect to the averaged centerpoint of the polygon.
+	-- sets the angle of each point with respect to the averaged centerpoint of the Polygon.
 	for i,v in pairs(listofpoints) do
 		v.angle = math.acos(math.abs(mainpoint.y-v.y)/(math.sqrt(math.pow((mainpoint.x-v.x),2)+math.pow((mainpoint.y-v.y),2))))
 		if (mainpoint.x <= v.x) and (mainpoint.y <= v.y) then
@@ -621,7 +608,7 @@ function tools:sortpolydraworder(listofpoints)
 
 end
 
-function tools:intersectionPoint(line1,line2)
+function Tools:intersectionPoint(line1,line2)
 	local dx1, dy1 = line1[3]-line1[1], line1[4]-line1[2]
 	local dx2, dy2 = line2[3]-line2[1], line2[4]-line2[2]
 	local slope1 = dy1/dx1
@@ -652,7 +639,7 @@ function tools:intersectionPoint(line1,line2)
 	return ix, iy, onbothlines
 end
 
-function tools:issegmentintersect(line1,groupoflines)
+function Tools:issegmentintersect(line1,groupoflines)
 	-- checks if the line segment intersects any of the line segments in the group of lines
 
 	local timestrue = 0
@@ -674,7 +661,7 @@ function tools:issegmentintersect(line1,groupoflines)
 	if timestrue > 0 then return false else return true end
 end
 
-function tools:isOnLine(x, y, line)
+function Tools:isOnLine(x, y, line)
 	-- checks if the point is on the line
 	local xWithinBounds = (line[1] <= x and x <= line[3]) or (line[3] <= x and x <= line[1])
 	local yWithinBounds = (line[2] <= y and y <= line[4]) or (line[4] <= y and y <= line[2])
@@ -683,7 +670,7 @@ function tools:isOnLine(x, y, line)
 end
 
 
-function tools:round(num, idp)
+function Tools:round(num, idp)
 	--http://lua-users.org/wiki/SimpleRound
 	local mult = 10^(idp or 0)
 	return math.floor(num * mult + 0.5) / mult
@@ -692,13 +679,19 @@ end
 -----------------------------------------------------------------------------------------------------------------------------
 -- i get lost in the arc tables. this is a way to make polygons. it might not be as fast as
 -- doing it during the sweeps, but its the fastest way i can implement one and might not be too bad on the performance side.
-function tools:dirty_poly(invoronoi)
+function Tools:dirty_poly(invoronoi)
 
 	local polygon = { }
 
 	-- removes the points that are outside the boundary
 	local processingpoints = invoronoi.vertex
+--	for i = 1, #processingpoints do
+--		print (i, processingpoints[i])
+--	end
+
 	for i=#processingpoints,1,-1 do
+--		print (i, processingpoints[i])
+--		print (i, tostring(processingpoints[i].x), tostring(processingpoints[i].y))
 		-- checks the boundaries, and then removes it
 		if (processingpoints[i].x < invoronoi.boundary[1]) or (processingpoints[i].x > invoronoi.boundary[3]) or (processingpoints[i].y < invoronoi.boundary[2]) or (processingpoints[i].y > invoronoi.boundary[4]) then
 			-- removes the item
@@ -813,12 +806,14 @@ function tools:dirty_poly(invoronoi)
 			related[#related+1] = distances[j].i 
 		end
 
-		-- puts them in a structure, calling it polygonmap
+		-- puts them in a structure, calling it polygonMap
 		for j=1,#related do
-			if invoronoi.polygonmap[related[j]] == nil then invoronoi.polygonmap[related[j]] = { } end
+			if invoronoi.polygonMap[related[j]] == nil then invoronoi.polygonMap[related[j]] = { } end
 			for k=1,#related do
-				if not self:tablecontains(invoronoi.polygonmap[related[j]],nil,related[k]) and (related[j] ~= related[k]) then
-					invoronoi.polygonmap[related[j]][#invoronoi.polygonmap[related[j]]+1] = related[k]
+				if not self:tableContains(invoronoi.polygonMap[related[j]],nil,related[k]) and (related[j] ~= related[k]) then
+					local indexA = related[j]
+					local indexB = #invoronoi.polygonMap[indexA]+1
+					invoronoi.polygonMap[indexA][indexB] = related[k]
 				end
 			end
 		end
@@ -833,19 +828,16 @@ function tools:dirty_poly(invoronoi)
 end
 
 ---------------------------------------------
--- generates randompoints
-function tools:randompoint(minx,miny,maxx,maxy)
-
+-- generates randomPoints
+function Tools:randomPoint(minx,miny,maxx,maxy)
 	local x = math.random(minx+1,maxx-1) 
 	local y = math.random(miny+1,maxy-1)
-
 	return x,y 
-
 end
 
 ----------------------------------------------
 -- checks if the line segment is the same
-function tools:sameedge(line1,line2)
+function Tools:sameEdge(line1,line2)
 
 	local l1p1 = { x = line1[1], y = line1[2] }
 	local l1p2 = { x = line1[3], y = line1[4] }
@@ -890,52 +882,49 @@ end
 --------
 --------
 
-local polygon = { }
+local Polygon = { }
 
-function polygon:new(inpoints,inindex)
-
-	local returner = { points = inpoints, index = inindex }
-
+function Polygon:new(points, index)
 	-- creates the edges
-	local edgeno = 0
-	returner.edges = { }
-	for i=1,#returner.points-2,2 do
-		edgeno = edgeno + 1
-		returner.edges[edgeno] = { }
-		returner.edges[edgeno][1] = returner.points[i]
-		returner.edges[edgeno][2] = returner.points[i+1]
-		returner.edges[edgeno][3] = returner.points[i+2]
-		returner.edges[edgeno][4] = returner.points[i+3]
+	local edges = {}
+	local edge = {points[#points-1], points[#points], points[1], points[2]}
+	table.insert (edges, edge)
+
+	for i=1, #points-2, 2 do
+		edge = {points[i], points[i+1], points[i+2], points[i+3]}
+		table.insert (edges, edge)
 	end
-	-- these last lines close the edges, without this the polygon would be missing an edge, usually on the top.
-	edgeno = edgeno + 1
-	returner.edges[edgeno] = { }
-	returner.edges[edgeno][1] = returner.edges[edgeno-1][3]
-	returner.edges[edgeno][2] = returner.edges[edgeno-1][4]
-	returner.edges[edgeno][3] = returner.edges[1][1]
-	returner.edges[edgeno][4] = returner.edges[1][2]
+
+	--	points, index, edges
+	local returner = {
+		points = points,
+		edges = edges,
+		index = index,
+	}
 
 	-- lua metatable stuff...
 	setmetatable(returner, self) 
 	self.__index = self 
 
 	return returner
-
 end
 
 ----------------------------------------------------------
--- checks if the point is inside the polygon
-function polygon:containspoint(inx,iny)
-	local centroidline = { inx,iny, self.centroid.x, self.centroid.y }
+-- checks if the point is inside the Polygon
+function Polygon:containsPoint(x, y)
+	local isInside = false
 
-	-- checks the point,centroid line with the edges of the polygon. if the point intersects any of the edges and is one the edge, then the point lies outside of the polygon 
-	for i,line2 in pairs(self.edges) do
-		local x,y,onlines = tools:intersectionPoint(centroidline,line2)
-		if onlines then return false end
+	for i, edge in ipairs (self.edges) do
+		local x1, y1, x2, y2 = edge[1], edge[2], edge[3], edge[4]
+		if ((y1 > y) ~= (y2 > y)) and
+		(x < (x2 - x1) * (y - y1) / (y2 - y1) + x1) then
+			isInside = not isInside
+		end
 	end
-
-	return true
+	return isInside
 end
+
+
 
 ----------------
 ----------------
@@ -943,107 +932,89 @@ end
 
 
 local voronoilib = { }
---------------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------
--- creates a voronoi diagram and returns a table containing the structure.
---
--- polygoncount = the number of polygons wanted, this can be thought of as the total number of grid regions
--- iterations = how many times you would like to run the  voronoi. the more iterations, the smoother and more regular
---              the grid looks, recommend at least 3 iterations for a nice grid. any more is diminishing returns
--- minx,miny,maxx,maxy = the boundary for the voronoi diagram. if you choose 0,0,100,100 the function will make a voronoi diagram inside 
---                       the square defined by 0,0 and 100,100 where all the points of the voronoi are inside the square.
+--voronoilib.constants = constants
 
-voronoilib.constants = constants
-
-function voronoilib:newPoints(polygoncount, iterations, minx,miny,maxx,maxy) 
+function voronoilib:newPoints(polygonCount, iterations, minx,miny,maxx,maxy) 
 	local points = {}
 	local boundary = { minx,miny,minx+maxx,miny+maxy }
 
-	for i=1,polygoncount do
-		local rx,ry = self.tools:randompoint(minx,miny,maxx,maxy)
+	for i=1,polygonCount do
+		local rx,ry = self.Tools:randomPoint(minx,miny,maxx,maxy)
 		local point = { x = rx, y = ry }
 		table.insert (points, point)
 	end
 
-	points = self.tools:sortthepoints(points)
+	points = Tools:sortthepoints(points)
+	return points
+end
 
 
+local function getRVoronoi (points, iterations, minx,miny,maxx,maxy)
+	local rightDoubleBoundary = 2*(maxx + (maxx-minx) + (maxy-miny))
+	local boundary = { minx,miny,minx+maxx,miny+maxy }
+
+	local rvoronoi = {}
+	rvoronoi.points = points
+	rvoronoi.boundary = boundary
+
+	rvoronoi.vertex = { }
+	rvoronoi.segments = { }
+	rvoronoi.events = Heap:new()
+	rvoronoi.beachline = doubleLinkedList:new()
+	rvoronoi.polygons = { }
+	rvoronoi.polygonMap = { }
+	rvoronoi.centroids = { }
+
+
+	-- sets up the rvoronoi events
+	for i = 1,#points do
+		rvoronoi.events:push(points[i], points[i].x,{i})
+	end
+
+	while not rvoronoi.events:isEmpty() do
+		local e, x = rvoronoi.events:pop()
+		if e.event then
+			Tools:processEvent(e,rvoronoi)
+		else
+			Tools:processPoint(e,rvoronoi)
+		end    
+	end
+
+	Tools:finishEdges(rvoronoi, rightDoubleBoundary)
+	Tools:dirty_poly(rvoronoi)
+
+	for i, polygon in pairs(rvoronoi.polygons) do
+		local cx, cy = Tools:polyoncentroid(polygon.points)
+		rvoronoi.centroids[i] = { x = cx, y = cy }
+		rvoronoi.polygons[i].centroid = rvoronoi.centroids[i] -- creating a link between the two tables
+	end
+
+	return rvoronoi
+end
+
+local function generatePoints (polygoncount,iterations,minx,miny,maxx,maxy)
+	local points = {}
+	for i=1,polygoncount do
+		local rx,ry = Tools:randomPoint(minx,miny,maxx,maxy)
+		while Tools:tableContains(points,{ 'x', 'y' }, { rx, ry }) do
+			rx,ry = Tools:randomPoint(minx,miny,maxx,maxy)
+		end
+
+		points[i] = { x = rx, y = ry }
+	end
+	points = Tools:sortthepoints(points)
 	return points
 end
 
 function voronoilib:new(polygoncount,iterations,minx,miny,maxx,maxy)
-
-	local rightDoubleBoundary = 2*(maxx + (maxx-minx) + (maxy-miny))
-
-	local rvoronoi = { }
-	----------------------------------------------------------
-	-- the iteration loop
-	for it=1,iterations do
-
-		------------------------------------------------
-		-- initalizes everything needed for this iteration
-		rvoronoi[it] = { }
-		rvoronoi[it].points = { }
-		rvoronoi[it].boundary = { minx,miny,minx+maxx,miny+maxy }
-		rvoronoi[it].vertex = { }
-		rvoronoi[it].segments = { }
-		rvoronoi[it].events = self.heap:new()
-		rvoronoi[it].beachline = self.doubleLinkedList:new()
-		rvoronoi[it].polygons = { }
-		rvoronoi[it].polygonmap = { }
-		rvoronoi[it].centroids = { }
-
-		---------------------------------------------------------
-		-- creates the random points that the polygons will be based
-		-- off of. if this is it > 1 then it uses the centroids of the 
-		-- polygons from the previous iteration as the 'random points'
-		-- this relaxes the voronoi diagram and softens the grids so
-		-- the grid is more even.
-		if it == 1 then 
-			-- creates a random point and then checks to see if that point is already inside the set of random points. 
-			-- don't know what would happened but it would not return the same amount of polygons that user requested
-			for i=1,polygoncount do
-				local rx,ry = self.tools:randompoint(minx,miny,maxx,maxy)
-				while self.tools:tablecontains(rvoronoi[it].points,{ 'x', 'y' }, { rx, ry }) do
-					rx,ry = self.tools:randompoint(minx,miny,maxx,maxy)
-				end
-				rvoronoi[it].points[i] = { x = rx, y = ry }
-			end
-			rvoronoi[it].points = self.tools:sortthepoints(rvoronoi[it].points)
-		else
-			rvoronoi[it].points = rvoronoi[it-1].centroids
-		end
-
-		-- sets up the rvoronoi events
-		for i = 1,#rvoronoi[it].points do
-			rvoronoi[it].events:push(rvoronoi[it].points[i], rvoronoi[it].points[i].x,{i} )
-		end
-
-		while not rvoronoi[it].events:isEmpty() do
-			local e, x = rvoronoi[it].events:pop()
-			if e.event then
-				self.tools:processEvent(e,rvoronoi[it])
-			else
-				self.tools:processPoint(e,rvoronoi[it])
-			end    
-		end
-
-		self.tools:finishEdges(rvoronoi[it], rightDoubleBoundary)	 
-
-		self.tools:dirty_poly(rvoronoi[it])
-
-		for i,polygon in pairs(rvoronoi[it].polygons) do
-			local cx, cy = self.tools:polyoncentroid(polygon.points)
-			rvoronoi[it].centroids[i] = { x = cx, y = cy }
-			rvoronoi[it].polygons[i].centroid = rvoronoi[it].centroids[i] -- creating a link between the two tables
-		end
+	local points = generatePoints (polygoncount,iterations,minx,miny,maxx,maxy)
+	local str = ''
+	for i, p in ipairs (points) do
+		str = str..p.x..','..p.y..', '
 	end
+	print ('{'..str..'}')
 
-	-----------------------------
-	-- returns the last iteration
-	local genvoronoi = rvoronoi[iterations]
-	print (#genvoronoi.polygons)
+	local genvoronoi = getRVoronoi (points,iterations,minx,miny,maxx,maxy)
 	setmetatable(genvoronoi, self) 
 	self.__index = self 
 	return genvoronoi
@@ -1051,149 +1022,48 @@ end
 
 ------------------------------------------------
 -- returns the actual polygons that are the neighbors
-function voronoilib:getNeighbors(...)
-
-	local returner = { }
-	local indexes = { }
-
-	-- builds a table of it input polygons
-	for i=2,#arg do 
-		indexes[arg[i]] = true 
+function voronoilib:getNeighborsSingle(polygon)
+	local index = polygon.index
+	local neighbors = {}
+	for i, indexNeighbour in pairs(self.polygonMap[index]) do
+		local neighbor = self.polygons[indexNeighbour]
+		table.insert (neighbors, neighbor)
 	end
-
-	if arg[1] == 'all' then
-
-		-- finds all the neighbors and removes all duplicates
-		local returnIs = { }
-		for pindex,tt in pairs(indexes) do
-			for j,index in pairs(self.polygonmap[pindex]) do
-				returnIs[index] = true
-			end
-		end
-
-		-- sets the in polygons as nil so it doesnt' return one of the inputs as a neighbor.
-		for index,tt in pairs(indexes) do returnIs[index] = nil end
-
-		-- builds the polygon table for returning
-		for index,tt in pairs(returnIs) do
-			returner[#returner+1] = self.polygons[index]
-		end
-
-	elseif arg[1] == 'shared' then
-
-		-- finds all the neighbors, counts occurances
-		local returnIs = { }
-		for pindex,tt in pairs(indexes) do
-			for j,index in pairs(self.polygonmap[pindex]) do
-				if returnIs[index] == nil then returnIs[index] = 1
-				else returnIs[index] = returnIs[index] + 1 end
-			end
-		end
-
-		-- builds the polygon table for returning
-		for index,count in pairs(returnIs) do
-			if count == (#arg-1) then returner[#returner+1] = self.polygons[index] end
-		end
-
-	else print('unknown mode in getNeighbors(...): ' .. arg[1]) end
-
-	--[[for pindex,tt in pairs(indexes) do
-        returner[]
-        for j,index in pairs(self.polygonmap[pindex]) do
-            returner[#returner+1] = self.polygons[index]
-        end
-    end]]--
-
-	return returner
-
+	return neighbors
 end
 
--------------------------------------------------------
--- returns the edges of a polygon. if multiple polygons are 
--- inputed then only the edges that are shared with at least 
--- two polygons are returned
--- the first argument is MODE = { 'segment' or 'vertex'} 
--- segment --> returns edges where the line segment is shared with atleast 2 polygons
--- vertex --> returns segments in which the vertexes are shared with atleast 3 polygons
-function voronoilib:getEdges(mode, drawlist)
-	local edges = { }
 
-	for i=1, #drawlist do
-		for j,line in pairs(self.polygons[drawlist[i]].edges) do 
-			edges[#edges+1] = line 
+function voronoilib:polygonContains(x, y)
+	local closestPolygon = nil
+	local minDistance = math.huge
+	for index, centroid in pairs(self.centroids) do
+		local dx = x - centroid.x
+		local dy = y - centroid.y
+		local dsqr = (dx * dx + dy * dy)
+		if dsqr < minDistance then
+			minDistance = dsqr
+			closestPolygon = self.polygons[index]
 		end
 	end
-
-
-
-	if #drawlist > 1 then
-		local processedreturner = { }
-		local incount = { }
-
-		for i,line1 in pairs(edges) do
-			for j,line2 in pairs(edges) do
-				if (i ~= j) and (incount[i] == nil) and (incount[j] == nil) then
-					if self.tools:sameedge(line1,line2) then
-						processedreturner[#processedreturner+1] = edges[i]
-						incount[i],incount[j] = true,true
-					end
-				end 
-			end
-		end
-		edges = processedreturner
-
-		if mode == 'segment' then
-			-- do nothing, everything is already done.
-		elseif mode == 'vertex' then
-			-- checks if the segment shares both points with 2 other segments
-			-- only returns those segments
-			processedreturner = { }
-			for indexmain,linemain in pairs(edges) do
-				-- how many other segments share the same points
-				local point1 = 0
-				local point2 = 0
-
-				for indexsub,linesub in pairs(edges) do
-					if ((math.abs(linemain[1] - linesub[1]) < constants.zero) and (math.abs(linemain[2] - linesub[2]) < constants.zero)) 
-					or ((math.abs(linemain[1] - linesub[3]) < constants.zero) and (math.abs(linemain[2] - linesub[4]) < constants.zero)) then
-						point1 = point1 + 1
-					elseif ((math.abs(linemain[3] - linesub[1]) < constants.zero) and (math.abs(linemain[4] - linesub[2]) < constants.zero)) 
-					or ((math.abs(linemain[3] - linesub[3]) < constants.zero) and (math.abs(linemain[4] - linesub[4]) < constants.zero)) then 
-						point2 = point2 + 1
-					end
-				end
-
-				if (point2 >= 2) and (point1 >= 2) then
-					processedreturner[#processedreturner+1] = linemain
-				end
-			end
-			edges = processedreturner
-
-		else print('not an recognized voronoilib:getEdges(...) mode') end
-
+	if closestPolygon:containsPoint (x, y) then
+		return closestPolygon
 	end
-
-	return edges
 end
 
------------------------------------------------------------------------------------
--- returns the polygon that contains the point, returns nil if no polygon was found
-function voronoilib:polygoncontains(x,y)
 
-	local distance = { }
-	for index,centroid in pairs(self.centroids) do
-		distance[#distance+1] = { i = index, d = math.sqrt(math.pow(x-centroid.x,2) + math.pow(y-centroid.y,2)) }
-	end
+function voronoilib:edgeContains(x, y, minDistance)
+	local closestEdge = nil
+	minDistance = minDistance or math.huge
+	for _, edge in pairs(self.edges) do
+		local dx, dy = x - edge.x1, y - edge.y1
+		local d = math.sqrt(dx * dx + dy * dy)
 
-	table.sort(distance,function(a,b) return a.d < b.d end)
-
-	for i,pindex in pairs({ unpack(self.polygonmap[distance[1].i]),distance[1].i }) do
-		if self.polygons[pindex]:containspoint(x,y) then 
-			return self.polygons[pindex]
+		if d < minDistance then
+			minDistance = d
+			closestEdge = edge
 		end
 	end
-
-	return nil
+	return closestEdge
 end
 
 
@@ -1201,9 +1071,10 @@ end
 ----------------
 ----------------
 
-tools.polygon = polygon
-voronoilib.heap = heap
-voronoilib.tools = tools
+Tools.polygon = Polygon
+
+voronoilib.Heap = Heap
+voronoilib.Tools = Tools
 voronoilib.doubleLinkedList = doubleLinkedList
 
 return voronoilib
