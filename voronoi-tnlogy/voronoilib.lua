@@ -326,7 +326,8 @@ function Tools:intersect(point, arc)
 	if (arc.x == point.x) then 
 		return false 
 	end
-
+	
+	local a, b
 	if (arc.prev) then
 		--Get the interSectionTool of i->prev, i.
 		a = self:interSectionTool(arc.prev, arc, point.x).y
@@ -335,7 +336,6 @@ function Tools:intersect(point, arc)
 		--Get the interSectionTool of i->next, i.
 		b = self:interSectionTool(arc, arc.next, point.x).y
 	end    
-	--print("intersect", a,b,p.y)
 	if (( not arc.prev or a <= point.y) and (not arc.next or point.y <= b)) then
 		res.y = point.y
 		-- Plug it back into the parabola equation.
@@ -404,11 +404,11 @@ end
 
 function Tools:tableContains(tablename,attributename,value)
 	if attributename == nil then
-		for i,v in pairs(tablename) do
+		for _, v in pairs(tablename) do
 			if v == value then return true end
 		end
 	elseif type(attributename) == 'table' then
-		for i,v in pairs(tablename) do
+		for _, v in pairs(tablename) do
 			local match = 0
 			for j,v2 in pairs(attributename) do
 				if v[v2] == value[j] then match = match + 1 end
@@ -416,7 +416,7 @@ function Tools:tableContains(tablename,attributename,value)
 			if match == #attributename then return true end
 		end
 	else
-		for i,v in pairs(tablename) do
+		for _, v in pairs(tablename) do
 			if v[attributename] == value then return true end
 		end
 	end
@@ -604,18 +604,18 @@ local function samePoint(point1, point2)
 	return math.abs (point1.x - point2.x) < constants.zero and math.abs (point1.y - point2.y) < constants.zero
 end
 
--- Проверка, что сегменты не соединены с другими сегментами
-local function connectionOther(segments, segment1, segment2)
-	for _, segment in ipairs(segments) do
-		if segment ~= segment1 and segment ~= segment2 then
-			if samePoint(segment1.endPoint, segment.startPoint) 
-			or samePoint(segment2.startPoint, segment.endPoint) then
-				return true
-			end
-		end
-	end
-	return false
-end
+---- Проверка, что сегменты не соединены с другими сегментами
+--local function connectionOther(segments, segment1, segment2)
+--	for _, segment in ipairs(segments) do
+--		if segment ~= segment1 and segment ~= segment2 then
+--			if samePoint(segment1.endPoint, segment.startPoint) 
+--			or samePoint(segment2.startPoint, segment.endPoint) then
+--				return true
+--			end
+--		end
+--	end
+--	return false
+--end
 
 -- Объединение двух сегментов
 local function mergeSegment(segment1, segment2)
@@ -688,11 +688,11 @@ function Tools:dirtyPolygon ( invoronoi )
 	invoronoi.segments = cleanSegments (invoronoi.segments)
 	print ('now #invoronoi.segments', #invoronoi.segments)
 
-	for i, segment in pairs(invoronoi.segments) do
+	for _, segment in pairs(invoronoi.segments) do
 		local isects = { }
 		local removetheline = false
 
-		for i, boundary in ipairs(boundaries) do
+		for _, boundary in ipairs(boundaries) do
 			if (segment.startPoint.x < boundary[1] or segment.endPoint.x < boundary[1])
 			or (segment.startPoint.x > boundary[3] or segment.endPoint.x > boundary[3])
 			or (segment.startPoint.y < boundary[2] or segment.endPoint.y < boundary[2])
@@ -701,14 +701,14 @@ function Tools:dirtyPolygon ( invoronoi )
 				local px, py, onlines = self:intersectionPoint(boundary, {segment.startPoint.x, segment.startPoint.y, segment.endPoint.x, segment.endPoint.y})
 				isects[#isects+1] = { x=px, y=py, on=onlines }
 
-				local segment1 = {startPoint = segment.startPoint, endPoint = {x=px, y=py}}
+--				local segment1 = {startPoint = segment.startPoint, endPoint = {x=px, y=py}}
 
 --				table.insert (invoronoi.segments, segment1)
 --				table.insert (invoronoi.segments, segment2)
 			end
 		end
 
-		for index,ise in pairs(isects) do 
+		for _, ise in pairs(isects) do 
 			if ise.on then 
 				otherpoints[#otherpoints+1] = { x = ise.x, y = ise.y }  
 			end 
@@ -717,7 +717,7 @@ function Tools:dirtyPolygon ( invoronoi )
 
 
 
-	for i,v in pairs(otherpoints) do 
+	for _, v in pairs(otherpoints) do 
 		table.insert(processingpoints,v) 
 	end
 
@@ -851,7 +851,7 @@ end
 -- checks if the point is inside the polygon
 function Polygon:containsPoint(x, y)
 	local isInside = false
-	for i, edge in ipairs (self.edges) do
+	for _, edge in ipairs (self.edges) do
 		local x1, y1, x2, y2 = edge[1], edge[2], edge[3], edge[4]
 		if ((y1 > y) ~= (y2 > y)) and
 		(x < (x2 - x1) * (y - y1) / (y2 - y1) + x1) then
@@ -896,7 +896,7 @@ local function getRVoronoi (points, minx,miny,maxx,maxy)
 	end
 
 	while not rvoronoi.events:isEmpty() do
-		local e, x = rvoronoi.events:pop()
+		local e = rvoronoi.events:pop()
 		if e.event then
 			Tools:processEvent(e,rvoronoi)
 		else
@@ -923,7 +923,7 @@ end
 --local function generatePoints (polygoncount,iterations,minx,miny,maxx,maxy)
 local function generatePoints (polygoncount, minx,miny, maxx,maxy)
 	local points = {}
-	for i=1,polygoncount do
+	for _ = 1, polygoncount do
 		local rx,ry = Tools:randomPoint(minx,miny,maxx,maxy)
 		while Tools:tableContains(points,{ 'x', 'y' }, { rx, ry }) do
 			rx,ry = Tools:randomPoint(minx,miny,maxx,maxy)
@@ -940,7 +940,7 @@ function voronoilib:new(polygoncount, minx,miny,maxx,maxy)
 --	local points = generatePoints (polygoncount,iterations,minx,miny,maxx,maxy)
 	local points = generatePoints (polygoncount, minx,miny,maxx,maxy)
 	local str = ''
-	for i, p in ipairs (points) do
+	for _, p in ipairs (points) do
 		str = str..p.x..','..p.y..', '
 	end
 	print ('{'..str..'}')
@@ -957,7 +957,7 @@ end
 function voronoilib:getNeighborsSingle(polygon)
 	local index = polygon.index
 	local neighbors = {}
-	for i, indexNeighbour in pairs (self.polygonMap[index]) do
+	for _, indexNeighbour in pairs (self.polygonMap[index]) do
 		local neighbor = self.polygons[indexNeighbour]
 		table.insert (neighbors, neighbor)
 	end
@@ -1008,7 +1008,7 @@ function voronoilib:edgeContains(x, y, minDistance)
 	minDistance = minDistance or math.huge
 	local found = false
 
-	for i, edge in pairs(self.segments) do
+	for _, edge in pairs(self.segments) do
 		local x1, y1 = edge.startPoint.x, edge.startPoint.y
 		local x2, y2 = edge.endPoint.x, edge.endPoint.y
 		local dsqr = distanceToSegment(x, y, x1, y1, x2, y2)
@@ -1034,7 +1034,7 @@ end
 
 Tools.polygon = Polygon
 
-voronoilib.Heap = Heap
+voronoilib.heap = HHeap
 voronoilib.Tools = Tools
 voronoilib.doubleLinkedList = doubleLinkedList
 
