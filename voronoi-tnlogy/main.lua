@@ -15,7 +15,7 @@ function love.load ()
 	local polygoncount = 16
 	local minx,miny = 25, 25
 	local maxx,maxy = width-50, heigth-50
-	
+
 	vDiagram = voronoilib:new(polygoncount, minx,miny, maxx,maxy)
 
 	hovered = {
@@ -29,14 +29,31 @@ function love.load ()
 end
 
 
+local function drawArrow (x1, y1, x2, y2)
+	local angle = math.atan2(y2 - y1, x2 - x1)
+	local arrowLength = 20
+	local arrow1x = x2 - arrowLength * math.cos(angle - math.pi / 12)
+	local arrow1y = y2 - arrowLength * math.sin(angle - math.pi / 12)
+	local arrow2x = x2 - arrowLength * math.cos(angle + math.pi / 12)
+	local arrow2y = y2 - arrowLength * math.sin(angle + math.pi / 12)
+
+	love.graphics.line(x2, y2, arrow1x, arrow1y)
+	love.graphics.line(x2, y2, arrow2x, arrow2y)
+end
+
 local function drawPolygons (polygons, colorFill, colorLine)
 	love.graphics.setColor (colorFill)
 	for _,polygon in pairs(polygons) do
-		love.graphics.polygon('fill', polygon.points)
+		if #polygon.points > 4 then
+			love.graphics.polygon('fill', polygon.points)
+		end
 	end
 	love.graphics.setColor (colorLine)
 	for _,polygon in pairs(polygons) do
-		love.graphics.polygon('line', polygon.points)
+		local vertices = polygon.points
+		if #vertices > 4 then
+			love.graphics.polygon('line', vertices)
+		end
 	end
 
 	love.graphics.setColor (1,1,1,0.9)
@@ -44,25 +61,8 @@ local function drawPolygons (polygons, colorFill, colorLine)
 		love.graphics.circle('fill', point.x, point.y, 2)
 		love.graphics.print(index, point.x, point.y)
 	end
-
-	love.graphics.setColor (0,0,0,0.9)
-	for index,polygon in pairs(polygons) do
-		love.graphics.circle('line', polygon.centroid.x, polygon.centroid.y, 2)
-		love.graphics.print(index, polygon.centroid.x, polygon.centroid.y)
-	end
 end
 
-local function drawArrow (x1, y1, x2, y2)
-	local angle = math.atan2(y2 - y1, x2 - x1)
-	local arrowLength = 20
-	local arrow1x = x2 - arrowLength * math.cos(angle - math.pi / 6)
-	local arrow1y = y2 - arrowLength * math.sin(angle - math.pi / 6)
-	local arrow2x = x2 - arrowLength * math.cos(angle + math.pi / 6)
-	local arrow2y = y2 - arrowLength * math.sin(angle + math.pi / 6)
-
-	love.graphics.line(x2, y2, arrow1x, arrow1y)
-	love.graphics.line(x2, y2, arrow2x, arrow2y)
-end
 
 function love.draw()
 	love.graphics.setLineWidth (1)
@@ -72,14 +72,24 @@ function love.draw()
 --	highlight hovered
 	if hovered.polygon then
 		love.graphics.setColor (0,1,0,0.2)
-		love.graphics.polygon('fill', hovered.polygon.points)
+		local vertices = hovered.polygon.points
+		love.graphics.polygon('fill', vertices)
+		local x1, y1 = vertices[#vertices-1], vertices[#vertices]
+		love.graphics.setColor (0.6,0.8,0.6)
+		for i = 1, #vertices, 2 do
+			local x2, y2 = vertices[i], vertices[i+1]
+			drawArrow (x1, y1, x2, y2)
+			x1, y1 = x2, y2
+		end
 	end
 
 -- highlight neigbours
 	if hovered.neighbours then
 		for _, polygon in pairs(hovered.neighbours) do
 			love.graphics.setColor (1,1,0,0.2)
-			love.graphics.polygon('fill', polygon.points)
+			if #polygon.points > 4 then
+				love.graphics.polygon('fill', polygon.points)
+			end
 		end
 	end
 

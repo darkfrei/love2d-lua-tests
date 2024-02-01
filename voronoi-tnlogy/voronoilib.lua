@@ -330,7 +330,7 @@ function Tools:intersect(point, arc)
 	if (arc.x == point.x) then 
 		return false 
 	end
-	
+
 	local a, b
 	if (arc.prev) then
 		--Get the interSectionTool of i->prev, i.
@@ -429,47 +429,6 @@ function Tools:tableContains(tablename,attributename,value)
 end
 
 
-
-function Tools:polygonCentroid(listofpoints)
-	-- formula here http://en.wikipedia.org/wiki/Centroid#Centroid_of_Polygon
-	local A = 0
-	for i = 1,#listofpoints,2 do
-		--print('point',listofpoints[i],listofpoints[i+1])
-		if i > #listofpoints-2 then
-			A = A + listofpoints[i]*listofpoints[2] - listofpoints[1]*listofpoints[i+1]
-		else
-			A = A + listofpoints[i]*listofpoints[i+3] - listofpoints[i+2]*listofpoints[i+1]
-		end
-	end
-	A = 0.5 * A
-
-	local cx = 0
-	for i = 1, #listofpoints,2 do
-		if i > #listofpoints-2 then
-			cx = cx + (listofpoints[i]+listofpoints[1])*(listofpoints[i]*listofpoints[2] - listofpoints[1]*listofpoints[i+1])
-		else
-			cx = cx + (listofpoints[i]+listofpoints[i+2])*(listofpoints[i]*listofpoints[i+3] - listofpoints[i+2]*listofpoints[i+1])
-		end
-	end
-	cx = cx / (6*A)
-
-	local cy = 0
-	for i = 1, #listofpoints,2 do
-		if i > #listofpoints-2 then
-			cy = cy + (listofpoints[i+1]+listofpoints[2])*(listofpoints[i]*listofpoints[2] - listofpoints[1]*listofpoints[i+1])
-		else
-			cy = cy + (listofpoints[i+1]+listofpoints[i+3])*(listofpoints[i]*listofpoints[i+3] - listofpoints[i+2]*listofpoints[i+1])
-		end
-	end
-	cy = cy / (6*A)
-	--print('cx',cx,'cy',cy,'A',A)
-
---	cx = math.floor (cx+0.5)
---	cy = math.floor (cy+0.5)
-
-	return cx,cy
-end
-
 function Tools:sorttable(datable, parameter, sortbyascending)
 	local sortedtable = {}
 	local comparator = sortbyascending and 1 or -1
@@ -482,42 +441,34 @@ function Tools:sorttable(datable, parameter, sortbyascending)
 	return sortedtable
 end
 
-
-
-function Tools:sortpolydraworder(listofpoints)
+local function sortPointsClockwise(points)
 	local centroidX, centroidY = 0, 0
-	local pointCount = #listofpoints
-
-	-- Calculate the centroid of the polygon
-	for _, point in pairs(listofpoints) do
+	for _, point in pairs(points) do
 		centroidX = centroidX + point.x
 		centroidY = centroidY + point.y
 	end
+	centroidX = centroidX / #points
+	centroidY = centroidY / #points
 
-	-- Calculate and set the angle of each point with respect to the centroid
-	for _, point in pairs(listofpoints) do
-		point.angle = math.atan2(point.y - centroidY/ pointCount, point.x - centroidX/ pointCount)
+	local function compareAngles(p1, p2)
+		local angle1 = math.atan2(p1.y - centroidY, p1.x - centroidX)
+		local angle2 = math.atan2(p2.y - centroidY, p2.x - centroidX)
+		return angle1 < angle2
 	end
 
-	-- Sort the points by angle
-	listofpoints = self:sorttable(listofpoints, 'angle', true)
+	table.sort(points, compareAngles)
+end
 
-	local returner
-	for _, point in pairs(listofpoints) do
-		if not returner then
-			returner = {point.x, point.y}
-		else
-			if (math.abs(returner[#returner - 1] - point.x) < constants.zero) 
-			and (math.abs(returner[#returner] - point.y) < constants.zero) then
-				-- Duplicate point, so do nothing
-			else
-				table.insert(returner, point.x)
-				table.insert(returner, point.y)
-			end
-		end
+function Tools:getSortedVertices(points)
+	sortPointsClockwise(points)
+
+	local vertices = {}
+	for i = 1, #points do
+		local point = points[i]
+		table.insert(vertices, point.x)
+		table.insert(vertices, point.y)
 	end
-
-	return returner
+	return vertices
 end
 
 
@@ -594,7 +545,6 @@ end
 ----------------------------------------------------
 ----------------------------------------------------
 
--- Проверка совпадения направления сегментов
 local function sameDirection(segment1, segment2)
 	local dx1, dy1 = segment1.endPoint.x - segment1.startPoint.x, segment1.endPoint.y - segment1.startPoint.y
 	local dx2, dy2 = segment2.endPoint.x - segment2.startPoint.x, segment2.endPoint.y - segment2.startPoint.y
@@ -603,25 +553,10 @@ local function sameDirection(segment1, segment2)
 	or 	math.abs(math.atan2 (dy1, dx1) - math.atan2 (-dy2, -dx2)) < constants.zero
 end
 
--- Проверка совпадения точек
 local function samePoint(point1, point2)
 	return math.abs (point1.x - point2.x) < constants.zero and math.abs (point1.y - point2.y) < constants.zero
 end
 
----- Проверка, что сегменты не соединены с другими сегментами
---local function connectionOther(segments, segment1, segment2)
---	for _, segment in ipairs(segments) do
---		if segment ~= segment1 and segment ~= segment2 then
---			if samePoint(segment1.endPoint, segment.startPoint) 
---			or samePoint(segment2.startPoint, segment.endPoint) then
---				return true
---			end
---		end
---	end
---	return false
---end
-
--- Объединение двух сегментов
 local function mergeSegment(segment1, segment2)
 	segment1.startPoint = segment1.endPoint
 	segment1.endPoint = segment2.endPoint
@@ -643,7 +578,6 @@ local function cleanSegments(segments)
 			if i ~= j 
 			and sameDirection(segment1, segment2) 
 			and samePoint(segment1.startPoint, segment2.startPoint) 
---			and not connectionOther(segments, segment1, segment2) 
 			then
 				mergeSegment(segment1, segment2)
 				removeSegment(segments, segment2)
@@ -662,6 +596,7 @@ end
 function Tools:dirtyPolygon ( invoronoi )
 	local minx, miny = invoronoi.boundary[1], invoronoi.boundary[2]
 	local maxx, maxy = invoronoi.boundary[3], invoronoi.boundary[4]
+	
 	local polygon = {}
 	local processingpoints = invoronoi.vertex
 	for i = #processingpoints, 1, -1 do
@@ -689,7 +624,7 @@ function Tools:dirtyPolygon ( invoronoi )
 	}
 
 	print ('was #invoronoi.segments', #invoronoi.segments)
-	invoronoi.segments = cleanSegments (invoronoi.segments)
+--	invoronoi.segments = cleanSegments (invoronoi.segments)
 	print ('now #invoronoi.segments', #invoronoi.segments)
 
 	for _, segment in pairs(invoronoi.segments) do
@@ -755,13 +690,11 @@ function Tools:dirtyPolygon ( invoronoi )
 		end
 	end
 
-	
-
 	for i, points in ipairs(polygon) do
-		invoronoi.polygons[i] = self.polygon:new(self:sortpolydraworder(points), i)
+		print (i, #points, #polygon)
+		local vertices = self:getSortedVertices(points)
+		invoronoi.polygons[i] = self.polygon:new(vertices, i)
 	end
-
-
 end
 
 ---------------------------------------------
@@ -821,19 +754,19 @@ end
 
 local Polygon = { }
 
-function Polygon:new(points, index)
+function Polygon:new(vertices, index)
 	-- creates the edges
 	local edges = {}
-	local edge = {points[#points-1], points[#points], points[1], points[2]}
+	local edge = {vertices[#vertices-1], vertices[#vertices], vertices[1], vertices[2]}
 	table.insert (edges, edge)
 
-	for i=1, #points-2, 2 do
-		edge = {points[i], points[i+1], points[i+2], points[i+3]}
+	for i=1, #vertices-2, 2 do
+		edge = {vertices[i], vertices[i+1], vertices[i+2], vertices[i+3]}
 		table.insert (edges, edge)
 	end
 
 	local poly = {
-		points = points,
+		points = vertices,
 		edges = edges,
 		index = index,
 	}
@@ -884,7 +817,6 @@ local function getRVoronoi (points, minx,miny,maxx,maxy)
 	rvoronoi.beachline = doubleLinkedList:new()
 	rvoronoi.polygons = { }
 	rvoronoi.polygonMap = { }
-	rvoronoi.centroids = { }
 
 
 	-- sets up the rvoronoi events
@@ -904,15 +836,7 @@ local function getRVoronoi (points, minx,miny,maxx,maxy)
 
 	Tools:finishEdges(rvoronoi, rightDoubleBoundary)
 
---	rvoronoi.segments = {}
 	Tools:dirtyPolygon(rvoronoi)
-
-	for i, polygon in pairs(rvoronoi.polygons) do
-		local points = polygon.points
-		local cx, cy = Tools:polygonCentroid(points)
-		rvoronoi.centroids[i] = { x = cx, y = cy }
-		rvoronoi.polygons[i].centroid = rvoronoi.centroids[i] -- creating a link between the two tables
-	end
 
 	return rvoronoi
 end
@@ -962,12 +886,13 @@ function voronoilib:getNeighborsSingle(polygon)
 end
 
 
+
 function voronoilib:polygonContains(x, y)
 	local closestPolygon = nil
 	local minDistance = math.huge
-	for index, centroid in pairs(self.centroids) do
-		local dx = x - centroid.x
-		local dy = y - centroid.y
+	for index, point in pairs(self.points) do
+		local dx = x - point.x
+		local dy = y - point.y
 		local dsqr = (dx * dx + dy * dy)
 		if dsqr < minDistance then
 			minDistance = dsqr
@@ -975,6 +900,7 @@ function voronoilib:polygonContains(x, y)
 		end
 	end
 	if closestPolygon:containsPoint (x, y) then
+		-- if pointInConvexPolygon(x, y, poly) then
 		return closestPolygon
 	end
 end
