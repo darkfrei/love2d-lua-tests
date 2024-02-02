@@ -8,15 +8,69 @@ local voronoilib = require ('voronoilib')
 
 -- https://github.com/darkfrei/love2d-lua-tests/tree/main/voronoi-tnlogy
 
+local function phyllotaxis(cx, cy, s, n)
+	local pointVertices = {}
+	local phi = 2*math.pi*(1-(5^0.5-1)/2)
+	for i = 0, n do
+		local angle = i * phi -- Adjust the angle for different phyllotaxis patterns
+		local radius = s * math.sqrt(i)
+		local x = cx + radius * math.cos(angle)
+		local y = cy + radius * math.sin(angle)
+		x = math.floor(x/2+0.5)*2
+		y = math.floor(y/2+0.5)*2
+		table.insert(pointVertices, x)
+		table.insert(pointVertices, y)
+	end
+--	print ('phyllotaxis', '{'..table.concat (pointVertices, ',')..'}')
+	return pointVertices
+end
 
+--local siteVertices = phyllotaxis(10, 99, 60, 500)
+
+local function hexagonalVertices(x0, y0, rows, cols, w, h, s1, s2)
+	local pointVertices = {}
+	for row = 1, rows do
+		for col = 1, cols do
+			local x = col * w
+			local y = row * h
+			x = x + math.random ()-0.5
+--			x = x + math.random (3)/1000
+--			y = y + math.random (3)/1000
+--			y = y + math.random ()-0.5
+			if col % 2 == s1 then
+				y = y + h/2
+			end
+			if row % 2 == s2 then
+				x = x + w/2
+			end
+			table.insert(pointVertices, x0+x)
+			table.insert(pointVertices, y0+y)
+		end
+	end
+
+	print ('hexagonal', '{'..table.concat (pointVertices, ',')..'}')
+	return pointVertices
+end
+
+
+--local siteVertices = hexagonalVertices (-30, 10, 6, 7, 100, 86, 2, 0)
+local siteVertices = hexagonalVertices (10, -10, 5, 8, 86, 100, 0, 2)
+--local siteVertices = hexagonalVertices (250, 100, 2, 2, 86, 100, 0, 2)
+
+
+
+specialCaseHLines = {}
+specialCaseVLines = {}
+specialCaseCircle = {}
 
 function love.load ()
 	local width, heigth = love.graphics.getDimensions ()
 	local polygoncount = 16
-	local minx,miny = 25, 25
-	local maxx,maxy = width-50, heigth-50
+	local frameX,frameY = 25, 25
+	local frameW, frameH = width-50, heigth-50
 
-	vDiagram = voronoilib:new(polygoncount, minx,miny, maxx,maxy)
+--	vDiagram = voronoilib:generateNew(polygoncount, minx,miny, maxx,maxy)
+	vDiagram = voronoilib:new(siteVertices, frameX,frameY, frameW, frameH)
 
 	hovered = {
 		vertex = nil,
@@ -27,6 +81,11 @@ function love.load ()
 	colorFill = {0.5,0.5,0.5}
 	colorLine = {0.8,0.8,0.8}
 end
+
+function love.update()
+
+end
+
 
 
 local function drawArrow (x1, y1, x2, y2)
@@ -59,8 +118,11 @@ local function drawPolygons (polygons, colorFill, colorLine)
 	love.graphics.setColor (1,1,1,0.9)
 	for index, point in pairs(vDiagram.points) do
 		love.graphics.circle('fill', point.x, point.y, 2)
-		love.graphics.print(index, point.x, point.y)
+--		love.graphics.print(index, point.x, point.y)
 	end
+
+	love.graphics.setColor (1,1,1)
+	love.graphics.points (siteVertices)
 end
 
 
@@ -101,13 +163,36 @@ function love.draw()
 		love.graphics.line (edge.startPoint.x, edge.startPoint.y, edge.endPoint.x, edge.endPoint.y)
 		drawArrow (edge.startPoint.x, edge.startPoint.y, edge.endPoint.x, edge.endPoint.y)
 	end
+
+	love.graphics.setColor (0,1,0)
+	for i, line in ipairs (specialCaseHLines) do
+--		love.graphics.line (line)
+	end
+
+	love.graphics.setColor (1,0,0)
+	for i, line in ipairs (specialCaseVLines) do
+		love.graphics.line (line)
+	end
+
+
+
+	for i, circle in ipairs (specialCaseCircle) do
+		love.graphics.setColor (0.7,0.7,0.7, 0.7)
+		love.graphics.setLineWidth (circle[4])
+		love.graphics.circle ('line', circle[1], circle[2], circle[3])
+		love.graphics.setColor (1,1,1)
+		love.graphics.circle ('line', circle[1], circle[2], 3)
+	end
 end
 
-function love.update()
 
+function love.mousepressed (x, y)
+	print ('mousepressed', x, y)
 end
+
 
 function love.mousemoved (x, y, dx, dy)
+	love.window.setTitle ('mouse x:'..x..' y:'..y)
 	local radius = 40
 	hovered.edge = vDiagram:edgeContains(x, y, radius)
 	hovered.polygon = vDiagram:polygonContains(x,y)
@@ -116,6 +201,7 @@ function love.mousemoved (x, y, dx, dy)
 	else
 		hovered.neighbours = nil
 	end
+
 end
 
 
