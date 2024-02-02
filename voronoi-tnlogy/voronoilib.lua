@@ -226,14 +226,10 @@ function Tools:processCircle(event, dVoronoi)
 		table.insert(dVoronoi.vertex, vertex)
 
 		local radius1 = self:checkCircleEvent(dVoronoi, event.arc.prev, event.x)
-		if radius1 then 
-			table.insert (specialCaseCircle, {x, y, radius1, 1})
-		end
+
 
 		local radius2 = self:checkCircleEvent(dVoronoi, event.arc.next, event.x)
-		if radius2 then 
-			table.insert (specialCaseCircle, {x, y, radius2, 2})
-		end
+
 	end
 end
 
@@ -266,8 +262,8 @@ function Tools:processPoint(point, dVoronoi)
 		if x and specialCaseX then
 --			print ('x and specicialCase', 'x', x, 'y', y)
 --			print ('arcNode y', arcNode.y, 'point.y', point.y)
-			
-			
+
+
 --			dVoronoi.beachline:insertAfter(arcNode, point)
 --			return
 		elseif x then
@@ -297,16 +293,12 @@ function Tools:processPoint(point, dVoronoi)
 
 			arcNode.next.seg1 = segment2
 			local radius1 = self:checkCircleEvent(dVoronoi, arcNode, point.x)
-			if radius1 then 
-				table.insert (specialCaseCircle, {x, y, radius1, 3})
-			end
+
 
 			local arc2 = arcNode.next.next
 			arc2.seg0 = segment2
 			local radius2 = self:checkCircleEvent(dVoronoi, arc2, point.x)
-			if radius2 then 
-				table.insert (specialCaseCircle, {x, y, radius2, 4})
-			end
+
 
 			return
 		else
@@ -381,7 +373,7 @@ function Tools:checkCircleEvent(dVoronoi, arc, x0)
 
 	if x + radius > x0 then
 --Create new event.
-		local circleEvent = {x = x, y = y, arc = arc, valid = true}
+		local circleEvent = {x = x, y = y, arc = arc, valid = true, radius = radius}
 		arc.event = circleEvent
 		dVoronoi.events:push(circleEvent, x + radius)
 		return radius
@@ -494,11 +486,25 @@ end
 --------
 --------
 
+-- vertical directix
+--[[
 local function sortPoints(p1, p2)
 	if p1.x == p2.x then
 		return p1.y < p2.y
 	else
 		return p1.x < p2.x
+	end
+end
+--]]
+
+-- horizontal  directix
+local function sortPoints(p1, p2)
+	if p1.y == p2.y then
+		-- left to right
+		return p1.x < p2.x
+	else
+--		from top to bottom
+		return p1.y < p2.y
 	end
 end
 
@@ -543,7 +549,7 @@ function Tools:sorttable(datable, parameter, sortbyascending)
 	return sortedtable
 end
 
-local function sortPointsClockwise(points)
+function Tools:getSortedVertices(points)
 	local centroidX, centroidY = 0, 0
 	for _, point in pairs(points) do
 		centroidX = centroidX + point.x
@@ -559,11 +565,22 @@ local function sortPointsClockwise(points)
 	end
 
 	table.sort(points, compareAngles)
+	return points
 end
 
-function Tools:getSortedVertices(points)
-	sortPointsClockwise(points)
+--function Tools:getSortedVertices(points)
+--	sortPointsClockwise(points)
 
+--	local vertices = {}
+--	for i = 1, #points do
+--		local point = points[i]
+--		table.insert(vertices, point.x)
+--		table.insert(vertices, point.y)
+--	end
+--	return vertices
+--end
+
+function Tools:pointsToVertices(points)
 	local vertices = {}
 	for i = 1, #points do
 		local point = points[i]
@@ -842,29 +859,25 @@ function Tools:dirtyPolygon ( dVoronoi )
 	end
 
 	for i, point in pairs(processingPoints) do
---print (i, #processingPoints, 'processingPoints', point.x, point.y)
 		local distances = {}
-
-		for rindex, ranpoint in pairs(dVoronoi.points) do
+		for siteIndex, sitePoint in pairs(dVoronoi.points) do
 			local distance = { 
-				i = rindex, 
-				dsqr = ((point.x - ranpoint.x)^2 + (point.y - ranpoint.y)^2)
+				i = siteIndex, 
+				sqrDist = ((point.x - sitePoint.x)^2 + (point.y - sitePoint.y)^2)
 			}
 			table.insert (distances, distance) 
 		end
 
-		distances = self:sorttable(distances, 'dsqr', true)
+		distances = self:sorttable(distances, 'sqrDist', true)
 
-
-		local mindistance = distances[1].dsqr
+		local mindistance = distances[1].sqrDist
 		local related = {}
 		for _, distInfo in ipairs(distances) do
-			if distInfo.dsqr - mindistance < constants.zero then
+			if distInfo.sqrDist - mindistance < constants.zero then
 				local polyIndex = distInfo.i
 				local poly = polygonList[polyIndex] or {}
 				poly[#poly + 1] = { x = point.x, y = point.y }
 				polygonList[polyIndex] = poly
-
 				related[#related + 1] = polyIndex
 			end
 		end
@@ -882,11 +895,55 @@ function Tools:dirtyPolygon ( dVoronoi )
 		end
 	end
 
+	local uniquePoints = {}
+	local uniquePointsHash = {}
+	for i, points in ipairs(polygonList) do
+		for j, point in ipairs (points) do
+			local x, y = point.x, point.y
+			local str = tostring(x) .. "_" .. tostring(y)
+			if not uniquePointsHash[str] then
+				table.insert (uniquePoints, point)
+				local index = #uniquePoints
+				point.index = index
+				uniquePointsHash[str] = index
+			end
+		end
+	end
+
+	dVoronoi.uniquePoints = uniquePoints
+
+	local uniqueSegments = {}
+	local uniqueSegmentsHash = {}
+
 	for i, points in ipairs(polygonList) do
 --print (i, #points, #polygonList)
-		local vertices = self:getSortedVertices(points)
+		points = self:getSortedVertices(points)
+
+
+		for i = 1, #points do
+			local p1 = points[i]
+			local p2 = points[(i % #points)+1]
+			local x1, y1, x2, y2= p1.x, p1.y, p2.x, p2.y
+			if sortPoints (p1, p2) then
+				local x1, y1, x2, y2 = x2, y2, x1, y1
+			end
+			local str = tostring(x1) .. "_" .. tostring(y1).. 
+					"_" .. tostring(x2).. "_" .. tostring(y2)
+			if not uniqueSegmentsHash[str] then
+				table.insert (uniqueSegments, {x1, y1, x2, y2})
+				local index = #uniqueSegments
+				uniqueSegmentsHash[str] = index
+			end
+		end
+		
+		
+
+		local vertices = self:pointsToVertices(points)
 		dVoronoi.polygons[i] = self.polygon:new(vertices, i)
 	end
+	
+	dVoronoi.uniqueSegments = uniqueSegments
+
 end
 
 ---------------------------------------------
@@ -897,86 +954,6 @@ function Tools:randomPoint(minx,miny,maxx,maxy)
 	return x,y 
 end
 
-----------------------------------------------
--- checks if the line segment is the same
---[[
-function Tools:sameEdge(line1,line2)
-local l1p1 = { x = line1[1], y = line1[2] }
-local l1p2 = { x = line1[3], y = line1[4] }
-local l2p1 = { x = line2[1], y = line2[2] }
-local l2p2 = { x = line2[3], y = line2[4] }
-
-local l1,l2 = { }, { }
-
-if (l1p1.x == l1p2.x) then
-if (l1p1.y < l1p2.y) then 
-l1 = { l1p1.x,l1p1.y,l1p2.x,l1p2.y }
-else 
-l1 = { l1p2.x,l1p2.y,l1p1.x,l1p1.y } 
-end
-elseif (l1p1.x < l1p2.x) then 
-l1 = { l1p1.x,l1p1.y,l1p2.x,l1p2.y }
-else 
-l1 = { l1p2.x,l1p2.y,l1p1.x,l1p1.y } 
-end
-
-if (l2p1.x == l2p2.x) then
-if (l2p1.y < l2p2.y) then 
-l2 = { l2p1.x,l2p1.y,l2p2.x,l2p2.y }
-else 
-l2 = { l2p2.x,l2p2.y,l2p1.x,l2p1.y } 
-end
-elseif (l2p1.x < l2p2.x) then 
-l2 = { l2p1.x,l2p1.y,l2p2.x,l2p2.y }
-else 
-l2 = { l2p2.x,l2p2.y,l2p1.x,l2p1.y } 
-end
-
-if (math.abs(l1[1] - l2[1]) < constants.zero) and (math.abs(l1[2] - l2[2]) < constants.zero)
-and (math.abs(l1[3] - l2[3]) < constants.zero) and (math.abs(l1[4] - l2[4]) < constants.zero) then
-return true
-end
-
-return false
-end
---]]
-
---[[
-function Tools:samePoint(point1, point2)
-return math.abs(point1.x - point2.x) < constants.zero 
-and math.abs(point1.y - point2.y) < constants.zero
-end
-
-
-function Tools:sameEdge(line1, line2)
-local function sortPoints(p1, p2)
-if p1.x == p2.x then
-return p1.y < p2.y
-else
-return p1.x < p2.x
-end
-end
-
-local function normalizeLine(line)
-local p1, p2 = { x = line[1], y = line[2] }, { x = line[3], y = line[4] }
-if not sortPoints(p1, p2) then
-p1, p2 = p2, p1
-end
-return { p1.x, p1.y, p2.x, p2.y }
-end
-
-local l1 = normalizeLine(line1)
-local l2 = normalizeLine(line2)
-
-for i = 1, 4 do
-if math.abs(l1[i] - l2[i]) >= constants.zero then
-return false
-end
-end
-
-return true
-end
---]]
 
 --------
 --------
@@ -1065,6 +1042,8 @@ local function getRVoronoi (sitePoints, frameX,frameY, frameW, frameH)
 
 		if event.arc then
 			if event.valid then
+				
+				table.insert (specialCaseCircle, {event.x, event.y, event.radius, 1})
 				Tools:processCircle(event, dVoronoi)
 			end
 		else
@@ -1091,7 +1070,6 @@ local function generateSitePoints (polygoncount, minx,miny, maxx,maxy)
 		local point = { x = x, y = y }
 		table.insert (points, point)
 	end
---points = Tools:sortThePoints(points)
 	return points
 end
 
@@ -1155,9 +1133,9 @@ function voronoilib:polygonContains(x, y)
 	for index, point in pairs(self.points) do
 		local dx = x - point.x
 		local dy = y - point.y
-		local dsqr = (dx * dx + dy * dy)
-		if dsqr < minDistance then
-			minDistance = dsqr
+		local sqrDist = (dx * dx + dy * dy)
+		if sqrDist < minDistance then
+			minDistance = sqrDist
 			closestPolygon = self.polygons[index]
 		end
 	end
@@ -1172,15 +1150,15 @@ local function sqrDistanceToSegment(x, y, x1, y1, x2, y2)
 	local l2 = dx * dx + dy * dy
 
 	if l2 == 0 then
-		return math.sqrt((x - x1)^2 + (y - y1)^2)
+		return ((x - x1)^2 + (y - y1)^2)
 	end
 
 	local t = ((x - x1) * dx + (y - y1) * dy) / l2
 
 	if t < 0 then
-		return math.sqrt((x - x1)^2 + (y - y1)^2)
+		return ((x - x1)^2 + (y - y1)^2)
 	elseif t > 1 then
-		return math.sqrt((x - x2)^2 + (y - y2)^2)
+		return ((x - x2)^2 + (y - y2)^2)
 	end
 
 	local projectionX, projectionY = x1 + t * dx, y1 + t * dy
@@ -1193,12 +1171,13 @@ function voronoilib:edgeContains(x, y, minDistance)
 	minDistance = minDistance or math.huge
 	local found = false
 
-	for _, edge in pairs(self.segments) do
-		local x1, y1 = edge.startPoint.x, edge.startPoint.y
-		local x2, y2 = edge.endPoint.x, edge.endPoint.y
-		local dsqr = sqrDistanceToSegment(x, y, x1, y1, x2, y2)
-		if dsqr < minDistance then
-			minDistance = dsqr
+	for _, segment in pairs(self.uniqueSegments) do
+		local x1, y1 = segment[1], segment[2]
+		local x2, y2 = segment[3], segment[4]
+		
+		local sqrDist = sqrDistanceToSegment(x, y, x1, y1, x2, y2)
+		if sqrDist < minDistance then
+			minDistance = sqrDist
 			closestEdge = edge
 			found = true
 --print ('found')

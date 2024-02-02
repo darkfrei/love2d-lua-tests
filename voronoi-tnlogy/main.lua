@@ -25,7 +25,7 @@ local function phyllotaxis(cx, cy, s, n)
 	return pointVertices
 end
 
---local siteVertices = phyllotaxis(10, 99, 60, 500)
+
 
 local function hexagonalVertices(x0, y0, rows, cols, w, h, s1, s2)
 	local pointVertices = {}
@@ -52,9 +52,10 @@ local function hexagonalVertices(x0, y0, rows, cols, w, h, s1, s2)
 	return pointVertices
 end
 
+local siteVertices = phyllotaxis(10, 99, 60, 500)
 
 --local siteVertices = hexagonalVertices (-30, 10, 6, 7, 100, 86, 2, 0)
-local siteVertices = hexagonalVertices (10, -10, 5, 8, 86, 100, 0, 2)
+--local siteVertices = hexagonalVertices (10, -10, 5, 8, 86, 100, 0, 2)
 --local siteVertices = hexagonalVertices (250, 100, 2, 2, 86, 100, 0, 2)
 
 
@@ -67,7 +68,8 @@ function love.load ()
 	local width, heigth = love.graphics.getDimensions ()
 	local polygoncount = 16
 	local frameX,frameY = 25, 25
-	local frameW, frameH = width-50, heigth-50
+--	local frameW, frameH = width-50, heigth-50
+	local frameW, frameH = 550, 550
 
 --	vDiagram = voronoilib:generateNew(polygoncount, minx,miny, maxx,maxy)
 	vDiagram = voronoilib:new(siteVertices, frameX,frameY, frameW, frameH)
@@ -181,7 +183,12 @@ function love.draw()
 		love.graphics.setLineWidth (circle[4])
 		love.graphics.circle ('line', circle[1], circle[2], circle[3])
 		love.graphics.setColor (1,1,1)
-		love.graphics.circle ('line', circle[1], circle[2], 3)
+--		love.graphics.circle ('line', circle[1], circle[2], 3)
+	end
+	
+	love.graphics.setColor (0,1,0)
+	for i, point in ipairs (vDiagram.uniquePoints) do
+		love.graphics.circle ('line', point.x, point.y, 2)
 	end
 end
 
