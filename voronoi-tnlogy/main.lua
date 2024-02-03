@@ -63,6 +63,8 @@ local siteVertices = phyllotaxis(10, 99, 60, 500)
 specialCaseHLines = {}
 specialCaseVLines = {}
 specialCaseCircle = {}
+specialCaseSectors = {}
+specialCaseSectors2 = {}
 
 function love.load ()
 	local width, heigth = love.graphics.getDimensions ()
@@ -162,8 +164,11 @@ function love.draw()
 		local edge = hovered.edge
 		love.graphics.setColor (1,1,1)
 --		print ('edge')
-		love.graphics.line (edge.startPoint.x, edge.startPoint.y, edge.endPoint.x, edge.endPoint.y)
-		drawArrow (edge.startPoint.x, edge.startPoint.y, edge.endPoint.x, edge.endPoint.y)
+		local x1, y1, x2, y2 = edge[1], edge[2], edge[2], edge[4]
+--		love.graphics.line (edge.startPoint.x, edge.startPoint.y, edge.endPoint.x, edge.endPoint.y)
+		love.graphics.line (x1, y1, x2, y2)
+--		drawArrow (edge.startPoint.x, edge.startPoint.y, edge.endPoint.x, edge.endPoint.y)
+		drawArrow (x1, y1, x2, y2)
 	end
 
 	love.graphics.setColor (0,1,0)
@@ -189,6 +194,21 @@ function love.draw()
 	love.graphics.setColor (0,1,0)
 	for i, point in ipairs (vDiagram.uniquePoints) do
 		love.graphics.circle ('line', point.x, point.y, 2)
+	end
+	
+	love.graphics.setColor (1,1,0)
+	for i, line in ipairs (specialCaseSectors) do
+		love.graphics.line (line)
+	end
+	love.graphics.setColor (1,0,0)
+	for i, line in ipairs (specialCaseSectors2) do
+		love.graphics.line (line)
+	end
+	
+	-- vertex as crossing points
+	love.graphics.setColor (0,0,1)
+	for i, c in ipairs (vDiagram.vertex) do
+		love.graphics.circle ('line', c.x, c.y, 4)
 	end
 end
 

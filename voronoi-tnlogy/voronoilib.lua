@@ -488,7 +488,7 @@ end
 
 -- vertical directix
 --[[
-local function sortPoints(p1, p2)
+local function comparePoints(p1, p2)
 	if p1.x == p2.x then
 		return p1.y < p2.y
 	else
@@ -498,7 +498,7 @@ end
 --]]
 
 -- horizontal  directix
-local function sortPoints(p1, p2)
+local function comparePoints(p1, p2)
 	if p1.y == p2.y then
 		-- left to right
 		return p1.x < p2.x
@@ -509,7 +509,7 @@ local function sortPoints(p1, p2)
 end
 
 function Tools:sortThePoints(points)
-	table.sort(points, sortPoints)
+	table.sort(points, comparePoints)
 	return points
 end
 
@@ -569,7 +569,7 @@ function Tools:getSortedVertices(points)
 end
 
 --function Tools:getSortedVertices(points)
---	sortPointsClockwise(points)
+--	comparePointsClockwise(points)
 
 --	local vertices = {}
 --	for i = 1, #points do
@@ -791,6 +791,134 @@ local function isSegmentOutsideBoundary(start, stop, boundary)
 end
 
 
+local function dotProductLineTangentPoint (x, y, tx, ty, px, py)
+-- x,y - starting point of line
+-- tx, ty - normalized tangent vector of line
+-- px, py - point to check
+--	return tx * (px - x) + ty * (py - y)
+	return ty * (px - x) + tx * (py - y)
+end
+
+local function isVertexInBoundary(x, y, frameX, frameY, frameW, frameH)
+	return x >= frameX and x <= frameX + frameW and y >= frameY and y <= frameY + frameH
+end
+
+local function isVertexOnBoundary(x, y, frameX, frameY, frameW, frameH)
+	-- ! exactly on boundry !
+	local onX = ((x == frameX) or (x == frameX + frameW)) and (y >= frameY) and (y <= frameY + frameH)
+	local onY = ((y == frameY) or (y == frameY + frameH)) and x >= frameX and x <= frameX + frameW
+--	print ('isVertexOnBoundary', x, y)
+--	if onX or onY then
+--		print ('onX', tostring (onX), 'onY', tostring (onY))
+--	end
+	return onX or onY
+end
+
+local function isPointInBoundary(point, frameX, frameY, frameW, frameH)
+	return isVertexInBoundary(point.x, point.y, frameX, frameY, frameW, frameH)
+end
+
+local function isSegmentInBoundary(segment, frameX, frameY, frameW, frameH)
+	local startPointInside = isVertexInBoundary(segment.startPoint, frameX, frameY, frameW, frameH)
+	local endPointInside = isVertexInBoundary(segment.endPoint, frameX, frameY, frameW, frameH)
+
+	return startPointInside and endPointInside
+end
+
+
+local function findIntersectionWithVerticalLine(x1, y1, x2, y2, x)
+	local t = (x - x1) / (x2 - x1)
+	local y = y1 + t * (y2 - y1)
+	return x, y
+end
+
+local function findIntersectionWithHorizontalLine(x1, y1, x2, y2, y)
+	local t = (y - y1) / (y2 - y1)
+	local x = x1 + t * (x2 - x1)
+	return x, y
+end
+
+
+local function findCrossingLineTangentSegment(bx, by, tx, ty, p1, p2)
+
+	if tx == 0 then
+
+		local x, y = findIntersectionWithVerticalLine(p1.x, p1.y, p2.x, p2.y, bx)
+--		print ('cross with vertical')
+		return x, y
+	elseif ty == 0 then
+		local x, y = findIntersectionWithHorizontalLine(p1.x, p1.y, p2.x, p2.y, by)
+--		print ('cross with horizontal')
+		return x, y
+	else
+		print ('!!!!!!!!!!!!!!!!!!!!wrong tx, ty', tx, ty)
+--		local u = ((p2.x - p1.x) * ty + (p1.y - by) * tx) / (tx * (p1.y - p2.y) + ty * (p2.x - p1.x))
+		local u = dotProductLineTangentPoint(bx, by, tx, ty, p1) / dotProductLineTangentPoint(bx, by, tx, ty, p1, p2)
+
+		local cx = p1.x + u * (p2.x - p1.x)
+		local cy = p1.y + u * (p2.y - p1.y)
+		return cx, cy
+	end
+end
+
+
+
+function Tools:cropBoundary ( dVoronoi, frameX, frameY, frameW, frameH)
+
+	local halfPlanes = {
+--		 halfplane as starting point and tangent
+		{frameX, frameY, -1, 0}, -- y < frameY
+		{frameX + frameW, frameY, 0, 1},  -- x > frameX + frameW
+		{frameX + frameW, frameY+frameH, 1, 0}, -- y > frameY + frameH
+		{frameX, frameY+frameH, 0, -1}, -- x < frameX
+	}
+
+	for _, segment in ipairs(dVoronoi.segments) do
+		for indexHP, hp in ipairs (halfPlanes) do
+			local bx, by, tx, ty = hp[1], hp[2], hp[3], hp[4]
+			local p1 = segment.startPoint
+			local p2 = segment.endPoint
+			local d1 = dotProductLineTangentPoint (bx, by, tx, ty, p1.x, p1.y)
+			local d2 = dotProductLineTangentPoint (bx, by, tx, ty, p2.x, p2.y)
+
+			if (d1 > 0 and d2 < 0) then
+--				print ('end', 'd1', d1, 'd2', d2)
+				local cx, cy = findCrossingLineTangentSegment (bx, by, tx, ty, p1, p2)
+--				print ('crossing', cx, cy)
+				if isVertexOnBoundary(cx, cy, frameX, frameY, frameW, frameH) then
+--					print (indexHP, 'end point segment crop', p2.x, p2.y, '-', cx, cy)
+					table.insert (specialCaseSectors, {p2.x, p2.y, cx, cy})
+					table.insert (specialCaseSectors2, {p1.x, p1.y, cx, cy})
+					p1.x = cx
+					p1.y = cy
+				end
+			elseif (d1 < 0 and d2 > 0) then
+				local cx, cy = findCrossingLineTangentSegment (bx, by, tx, ty, p1, p2)
+--				print ('start', 'd1', d1, 'd2', d2)
+				if isVertexOnBoundary(cx, cy, frameX, frameY, frameW, frameH) then
+--					print (indexHP, 'start point segment crop', p1.x, p1.y, '-', cx, cy)
+					table.insert (specialCaseSectors, {p1.x, p1.y, cx, cy})
+					table.insert (specialCaseSectors2, {p2.x, p2.y, cx, cy})
+					p1.x = cx
+					p1.y = cy
+				end
+			end
+		end
+	end
+end
+
+local function filterPoints (points, minx, miny, maxx, maxy)
+	local filteredPoints = {}
+	local frameW, frameH = maxx-minx, maxy-miny
+	for _, point in ipairs(points) do
+		if isVertexInBoundary(point.x, point.y, minx, miny, frameW, frameH) then
+			table.insert(filteredPoints, point)
+		else
+			print ('removed point', point.x, point.y)
+		end
+	end
+	return filteredPoints
+end
 
 function Tools:dirtyPolygon ( dVoronoi )
 	local minx, miny = dVoronoi.boundary[1], dVoronoi.boundary[2]
@@ -798,14 +926,11 @@ function Tools:dirtyPolygon ( dVoronoi )
 
 	local polygonList = {}
 	local processingPoints = dVoronoi.vertex
-	for i = #processingPoints, 1, -1 do
-		if (processingPoints[i].x < minx) 
-		or (processingPoints[i].x > maxx) 
-		or (processingPoints[i].y < miny) 
-		or (processingPoints[i].y > maxy) then
-			processingPoints[i] = nil
-		end
-	end
+
+	table.sort(processingPoints, comparePoints)
+	processingPoints = filterPoints (processingPoints, minx, miny, maxx, maxy)
+	
+
 
 -- adds other points that are not in the vertexes, like the corners and intersectParabolass with the boundary
 	local otherPoints = {
@@ -826,7 +951,7 @@ function Tools:dirtyPolygon ( dVoronoi )
 --dVoronoi.segments = cleanSegments (dVoronoi.segments)
 --print ('now #dVoronoi.segments', #dVoronoi.segments)
 
-	for _, segment in pairs(dVoronoi.segments) do
+	for _, segment in ipairs(dVoronoi.segments) do
 		local isects = {}
 		for _, boundary in ipairs(boundaries) do
 			if (segment.startPoint.x < boundary[1] or segment.endPoint.x < boundary[1])
@@ -924,24 +1049,24 @@ function Tools:dirtyPolygon ( dVoronoi )
 			local p1 = points[i]
 			local p2 = points[(i % #points)+1]
 			local x1, y1, x2, y2= p1.x, p1.y, p2.x, p2.y
-			if sortPoints (p1, p2) then
+			if comparePoints (p1, p2) then
 				local x1, y1, x2, y2 = x2, y2, x1, y1
 			end
 			local str = tostring(x1) .. "_" .. tostring(y1).. 
-					"_" .. tostring(x2).. "_" .. tostring(y2)
+			"_" .. tostring(x2).. "_" .. tostring(y2)
 			if not uniqueSegmentsHash[str] then
 				table.insert (uniqueSegments, {x1, y1, x2, y2})
 				local index = #uniqueSegments
 				uniqueSegmentsHash[str] = index
 			end
 		end
-		
-		
+
+
 
 		local vertices = self:pointsToVertices(points)
 		dVoronoi.polygons[i] = self.polygon:new(vertices, i)
 	end
-	
+
 	dVoronoi.uniqueSegments = uniqueSegments
 
 end
@@ -1013,10 +1138,9 @@ local voronoilib = { }
 local function getRVoronoi (sitePoints, frameX,frameY, frameW, frameH)
 --local function getRVoronoi (sitePoints, minx,miny,maxx,maxy)
 
-	local minx,miny,maxx,maxy = frameX,frameY, frameW, frameH
-	local rightDoubleBoundary = 2*(maxx + (maxx-minx) + (maxy-miny))
---print ('rightDoubleBoundary', rightDoubleBoundary)
-	local boundary = {minx, miny, minx+maxx, miny+maxy}
+	local rightDoubleBoundary = 2*(2*frameW - frameX + frameH-frameY)
+
+	local boundary = {frameX, frameY, frameX+frameW, frameY+frameH}
 	local dVoronoi = {}
 	dVoronoi.points = sitePoints
 	dVoronoi.boundary = boundary
@@ -1042,7 +1166,7 @@ local function getRVoronoi (sitePoints, frameX,frameY, frameW, frameH)
 
 		if event.arc then
 			if event.valid then
-				
+
 				table.insert (specialCaseCircle, {event.x, event.y, event.radius, 1})
 				Tools:processCircle(event, dVoronoi)
 			end
@@ -1053,6 +1177,11 @@ local function getRVoronoi (sitePoints, frameX,frameY, frameW, frameH)
 
 
 	Tools:finishEdges(dVoronoi, rightDoubleBoundary)
+
+
+
+	Tools:cropBoundary(dVoronoi, frameX,frameY, frameW, frameH)
+
 
 	Tools:dirtyPolygon(dVoronoi)
 
@@ -1174,7 +1303,7 @@ function voronoilib:edgeContains(x, y, minDistance)
 	for _, segment in pairs(self.uniqueSegments) do
 		local x1, y1 = segment[1], segment[2]
 		local x2, y2 = segment[3], segment[4]
-		
+
 		local sqrDist = sqrDistanceToSegment(x, y, x1, y1, x2, y2)
 		if sqrDist < minDistance then
 			minDistance = sqrDist
