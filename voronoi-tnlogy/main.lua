@@ -71,7 +71,7 @@ function love.load ()
 	local polygoncount = 16
 	local frameX,frameY = 25, 25
 --	local frameW, frameH = width-50, heigth-50
-	local frameW, frameH = 550, 550
+	local frameW, frameH = 750, 550
 
 --	vDiagram = voronoilib:generateNew(polygoncount, minx,miny, maxx,maxy)
 	vDiagram = voronoilib:new(siteVertices, frameX,frameY, frameW, frameH)
@@ -190,12 +190,12 @@ function love.draw()
 		love.graphics.setColor (1,1,1)
 --		love.graphics.circle ('line', circle[1], circle[2], 3)
 	end
-	
+
 	love.graphics.setColor (0,1,0)
 	for i, point in ipairs (vDiagram.uniquePoints) do
 		love.graphics.circle ('line', point.x, point.y, 2)
 	end
-	
+
 	love.graphics.setColor (1,1,0)
 	for i, line in ipairs (specialCaseSectors) do
 		love.graphics.line (line)
@@ -204,11 +204,16 @@ function love.draw()
 	for i, line in ipairs (specialCaseSectors2) do
 		love.graphics.line (line)
 	end
-	
+
 	-- vertex as crossing points
 	love.graphics.setColor (0,0,1)
 	for i, c in ipairs (vDiagram.vertex) do
 		love.graphics.circle ('line', c.x, c.y, 4)
+	end
+
+	love.graphics.setColor (0,0,0)
+	for index, point in pairs(vDiagram.points) do
+		love.graphics.circle('fill', point.x, point.y, 3)
 	end
 end
 
