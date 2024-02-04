@@ -11,13 +11,15 @@ local voronoilib = require ('voronoilib')
 local function phyllotaxis(cx, cy, s, n)
 	local pointVertices = {}
 	local phi = 2*math.pi*(1-(5^0.5-1)/2)
+	
+	local snip = 25
 	for i = 0, n do
 		local angle = i * phi -- Adjust the angle for different phyllotaxis patterns
 		local radius = s * math.sqrt(i)
 		local x = cx + radius * math.cos(angle)
 		local y = cy + radius * math.sin(angle)
-		x = math.floor(x/2+0.5)*2
-		y = math.floor(y/2+0.5)*2
+--		x = math.floor(x/snip+0.5)*snip
+--		y = math.floor(y/snip+0.5)*snip
 		table.insert(pointVertices, x)
 		table.insert(pointVertices, y)
 	end
@@ -52,7 +54,9 @@ local function hexagonalVertices(x0, y0, rows, cols, w, h, s1, s2)
 	return pointVertices
 end
 
-local siteVertices = phyllotaxis(10, 99, 60, 500)
+--local siteVertices = phyllotaxis(10, 99, 160, 500)
+--local siteVertices = phyllotaxis(10, 99, 60, 500)
+local siteVertices = phyllotaxis(10, 300, 16, 5000)
 
 --local siteVertices = hexagonalVertices (-30, 10, 6, 7, 100, 86, 2, 0)
 --local siteVertices = hexagonalVertices (10, -10, 5, 8, 86, 100, 0, 2)
@@ -74,7 +78,7 @@ function love.load ()
 	local frameW, frameH = 750, 550
 
 --	vDiagram = voronoilib:generateNew(polygoncount, minx,miny, maxx,maxy)
-	vDiagram = voronoilib:new(siteVertices, frameX,frameY, frameW, frameH)
+	vDiagram = voronoilib:newDiagram(siteVertices, frameX,frameY, frameW, frameH)
 
 	hovered = {
 		vertex = nil,
@@ -82,8 +86,8 @@ function love.load ()
 		polygon = nil,
 	}
 
-	colorFill = {0.5,0.5,0.5}
-	colorLine = {0.8,0.8,0.8}
+	colorFill = {0.4,0.4,0.4}
+	colorLine = {0.9,0.9,0.9}
 end
 
 function love.update()
@@ -120,8 +124,8 @@ local function drawPolygons (polygons, colorFill, colorLine)
 	end
 
 	love.graphics.setColor (1,1,1,0.9)
-	for index, point in pairs(vDiagram.points) do
-		love.graphics.circle('fill', point.x, point.y, 2)
+	for index, sitePoint in pairs(vDiagram.sitePoints) do
+		love.graphics.circle('fill', sitePoint.x, sitePoint.y, 2)
 --		love.graphics.print(index, point.x, point.y)
 	end
 
@@ -184,36 +188,37 @@ function love.draw()
 
 
 	for i, circle in ipairs (specialCaseCircle) do
-		love.graphics.setColor (0.7,0.7,0.7, 0.7)
+		love.graphics.setColor (0.5,0.5,0.5, 0.5)
 		love.graphics.setLineWidth (circle[4])
 		love.graphics.circle ('line', circle[1], circle[2], circle[3])
 		love.graphics.setColor (1,1,1)
 --		love.graphics.circle ('line', circle[1], circle[2], 3)
 	end
 
-	love.graphics.setColor (0,1,0)
-	for i, point in ipairs (vDiagram.uniquePoints) do
-		love.graphics.circle ('line', point.x, point.y, 2)
-	end
+--	love.graphics.setColor (0,1,0)
+--	for i, point in ipairs (vDiagram.uniquePoints) do
+--		love.graphics.circle ('line', point.x, point.y, 2)
+--	end
 
 	love.graphics.setColor (1,1,0)
 	for i, line in ipairs (specialCaseSectors) do
 		love.graphics.line (line)
 	end
+	
 	love.graphics.setColor (1,0,0)
 	for i, line in ipairs (specialCaseSectors2) do
 		love.graphics.line (line)
 	end
 
 	-- vertex as crossing points
-	love.graphics.setColor (0,0,1)
-	for i, c in ipairs (vDiagram.vertex) do
-		love.graphics.circle ('line', c.x, c.y, 4)
-	end
+--	love.graphics.setColor (0,0,1)
+--	for i, c in ipairs (vDiagram.vertex) do
+--		love.graphics.circle ('line', c.x, c.y, 4)
+--	end
 
 	love.graphics.setColor (0,0,0)
-	for index, point in pairs(vDiagram.points) do
-		love.graphics.circle('fill', point.x, point.y, 3)
+	for index, sitePoint in ipairs(vDiagram.sitePoints) do
+		love.graphics.circle('fill', sitePoint.x, sitePoint.y, 3)
 	end
 end
 
