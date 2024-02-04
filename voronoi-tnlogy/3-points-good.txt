@@ -1,0 +1,93 @@
+	-----event 1 point
+processPoint	100	100
+new beachline	100	100
+beachline length:	1
+1	x:100	y:100
+index x y 
+# end of point event
+
+
+	-----event 2 point
+processPoint	101	200
+arcNodeTest	1
+processPoint, point	-4899.5	200	specialcase:	nil
+intersectPointArc crossing:	-4899.5	200
+no next
+beachline length:	3
+1	x:100	y:100
+x index next rightSegm y 
+1	right	Start Point: (-4899.5, 200) End Point: (101, 200)
+# # #
+2	x:101	y:200
+leftSegm index x prev node next rightSegm y 
+2	left	Start Point: (-4899.5, 200) End Point: (101, 200)
+2	right	Start Point: (-4899.5, 200) End Point: (101, 200)
+# # #
+3	x:100	y:100
+leftSegm index x y node prev 
+3	left	Start Point: (-4899.5, 200) End Point: (101, 200)
+# end of point event
+
+
+	-----event 3 point
+processPoint	150	150
+directrix:150	focus1.x:100	focus2.x:101
+directrix:150	focus1.x:100	focus2.x:101
+directrix:150	focus1.x:101	focus2.x:100
+arcNodeTest	1
+directrix:150	focus1.x:100	focus2.x:101
+processPoint, point	100	150	specialcase:	nil
+intersectPointArc crossing:	100	150
+directrix:150	focus1.x:100	focus2.x:101
+directrix:150	focus1.x:101	focus2.x:100
+no next
+beachline length:	5
+1	x:100	y:100
+x index next rightSegm y 
+1	right	Start Point: (100, 150) End Point: (150, 150)
+# # #
+2	x:150	y:150
+leftSegm index x prev node next rightSegm y 
+2	left	Start Point: (100, 150) End Point: (150, 150)
+2	right	Start Point: (100, 150) End Point: (150, 150)
+# # #
+3	x:100	y:100
+leftSegm rightSegm prev node next event y index x 
+3	left	Start Point: (100, 150) End Point: (150, 150)
+3	right	Start Point: (-4899.5, 200) End Point: (101, 200)
+# # #
+4	x:101	y:200
+leftSegm index x prev node next rightSegm y 
+4	left	Start Point: (-4899.5, 200) End Point: (101, 200)
+4	right	Start Point: (-4899.5, 200) End Point: (101, 200)
+# # #
+5	x:100	y:100
+leftSegm index x y node prev 
+5	left	Start Point: (-4899.5, 200) End Point: (101, 200)
+# end of point event
+
+
+	-----event 4 circle
+beachline length:	4
+1	x:100	y:100
+x index next rightSegm y 
+1	right	Start Point: (100, 150) End Point: (150, 150)
+# # #
+2	x:150	y:150
+leftSegm rightSegm index node next x y prev 
+2	left	Start Point: (100, 150) End Point: (150, 150)
+2	right	Start Point: (99.994949494949, 150.00505050505) End Point: (0, 0)
+# # #
+3	x:101	y:200
+leftSegm rightSegm index node next x y prev 
+3	left	Start Point: (99.994949494949, 150.00505050505) End Point: (0, 0)
+3	right	Start Point: (-4899.5, 200) End Point: (101, 200)
+# # #
+4	x:100	y:100
+leftSegm index x y node prev 
+4	left	Start Point: (-4899.5, 200) End Point: (101, 200)
+# end of cirlce event
+
+directrix:4000	focus1.x:100	focus2.x:150
+directrix:4000	focus1.x:150	focus2.x:101
+directrix:4000	focus1.x:101	focus2.x:100

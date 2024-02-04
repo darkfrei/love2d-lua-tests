@@ -54,9 +54,16 @@ local function hexagonalVertices(x0, y0, rows, cols, w, h, s1, s2)
 	return pointVertices
 end
 
+
+
+--local siteVertices = {100, 100, 151, 151, 101,200}
+--local siteVertices = {100, 100, 150, 150, 101,200}
+local siteVertices = {100, 100, 150, 150, 100,200}
+
+
 --local siteVertices = phyllotaxis(10, 99, 160, 500)
 --local siteVertices = phyllotaxis(10, 99, 60, 500)
-local siteVertices = phyllotaxis(10, 300, 16, 5000)
+--local siteVertices = phyllotaxis(10, 300, 16, 5000)
 
 --local siteVertices = hexagonalVertices (-30, 10, 6, 7, 100, 86, 2, 0)
 --local siteVertices = hexagonalVertices (10, -10, 5, 8, 86, 100, 0, 2)
@@ -219,6 +226,11 @@ function love.draw()
 	love.graphics.setColor (0,0,0)
 	for index, sitePoint in ipairs(vDiagram.sitePoints) do
 		love.graphics.circle('fill', sitePoint.x, sitePoint.y, 3)
+	end
+	
+	love.graphics.setColor (1,1,1)
+	for i = 1, #siteVertices, 2 do
+		love.graphics.circle('fill', siteVertices[i], siteVertices[i+1], 1)
 	end
 end
 

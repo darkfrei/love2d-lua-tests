@@ -1,0 +1,73 @@
+	-----event 1 point
+processPoint	100	100
+new beachline	100	100
+beachline length:	1
+1	x:100	y:100
+x y index 
+# end of point event
+
+
+	-----event 2 point
+processPoint	100	200
+arcNodeTest	1
+Special case for point and arc: x=x	100	200	100	100
+processPoint, point	100	200	specialcase:	true
+x and specicialCase	x	100	y	200
+beachline length:	3
+1	x:100	y:100
+index rightSegm next y x 
+1	right	Start Point: (100, 200) End Point: (100, 200)
+# # #
+2	x:100	y:200
+index prev leftSegm node rightSegm next y x 
+2	left	Start Point: (100, 200) End Point: (100, 200)
+2	right	Start Point: (100, 200) End Point: (100, 200)
+# # #
+3	x:100	y:100
+index leftSegm prev x node y 
+3	left	Start Point: (100, 200) End Point: (100, 200)
+# end of point event
+
+
+	-----event 3 point
+processPoint	150	150
+directrix:150	focus1.x:100	focus2.x:100
+intersectParabolasV, same x:100	y1:100	y2:100
+directrix:150	focus1.x:100	focus2.x:100
+intersectParabolasV, same x:100	y1:100	y2:100
+directrix:150	focus1.x:100	focus2.x:100
+intersectParabolasV, same x:100	y1:200	y2:200
+directrix:150	focus1.x:100	focus2.x:100
+intersectParabolasV, same x:100	y1:100	y2:100
+directrix:150	focus1.x:100	focus2.x:100
+intersectParabolasV, same x:100	y1:200	y2:200
+directrix:150	focus1.x:100	focus2.x:100
+intersectParabolasV, same x:100	y1:200	y2:200
+arcNodeTest	3
+directrix:150	focus1.x:100	focus2.x:100
+intersectParabolasV, same x:100	y1:100	y2:100
+processPoint, point	100	150	specialcase:	nil
+intersectPointArc crossing:	100	150
+directrix:150	focus1.x:100	focus2.x:100
+intersectParabolasV, same x:100	y1:100	y2:100
+directrix:150	focus1.x:100	focus2.x:100
+intersectParabolasV, same x:100	y1:200	y2:200
+beachline length:	3
+1	x:100	y:100
+index rightSegm next y x 
+1	right	Start Point: (100, 200) End Point: (100, 200)
+# # #
+2	x:100	y:200
+index prev leftSegm node rightSegm next y x 
+2	left	Start Point: (100, 200) End Point: (100, 200)
+2	right	Start Point: (100, 200) End Point: (100, 200)
+# # #
+3	x:100	y:100
+index leftSegm prev x node y 
+3	left	Start Point: (100, 200) End Point: (100, 200)
+# end of point event
+
+directrix:4000	focus1.x:100	focus2.x:100
+intersectParabolasV, same x:100	y1:100	y2:100
+directrix:4000	focus1.x:100	focus2.x:100
+intersectParabolasV, same x:100	y1:200	y2:200

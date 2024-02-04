@@ -38,6 +38,11 @@ _italic_
 --local constants = {zero = 2^(-28)} -- just on the edge
 local constants = {zero = 2^(-26)} -- just on the edge
 
+
+math.log2 = function (x)
+	return math.log(x) / math.log(2)
+end
+
 --------
 --------
 --------
@@ -106,6 +111,30 @@ function HHeap:isEmpty()
 	return not next(self.heap)
 end
 
+function HHeap:heapPrint()
+	if not next(self.heap) then
+		print("Heap is empty.")
+		return
+	end
+
+	local levels = math.ceil(math.log2(#self.heap))
+	local index = 1
+	print ('heap size', #self.heap)
+	for level = 1, levels do
+		local spaces = string.rep("	", 2 ^ (levels - level) - 1)
+		for i = 1, 2^(level - 1) do
+			if index <= #self.heap then
+				print(spaces..'heapIndex: '..self.nodes[self.heap[index]], 
+					'x:'..self.heap[index].x, 'y:'..self.heap[index].y)
+				index = index + 1
+			else
+				break
+			end
+		end
+	end
+end
+
+
 --------
 --------
 --------
@@ -120,11 +149,9 @@ end
 
 local function newSegment (startPoint, endPoint, typ)
 	local segment = {
---startPoint = {x = x, y = y},
 		startPoint = startPoint,
 		endPoint = endPoint,
 		done = false,
---		type = 1
 	}
 	return segment
 end
@@ -134,6 +161,7 @@ end
 --------
 
 local DoubleLinkedList = {}
+-- class for beachline
 
 function DoubleLinkedList:new()
 	local list = {first = nil, last = nil} -- empty list head
@@ -171,6 +199,50 @@ function DoubleLinkedList:insertAtStart(newData)
 	return newNode
 end
 
+function DoubleLinkedList:length()
+	local index = 0
+	local current = self.first
+	while current do
+		index = index + 1
+		current.index = index
+		current = current.next
+	end
+	return index
+end
+
+local function segmentToStr(segment)
+	local str = "Start Point: (" .. segment.startPoint.x .. ", " .. segment.startPoint.y .. ")"
+	.. " End Point: (" .. segment.endPoint.x .. ", " .. segment.endPoint.y .. ")"
+	return str
+end
+
+
+function DoubleLinkedList:showContents()
+	local node = self.first
+	print ('beachline length:', self:length())
+	while node do
+		print (node.index, 'x:'..node.x, 'y:'..node.y)
+
+		local str = ''
+		for i in pairs (node) do
+			str = str .. i .. ' '
+		end
+		print (str)
+
+		if node.leftSegm then
+			print(node.index, 'left', segmentToStr(node.leftSegm))
+		end
+		if node.rightSegm then
+			print(node.index, 'right', segmentToStr(node.rightSegm))
+		end
+
+		node = node.next
+		if node then
+			print ('# # #')
+		end
+	end
+end
+
 function DoubleLinkedList:delete(node)
 	if node == self.first then
 		self.first = node.next
@@ -189,46 +261,102 @@ function DoubleLinkedList:nextNode(node)
 	return (not node and self.first) or node.next
 end
 
+---------------
+---------------
+---------------
+
+
+--------
+--------
+--------
+
+local Polygon = { }
+
+function Polygon:new(vertices, index)
+-- creates the edges
+	local edges = {}
+	local edge = {vertices[#vertices-1], vertices[#vertices], vertices[1], vertices[2]}
+	table.insert (edges, edge)
+
+	for i=1, #vertices-2, 2 do
+		edge = {vertices[i], vertices[i+1], vertices[i+2], vertices[i+3]}
+		table.insert (edges, edge)
+	end
+
+	local poly = {
+		points = vertices,
+		edges = edges,
+		index = index,
+	}
+
+	setmetatable(poly, self) 
+	self.__index = self 
+
+	return poly
+end
+
+----------------------------------------------------------
+-- checks if the point is inside the polygon
+function Polygon:containsPoint(x, y)
+	local isInside = false
+	for _, edge in ipairs (self.edges) do
+		local x1, y1, x2, y2 = edge[1], edge[2], edge[3], edge[4]
+		if ((y1 > y) ~= (y2 > y)) and
+		(x < (x2 - x1) * (y - y1) / (y2 - y1) + x1) then
+			isInside = not isInside
+		end
+	end
+	return isInside
+end
+
+
+---------------
+---------------
+---------------
+
 local Tools = { }
-function Tools:processCircle(event, dVoronoi)
+function Tools:processCircle(dVoronoi, circle)
 --	print ('processCircle', event.x, event.y)
-	if event.valid then
-		local x, y = event.x, event.y
+	if circle.valid then
+		local x, y = circle.x, circle.y
 --startPoint, endPoint
-		local startPoint = event
+		local startPoint = circle
 		local endPoint = newPoint (0, 0)
 		local segment = newSegment (startPoint, endPoint, 1)
 
 		table.insert(dVoronoi.segments, segment)
 
--- Remove the associated arc from the front and update segment info
-		dVoronoi.beachline:delete(event.arc)
+		-- Remove the associated arc from the front and update segment info
+		dVoronoi.beachline:delete(circle.arc)
 
-		if event.arc.prev then
-			event.arc.prev.seg1 = segment
+		if circle.arc.prev then
+			-- prev is left
+			circle.arc.prev.rightSegm = segment
 		end
 
-		if event.arc.next then
-			event.arc.next.seg0 = segment
+		if circle.arc.next then
+			-- next is right
+			circle.arc.next.leftSegm = segment
 		end
 
 -- Finish the edges before and after arc.
-		if event.arc.seg0 then
-			event.arc.seg0.endPoint = {x = event.x, y = event.y}
-			event.arc.seg0.done = true
+		if circle.arc.leftSegm then
+			circle.arc.leftSegm.endPoint = {x = circle.x, y = circle.y}
+			circle.arc.leftSegm.done = true
 		end 
 
-		if event.arc.seg1 then
-			event.arc.seg1.endPoint = {x = event.x, y = event.y}
-			event.arc.seg1.done = true
+		if circle.arc.rightSegm then
+			circle.arc.rightSegm.endPoint = {x = circle.x, y = circle.y}
+			circle.arc.rightSegm.done = true
 		end
-		local vertex = {x = event.x, y = event.y}
+--		local vertex = {x = circle.x, y = circle.y}
+		local vertex = newPoint (circle.x, circle.y)
 		table.insert(dVoronoi.vertex, vertex)
 
-		local radius1 = self:checkCircleEvent(dVoronoi, event.arc.prev, event.x)
+		self:checkCircleEvent(dVoronoi, circle.arc.prev, circle.x)
 
 
-		local radius2 = self:checkCircleEvent(dVoronoi, event.arc.next, event.x)
+		self:checkCircleEvent(dVoronoi, circle.arc.next, circle.x)
 
 	end
 end
@@ -238,77 +366,95 @@ end
 --------
 --------
 
+function Tools:insertPointCommon (dVoronoi, arcNode1, site, x, y)
+	dVoronoi.beachline:insertAfter(arcNode1, arcNode1)
 
-function Tools:processPoint(point, dVoronoi)
---	print ('processPoint', point.x, point.y)
---Adds a point to the beachline
---local intersect = self:intersect
+--	local arcNode2 = arcNode1.next
+
+	arcNode1.next.rightSegm = arcNode1.rightSegm
+
+	dVoronoi.beachline:insertAfter(arcNode1, site)
+
+	local arcNode2 = arcNode1.next
+
+	local startPoint = newPoint (x, y)
+	local endPoint = newPoint (site.x, site.y)
+	local segment = newSegment (startPoint, endPoint, 2)
+	local segment2 = newSegment(startPoint, endPoint, 2)
+
+	table.insert(dVoronoi.segments, segment)
+	table.insert(dVoronoi.segments, segment2)
+
+	arcNode1.rightSegm = segment
+	arcNode2.leftSegm = segment
+	arcNode1.next.rightSegm = segment2
+
+	self:checkCircleEvent(dVoronoi, arcNode1, site.x)
+	arcNode1.next.next.leftSegm = segment2
+	self:checkCircleEvent(dVoronoi, arcNode1.next.next, site.x)
+end
+
+
+
+function Tools:getCurrentArc(dVoronoi, site)
+	local currentNode = dVoronoi.beachline.first
+	while currentNode do
+		local nextNode = currentNode.next
+		if nextNode then
+			local x, y, specialCaseX = self:intersectPointArc(site, currentNode)
+			if x then
+				if not self:intersectPointArc(site, nextNode) then
+					return currentNode
+				end
+			end
+		end
+		currentNode = currentNode.next
+	end
+	return dVoronoi.beachline.last
+end
+
+
+function Tools:processPoint(dVoronoi, site)
+	print ('processPoint', site.x, site.y)
+
+
 	if not dVoronoi.beachline.first then
---		print ('new beachline', point.x, point.y)
-		point.isPoint = true
-		dVoronoi.beachline:insertAtStart(point)
+		-- creates new beachline and return
+		print ('new beachline', site.x, site.y)
+		dVoronoi.beachline:insertAtStart(site)
 		return
 	end
 
---Find the current arc(s) at height p.y (if there are any).
+
+	local arcNodeTest = self:getCurrentArc(dVoronoi, site)
+	print ('arcNodeTest', arcNodeTest.index)
 
 	for arcNode in dVoronoi.beachline.nextNode, dVoronoi.beachline do
---		for i, v in pairs (arcNode) do
---			print (i, type (v))
---		end
-
-		local x, y, specialCaseX = self:intersectPointArc(point, arcNode)
---		print ('processPoint, point', x, y, 'specialcase:', tostring (specialCaseX))
+		local x, y, specialCaseX = self:intersectPointArc(site, arcNode)
+		print ('processPoint, point', x, y, 'specialcase:', tostring (specialCaseX))
 		if x and specialCaseX then
---			print ('x and specicialCase', 'x', x, 'y', y)
---			print ('arcNode y', arcNode.y, 'point.y', point.y)
-
-
---			dVoronoi.beachline:insertAfter(arcNode, point)
---			return
-		elseif x then
---New parabola intersects arc i. If necessary, duplicate i.
--- ie if there is a next node, but there is not interation, then creat a duplicate
-			if not (arcNode.next and self:intersectPointArc(point, arcNode.next)) then
-				dVoronoi.beachline:insertAfter(arcNode, arcNode)
-			else
-				return
+			print ('x and specicialCase', 'x', x, 'y', y)
+			if not (arcNode.next and self:intersectPointArc(site, arcNode.next)) then
+				self:insertPointCommon (dVoronoi, arcNode, site, x, y)
 			end
-
-			arcNode.next.seg1 = arcNode.seg1
-			dVoronoi.beachline:insertAfter(arcNode, point)
-
---local segment = {startPoint = {x = x, y = y}, endPoint = {x = 0, y = 0}, done = false, type = 2}
-			local startPoint = newPoint (x, y)
-			local endPoint = newPoint (point.x, point.y)
-			local segment = newSegment (startPoint, endPoint, 2)
---local segment2 = {startPoint = {x = x, y = y}, endPoint = {x = 0, y = 0}, done = false, type = 2}
-			local segment2 = newSegment(startPoint, endPoint, 2)
-
-			table.insert(dVoronoi.segments, segment)
-			table.insert(dVoronoi.segments, segment2)
-
-			arcNode.next.seg0 = segment
-			arcNode.seg1 = segment
-
-			arcNode.next.seg1 = segment2
-			local radius1 = self:checkCircleEvent(dVoronoi, arcNode, point.x)
-
-
-			local arc2 = arcNode.next.next
-			arc2.seg0 = segment2
-			local radius2 = self:checkCircleEvent(dVoronoi, arc2, point.x)
-
-
 			return
-		else
---			print ('no x, y', arcNode.x, arcNode.y)
+		elseif x then
+			-- New parabola intersects arc i. If necessary, duplicate i.
+			-- ie if there is a next node, but there is not interation, then creat a duplicate
+			print ('intersectPointArc crossing:', x, y)
+			if not (arcNode.next and self:intersectPointArc(site, arcNode.next)) then
+				print ('no next')
+				self:insertPointCommon (dVoronoi, arcNode, site, x, y)
+			end
+			return
 		end 
 	end
 
 --Special case: If p never intersects an arc, append it to the list.
-	dVoronoi.beachline:insertAtStart(point)
+	print ('special case 2')
 
+
+	dVoronoi.beachline:insertAtStart(site)
 	local lastNode = dVoronoi.beachline.last
 	local startPoint = newPoint (dVoronoi.boundary[1], (lastNode.y + lastNode.prev.y) / 2)
 	local endPoint = newPoint (0,0)
@@ -322,8 +468,8 @@ function Tools:processPoint(point, dVoronoi)
 
 	table.insert(dVoronoi.segments, segment)
 
-	lastNode.seg0 = segment
-	lastNode.prev.seg1 = segment
+	lastNode.leftSegm = segment
+	lastNode.prev.rightSegm = segment
 end
 
 
@@ -375,7 +521,8 @@ function Tools:checkCircleEvent(dVoronoi, arc, x0)
 --Create new event.
 		local circleEvent = {x = x, y = y, arc = arc, valid = true, radius = radius}
 		arc.event = circleEvent
-		dVoronoi.events:push(circleEvent, x + radius)
+		dVoronoi.eventsHeap:push(circleEvent, x + radius) -- vertical directrix
+--		dVoronoi.eventsHeap:push(circleEvent, y + radius) -- hoizontal directrix
 		return radius
 	end
 end
@@ -388,7 +535,7 @@ function Tools:intersectPointArc(point, arc)
 
 -- Special case: Check if the x-coordinate of the focus aligns with the x-coordinate of the arc's vertex.
 	if (arc.x == point.x) and not arc.next then 
---		print ('Special case for point and arc: x=x', point.x, point.y, arc.x, arc.y)
+		print ('Special case for point and arc: x=x', point.x, point.y, arc.x, arc.y)
 		table.insert (specialCaseVLines, {point.x, point.y, arc.x, arc.y})
 		local x, y = point.x, point.y
 		return x, y, true
@@ -404,22 +551,31 @@ function Tools:intersectPointArc(point, arc)
 -- Calculate the intersection with the previous arc, if it exists.
 	local ax, ay
 	if (arc.prev) then
-		ax, ay = self:intersectParabolas(arc.prev, arc, point.x)
+		ax, ay = self:intersectParabolasV(arc.prev, arc, point.x) -- vertical directrix
+--		ax, ay = self:intersectParabolasH(arc.prev, arc, point.y) -- horizontal directrix
 	end 
 
 -- Calculate the intersection with the next arc, if it exists.
 	local bx, by
 	if (arc.next) then
-		bx, by = self:intersectParabolas(arc, arc.next, point.x)
+		bx, by = self:intersectParabolasV(arc, arc.next, point.x) -- vertical directrix
+--		bx, by = self:intersectParabolasH(arc, arc.next, point.y) -- horizontal directrix
 	end
 
 
 
 -- Check if the point is within the y-range of the current arc.
-	if ((not arc.prev or ay <= point.y) and (not arc.next or point.y <= by)) then
+	if ((not arc.prev or ay <= point.y) and (not arc.next or point.y <= by)) then -- vertical directrix
+--	if ((not arc.prev or ax <= point.x) and (not arc.next or point.x <= bx)) then -- horizontal directrix
 -- Calculate the intersection point.
+
+		-- vertical directrix
 		local y = point.y
 		local x = (arc.x * arc.x + (arc.y - y) * (arc.y - y) - point.x * point.x) / (2 * arc.x - 2 * point.x)
+
+		-- horizontal directrix
+--		local x = point.x
+--		local y = (arc.y * arc.y + (arc.x - x) * (arc.x - x) - point.y * point.y) / (2 * arc.y - 2 * point.y)
 		return x, y
 	end
 
@@ -430,14 +586,22 @@ end
 
 
 
-function Tools:intersectParabolas(focus1, focus2, directrix)
+function Tools:intersectParabolasV(focus1, focus2, directrix)
 -- Calculate the intersection point of two parabolas.
 
 	local x, y
-	local currentFocus = {x = focus1.x, y = focus1.y}
+--	local currentFocus = {x = focus1.x, y = focus1.y}
+	local currentFocus = focus1
 
-	if (focus1.x == focus2.x) then
+	print ('directrix:'..directrix, 'focus1.x:'..focus1.x, 'focus2.x:'..focus2.x)
+	if (focus1.x == directrix) and (focus2.x == directrix) then
+		print ('special case: same x by f1, f2 and directrix')
+		y = (focus1.y + focus2.y) / 2
+		x = 0
+		return x, y
+	elseif (focus1.x == focus2.x) then
 -- Parabolas are symmetric, intersection is the midpoint on the y-axis.
+		print ('intersectParabolasV, same x:'..focus1.x, 'y1:'..focus1.y, 'y2:'..focus1.y)
 		y = (focus1.y + focus2.y) / 2
 	elseif (focus2.x == directrix) then
 -- Second parabola is vertical, intersection is its y-coordinate.
@@ -445,7 +609,8 @@ function Tools:intersectParabolas(focus1, focus2, directrix)
 	elseif (focus1.x == directrix) then
 -- First parabola is vertical, intersection is its y-coordinate.
 		y = focus1.y
-		currentFocus = {x = focus2.x, y = focus2.y}
+--		currentFocus = {x = focus2.x, y = focus2.y}
+		currentFocus = focus2
 	else
 -- Use the quadratic formula to calculate the y-coordinate for non-vertical parabolas.
 		local z0 = 2 * (focus1.x - directrix)
@@ -467,12 +632,12 @@ end
 
 
 function Tools:finishEdges(dVoronoi, rightDoubleBoundary)
---Extend each remaining segment to the new parabola intersectParabolass.
+--Extend each remaining segment to the new parabola intersectParabolasVs.
 	for arc in dVoronoi.beachline.nextNode, dVoronoi.beachline do
-		if arc.seg1 then
-			local x, y = self:intersectParabolas(arc, arc.next, rightDoubleBoundary)
-			arc.seg1.endPoint = {x = x, y = y}
-			arc.seg1.done = true
+		if arc.rightSegm then
+			local x, y = self:intersectParabolasV(arc, arc.next, rightDoubleBoundary)
+			arc.rightSegm.endPoint = {x = x, y = y}
+			arc.rightSegm.done = true
 		end
 	end
 end
@@ -900,7 +1065,7 @@ function Tools:filterSegments(dVoronoi, frameX, frameY, frameW, frameH)
 	local i = #segments
 
 	while i > 0 do
-		print ('segment', i)
+--		print ('segment', i)
 		local segment = segments[i]
 		local p1, p2 = segment.startPoint, segment.endPoint
 		local minx, maxx = math.min(p1.x, p2.x), math.max(p1.x, p2.x)
@@ -1033,7 +1198,7 @@ function Tools:dirtyPolygon ( dVoronoi )
 
 
 		local vertices = self:pointsToVertices(points)
-		dVoronoi.polygons[i] = self.polygon:new(vertices, i)
+		dVoronoi.polygons[i] = Polygon:new(vertices, i)
 	end
 
 	dVoronoi.uniqueSegments = uniqueSegments
@@ -1049,48 +1214,7 @@ function Tools:randomPoint(minx,miny,maxx,maxy)
 end
 
 
---------
---------
---------
 
-local Polygon = { }
-
-function Polygon:new(vertices, index)
--- creates the edges
-	local edges = {}
-	local edge = {vertices[#vertices-1], vertices[#vertices], vertices[1], vertices[2]}
-	table.insert (edges, edge)
-
-	for i=1, #vertices-2, 2 do
-		edge = {vertices[i], vertices[i+1], vertices[i+2], vertices[i+3]}
-		table.insert (edges, edge)
-	end
-
-	local poly = {
-		points = vertices,
-		edges = edges,
-		index = index,
-	}
-
-	setmetatable(poly, self) 
-	self.__index = self 
-
-	return poly
-end
-
-----------------------------------------------------------
--- checks if the point is inside the polygon
-function Polygon:containsPoint(x, y)
-	local isInside = false
-	for _, edge in ipairs (self.edges) do
-		local x1, y1, x2, y2 = edge[1], edge[2], edge[3], edge[4]
-		if ((y1 > y) ~= (y2 > y)) and
-		(x < (x2 - x1) * (y - y1) / (y2 - y1) + x1) then
-			isInside = not isInside
-		end
-	end
-	return isInside
-end
 
 
 ----------------
@@ -1108,14 +1232,13 @@ local function getRVoronoi (sitePoints, frameX,frameY, frameW, frameH)
 	-- magic value!
 	local rightDoubleBoundary = 2*(2*frameW - frameX + frameH-frameY)
 
-	local boundary = {frameX, frameY, frameX+frameW, frameY+frameH}
 	local dVoronoi = {}
 	dVoronoi.sitePoints = sitePoints
-	dVoronoi.boundary = boundary
+	dVoronoi.boundary = {frameX, frameY, frameX+frameW, frameY+frameH}
 
 	dVoronoi.vertex = { }
 	dVoronoi.segments = { }
-	dVoronoi.events = HHeap:new()
+	dVoronoi.eventsHeap = HHeap:new()
 	dVoronoi.beachline = DoubleLinkedList:new()
 	dVoronoi.polygons = { }
 	dVoronoi.polygonMap = { }
@@ -1123,19 +1246,33 @@ local function getRVoronoi (sitePoints, frameX,frameY, frameW, frameH)
 
 -- sets up the dVoronoi events
 	for i, sitePoint in ipairs (sitePoints) do
-		dVoronoi.events:push(sitePoint, sitePoint.x, {i})
+		dVoronoi.eventsHeap:push(sitePoint, sitePoint.x, {i})
 	end
 
-	while not dVoronoi.events:isEmpty() do
-		local event = dVoronoi.events:pop()
+	local index = 0
+	while not dVoronoi.eventsHeap:isEmpty() do
+		index = index + 1
+		local event = dVoronoi.eventsHeap:pop()
+		print ('\n	-----event '.. index..' '..(event.arc~=nil and "circle" or "point"))
+
 		if event.arc then
 			if event.valid then
 				table.insert (specialCaseCircle, {event.x, event.y, event.radius, 1})
-				Tools:processCircle(event, dVoronoi)
+				Tools:processCircle(dVoronoi, event)
 			end
+--			print ('beachline:length', dVoronoi.beachline:length())
+			dVoronoi.beachline:showContents()
+			print ('# end of cirlce event\n')
+
 		else
-			Tools:processPoint(event, dVoronoi)
+			Tools:processPoint(dVoronoi, event)
+--			print ('beachline:length', dVoronoi.beachline:length())
+			dVoronoi.beachline:showContents()
+			print ('# end of point event\n')
+
 		end 
+
+
 	end
 
 
@@ -1292,10 +1429,10 @@ end
 ----------------
 ----------------
 
-Tools.polygon = Polygon
+--Tools.polygon = Polygon
 
-voronoilib.heap = HHeap
-voronoilib.Tools = Tools
-voronoilib.DoubleLinkedList = DoubleLinkedList
+--voronoilib.HHeap = HHeap
+--voronoilib.Tools = Tools
+--voronoilib.DoubleLinkedList = DoubleLinkedList
 
 return voronoilib
