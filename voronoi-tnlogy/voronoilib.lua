@@ -49,6 +49,7 @@ end
 
 local HHeap = {}
 function HHeap:new()
+	-- HHEAP for event queue
 	local heap = { heap = {}, nodes = {} }
 	setmetatable(heap, self)
 	self.__index = self
@@ -180,7 +181,6 @@ function DoubleLinkedList:insertAfter(currentNode, newData)
 	else
 		newNode.next.prev = newNode
 	end
-	newNode.node = true
 	return newNode
 end
 
@@ -221,24 +221,24 @@ function DoubleLinkedList:showContents()
 	local node = self.first
 	print ('beachline length:', self:length())
 	while node do
-		print (node.index, 'x:'..node.x, 'y:'..node.y)
+		print ('', node.index, 'x:'..node.x, 'y:'..node.y)
 
 		local str = ''
 		for i in pairs (node) do
 			str = str .. i .. ' '
 		end
-		print (str)
+		print ('', node.index, str)
 
 		if node.leftSegm then
-			print(node.index, 'left', segmentToStr(node.leftSegm))
+			print('', node.index, 'left', segmentToStr(node.leftSegm))
 		end
 		if node.rightSegm then
-			print(node.index, 'right', segmentToStr(node.rightSegm))
+			print('', node.index, 'right', segmentToStr(node.rightSegm))
 		end
 
 		node = node.next
 		if node then
-			print ('# # #')
+			print ('# # # next node:')
 		end
 	end
 end
@@ -366,21 +366,44 @@ end
 --------
 --------
 
-function Tools:insertPointCommon (dVoronoi, arcNode1, site, x, y)
-	dVoronoi.beachline:insertAfter(arcNode1, arcNode1)
 
---	local arcNode2 = arcNode1.next
+function Tools:insertPointCommon(dVoronoi, arcNode1, site, x, y)
+	if arcNode1.x == site.x then
+		-- Special case: arcNode1.x == site.x
+		print("arcNode1.x == site.x")
+
+		-- Insert site into the beachline after arcNode1
+		dVoronoi.beachline:insertAfter(arcNode1, site)
+
+		-- Create a new segment
+		local startPoint = newPoint(x, y)
+		local endPoint = newPoint(site.x, site.y)
+		local segment = newSegment(startPoint, endPoint)
+		table.insert(dVoronoi.segments, segment)
+
+		-- Update references
+		arcNode1.next.rightSegm = arcNode1.rightSegm
+		site.leftSegm = segment
+		site.rightSegm = arcNode1.rightSegm
+
+		return
+	end
+
+	-- General case: Inserting a new site between two existing arcs
+	
+	local arcNode3 = dVoronoi.beachline:insertAfter(arcNode1, arcNode1)
+
 
 	arcNode1.next.rightSegm = arcNode1.rightSegm
 
-	dVoronoi.beachline:insertAfter(arcNode1, site)
 
-	local arcNode2 = arcNode1.next
+	local arcNode2 = dVoronoi.beachline:insertAfter(arcNode1, site)
 
-	local startPoint = newPoint (x, y)
-	local endPoint = newPoint (site.x, site.y)
-	local segment = newSegment (startPoint, endPoint, 2)
-	local segment2 = newSegment(startPoint, endPoint, 2)
+
+	local startPoint = newPoint(x, y)
+	local endPoint = newPoint(site.x, site.y)
+	local segment = newSegment(startPoint, endPoint)
+	local segment2 = newSegment(startPoint, endPoint)
 
 	table.insert(dVoronoi.segments, segment)
 	table.insert(dVoronoi.segments, segment2)
@@ -396,21 +419,40 @@ end
 
 
 
+
 function Tools:getCurrentArc(dVoronoi, site)
+	print ('##getCurrentArc, search arc for site', site.x, site.y)
 	local currentNode = dVoronoi.beachline.first
+	local index = 0
+
 	while currentNode do
 		local nextNode = currentNode.next
+		index = index + 1
+		print ('check currentNode:'..index)
+		local x, y, specialCaseX = self:intersectPointArc(site, currentNode)
+		print ('getCurrentArc', 'x:'..tostring(x), 'y:'..tostring(y))
+
 		if nextNode then
-			local x, y, specialCaseX = self:intersectPointArc(site, currentNode)
 			if x then
-				if not self:intersectPointArc(site, nextNode) then
+				local x1, y1 = self:intersectPointArc(site, nextNode)
+				if x1 then
+					-- do nothing
+					print ('intersect with next node, skip current:'.. index, 'next:',x1, y1)
+				else
+					print ('found arc index:'..index, 'point', x, y)
 					return currentNode
 				end
 			end
+		elseif x and specialCaseX then
+			print ('specialCaseX, last arc:'..index,'x:'..x, 'y:'..y)
+			return currentNode
+		else
+--			currentNode = dVoronoi.beachline.last
+			print ('arc not found, return the last:'..currentNode.index, currentNode.x, currentNode.y)
+			return currentNode
 		end
 		currentNode = currentNode.next
 	end
-	return dVoronoi.beachline.last
 end
 
 
@@ -432,6 +474,7 @@ function Tools:processPoint(dVoronoi, site)
 	for arcNode in dVoronoi.beachline.nextNode, dVoronoi.beachline do
 		local x, y, specialCaseX = self:intersectPointArc(site, arcNode)
 		print ('processPoint, point', x, y, 'specialcase:', tostring (specialCaseX))
+		--[[
 		if x and specialCaseX then
 			print ('x and specicialCase', 'x', x, 'y', y)
 			if not (arcNode.next and self:intersectPointArc(site, arcNode.next)) then
@@ -439,11 +482,14 @@ function Tools:processPoint(dVoronoi, site)
 			end
 			return
 		elseif x then
+			--]]
+		if x then
 			-- New parabola intersects arc i. If necessary, duplicate i.
 			-- ie if there is a next node, but there is not interation, then creat a duplicate
 			print ('intersectPointArc crossing:', x, y)
 			if not (arcNode.next and self:intersectPointArc(site, arcNode.next)) then
 				print ('no next')
+				if specialCaseX then x = -1000 end
 				self:insertPointCommon (dVoronoi, arcNode, site, x, y)
 			end
 			return
@@ -535,7 +581,7 @@ function Tools:intersectPointArc(point, arc)
 
 -- Special case: Check if the x-coordinate of the focus aligns with the x-coordinate of the arc's vertex.
 	if (arc.x == point.x) and not arc.next then 
-		print ('Special case for point and arc: x=x', point.x, point.y, arc.x, arc.y)
+--		print ('Special case for point and arc: x=x', point.x, point.y, arc.x, arc.y)
 		table.insert (specialCaseVLines, {point.x, point.y, arc.x, arc.y})
 		local x, y = point.x, point.y
 		return x, y, true
@@ -998,9 +1044,7 @@ end
 
 
 local function findCrossingLineTangentSegment(bx, by, tx, ty, p1, p2)
-
 	if tx == 0 then
-
 		local x, y = findIntersectionWithVerticalLine(p1.x, p1.y, p2.x, p2.y, bx)
 --		print ('cross with vertical')
 		return x, y
@@ -1009,10 +1053,8 @@ local function findCrossingLineTangentSegment(bx, by, tx, ty, p1, p2)
 --		print ('cross with horizontal')
 		return x, y
 	else
-		print ('!!!!!!!!!!!!!!!!!!!!wrong tx, ty', tx, ty)
 --		local u = ((p2.x - p1.x) * ty + (p1.y - by) * tx) / (tx * (p1.y - p2.y) + ty * (p2.x - p1.x))
 		local u = dotProductLineTangentPoint(bx, by, tx, ty, p1) / dotProductLineTangentPoint(bx, by, tx, ty, p1, p2)
-
 		local cx = p1.x + u * (p2.x - p1.x)
 		local cy = p1.y + u * (p2.y - p1.y)
 		return cx, cy

@@ -56,13 +56,15 @@ end
 
 
 
---local siteVertices = {100, 100, 151, 151, 101,200}
---local siteVertices = {100, 100, 150, 150, 101,200}
-local siteVertices = {100, 100, 150, 150, 100,200}
+--local siteVertices = {100, 100, 101,200, 301, 301} -- good
+--local siteVertices = {100, 100, 100,200, 301, 301} -- bad
+--local siteVertices = {100, 100, 101,200} -- good
+--local siteVertices = {100, 100, 100,200} -- bad
+
 
 
 --local siteVertices = phyllotaxis(10, 99, 160, 500)
---local siteVertices = phyllotaxis(10, 99, 60, 500)
+local siteVertices = phyllotaxis(10, 99, 60, 500)
 --local siteVertices = phyllotaxis(10, 300, 16, 5000)
 
 --local siteVertices = hexagonalVertices (-30, 10, 6, 7, 100, 86, 2, 0)
@@ -225,12 +227,12 @@ function love.draw()
 
 	love.graphics.setColor (0,0,0)
 	for index, sitePoint in ipairs(vDiagram.sitePoints) do
-		love.graphics.circle('fill', sitePoint.x, sitePoint.y, 3)
+		love.graphics.circle('fill', sitePoint.x, sitePoint.y, 4)
 	end
 	
 	love.graphics.setColor (1,1,1)
 	for i = 1, #siteVertices, 2 do
-		love.graphics.circle('fill', siteVertices[i], siteVertices[i+1], 1)
+		love.graphics.circle('fill', siteVertices[i], siteVertices[i+1], 2)
 	end
 end
 
