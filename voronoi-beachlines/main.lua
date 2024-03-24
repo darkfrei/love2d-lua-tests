@@ -4,22 +4,19 @@ frame = {x=50,y=50, w=700,h=500}
 vertices = {
 	200,200,
 --	300,210, 
---	400,210, 
+	500,250, 
 }
 
 dirY = 220
 
-function getFocusParabolaRoots (fx, fy, y) -- focus
-
+function getFocusParabolaRoots (fx, fy, y) -- focus, horizontal line
+-- dirY is global
 	local h = fx -- x shift
 	local p = -(dirY-fy)/2 -- always negative for voronoi
 	local k = fy - p -y
-
-	-- roots
-	local left_x = h - math.sqrt (-k*4*p)
-	local right_x = h + math.sqrt (-k*4*p)
---	print (left_x, right_x)
-	return left_x, right_x
+	local leftX = h - math.sqrt (-k*4*p)
+	local rightX = h + math.sqrt (-k*4*p)
+	return leftX, rightX
 end
 
 getFocusParabolaRoots (2, 6, 10) -- focus x, y, directrix y
@@ -28,44 +25,47 @@ getFocusParabolaRoots (5, 3, 5) -- focus x, y, directrix y
 ---------------------------------------------------------------------
 
 function getBezierControlPoint_focus_directrix(fx, fy, ax, ay, bx, by)
+	-- (x-h)^2=4*p*(y-k)
 	if (ay == by) then
 		-- exception: horizontal AB
-		local h = fx
 		local k = (fy + dirY) / 2
+		local h = fx
 		local cx = h
 		local cy = ay + 2*(k-ay)
-		return cx, cy		
+		return cx, cy
+		
+	else
+--	[Axis direction](https://en.wikipedia.org/wiki/Parabola#Axis_direction)
+		local h = fx
+		local k = (fy + dirY) / 2
+		local cx = (ax+bx)/2
+		local f = (k-dirY)/2
+		
+		-- vertex
+		-- h = -b/(2*a)
+		-- k = (4*a*c-b*b)/(4*a)
+		
+		local a = -1/(dirY-ay)
+		local b = -2 * a * h
+		local c = h * h * a + k
+--		print ('h', h, -b/(2*a)) -- ok, same
+--		print ('k', k, (4*a*c-b*b)/(4*a)) -- ok, same
+		
+		-- derivative value of parabola in point A (ax):
+		local day = a*2*ax + b
+		local cy = ay + day * (bx-ax)/2
+		
+		-- usage: three control points to draw parabola:
+		-- {ax, ay, cx, cy, bx, by}
+		return cx, cy
 	end
-	-- Calculate the axis of symmetry (h)
-	local h = -fx / (2 * (ay - dirY))
-
-	-- Calculate the vertex of the parabola (k)
-	local k = ay - (ay - dirY) / 4
-
-	-- Calculate the distance from A and B to the vertex
-	local dA = math.abs(ax - h)
-	local dB = math.abs(bx - h)
-
-	-- Calculate the control point's x-coordinate (c_x)
-	local cx = (dA * bx + dB * ax) / (dA + dB)
-
-	-- Calculate the control point's y-coordinate (c_y)
-	local cy = k + (cx - h)^2 / (4 * (k - dirY))
-
-	return c_x, c_y
 end
 
-function get_y1 (fx, fy, x1)
+function evaluateParabola (fx, fy, x)
 	local k = (fy+dirY)/2
---	local p = k-dirY
 	local p = -(dirY-fy)/2
-	local h = fx
-	-- (x-h)^2 = 4*p*(y-k)
-	-- dirY = k-p
-	local y1 = (x1-h)^2 / (4*p) + k
-	love.window.setTitle ('x:'..x1..
-		' y1:'..y1.. ' p:'..p )
-	return y1
+	local y = (x-fx)^2 / (4*p) + k
+	return y
 end
 
 
@@ -85,14 +85,29 @@ function updateBeachlines ()
 --			print ('2', dirY-frame.y)
 			beachLine.line = {left_x, frame.y, right_x, frame.y}
 			local ax, ay = left_x, frame.y
-			if ax < frame.x then 
---				print ('ax, ay', ax, ay)
-				beachLine.line[1] = frame.x
-				beachLine.line[2] = get_y1 (fx, fy, frame.x)
-				table.insert (beachLine.line, 3, frame.x)
+			if ax < frame.x then
+				local ax1 = frame.x
+				local ay1 = evaluateParabola (fx, fy, ax1)
+				beachLine.line[1] = ax1 
+				beachLine.line[2] = ay1
+				table.insert (beachLine.line, 3, ax1)
 				table.insert (beachLine.line, 4, frame.y)
+				ax = ax1
+				ay = ay1
 			end
+			
 			local bx, by = right_x, frame.y
+			if bx > frame.x + frame.w then
+				local bx1 = frame.x + frame.w
+				local by1 = evaluateParabola (fx, fy, bx1)
+				beachLine.line[#beachLine.line-1] = bx1 
+				beachLine.line[#beachLine.line] = by1
+				table.insert (beachLine.line, #beachLine.line-1, bx1)
+				table.insert (beachLine.line, #beachLine.line-1, frame.y)
+				bx = bx1
+				by = by1
+			end
+			
 --			local cx, cy = getBezierThirdControlPoint(fx, fy, ax, ay, bx, by+1)
 			local cx, cy = getBezierControlPoint_focus_directrix(fx, fy, ax, ay, bx, by)
 			beachLine.controlPoints = {
