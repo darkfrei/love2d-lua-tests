@@ -1,14 +1,16 @@
 -- 2024-03-31
 
 require ('math-vb')
+require ('events-vb')
 require ('draw-vb')
 
 frame = {x=50,y=50, w=700,h=500}
 
 vertices = {
-	250, 250,
+	400, 450,
 	550, 250,
-	400, 450 
+	250, 250,
+	
 }
 
 -- defaul directrix Y
@@ -34,6 +36,7 @@ for i, site in ipairs (sites) do
 	local cell = {}
 	cell.site = site
 	site.cell = cell
+	site.circleEvents = {}
 	cell.triangles = {}
 end
 
@@ -42,19 +45,30 @@ eventQueue = {}
 for i, site in ipairs (sites) do
 	local event = {}
 	event.type = 'site' -- also 'circle' and 'edge'
-	event.valid = true
+	event.valid = true -- site event is always valid
 	event.site = site
+	site.siteEvent = event
 	event.x = site.fx
 	event.y = site.fy
+	table.insert (eventQueue, event)
 end
-sortEventQueue ()
+--printEventQueue (eventQueue, 'not sorted')
+sortEventQueue (eventQueue)
+--printEventQueue (eventQueue, 'sorted')
 
 beachLines = {} -- array of arcs and lines
-local flat = {x1=frame.x, y1=frame.y, x2=frame.x+frame.w, y2=frame.y, flat = true}
-flat.line = {frame.x, frame.y, frame.x+frame.w, frame.y}
-table.insert (beachLines, flat)
+local flatBeachLine = {x1=frame.x, x2=frame.x+frame.w, y=frame.y, flat = true}
+flatBeachLine.line = {flatBeachLine.x1, flatBeachLine.y, flatBeachLine.x2, flatBeachLine.y}
+table.insert (beachLines, flatBeachLine)
+print ('#beachLines', #beachLines)
+--[[
+local arcBeachline = {
+	line = {x1, y1, x2, y2}, -- line on frame, optional
+	controlPoints = {ax, ay, cx, cy, bx, by}, -- bezier control points
+	bezierLine = bezier:render(), -- prepared line to draw
+}
+--]]
 
-insertFirstArcFromEventQueue ()
 
 
 ---------------------------------------------------------------------
@@ -65,9 +79,34 @@ insertFirstArcFromEventQueue ()
 
 
 
+function updateDiagram ()
+	local queue = {}
+	for i, event in ipairs (eventQueue) do
+		if event.y <= dirY then
+			table.insert (queue, event)
+		end
+	end
+	
+	local n = 0
+	while #queue > 0 do
+		n = n+1
+		sortEventQueue (eventQueue)
+		local event = getEventFromQueue (queue)
+		if event.valid then
+			print ('----------------------')
+			print ('event', n)
+			runEvent[event.type](event)
+			print (event.type, event.x, event.y)
+		end
+	end
+	love.window.setTitle('done events: '.. n)
+end
+
+
+
 function updateBeachlines ()
 	beachLines = {}
-	
+
 	for i = 1, #vertices-1, 2 do
 		local fx = vertices[i]
 		local fy = vertices[i+1]
@@ -89,6 +128,7 @@ function updateBeachlines ()
 				ax = ax1
 				ay = ay1
 			end
+			beachLine.x1 = ax
 
 			local bx, by = right_x, frame.y
 			if bx > frame.x + frame.w then
@@ -101,6 +141,7 @@ function updateBeachlines ()
 				bx = bx1
 				by = by1
 			end
+			beachLine.x2 = ay
 
 --			local cx, cy = getBezierThirdControlPoint(fx, fy, ax, ay, bx, by+1)
 			local cx, cy = getBezierControlPoint(fx, fy, ax, bx, dirY)
@@ -123,6 +164,11 @@ end
 
 updateBeachlines ()
 
+function love.load ()
+	print ('load', '#beachLines:', #beachLines)
+	updateDiagram ()
+end
+
 function love.draw ()
 	drawFrame ()
 
@@ -136,6 +182,7 @@ function love.draw ()
 	drawBezierControlLines ()
 
 	drawBezierArcs ()
+	
 
 end
 

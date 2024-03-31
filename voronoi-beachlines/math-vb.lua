@@ -32,15 +32,28 @@ function evaluateParabola (fx, fy, x, dirY)
 	return y
 end
 
-function sortEventQueue ()
-	table.sort(eventQueue, function(a, b)
-			return a.y < b.y or a.y == b.y and a.y < b.x
+function sortEventQueue(events)
+	table.sort(events, function(a, b)
+			return a.y < b.y or (a.y == b.y and a.x < b.x)
 		end)
 end
 
 ----------------------------------------------------------------
 
-
-function insertFirstArcFromEventQueue ()
-
+function printEventQueue (events, str)
+	print ('event queue', str)
+	for i, event in ipairs (events) do
+		print (i, 'event', event.type, event.y, event.x)
+	end
 end
+
+----------------------------------------------------------------
+
+function getEventFromQueue (queue)
+	local n = #queue
+	if n >= 1 then
+		sortEventQueue (eventQueue)
+		return table.remove (queue, 1)
+	end
+end
+
