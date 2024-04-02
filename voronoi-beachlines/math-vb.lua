@@ -1,6 +1,23 @@
 -- math functions for voronoi beachlines
 
 
+function getArc_x1 (fx, fy, y) -- focus, horizontal line
+	local p = -(dirY-fy)/2 -- always negative for voronoi
+	if p == 0 then return fx end
+	local k = fy - p -y
+	local leftX = fx - math.sqrt (-k*4*p)
+	return leftX
+end
+
+function getArc_x2 (fx, fy, y) -- focus, horizontal line
+	local p = -(dirY-fy)/2 -- always negative for voronoi
+	if p == 0 then return fx end
+	local k = fy - p -y
+	local leftX = fx + math.sqrt (-k*4*p)
+	return leftX
+end
+
+
 function getFocusParabolaRoots (fx, fy, y, dirY) -- focus, horizontal line
 -- dirY is global
 	local h = fx -- x shift
@@ -12,6 +29,15 @@ function getFocusParabolaRoots (fx, fy, y, dirY) -- focus, horizontal line
 end
 
 
+
+function getBezierControlPoints (fx, fy, ax, bx)
+	local f = function (x) return (x*x-2*fx*x+fx*fx+fy*fy-dirY*dirY) / (2*(fy-dirY)) end
+	local function df(x) return (x-fx) / (fy-dirY) end
+	if (fy == dirY) then return end -- not parabola
+	local ay, by = f(ax), f(bx)
+	local ad, dx = df(ax), (bx-ax)/2
+	return {ax, ay, ax+dx, ay+ad*dx, bx, by}
+end
 
 function getBezierControlPoint (fx, fy, ax, bx, dirY)
 -- based on [code](https://stackoverflow.com/a/78216720/12968803)
@@ -34,7 +60,8 @@ end
 
 function sortEventQueue(events)
 	table.sort(events, function(a, b)
-			return a.y < b.y or (a.y == b.y and a.x < b.x)
+--			return a.y < b.y or (a.y == b.y and a.x < b.x)
+			return a.y < b.y or (a.y == b.y and (a.priority < b.priority))
 		end)
 end
 

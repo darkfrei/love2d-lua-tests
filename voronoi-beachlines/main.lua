@@ -1,4 +1,5 @@
 -- 2024-03-31
+-- 2024-04-02
 
 require ('math-vb')
 require ('events-vb')
@@ -10,7 +11,7 @@ vertices = {
 	400, 450,
 	550, 250,
 	250, 250,
-	
+
 }
 
 -- defaul directrix Y
@@ -21,82 +22,67 @@ dirY = 260
 
 
 -- creating sites
-sites = {}
+--sites = {}
+cells = {}
 for i = 1, #vertices-1, 2 do
-	local fx = vertices[i]
-	local fy = vertices[i+1]
+	local x = vertices[i]
+	local y = vertices[i+1]
 	local index = (i-1)/2+1
-	local site = {fx=fx, fy=fy, index=index} -- focus
-	table.insert (sites, site)
+	local cell = {
+		x=x, y=y, -- site and parabola focus
+	}
+	table.insert (cells, cell)
 end
 
--- creating cells
-cells = {}
-for i, site in ipairs (sites) do
-	local cell = {}
-	cell.site = site
-	site.cell = cell
-	site.circleEvents = {}
-	cell.triangles = {}
-end
 
 -- creating queue
 eventQueue = {}
-for i, site in ipairs (sites) do
+for i, cell in ipairs (cells) do
 	local event = {}
 	event.type = 'site' -- also 'circle' and 'edge'
 	event.valid = true -- site event is always valid
-	event.site = site
-	site.siteEvent = event
-	event.x = site.fx
-	event.y = site.fy
+	event.cell = cell
+	cell.siteEvent = event
+	event.x = cell.x
+	event.y = cell.y
+	event.priority = 2
 	table.insert (eventQueue, event)
 end
 --printEventQueue (eventQueue, 'not sorted')
 sortEventQueue (eventQueue)
 --printEventQueue (eventQueue, 'sorted')
 
-beachLines = {} -- array of arcs and lines
-local flatBeachLine = {x1=frame.x, x2=frame.x+frame.w, y=frame.y, flat = true}
-flatBeachLine.line = {flatBeachLine.x1, flatBeachLine.y, flatBeachLine.x2, flatBeachLine.y}
-table.insert (beachLines, flatBeachLine)
-print ('#beachLines', #beachLines)
---[[
-local arcBeachline = {
-	line = {x1, y1, x2, y2}, -- line on frame, optional
-	controlPoints = {ax, ay, cx, cy, bx, by}, -- bezier control points
-	bezierLine = bezier:render(), -- prepared line to draw
-}
---]]
+function resetBeachlLines ()
+	beachLines = {} -- array of arcs and lines
+	local flatBeachLine = newFlatBeachline (frame.x, frame.x+frame.w, frame.y)
+	table.insert (beachLines, flatBeachLine)
+--	print ('#beachLines', #beachLines)
+end
 
-
+resetBeachlLines ()
 
 ---------------------------------------------------------------------
 
 
-
-
-
-
-
 function updateDiagram ()
+	resetBeachlLines ()
 	local queue = {}
 	for i, event in ipairs (eventQueue) do
 		if event.y <= dirY then
 			table.insert (queue, event)
 		end
 	end
-	
+
 	local n = 0
 	while #queue > 0 do
 		n = n+1
 		sortEventQueue (eventQueue)
 		local event = getEventFromQueue (queue)
 		if event.valid then
-			print ('----------------------')
-			print ('event', n)
+--			print ('----------------------')
+--			print ('event', n)
 			runEvent[event.type](event)
-			print (event.type, event.x, event.y)
+--			print (event.type, event.x, event.y)
 		end
 	end
 	love.window.setTitle('done events: '.. n)
@@ -162,10 +148,10 @@ function updateBeachlines ()
 	end
 end
 
-updateBeachlines ()
+--updateBeachlines ()
 
 function love.load ()
-	print ('load', '#beachLines:', #beachLines)
+--	print ('load', '#beachLines:', #beachLines)
 	updateDiagram ()
 end
 
@@ -177,12 +163,12 @@ function love.draw ()
 	drawSitesVertices ()
 
 
-	drawFrameCollisionLines ()
 
 	drawBezierControlLines ()
 
+	drawFrameCollisionLines ()
 	drawBezierArcs ()
-	
+
 
 end
 
@@ -190,7 +176,8 @@ end
 
 function love.mousemoved (x, y)
 	dirY = y
-	updateBeachlines ()
+	updateDiagram ()
+--	updateBeachlines ()
 end
 
 function love.keypressed(key, scancode, isrepeat)
