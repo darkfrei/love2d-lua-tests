@@ -73,28 +73,27 @@ function love.load()
 		{x=300, y=300, ns = {}}	,
 		{x=200, y=300, ns = {}}	,
 		{x=100, y=300, ns = {}}	,
-		{x=100, y=450, ns = {}}	,
-		{x=200, y=390, ns = {}}	, -- 14
-		{x=300, y=390, ns = {}}	, -- 15
-		{x=400, y=450, ns = {}}	,
-		{x=250, y=490, ns = {}}	,
+		{x=100, y=500, ns = {}}	,
+		{x=200, y=400, ns = {}}	, -- 14
+		{x=300, y=400, ns = {}}	, -- 15
+		{x=400, y=500, ns = {}}	,
+		{x=250, y=500, ns = {}}	,
 	}
 
 	-- Connect the nodes
 	connect (nodes, 1, 2)
 	connect (nodes, 2, 3, 4)
-	connect (nodes, 3, 4)
+	connect (nodes, 3, 4, 1, 12)
 	connect (nodes, 5, 2, 4)
-	connect (nodes, 6, 2, 5)
+	connect (nodes, 6, 2, 5, 7)
 	connect (nodes, 8, 5, 6, 7, 9, 10)
 	connect (nodes, 11, 12, 3, 4, 5, 10)
-	connect (nodes, 10, 3, 4, 5, 9)
-	connect (nodes, 13, 12, 11, 10, 9)
-	connect (nodes, 14, 12, 11, 10, 9)
-	connect (nodes, 15, 12, 11, 10, 9)
-	connect (nodes, 16, 12, 11, 10, 9)
-	-- connect (nodes, 17, 13, 12, 14, 11, 4, 2, 6, 5, 10, 15, 9, 16)
-	connect (nodes, 17, 13, 12, 14, 11, 10, 15, 9, 16)
+	connect (nodes, 10, 5, 9)
+	connect (nodes, 13, 12, 14)
+	connect (nodes, 14, 12, 11, 10, 15)
+	connect (nodes, 15, 9, 10)
+	connect (nodes, 16, 15, 9)
+	connect (nodes, 17, 13, 14, 15, 16)
 
 	-- Define colors for the theorem
 	colors = {{1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {0, 0, 1}}
@@ -102,239 +101,6 @@ function love.load()
 	-- Apply the four color theorem
 	fourColorTheorem(nodes, colors)
 
---	serpent = require ('serpent')
---	print ('nodes = ' .. serpent.block (nodes))
---[[
-nodes = { -- [17]
-	{
-		y = 100,
-		ns = { -- [1]
-			2
-		},
-		color = { -- [3]
-			1,
-			0,
-			0
-		},
-		x = 100
-	},
-	{
-		y = 100,
-		ns = { -- [5]
-			1,
-			3,
-			4,
-			5,
-			6
-		},
-		color = { -- [3]
-			1,
-			1,
-			0
-		},
-		x = 200
-	},
-	{
-		y = 200,
-		ns = { -- [4]
-			2,
-			4,
-			11,
-			10
-		},
-		color = nil,
-		x = 100
-	},
-	{
-		y = 200,
-		ns = { -- [5]
-			2,
-			3,
-			5,
-			11,
-			10
-		},
-		color = { -- [3]
-			0,
-			1,
-			0
-		},
-		x = 200
-	},
-	{
-		y = 200,
-		ns = { -- [6]
-			2,
-			4,
-			6,
-			8,
-			11,
-			10
-		},
-		color = nil,
-		x = 300
-	},
-	{
-		y = 100,
-		ns = { -- [3]
-			2,
-			5,
-			8
-		},
-		color = { -- [3]
-			0,
-			0,
-			1
-		},
-		x = 300
-	},
-	{
-		y = 100,
-		ns = { -- [1]
-			8
-		},
-		color = nil,
-		x = 400
-	},
-	{
-		y = 200,
-		ns = { -- [5]
-			5,
-			6,
-			7,
-			9,
-			10
-		},
-		color = nil,
-		x = 400
-	},
-	{
-		y = 300,
-		ns = { -- [7]
-			8,
-			10,
-			13,
-			14,
-			15,
-			16,
-			17
-		},
-		color = nil,
-		x = 400
-	},
-	{
-		y = 300,
-		ns = { -- [11]
-			8,
-			11,
-			3,
-			4,
-			5,
-			9,
-			13,
-			14,
-			15,
-			16,
-			17
-		},
-		color = nil,
-		x = 300
-	},
-	{
-		y = 300,
-		ns = { -- [10]
-			12,
-			3,
-			4,
-			5,
-			10,
-			13,
-			14,
-			15,
-			16,
-			17
-		},
-		color = nil,
-		x = 200
-	},
-	{
-		y = 300,
-		ns = { -- [6]
-			11,
-			13,
-			14,
-			15,
-			16,
-			17
-		},
-		color = nil,
-		x = 100
-	},
-	{
-		y = 450,
-		ns = { -- [5]
-			12,
-			11,
-			10,
-			9,
-			17
-		},
-		color = nil,
-		x = 100
-	},
-	{
-		y = 390,
-		ns = { -- [5]
-			12,
-			11,
-			10,
-			9,
-			17
-		},
-		color = nil,
-		x = 200
-	},
-	{
-		y = 390,
-		ns = { -- [5]
-			12,
-			11,
-			10,
-			9,
-			17
-		},
-		color = nil,
-		x = 300
-	},
-	{
-		y = 450,
-		ns = { -- [5]
-			12,
-			11,
-			10,
-			9,
-			17
-		},
-		color = nil,
-		x = 400
-	},
-	{
-		y = 490,
-		ns = { -- [8]
-			13,
-			12,
-			14,
-			11,
-			10,
-			15,
-			9,
-			16
-		},
-		color = nil,
-		x = 250
-	}
-}
---]]
 end
 
 
