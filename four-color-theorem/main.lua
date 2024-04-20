@@ -10,7 +10,7 @@ end
 
 ------------------------------------------------------------
 
-local function is_safe(node_index, color, nodes)
+local function isSafe(node_index, color, nodes)
 	local node = nodes[node_index]
 	for _, neighbor_index in ipairs(node.ns) do
 		local neighbor_color = nodes[neighbor_index].color
@@ -22,15 +22,15 @@ local function is_safe(node_index, color, nodes)
 end
 
 -- Recursive function to color the map using the four color theorem
-local function four_color_theorem_recursive(node_index, colors, nodes)
+local function fourColorTheoremRecursive(node_index, colors, nodes)
 	if node_index > #nodes then
 		return true  -- Base case: All nodes colored
 	end
 
 	for _, color in ipairs(colors) do
-		if is_safe(node_index, color, nodes) then
+		if isSafe(node_index, color, nodes) then
 			nodes[node_index].color = color
-			if four_color_theorem_recursive(node_index + 1, colors, nodes) then
+			if fourColorTheoremRecursive(node_index + 1, colors, nodes) then
 				return true  -- Solution found
 			end
 			nodes[node_index].color = nil  -- Backtrack
@@ -41,8 +41,8 @@ local function four_color_theorem_recursive(node_index, colors, nodes)
 end
 
 -- Main function to initiate coloring
-local function four_color_theorem(nodes, colors)
-	if four_color_theorem_recursive(1, colors, nodes) then
+local function fourColorTheorem(nodes, colors)
+	if fourColorTheoremRecursive(1, colors, nodes) then
 		return nodes
 	else
 		return nil  -- No solution found
@@ -87,7 +87,7 @@ function love.load()
 	connect (nodes, 17, 13, 12, 14, 11, 10, 15, 9, 16)
 
 	colors = {{1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {0, 0, 1}}
-	four_color_theorem(nodes, colors)
+	fourColorTheorem(nodes, colors)
 
 --	serpent = require ('serpent')
 --	print ('nodes = ' .. serpent.block (nodes))
@@ -117,7 +117,7 @@ function drawNodes (nodes)
 
 
 	for i, node in ipairs(nodes) do
-		
+
 		love.graphics.setColor(0, 0, 0, 0.5)
 		love.graphics.rectangle('fill', node.x + 	8, node.y - 8, 18, 14)
 		love.graphics.setColor(1, 1, 1)
