@@ -1,9 +1,10 @@
 -- voronoi for closed polygon
 local VP = require ('voronoi-polygon')
 
-local flatPolygon = {100,50, 700,150, 400,500, 50,250}
+local flatPolygon = {
+	50,50, 700,150, 300,500}
 
-local flatSites = {200, 200, 300, 300, 300, 220}
+local flatSites = {300, 200, 400, 210}
 
 
 local diagram = VP.newDiagram (flatPolygon, flatSites, "diagram-1")
@@ -15,15 +16,16 @@ function love.draw ()
 	love.graphics.setColor (1,1,1)
 	love.graphics.setLineWidth (1)
 	VP.drawFlatPolygon (diagram)
+	VP.drawPolygon (diagram, 2)
 	VP.drawSites (diagram, 2)
 
 	love.graphics.setLineWidth (3)
 	VP.drawUpperBoundary (diagram)
 
 	love.graphics.setLineWidth (1)
-	love.graphics.setColor (0,1,0)
+	love.graphics.setColor (1,1,1)
 	VP.drawBeachline (diagram, 2)
-	
+
 	love.graphics.setLineWidth (1)
 	love.graphics.setColor (1,1,1)
 	VP.drawSweepline (diagram)
@@ -34,12 +36,13 @@ function love.keypressed (key, scancode)
 		love.event.quit()
 	end
 
-	nSteps = nSteps + 1
-	print ('----------------------------')
-	print ('---------- step '.. nSteps ..' ----------')
-	print ('----------------------------')
-	VP.step (diagram)
-	love.window.setTitle (nSteps)
-
+	if diagram.eventQueue and #diagram.eventQueue > 0 then
+		nSteps = nSteps + 1
+		print ('----------------------------')
+		print ('---------- step '.. nSteps ..' ----------')
+		print ('----------------------------')
+		VP.step (diagram)
+		love.window.setTitle (nSteps..' eventQueue: ' .. #diagram.eventQueue)
+	end
 
 end

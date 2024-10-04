@@ -5,8 +5,11 @@ local utils = {}
 
 utils.tiny = 0.0001
 
+local pointIndex = 0
+
 function utils.newPoint (x, y, fixed)
-	local newPoint = {x=x, y=y, fixed=fixed}
+	pointIndex = pointIndex + 1
+	local newPoint = {x=x, y=y, fixed=fixed, index = pointIndex}
 	return newPoint
 end
 
@@ -287,7 +290,8 @@ local function findLineParabolaIntersection(segment, site, dirY)
 	local k, m = segment.k, segment.m
 	local x1, y1, x2, y2 = getParabolaToInclinedLineIntersections (fx, fy, k, m, dirY)
 	-- get left point of parabola
-	return x1, y1
+	print ('findLineParabolaIntersection', x1, y1, x2, y2)
+	return x2, y2
 end
 
 
@@ -296,7 +300,8 @@ local function findParabolaLineIntersection(site, segment, dirY)
 	local k, m = segment.k, segment.m
 	local x1, y1, x2, y2 = getParabolaToInclinedLineIntersections (fx, fy, k, m, dirY)
 	-- get right point of parabola
-	return x2, y2
+	print ('findParabolaLineIntersection', x1, y1, x2, y2)
+	return x1, y1
 end
 
 
@@ -360,7 +365,7 @@ local function updateBeachLine (diagram, yEvent)
 		local segment2 = diagram.beachLine[i+1]
 		updateConjugationPoint (diagram, segment1, segment2, yEvent)
 	end
-	
+
 	-- update rendered parabola:
 	for i, segment in ipairs (diagram.beachLine) do
 		print ('segment.type', segment.type)
@@ -407,6 +412,214 @@ end
 
 
 
+
+
+
+
+local function updateBeachlineLinkSegments (beachLine)
+	for i = 1, #beachLine do
+		local segment = beachLine[i]
+		segment.rightSegment = nil
+		segment.leftSegment = nil
+	end
+	for i = 1, #beachLine-1 do
+		local segment1 = beachLine[i]
+		local segment2 = beachLine[i+1]
+		segment1.rightSegment = segment2
+		segment2.leftSegment = segment1
+	end
+end
+
+
+
+
+
+
+
+local function findIntersectionOfPerpendicularLine(fx1, fy1, fx2, fy2, k, m)
+--	fx1, fy1, fx2, fy2 - two focuses
+-- k, m - line as y = k*x+m
+--	https://www.desmos.com/calculator/uuwgskkjnu
+	local ax, ay = (fx1 + fx2) / 2, (fy1 + fy2) / 2
+	local k2 = - (fx2 - fx1) / (fy2 - fy1)
+	local m2 = ay - k2 * ax
+	local bx = (m2 - m) / (k - k2)
+	local by = k * bx + m
+	return bx, by
+end
+
+local function executeCircleEventNLP (event)
+	print ('executeCircleEventNLP')
+	local diagram = event.diagram
+	local beachLine = diagram.beachLine
+	local yEvent = event.yEvent
+
+	if not (diagram.sweepLinePosition == yEvent) then
+		print ('new sweepLinePosition', yEvent)
+		updateBeachLine (diagram, yEvent)
+		diagram.sweepLinePosition = yEvent
+	end
+
+	local segment = event.segment
+	local rightSegment = segment.rightSegment
+
+	print ('executeCircleEventNLP - 2')
+	print ('segment:', segment.left.index, segment.right.index)
+	print ('right:', rightSegment.left.index, rightSegment.right.index)
+
+	if segment.leftSegment then
+		segment.leftSegment.right = segment.right
+	end
+
+	local index
+	for i, v in ipairs (diagram.beachLine) do
+		if segment == v then
+			index = i
+			break
+		end
+	end
+
+	if index then
+		print ('circle not removed segment:')
+		for i, segment in ipairs (beachLine) do
+			print (i, segment.left.x..' '..segment.left.y, segment.right.x..' '..segment.right.y, segment.type)
+		end
+
+		table.remove (diagram.beachLine, index)
+		updateBeachlineLinkSegments (beachLine)
+
+		print ('circle removed segment:')
+		for i, segment in ipairs (beachLine) do
+			print (i, segment.left.x..' '..segment.left.y, segment.right.x..' '..segment.right.y, segment.type)
+			if segment.controlPoints then
+				print ('controlPoints', table.concat (segment.controlPoints, ','))
+			end
+		end
+	end
+end
+
+local function executeCircleEventPLP (event)
+	print ('executeCircleEventPLP')
+	local diagram = event.diagram
+	local beachLine = diagram.beachLine
+	local yEvent = event.yEvent
+	local segment = event.segment
+	local point = event.point
+	
+	if not (diagram.sweepLinePosition == yEvent) then
+		print ('new sweepLinePosition', yEvent)
+		updateBeachLine (diagram, yEvent)
+		diagram.sweepLinePosition = yEvent
+	end
+
+	local index
+	for i, v in ipairs (diagram.beachLine) do
+		if segment == v then
+			index = i
+			break
+		end
+	end
+
+	if index then
+		segment.leftSegment.right = point
+		segment.rightSegment.left = point
+		table.remove (diagram.beachLine, index)
+
+		updateBeachlineLinkSegments (beachLine)
+
+		print ('circle removed segment:')
+		for i, segment in ipairs (beachLine) do
+			print (i, segment.left.x..' '..segment.left.y, segment.right.x..' '..segment.right.y, segment.type)
+			if segment.controlPoints then
+				print ('controlPoints', table.concat (segment.controlPoints, ','))
+			end
+		end
+	end
+end
+
+local function setCircleEventNLP (diagram, segment, right) -- nil line parabola
+	-- left is nil
+	-- segment is line
+	-- right is parabola
+	local eventQueue = diagram.eventQueue 
+	local px1, py1 = segment.left.x, segment.left.y
+	local px2, py2 = right.site.x, right.site.y
+	local dist = ((px1-px2)^2 + (py1-py2)^2)^0.5
+	local yEvent = py1 + dist
+	local event = {
+		type='circle', 
+		yEvent = yEvent, 
+		segment = segment,
+		execute = executeCircleEventNLP,
+		diagram = diagram,
+	}
+	table.insert (eventQueue, event)
+
+	print ('added setCircleEventNLP', yEvent)
+end
+
+local function setCircleEventPLP (diagram, left, segment, right) -- parabola line parabola
+	-- left is parabola
+	-- segment is line
+	-- right is parabola
+	local eventQueue = diagram.eventQueue 
+
+	-- parabola focuses:
+	local fx1, fy1 = left.site.x, left.site.y
+	local fx2, fy2 = right.site.x, right.site.y
+	local x, y
+	if fy1 == fy2 then
+		-- special case for vertical edge
+		local k, m = segment.k, segment.m
+		x = (fx1+fx2)/2
+		y = k*x+m
+	else
+		-- crossing k1 m1
+		local k, m = segment.k, segment.m
+		x, y = findIntersectionOfPerpendicularLine(fx1, fy1, fx2, fy2, k, m)
+	end
+
+	local dist = ((fx1-x)^2 + (fy1-y)^2)^0.5
+	local yEvent = y + dist
+
+	local event = {
+		type='circle',
+		name='eventPLP',
+		yEvent = yEvent, 
+		segment = segment,
+		execute = executeCircleEventPLP,
+		diagram = diagram,
+		point = utils.newPoint (x, y)
+	}
+	table.insert (eventQueue, event)
+
+	print ('added setCircleEventPLP', yEvent)
+
+end
+
+
+local function setCircleEvent (diagram, segment)
+	local left = segment.leftSegment
+	local right = segment.rightSegment
+
+	if right and not left then
+		if segment.type == "line" and  right.type == "parabola" then
+			setCircleEventNLP (diagram, segment, right)
+			return
+		end
+
+	elseif left and right then
+		if left.type == "line" and segment.type == "line" and  right.type == "parabola" then
+			setCircleEventNLP (diagram, segment, right)
+			return
+		elseif left.type == "parabola" and segment.type == "line" and  right.type == "parabola" then
+			-- crossing two parabolas on the given line:
+			setCircleEventPLP (diagram, left, segment, right)
+			return
+		end
+	end
+end
+
 local function executePointEvent (event)
 	local diagram = event.diagram
 	local beachLine = diagram.beachLine
@@ -430,19 +643,33 @@ local function executePointEvent (event)
 
 		local y = evaluateSegment (cutSegment, xCut, yEvent)
 		print ('cut segment', cutSegment.type, xCut, y)
-		local p1 = utils.newPoint (xCut, y)
-		local p2 = utils.newPoint (xCut, y)
+		local p1 = utils.newPoint (xCut-1, y)
+		local p2 = utils.newPoint (xCut+1, y)
 
 		local segment1 = copySegment (cutSegment)
 		local segment2 = newParabolaSegment (p1, p2, site)
 		local segment3 = copySegment (cutSegment)
 		segment1.right = p1
 		segment3.left = p2
-		
+
 		table.remove (beachLine, cutIndex)
 		table.insert (beachLine, cutIndex, segment1)
 		table.insert (beachLine, cutIndex+1, segment2)
 		table.insert (beachLine, cutIndex+2, segment3)
+
+		print ('point cutSegment:')
+		for i, segment in ipairs (beachLine) do
+			print (i, segment.left.x..' '..segment.left.y, segment.right.x..' '..segment.right.y)
+		end
+
+		updateBeachlineLinkSegments (beachLine)
+
+		setCircleEvent (diagram, segment1)
+		setCircleEvent (diagram, segment3)
+
+		utils.sortQueue (diagram.eventQueue)
+	else
+		-- cut point: special case
 
 	end
 end

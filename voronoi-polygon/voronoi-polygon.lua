@@ -43,9 +43,18 @@ function VP.drawFlatPolygon (diagram)
 	love.graphics.polygon ('line', diagram.flatPolygon)
 end
 
+function VP.drawPolygon (diagram, r)
+	
+	for i, p in ipairs (diagram.polygon) do
+		love.graphics.circle ('line', p.x, p.y, r)
+		love.graphics.print (p.index, p.x, p.y)
+	end
+end
+
 function VP.drawSites (diagram, r)
 	for i, site in ipairs (diagram.sites) do
 		love.graphics.circle ('line', site.x, site.y, r)
+		love.graphics.print (site.index, site.x, site.y)
 	end
 end
 
@@ -62,7 +71,7 @@ end
 local colors = {{1,0,0}, {1,1,0}, {0,1,0}, {0,1,1}, {0,0,1}, {1,0,1}}
 
 function VP.drawBeachline (diagram)
-	
+
 	for i, segment in ipairs (diagram.beachLine) do
 		local colorIndex = (i-1)%#colors+1
 		love.graphics.setColor (colors[colorIndex])
@@ -86,6 +95,16 @@ function VP.drawBeachline (diagram)
 			end
 		end
 	end
+
+	for i, segment in ipairs (diagram.beachLine) do
+		local x1, y1, index1 = segment.left.x, segment.left.y, segment.left.index
+		local x2, y2, index2 = segment.right.x, segment.right.y, segment.right.index
+		love.graphics.setColor (1,0,0)
+		love.graphics.print (index1, x1+ 14 *((i+1)%2), y1)
+		love.graphics.setColor (0,1,0)
+		love.graphics.print (index2, x2+ 14 *((i)%2), y2+14)
+		
+	end
 end
 
 function VP.drawSweepline (diagram)
@@ -98,12 +117,12 @@ function VP.step (diagram)
 	if diagram.eventQueue and #diagram.eventQueue > 0 then
 		local event = table.remove (diagram.eventQueue, 1)
 		event.execute(event)
-		
-		print ('beachLine:')
+
+		print ('beachLine after step:')
 		for i, segment in ipairs (diagram.beachLine) do
 			print (i, segment.left.x, segment.right.x, segment.type)
 		end
-		
+
 	end
 end
 
