@@ -78,14 +78,42 @@ function utils.YX_Sort(sites)
 	return sites
 end
 
+local function newCell (diagram, site)
+	local cell = {
+		site = site,
+		vertices = {},
+		edges = {},
+		neighbourCells = {},
+	}
+	site.cell = cell
+	table.insert (diagram.cells, cell)
+	print ('created cell', #diagram.cells)
+	return cell
+end
+
 function utils.newSites (flatSites)
 	local sites = {}
 	for i = 1, #flatSites, 2 do
-		local newPoint = utils.newPoint (flatSites[i], flatSites[i+1], true)
-		table.insert(sites, newPoint)
+		local site = utils.newPoint (flatSites[i], flatSites[i+1], true)
+		table.insert(sites, site)
+	end
+	return utils.YX_Sort(sites)
+end
+
+function utils.newCells (sites)
+	local cells = {}
+	for i, site in ipairs (sites) do
+		local cell = {
+			site=site,
+			vertices = {}, 
+			edges = {}, 
+			neighbourCells = {},
+		}
+		site.cell = cell
+		table.insert(cells, cell)
 	end
 
-	return utils.YX_Sort(sites)
+	return cells
 end
 
 local function listToFlat (list)
@@ -195,18 +223,7 @@ function utils.sortQueue (eventQueue)
 	return eventQueue
 end
 
-local function newCell (diagram, site)
-	local cell = {
-		site = site,
-		vertices = {},
-		edges = {},
-		neighbourCells = {},
-	}
-	site.cell = cell
-	table.insert (diagram.cells, cell)
-	print ('created cell', #diagram.cells)
-	return cell
-end
+
 
 local function evaluateParabolaYbyX (x, focus, dirY)
 	local fx, fy = focus.x, focus.y
@@ -358,7 +375,7 @@ local function getBezierControlPoint (fx, fy, ax, bx, dirY)
 	end
 end
 
-local function updateBeachLine (diagram, yEvent)
+function utils.updateBeachLine (diagram, yEvent)
 --	conjugation point
 	for i = 1, #diagram.beachLine-1 do
 		local segment1 = diagram.beachLine[i]
@@ -454,46 +471,43 @@ local function executeCircleEventNLP (event)
 	local beachLine = diagram.beachLine
 	local yEvent = event.yEvent
 
-	if not (diagram.sweepLinePosition == yEvent) then
-		print ('new sweepLinePosition', yEvent)
-		updateBeachLine (diagram, yEvent)
-		diagram.sweepLinePosition = yEvent
-	end
-
 	local segment = event.segment
 	local rightSegment = segment.rightSegment
-
-	print ('executeCircleEventNLP - 2')
-	print ('segment:', segment.left.index, segment.right.index)
-	print ('right:', rightSegment.left.index, rightSegment.right.index)
 
 	if segment.leftSegment then
 		segment.leftSegment.right = segment.right
 	end
-
-	local index
-	for i, v in ipairs (diagram.beachLine) do
+	for index, v in ipairs (diagram.beachLine) do
 		if segment == v then
-			index = i
-			break
+			table.remove (diagram.beachLine, index)
+			updateBeachlineLinkSegments (beachLine)
+			return
 		end
 	end
+end
 
-	if index then
-		print ('circle not removed segment:')
-		for i, segment in ipairs (beachLine) do
-			print (i, segment.left.x..' '..segment.left.y, segment.right.x..' '..segment.right.y, segment.type)
-		end
+local function executeCircleEventPLN (event)
+	print ('executeCircleEventPLN')
+	local diagram = event.diagram
+	local beachLine = diagram.beachLine
+	local yEvent = event.yEvent
 
-		table.remove (diagram.beachLine, index)
-		updateBeachlineLinkSegments (beachLine)
+	local segment = event.segment
 
-		print ('circle removed segment:')
-		for i, segment in ipairs (beachLine) do
-			print (i, segment.left.x..' '..segment.left.y, segment.right.x..' '..segment.right.y, segment.type)
-			if segment.controlPoints then
-				print ('controlPoints', table.concat (segment.controlPoints, ','))
-			end
+--	local rightSegment = segment.rightSegment
+--	if segment.leftSegment then
+--		segment.leftSegment.right = segment.right
+--	end	
+	local leftSegment = segment.leftSegment
+	if segment.rightSegment then
+		segment.rightSegment.left = segment.left
+	end
+
+	for index, v in ipairs (diagram.beachLine) do
+		if segment == v then
+			table.remove (diagram.beachLine, index)
+			updateBeachlineLinkSegments (beachLine)
+			return
 		end
 	end
 end
@@ -505,12 +519,6 @@ local function executeCircleEventPLP (event)
 	local yEvent = event.yEvent
 	local segment = event.segment
 	local point = event.point
-	
-	if not (diagram.sweepLinePosition == yEvent) then
-		print ('new sweepLinePosition', yEvent)
-		updateBeachLine (diagram, yEvent)
-		diagram.sweepLinePosition = yEvent
-	end
 
 	local index
 	for i, v in ipairs (diagram.beachLine) do
@@ -558,6 +566,27 @@ local function setCircleEventNLP (diagram, segment, right) -- nil line parabola
 	print ('added setCircleEventNLP', yEvent)
 end
 
+local function setCircleEventPLN (diagram, left, segment) -- parabola line nil
+	-- left is parabola
+	-- segment is line
+	-- right is nil
+	local eventQueue = diagram.eventQueue 
+	local px1, py1 = segment.right.x, segment.right.y
+	local px2, py2 = left.site.x, left.site.y
+	local dist = ((px1-px2)^2 + (py1-py2)^2)^0.5
+	local yEvent = py1 + dist
+	local event = {
+		type='circle', 
+		yEvent = yEvent, 
+		segment = segment,
+		execute = executeCircleEventPLN,
+		diagram = diagram,
+	}
+	table.insert (eventQueue, event)
+
+	print ('added setCircleEventPLN', yEvent)
+end
+
 local function setCircleEventPLP (diagram, left, segment, right) -- parabola line parabola
 	-- left is parabola
 	-- segment is line
@@ -598,26 +627,77 @@ local function setCircleEventPLP (diagram, left, segment, right) -- parabola lin
 end
 
 
+local function getCircumcircle (x1, y1, x2, y2, x3, y3)
+	local d = 2*(x1*(y2-y3)+x2*(y3-y1)+x3*(y1-y2))
+	local t1, t2, t3 = x1*x1+y1*y1, x2*x2+y2*y2, x3*x3+y3*y3
+	local x = (t1*(y2-y3)+t2*(y3-y1)+t3*(y1-y2))/d
+	local y = (t1*(x3-x2)+t2*(x1-x3)+t3*(x2-x1))/d
+	local radius = math.sqrt((x1-x)*(x1-x)+(y1-y)*(y1-y))
+	return x,y,radius
+end
+
+
+local function setClassicCircleEvent (diagram, leftSegment, segment, rightSegment)
+	local fx1, fy1 = left.site.x, left.site.y
+	local fx2, fy2 = right.site.x, right.site.y
+	local fx3, fy3 = segment.right.x, segment.right.y -- Using the right end of the segment
+
+	local x, y, radius = getCircumcircle(fx1, fy1, fx2, fy2, fx3, fy3)
+
+	local yEvent = y + radius
+
+	local event = {
+		type = "circle",
+		yEvent = yEvent,
+--		site = segment.site,
+		segment = segment,
+		leftSegment = leftSegment,
+		rightSegment = rightSegment,
+		execute = executeCircleEvent,
+		diagram = diagram,
+		vertex = utils.newPoint (x, y, true)
+	}
+
+	table.insert(diagram.eventQueue, event)
+end
+
 local function setCircleEvent (diagram, segment)
 	local left = segment.leftSegment
 	local right = segment.rightSegment
 
-	if right and not left then
-		if segment.type == "line" and  right.type == "parabola" then
-			setCircleEventNLP (diagram, segment, right)
+	if left and right and left.type == "parabola" and right.type == "parabola" then
+		if segment.type == "parabola" then
+			-- classic circle event
+			setClassicCircleEvent (diagram, left, segment, right)
 			return
-		end
-
-	elseif left and right then
-		if left.type == "line" and segment.type == "line" and  right.type == "parabola" then
-			setCircleEventNLP (diagram, segment, right)
-			return
-		elseif left.type == "parabola" and segment.type == "line" and  right.type == "parabola" then
+		elseif segment.type == "line" then
 			-- crossing two parabolas on the given line:
 			setCircleEventPLP (diagram, left, segment, right)
 			return
 		end
+
+--		if left.type == "line" and segment.type == "line" and  right.type == "parabola" then
+--			setCircleEventNLP (diagram, segment, right)
+--			return
+
+--		elseif left.type == "parabola" and segment.type == "line" and  right.type == "line" then
+--			setCircleEventPLN (diagram, left, segment)
+--			return
+--		end
+
+	elseif right and not left then
+--		if segment.type == "line" and  right.type == "parabola" then
+--			setCircleEventNLP (diagram, segment, right)
+--			return
+--		end
+
+	elseif left and not right then
+--		if segment.type == "line" and  left.type == "parabola" then
+--			setCircleEventPLN (diagram, left, segment)
+--			return
+--		end
 	end
+
 end
 
 local function executePointEvent (event)
@@ -627,14 +707,8 @@ local function executePointEvent (event)
 	print ('executePointEvent', diagram.name, event.yEvent, site.x, site.y)
 	local xCut = event.xCut
 	local yEvent = event.yEvent
-	local cell = newCell (diagram, site)
+--	local cell = newCell (diagram, site)
 
-	-- update all x coordinates in the beachline
-	if not (diagram.sweepLinePosition == yEvent) then
-		print ('new sweepLinePosition', yEvent)
-		updateBeachLine (diagram, yEvent)
-		diagram.sweepLinePosition = yEvent
-	end
 
 	-- cut cutVertex when vertex x == Xcut; otherwise cut line (parabola or segment)
 	local cutIndex, cutSegment = findBeachLinePointAtX(diagram, xCut)
@@ -674,8 +748,20 @@ local function executePointEvent (event)
 	end
 end
 
+local function executePolygonVertexEvent (event)
+	local site = event.site
+	local vertex = event.vertex
+	local yEvent = event.yEvent
+	local diagram = event.diagram
+
+
+end
+
 function utils.newEventQueue (diagram)
 	local eventQueue = {}
+
+	-- adding sites
+
 	for i, site in ipairs (diagram.sites) do
 		local event = {
 			type='site', 
@@ -686,6 +772,37 @@ function utils.newEventQueue (diagram)
 			diagram = diagram
 		}
 		table.insert (eventQueue, event)
+	end
+
+	for i, vertex in ipairs (diagram.polygon) do
+		local mindstsqr = math.huge
+		local nearest = {}
+
+		for j, site in ipairs (diagram.sites) do
+			local sqrdist = (site.x-vertex.x)^2 + (site.y-vertex.y)^2
+
+			if sqrdist < mindstsqr then
+				nearest = {{site=site, vertex=vertex}}
+				mindstsqr = sqrdist
+			elseif sqrdist == mindstsqr then
+				table.insert (nearest, {site=site, vertex = vertex})
+			end
+		end
+
+		local dist = math.sqrt(mindstsqr)
+		local yEvent = vertex.y + dist
+
+		for i, near in ipairs (nearest) do
+			local event = {
+				type='vertex', 
+				yEvent = yEvent, 
+				site=near.site,
+				vertex=near.vertex,
+				execute = executePolygonVertexEvent,
+				diagram = diagram
+			}
+			table.insert (eventQueue, event)
+		end
 	end
 
 	utils.sortQueue (eventQueue)

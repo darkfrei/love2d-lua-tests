@@ -1,10 +1,9 @@
 -- voronoi for closed polygon
 local VP = require ('voronoi-polygon')
 
-local flatPolygon = {
-	50,50, 700,150, 300,500}
+local flatPolygon = {50,50, 700,150, 300,500}
 
-local flatSites = {300, 200, 400, 210}
+local flatSites = {300, 200}
 
 
 local diagram = VP.newDiagram (flatPolygon, flatSites, "diagram-1")

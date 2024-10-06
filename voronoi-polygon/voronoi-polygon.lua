@@ -10,9 +10,15 @@ local VP = {}
 function VP.newDiagram (flatPolygon, flatSites, name)
 	-- convert input to points {x=x, y=y}
 	local polygon = utils.newPolygon (flatPolygon)
-	local sites = utils.newSites (flatSites)
 
-	local diagram = {polygon=polygon, sites=sites, flatPolygon=flatPolygon, name = name}
+	local sites = utils.newSites (flatSites)
+	
+	local diagram = {polygon=polygon, 
+		flatPolygon=flatPolygon, 
+		name = name,
+		sites=sites
+		}
+
 
 	-- vertices: List of crossing points (intersections) on the edges of the Voronoi cells
 	-- Each vertex contains coordinates and references to its edges and cells
@@ -27,7 +33,7 @@ function VP.newDiagram (flatPolygon, flatSites, name)
 	-- cells: Each cell represents a Voronoi region centered at a site
 	-- The cells contain references to their vertices, edges, and neighboring cells
 	-- {site=site, vertices = {}, edges = {}, neighbourCells = {}}
-	diagram.cells = {}
+	diagram.cells = utils.newCells (sites)
 
 
 	diagram.beachLine = utils.newBeachLine (diagram)
@@ -39,12 +45,18 @@ function VP.newDiagram (flatPolygon, flatSites, name)
 	return diagram
 end
 
+
+--------------------------------------------------------------------
+-- draw ------------------------------------------------------------------
+--------------------------------------------------------------------
+
+
 function VP.drawFlatPolygon (diagram)
 	love.graphics.polygon ('line', diagram.flatPolygon)
 end
 
 function VP.drawPolygon (diagram, r)
-	
+
 	for i, p in ipairs (diagram.polygon) do
 		love.graphics.circle ('line', p.x, p.y, r)
 		love.graphics.print (p.index, p.x, p.y)
@@ -103,7 +115,7 @@ function VP.drawBeachline (diagram)
 		love.graphics.print (index1, x1+ 14 *((i+1)%2), y1)
 		love.graphics.setColor (0,1,0)
 		love.graphics.print (index2, x2+ 14 *((i)%2), y2+14)
-		
+
 	end
 end
 
@@ -116,6 +128,13 @@ end
 function VP.step (diagram)
 	if diagram.eventQueue and #diagram.eventQueue > 0 then
 		local event = table.remove (diagram.eventQueue, 1)
+
+		local yEvent = event.yEvent
+		if not (diagram.sweepLinePosition == yEvent) then
+			utils.updateBeachLine (diagram, yEvent)
+			diagram.sweepLinePosition = yEvent
+		end
+
 		event.execute(event)
 
 		print ('beachLine after step:')
