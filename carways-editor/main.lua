@@ -10,7 +10,9 @@ currentLevel = {
 	index = 1,
 	walls = {},
 	spawners = {},
-
+	entities = {},
+	selectedZone = nil, -- or entity
+	
 }
 
 levels = {currentLevel}
@@ -21,11 +23,14 @@ Game = {
 	tileSize = 40,
 	tw = 32,
 	tw = 20,
-	mouseLevelCursor = {tx=0, ty=0, tw=1, th=1},
+--	mouseLevelCursor = {tx=0, ty=0, tw=1, th=1},
 }
 
-local StateManager = require("state_manager")
-local Editor = require("editor")
+StateManager = require("state_manager")
+Data = require("data")
+Editor = require("editor")
+
+
 
 
 
