@@ -36,7 +36,7 @@ local function getSlots(totalCars, totalSlots)
 	return slots  -- return the list of assigned slots
 end
 
-local totalCars = 1
+local totalCars = 10
 local totalSlots = 20
 local diagram1 = {}
 local amountSimulations = 0
