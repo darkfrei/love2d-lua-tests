@@ -374,7 +374,7 @@ local function drawEntity (entity)
 
 	-- [draw the flow-out line]
 	if flowOut and flowOut.line then
-		love.graphics.setColor(1, 0, 0)  -- [red color for flow-out]
+		love.graphics.setColor(0, 0, 1)
 		love.graphics.line(
 			flowOut.line[1]*tileSize, 
 			flowOut.line[2]*tileSize, 
@@ -390,7 +390,8 @@ local function drawEntity (entity)
 
 	-- [draw the flow-in line]
 	if flowIn and flowIn.line then
-		love.graphics.setColor(0, 0, 1)  -- [blue color for flow-in]
+
+		love.graphics.setColor(1, 0, 0)
 --		love.graphics.line(flowIn.line)
 		love.graphics.line(
 			flowIn.line[1]*tileSize, 
@@ -1090,20 +1091,23 @@ end
 --wip--
 -- [deletes all flows related to the selected entity]
 local function deleteSelectedZoneFlow(entity)
+	if entity.type ~= 'spawner' then return end
 	-- [loop through all entities and remove references to the deleted entity's ID in their flows]
 	for _, otherEntity in ipairs(currentLevel.entities) do
-		if otherEntity ~= entity then
-			-- [remove outgoing flows to the deleted entity from other entities]
-			for i = #otherEntity.flowOut, 1, -1 do
-				if otherEntity.flowOut[i] == entity.ID then
-					table.remove(otherEntity.flowOut, i)
+		if otherEntity.type == 'spawner' then
+			if otherEntity ~= entity then
+				-- [remove outgoing flows to the deleted entity from other entities]
+				for i = #otherEntity.flowOut, 1, -1 do
+					if otherEntity.flowOut[i] == entity.ID then
+						table.remove(otherEntity.flowOut, i)
+					end
 				end
-			end
 
-			-- [remove incoming flows from the deleted entity to other entities]
-			for i = #otherEntity.flowIn, 1, -1 do
-				if otherEntity.flowIn[i] == entity.ID then
-					table.remove(otherEntity.flowIn, i)
+				-- [remove incoming flows from the deleted entity to other entities]
+				for i = #otherEntity.flowIn, 1, -1 do
+					if otherEntity.flowIn[i] == entity.ID then
+						table.remove(otherEntity.flowIn, i)
+					end
 				end
 			end
 		end

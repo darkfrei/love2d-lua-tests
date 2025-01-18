@@ -1,9 +1,8 @@
 start table
 stringIndex
-spawners
-tableValue
-  start table
-  end table
+index
+numberValue
+1
 stringIndex
 entities
 tableValue
@@ -13,89 +12,21 @@ tableValue
   tableValue
     start table
     stringIndex
-    tw
+    flowOutDirection
     numberValue
-    3
+    8
+    stringIndex
+    flowInDirection
+    numberValue
+    2
+    stringIndex
+    type
+    stringValue
+    spawner
     stringIndex
     flowOut
     tableValue
       start table
-      stringIndex
-      lines
-      tableValue
-        start table
-        numberIndex
-        1
-        tableValue
-          start table
-          numberIndex
-          1
-          numberValue
-          580
-          numberIndex
-          2
-          numberValue
-          340
-          numberIndex
-          3
-          numberValue
-          580
-          numberIndex
-          4
-          numberValue
-          300
-          end table
-        numberIndex
-        2
-        tableValue
-          start table
-          numberIndex
-          1
-          numberValue
-          575
-          numberIndex
-          2
-          numberValue
-          310
-          numberIndex
-          3
-          numberValue
-          580
-          numberIndex
-          4
-          numberValue
-          300
-          numberIndex
-          5
-          numberValue
-          585
-          numberIndex
-          6
-          numberValue
-          310
-          end table
-        end table
-      stringIndex
-      point
-      tableValue
-        start table
-        stringIndex
-        x
-        numberValue
-        580
-        stringIndex
-        y
-        numberValue
-        340
-        end table
-      stringIndex
-      direction
-      numberValue
-      2
-      stringIndex
-      maxAmount
-      numberValue
-      20
       stringIndex
       line
       tableValue
@@ -103,36 +34,19 @@ tableValue
         numberIndex
         1
         numberValue
-        380
+        10
         numberIndex
         2
         numberValue
-        220
+        6.5
         numberIndex
         3
         numberValue
-        420
+        10
         numberIndex
         4
         numberValue
-        220
-        end table
-      stringIndex
-      amount
-      numberValue
-      0
-      stringIndex
-      textPosition
-      tableValue
-        start table
-        stringIndex
-        x
-        numberValue
-        375
-        stringIndex
-        y
-        numberValue
-        225
+        5.5
         end table
       end table
     stringIndex
@@ -140,304 +54,97 @@ tableValue
     tableValue
       start table
       stringIndex
-      lines
-      tableValue
-        start table
-        numberIndex
-        1
-        tableValue
-          start table
-          numberIndex
-          1
-          numberValue
-          660
-          numberIndex
-          2
-          numberValue
-          380
-          numberIndex
-          3
-          numberValue
-          620
-          numberIndex
-          4
-          numberValue
-          380
-          end table
-        numberIndex
-        2
-        tableValue
-          start table
-          numberIndex
-          1
-          numberValue
-          630
-          numberIndex
-          2
-          numberValue
-          375
-          numberIndex
-          3
-          numberValue
-          620
-          numberIndex
-          4
-          numberValue
-          380
-          numberIndex
-          5
-          numberValue
-          630
-          numberIndex
-          6
-          numberValue
-          385
-          end table
-        end table
-      stringIndex
-      point
-      tableValue
-        start table
-        stringIndex
-        x
-        numberValue
-        660
-        stringIndex
-        y
-        numberValue
-        380
-        end table
-      stringIndex
-      direction
-      numberValue
-      4
-      stringIndex
-      maxAmount
-      numberValue
-      20
-      stringIndex
       line
       tableValue
         start table
         numberIndex
         1
         numberValue
-        260
+        10
         numberIndex
         2
         numberValue
-        220
+        8.5
         numberIndex
         3
         numberValue
-        300
+        10
         numberIndex
         4
         numberValue
-        220
-        end table
-      stringIndex
-      amount
-      numberValue
-      0
-      stringIndex
-      textPosition
-      tableValue
-        start table
-        stringIndex
-        x
-        numberValue
-        295
-        stringIndex
-        y
-        numberValue
-        225
+        7.5
         end table
       end table
     stringIndex
     tx
     numberValue
-    7
-    stringIndex
-    th
-    numberValue
-    3
-    stringIndex
-    type
-    stringValue
-    spawner
+    9
     stringIndex
     ty
     numberValue
-    4
+    6
     stringIndex
-    zoneColor
+    tw
     numberValue
-    1
+    2
     stringIndex
-    zoneArt
+    th
     numberValue
-    1
+    2
+    stringIndex
+    ID
+    numberValue
+    2
     end table
   numberIndex
   2
   tableValue
     start table
     stringIndex
+    type
+    stringValue
+    wall
+    stringIndex
+    tx
+    numberValue
+    12
+    stringIndex
+    ty
+    numberValue
+    11
+    stringIndex
     tw
     numberValue
     2
-    stringIndex
-    flowOut
-    tableValue
-      start table
-      stringIndex
-      direction
-      numberValue
-      1
-      stringIndex
-      maxAmount
-      numberValue
-      20
-      stringIndex
-      line
-      tableValue
-        start table
-        numberIndex
-        1
-        numberValue
-        1020
-        numberIndex
-        2
-        numberValue
-        380
-        numberIndex
-        3
-        numberValue
-        1020
-        numberIndex
-        4
-        numberValue
-        340
-        end table
-      stringIndex
-      amount
-      numberValue
-      0
-      stringIndex
-      textPosition
-      tableValue
-        start table
-        stringIndex
-        x
-        numberValue
-        1015
-        stringIndex
-        y
-        numberValue
-        385
-        end table
-      end table
-    stringIndex
-    flowIn
-    tableValue
-      start table
-      stringIndex
-      direction
-      numberValue
-      1
-      stringIndex
-      maxAmount
-      numberValue
-      20
-      stringIndex
-      line
-      tableValue
-        start table
-        numberIndex
-        1
-        numberValue
-        980
-        numberIndex
-        2
-        numberValue
-        340
-        numberIndex
-        3
-        numberValue
-        980
-        numberIndex
-        4
-        numberValue
-        380
-        end table
-      stringIndex
-      amount
-      numberValue
-      0
-      stringIndex
-      textPosition
-      tableValue
-        start table
-        stringIndex
-        x
-        numberValue
-        975
-        stringIndex
-        y
-        numberValue
-        385
-        end table
-      end table
     stringIndex
     th
     numberValue
     2
     stringIndex
-    tx
+    ID
     numberValue
-    24
-    stringIndex
-    type
-    stringValue
-    spawner
-    stringIndex
-    zoneArt
-    numberValue
-    1
-    stringIndex
-    ty
-    numberValue
-    9
-    stringIndex
-    zoneColor
-    numberValue
-    1
-    stringIndex
-    left
-    booleanValue
-    true
+    5
     end table
   numberIndex
   3
   tableValue
     start table
     stringIndex
-    tw
+    flowOutDirection
     numberValue
-    2
+    6
+    stringIndex
+    flowInDirection
+    numberValue
+    6
+    stringIndex
+    type
+    stringValue
+    spawner
     stringIndex
     flowOut
     tableValue
       start table
-      stringIndex
-      direction
-      numberValue
-      1
-      stringIndex
-      maxAmount
-      numberValue
-      20
       stringIndex
       line
       tableValue
@@ -445,36 +152,19 @@ tableValue
         numberIndex
         1
         numberValue
-        300
+        22.5
         numberIndex
         2
         numberValue
-        540
+        8.5
         numberIndex
         3
         numberValue
-        300
+        23.5
         numberIndex
         4
         numberValue
-        500
-        end table
-      stringIndex
-      amount
-      numberValue
-      0
-      stringIndex
-      textPosition
-      tableValue
-        start table
-        stringIndex
-        x
-        numberValue
-        295
-        stringIndex
-        y
-        numberValue
-        545
+        8.5
         end table
       end table
     stringIndex
@@ -482,101 +172,68 @@ tableValue
     tableValue
       start table
       stringIndex
-      direction
-      numberValue
-      1
-      stringIndex
-      maxAmount
-      numberValue
-      20
-      stringIndex
       line
       tableValue
         start table
         numberIndex
         1
         numberValue
-        260
+        23.5
         numberIndex
         2
         numberValue
-        500
+        9.5
         numberIndex
         3
         numberValue
-        260
+        22.5
         numberIndex
         4
         numberValue
-        540
-        end table
-      stringIndex
-      amount
-      numberValue
-      0
-      stringIndex
-      textPosition
-      tableValue
-        start table
-        stringIndex
-        x
-        numberValue
-        255
-        stringIndex
-        y
-        numberValue
-        545
+        9.5
         end table
       end table
     stringIndex
-    zoneColor
-    numberValue
-    1
-    stringIndex
     tx
     numberValue
-    6
-    stringIndex
-    zoneArt
-    numberValue
-    1
-    stringIndex
-    type
-    stringValue
-    spawner
+    21
     stringIndex
     ty
     numberValue
-    13
+    8
+    stringIndex
+    tw
+    numberValue
+    2
     stringIndex
     th
     numberValue
     2
     stringIndex
-    left
-    booleanValue
-    true
+    ID
+    numberValue
+    8
     end table
   numberIndex
   4
   tableValue
     start table
     stringIndex
-    tw
+    flowOutDirection
     numberValue
-    2
+    4
+    stringIndex
+    flowInDirection
+    numberValue
+    4
+    stringIndex
+    type
+    stringValue
+    spawner
     stringIndex
     flowOut
     tableValue
       start table
-      stringIndex
-      direction
-      numberValue
-      1
-      stringIndex
-      maxAmount
-      numberValue
-      20
       stringIndex
       line
       tableValue
@@ -584,36 +241,19 @@ tableValue
         numberIndex
         1
         numberValue
-        820
+        31.5
         numberIndex
         2
         numberValue
-        500
+        11.5
         numberIndex
         3
         numberValue
-        820
+        30.5
         numberIndex
         4
         numberValue
-        460
-        end table
-      stringIndex
-      amount
-      numberValue
-      0
-      stringIndex
-      textPosition
-      tableValue
-        start table
-        stringIndex
-        x
-        numberValue
-        815
-        stringIndex
-        y
-        numberValue
-        505
+        11.5
         end table
       end table
     stringIndex
@@ -621,13 +261,68 @@ tableValue
     tableValue
       start table
       stringIndex
-      direction
-      numberValue
-      1
-      stringIndex
-      maxAmount
-      numberValue
-      20
+      line
+      tableValue
+        start table
+        numberIndex
+        1
+        numberValue
+        30.5
+        numberIndex
+        2
+        numberValue
+        10.5
+        numberIndex
+        3
+        numberValue
+        31.5
+        numberIndex
+        4
+        numberValue
+        10.5
+        end table
+      end table
+    stringIndex
+    tx
+    numberValue
+    31
+    stringIndex
+    ty
+    numberValue
+    10
+    stringIndex
+    tw
+    numberValue
+    1
+    stringIndex
+    th
+    numberValue
+    2
+    stringIndex
+    ID
+    numberValue
+    9
+    end table
+  numberIndex
+  5
+  tableValue
+    start table
+    stringIndex
+    flowOutDirection
+    numberValue
+    2
+    stringIndex
+    flowInDirection
+    numberValue
+    2
+    stringIndex
+    type
+    stringValue
+    spawner
+    stringIndex
+    flowOut
+    tableValue
+      start table
       stringIndex
       line
       tableValue
@@ -635,48 +330,78 @@ tableValue
         numberIndex
         1
         numberValue
-        780
+        16.5
         numberIndex
         2
         numberValue
-        460
+        0.5
         numberIndex
         3
         numberValue
-        780
+        16.5
         numberIndex
         4
         numberValue
-        500
-        end table
-      stringIndex
-      amount
-      numberValue
-      0
-      stringIndex
-      textPosition
-      tableValue
-        start table
-        stringIndex
-        x
-        numberValue
-        775
-        stringIndex
-        y
-        numberValue
-        505
+        1.5
         end table
       end table
     stringIndex
-    zoneColor
-    numberValue
-    1
+    flowIn
+    tableValue
+      start table
+      stringIndex
+      line
+      tableValue
+        start table
+        numberIndex
+        1
+        numberValue
+        15.5
+        numberIndex
+        2
+        numberValue
+        1.5
+        numberIndex
+        3
+        numberValue
+        15.5
+        numberIndex
+        4
+        numberValue
+        0.5
+        end table
+      end table
     stringIndex
     tx
     numberValue
-    19
+    15
     stringIndex
-    zoneArt
+    ty
+    numberValue
+    0
+    stringIndex
+    tw
+    numberValue
+    2
+    stringIndex
+    th
+    numberValue
+    1
+    stringIndex
+    ID
+    numberValue
+    10
+    end table
+  numberIndex
+  6
+  tableValue
+    start table
+    stringIndex
+    flowOutDirection
+    numberValue
+    1
+    stringIndex
+    flowInDirection
     numberValue
     1
     stringIndex
@@ -684,26 +409,615 @@ tableValue
     stringValue
     spawner
     stringIndex
+    flowOut
+    tableValue
+      start table
+      stringIndex
+      line
+      tableValue
+        start table
+        numberIndex
+        1
+        numberValue
+        32
+        numberIndex
+        2
+        numberValue
+        1
+        numberIndex
+        3
+        numberValue
+        31
+        numberIndex
+        4
+        numberValue
+        2
+        end table
+      end table
+    stringIndex
+    flowIn
+    tableValue
+      start table
+      stringIndex
+      line
+      tableValue
+        start table
+        numberIndex
+        1
+        numberValue
+        30
+        numberIndex
+        2
+        numberValue
+        1
+        numberIndex
+        3
+        numberValue
+        31
+        numberIndex
+        4
+        numberValue
+        0
+        end table
+      end table
+    stringIndex
+    tx
+    numberValue
+    31
+    stringIndex
+    ty
+    numberValue
+    0
+    stringIndex
+    tw
+    numberValue
+    1
+    stringIndex
+    th
+    numberValue
+    1
+    stringIndex
+    ID
+    numberValue
+    11
+    end table
+  numberIndex
+  7
+  tableValue
+    start table
+    stringIndex
+    flowOutDirection
+    numberValue
+    3
+    stringIndex
+    flowInDirection
+    numberValue
+    3
+    stringIndex
+    type
+    stringValue
+    spawner
+    stringIndex
+    flowOut
+    tableValue
+      start table
+      stringIndex
+      line
+      tableValue
+        start table
+        numberIndex
+        1
+        numberValue
+        1
+        numberIndex
+        2
+        numberValue
+        0
+        numberIndex
+        3
+        numberValue
+        2
+        numberIndex
+        4
+        numberValue
+        1
+        end table
+      end table
+    stringIndex
+    flowIn
+    tableValue
+      start table
+      stringIndex
+      line
+      tableValue
+        start table
+        numberIndex
+        1
+        numberValue
+        1
+        numberIndex
+        2
+        numberValue
+        2
+        numberIndex
+        3
+        numberValue
+        0
+        numberIndex
+        4
+        numberValue
+        1
+        end table
+      end table
+    stringIndex
+    tx
+    numberValue
+    0
+    stringIndex
+    ty
+    numberValue
+    0
+    stringIndex
+    tw
+    numberValue
+    1
+    stringIndex
+    th
+    numberValue
+    1
+    stringIndex
+    ID
+    numberValue
+    12
+    end table
+  numberIndex
+  8
+  tableValue
+    start table
+    stringIndex
+    flowOutDirection
+    numberValue
+    9
+    stringIndex
+    flowInDirection
+    numberValue
+    9
+    stringIndex
+    type
+    stringValue
+    spawner
+    stringIndex
+    flowOut
+    tableValue
+      start table
+      stringIndex
+      line
+      tableValue
+        start table
+        numberIndex
+        1
+        numberValue
+        0
+        numberIndex
+        2
+        numberValue
+        19
+        numberIndex
+        3
+        numberValue
+        1
+        numberIndex
+        4
+        numberValue
+        18
+        end table
+      end table
+    stringIndex
+    flowIn
+    tableValue
+      start table
+      stringIndex
+      line
+      tableValue
+        start table
+        numberIndex
+        1
+        numberValue
+        2
+        numberIndex
+        2
+        numberValue
+        19
+        numberIndex
+        3
+        numberValue
+        1
+        numberIndex
+        4
+        numberValue
+        20
+        end table
+      end table
+    stringIndex
+    tx
+    numberValue
+    0
+    stringIndex
+    ty
+    numberValue
+    19
+    stringIndex
+    tw
+    numberValue
+    1
+    stringIndex
+    th
+    numberValue
+    1
+    stringIndex
+    ID
+    numberValue
+    13
+    end table
+  numberIndex
+  9
+  tableValue
+    start table
+    stringIndex
+    flowOutDirection
+    numberValue
+    7
+    stringIndex
+    flowInDirection
+    numberValue
+    7
+    stringIndex
+    type
+    stringValue
+    spawner
+    stringIndex
+    flowOut
+    tableValue
+      start table
+      stringIndex
+      line
+      tableValue
+        start table
+        numberIndex
+        1
+        numberValue
+        31
+        numberIndex
+        2
+        numberValue
+        20
+        numberIndex
+        3
+        numberValue
+        30
+        numberIndex
+        4
+        numberValue
+        19
+        end table
+      end table
+    stringIndex
+    flowIn
+    tableValue
+      start table
+      stringIndex
+      line
+      tableValue
+        start table
+        numberIndex
+        1
+        numberValue
+        31
+        numberIndex
+        2
+        numberValue
+        18
+        numberIndex
+        3
+        numberValue
+        32
+        numberIndex
+        4
+        numberValue
+        19
+        end table
+      end table
+    stringIndex
+    tx
+    numberValue
+    31
+    stringIndex
+    ty
+    numberValue
+    19
+    stringIndex
+    tw
+    numberValue
+    1
+    stringIndex
+    th
+    numberValue
+    1
+    stringIndex
+    ID
+    numberValue
+    14
+    end table
+  numberIndex
+  10
+  tableValue
+    start table
+    stringIndex
+    flowOutDirection
+    numberValue
+    8
+    stringIndex
+    flowInDirection
+    numberValue
+    8
+    stringIndex
+    type
+    stringValue
+    spawner
+    stringIndex
+    flowOut
+    tableValue
+      start table
+      stringIndex
+      line
+      tableValue
+        start table
+        numberIndex
+        1
+        numberValue
+        17.5
+        numberIndex
+        2
+        numberValue
+        19.5
+        numberIndex
+        3
+        numberValue
+        17.5
+        numberIndex
+        4
+        numberValue
+        18.5
+        end table
+      end table
+    stringIndex
+    flowIn
+    tableValue
+      start table
+      stringIndex
+      line
+      tableValue
+        start table
+        numberIndex
+        1
+        numberValue
+        18.5
+        numberIndex
+        2
+        numberValue
+        18.5
+        numberIndex
+        3
+        numberValue
+        18.5
+        numberIndex
+        4
+        numberValue
+        19.5
+        end table
+      end table
+    stringIndex
+    tx
+    numberValue
+    17
+    stringIndex
+    ty
+    numberValue
+    19
+    stringIndex
+    tw
+    numberValue
+    2
+    stringIndex
+    th
+    numberValue
+    1
+    stringIndex
+    ID
+    numberValue
+    15
+    end table
+  numberIndex
+  11
+  tableValue
+    start table
+    stringIndex
+    flowOutDirection
+    numberValue
+    7
+    stringIndex
+    flowInDirection
+    numberValue
+    6
+    stringIndex
+    type
+    stringValue
+    spawner
+    stringIndex
+    flowOut
+    tableValue
+      start table
+      stringIndex
+      line
+      tableValue
+        start table
+        numberIndex
+        1
+        numberValue
+        5.5
+        numberIndex
+        2
+        numberValue
+        12.5
+        numberIndex
+        3
+        numberValue
+        4.5
+        numberIndex
+        4
+        numberValue
+        11.5
+        end table
+      end table
+    stringIndex
+    flowIn
+    tableValue
+      start table
+      stringIndex
+      line
+      tableValue
+        start table
+        numberIndex
+        1
+        numberValue
+        8.5
+        numberIndex
+        2
+        numberValue
+        13.5
+        numberIndex
+        3
+        numberValue
+        7.5
+        numberIndex
+        4
+        numberValue
+        13.5
+        end table
+      end table
+    stringIndex
+    tx
+    numberValue
+    5
+    stringIndex
     ty
     numberValue
     12
     stringIndex
+    tw
+    numberValue
+    3
+    stringIndex
     th
     numberValue
-    2
+    3
     stringIndex
-    left
-    booleanValue
-    true
+    ID
+    numberValue
+    16
+    end table
+  numberIndex
+  12
+  tableValue
+    start table
+    stringIndex
+    flowOutDirection
+    numberValue
+    4
+    stringIndex
+    flowInDirection
+    numberValue
+    6
+    stringIndex
+    type
+    stringValue
+    spawner
+    stringIndex
+    flowOut
+    tableValue
+      start table
+      stringIndex
+      line
+      tableValue
+        start table
+        numberIndex
+        1
+        numberValue
+        22.5
+        numberIndex
+        2
+        numberValue
+        15
+        numberIndex
+        3
+        numberValue
+        21.5
+        numberIndex
+        4
+        numberValue
+        15
+        end table
+      end table
+    stringIndex
+    flowIn
+    tableValue
+      start table
+      stringIndex
+      line
+      tableValue
+        start table
+        numberIndex
+        1
+        numberValue
+        26.5
+        numberIndex
+        2
+        numberValue
+        15
+        numberIndex
+        3
+        numberValue
+        25.5
+        numberIndex
+        4
+        numberValue
+        15
+        end table
+      end table
+    stringIndex
+    tx
+    numberValue
+    22
+    stringIndex
+    ty
+    numberValue
+    13
+    stringIndex
+    tw
+    numberValue
+    4
+    stringIndex
+    th
+    numberValue
+    4
+    stringIndex
+    ID
+    numberValue
+    17
     end table
   end table
 stringIndex
-index
+entityID
 numberValue
-1
-stringIndex
-walls
-tableValue
-  start table
-  end table
+18
 end table
