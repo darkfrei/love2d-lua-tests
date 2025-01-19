@@ -2,24 +2,26 @@
 
 local SafeSaveLoad = {}
 
--- [check if table is a number array]
+-- checks if a table is a list
+-- a list has consecutive numeric keys starting from 1 and ending at the table's length
 local function isList(tbl)
 	local n = #tbl
 	for i, v in pairs(tbl) do
-		if type(i) ~= "number" 
-		or i ~= math.floor(i) 
-		or i < 1 or i > n then
+		if type(i) ~= "number"  -- [i] must be a number
+		or i ~= math.floor(i)  -- [i] must be an integer
+		or i < 1 or i > n then -- [i] must be within the range 1 to n
 			return false
 		end
 	end
-
 	return true
 end
 
-local function isNumberList (tbl)
+-- checks if a table is a list of numbers
+-- returns false if the table is not a list or contains non-number values
+local function isNumberList(tbl)
 	if isList(tbl) then
 		for key, value in ipairs(tbl) do
-			if type(value) ~= "number" then
+			if type(value) ~= "number" then -- [value] must be a number
 				return false
 			end
 		end
@@ -27,24 +29,55 @@ local function isNumberList (tbl)
 	end
 end
 
-local function isStringList (tbl)
+-- checks if a table is a list of strings
+-- returns false if the table is not a list or contains non-string values
+local function isStringList(tbl)
 	if isList(tbl) then
 		for key, value in ipairs(tbl) do
-			if type(value) ~= "string" then
+			if type(value) ~= "string" then -- [value] must be a string
 				return false
 			end
 		end
 		return true
 	end
+end
+
+-- checks if a table is a list of numbers and serializes it into a space-separated string
+-- returns the serialized string if the table is valid, otherwise returns nil
+local function serializeNumberList(tbl)
+	if isNumberList(tbl) then -- check if the table is a list of numbers
+		return table.concat(tbl, " ") -- join all numbers with spaces
+	end
+	return nil -- return nil if the table is not a valid number list
 end
 
 -- serializes a table into a formatted string representation
 -- supports string and number keys, as well as string, number, and nested table values
 -- unsupported key or value types will raise an error
+
 function SafeSaveLoad.serializeTable(tabl, level)
 	level = level or 0
 	local result = {}
 	local indent = string.rep("  ", level)
+
+	-- check if the table is a list of numbers
+	if isNumberList(tabl) then
+		print ('serializeTable: level '..level .. ' was numbers list')
+		-- handle ListNumbers type
+		table.insert(result, indent .. "start numbers list")
+		table.insert(result, indent .. table.concat(tabl, " "))
+		table.insert(result, indent .. "end numbers list")
+		return table.concat(result, "\n")
+	end
+
+	-- check if the table is a list of strings
+	if isStringList(tabl) then
+		-- handle ListStrings type
+		table.insert(result, indent .. "start strings list")
+		table.insert(result, table.concat(tabl, '\n'))
+		table.insert(result, indent .. "end strings list")
+		return table.concat(result, "\n")
+	end
 
 	-- append the start of a table marker
 	table.insert(result, indent .. "start table")
@@ -80,103 +113,112 @@ function SafeSaveLoad.serializeTable(tabl, level)
 	return table.concat(result, "\n")
 end
 
-
+-- new
+-- deserializes a formatted string representation back into a Lua table
+-- supports nested tables with string and number keys and values
+-- maintains the same structure as the serialized table
 -- deserializes a formatted string representation back into a Lua table
 -- supports nested tables with string and number keys and values
 -- maintains the same structure as the serialized table
 function SafeSaveLoad.deserializeString(str)
 	-- [input string with serialized data]
 	local stack = {} -- stack for nested tables
-	local currentTable = {} -- current table we are working with
+	local currentTable -- current table we are working with
+	local tempList
 	local tempIndex
 	local state = 'tableValue'
+	
 
 	for line in str:gmatch("(.-)\n") do
 		line = line:match("^%s*(.-)%s*$") -- remove leading/trailing spaces
---		print('['..line..']') -- print for debugging
-		if line == "start table" then
-			-- starting a new table
-			table.insert(stack, currentTable) -- push current table to stack
-			state = 'index'
+		print (line)
 
-		elseif line == "end table" then
-			-- ending the current table
-			table.remove(stack)
-			currentTable = stack[#stack]
-		elseif (state == 'index') then
-			if line == "stringIndex" then
-				-- waiting for the index (key)
---				print("Waiting for string index")
-				state = 'stringIndex'
-			elseif line == "numberIndex" then
-				state = "numberIndex"
-			end
-		elseif (state == 'stringIndex') then
-			tempIndex = line
-			state = 'value'
-		elseif (state == 'numberIndex') then
-			tempIndex = tonumber(line)
-			state = 'value'
-		elseif (state == 'value') then
-			state = line
-			if state == 'tableValue' then
+		-- state machine logic
+
+		if state == 'tableValue' then
+			if line == 'start table' then
+				
 				local newTable = {}
-				currentTable[tempIndex] = newTable
+				
+				table.insert(stack, newTable) -- push current table to stack
+				
+				if currentTable and tempIndex then
+					currentTable[tempIndex] = newTable
+				end
 				currentTable = newTable
-			end
-		elseif state == "stringValue" then
-			currentTable[tempIndex] = line
-			tempIndex = nil -- reset temp variables
-			state = 'index'
-		elseif state == "numberValue" then
-			currentTable[tempIndex] = tonumber(line)
-			tempIndex = nil -- reset temp variables
-			state = 'index'
-		elseif state == "booleanValue" then
---			currentTable[tempIndex] = tonumber(line)
-			if line == "true" then
-				print ('added ' .. line .. ' as boolean')
-				currentTable[tempIndex] = true
-			elseif line == "false" then
-				print ('added ' .. line .. ' as boolean')
-				currentTable[tempIndex] = false
-			end
-			tempIndex = nil -- reset temp variables
-			state = 'index'
+				
+				print ('new table, #stack:', #stack)
+				state = 'indexType'
 
+			elseif line == 'start numbers list' then
+				tempList = {} -- reset content
+				state = 'listNumbers'
+
+			elseif line == 'start strings list' then
+				tempList = {} -- reset content
+				state = 'listStrings'
+			end
+
+		elseif state == 'indexType' then
+			if line == 'end table' then
+				table.remove(stack) -- pop current table from stack
+				print ('stack removed! #stack:', #stack)
+				currentTable = stack[#stack] -- restore previous table
+			else
+				state = line -- 'numberIndex' or 'stringIndex'
+			end
+
+		elseif state == 'numberIndex' then
+			tempIndex = tonumber(line)
+			state = 'valueType' -- waiting for value type
+
+		elseif state == 'stringIndex' then
+			tempIndex = line
+			state = 'valueType'
+
+		elseif state == 'valueType' then
+			state = line -- 'numberValue' or 'stringValue'
+
+		elseif state == 'numberValue' then
+			currentTable[tempIndex] = tonumber(line)
+			tempIndex = nil
+			state = 'indexType' -- or end of table!
+
+		elseif state == 'stringValue' then
+			currentTable[tempIndex] = line
+			tempIndex = nil
+			state = 'indexType' -- or end of table!
+
+			-- new states:
+		elseif state == 'listNumbers' then
+			if line == 'end numbers list' then
+				currentTable[tempIndex] = tempList
+				tempList = nil
+				state = 'indexType'
+			else -- line or multiline values
+				for num in line:gmatch("([%-?%d%.]+)") do
+					table.insert(tempList, tonumber(num))
+				end
+			end
+		elseif state == 'listStrings' then
+			if line == 'end strings list' then
+				currentTable[tempIndex] = tempList
+				tempList = nil
+				state = 'indexType'
+			else -- line or multiline values
+				table.insert(tempList, line)
+			end
 		end
 	end
-	return currentTable
+
+	print ('currentTable:')
+	for i, v in pairs (currentTable) do
+		print (i, v)
+	end
+	print ('end of currentTable')
+
+	return currentTable -- return the deserialized table
 end
-
-
-
---[[
--- test functions
-
-local data = 
-{
-	player = "hero",
-	level = 5,
-	stats = {
-		health = 100,
-		mana = 50,
-	},
-	items = {"sword", "shield", "potion"}
-}
-
-
-
-local testStr = SafeSaveLoad.serializeTable(data)
-print ('')
-print ('testStr')
-print (testStr)
-print ('')
-local testTable2 = SafeSaveLoad.deserializeString(testStr)
-serpent = require ('serpent')
-print ('serpent:')
-print (serpent.block (testTable2))
---]]
 
 
 return SafeSaveLoad

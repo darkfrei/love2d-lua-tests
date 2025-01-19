@@ -9,7 +9,8 @@ Resolution.setup(1280, 800)
 currentLevel = {
 	index = 1,
 	entities = {},
---	selectedZone = nil, -- or entity
+	x = 0,
+	y = 0,
 }
 
 levels = {currentLevel}
@@ -22,9 +23,12 @@ Game = {
 	th = 20,
 }
 
-StateManager = require("state_manager")
+StateManager = require("state-manager")
 Data = require("data")
+WorldManager = require("world-manager")
+
 Editor = require("editor")
+--Gameplay = require("gameplay")
 
 
 

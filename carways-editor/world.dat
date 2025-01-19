@@ -1,0 +1,67 @@
+start table
+numberIndex
+1
+tableValue
+  start table
+  stringIndex
+  row
+  numberValue
+  1
+  stringIndex
+  col
+  numberValue
+  1
+  stringIndex
+  index
+  numberValue
+  1
+  end table
+numberIndex
+2
+tableValue
+  start table
+  stringIndex
+  row
+  numberValue
+  1
+  stringIndex
+  col
+  numberValue
+  2
+  stringIndex
+  index
+  numberValue
+  2
+  end table
+numberIndex
+3
+tableValue
+  start table
+  stringIndex
+  row
+  numberValue
+  2
+  stringIndex
+  col
+  numberValue
+  1
+  stringIndex
+  index
+  numberValue
+  3
+  end table
+numberIndex
+4
+tableValue
+  start numbers list
+  1 2 3 4
+  end numbers list
+numberIndex
+5
+tableValue
+  start strings list
+  a
+  b
+  c
+  end strings list
+end table

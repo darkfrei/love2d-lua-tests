@@ -26,31 +26,10 @@ Preselect.selectedEntity = nil -- current entity in preselect
 
 Editor.flowMax = 20
 
--- [directional offsets for flow]
-local directionOffsets = {
-	[1] = {dx = -0.5, dy = 1},    -- down left
-	[2] = {dx = 0, dy = 1},       -- down
-	[3] = {dx = 0.5, dy = 1},     -- down right
-	[4] = {dx = -1, dy = 0},      -- left
-	[6] = {dx = 1, dy = 0},       -- right
-	[7] = {dx = -0.5, dy = -1},   -- up left
-	[8] = {dx = 0, dy = -1},      -- up
-	[9] = {dx = 0.5, dy = -1},    -- up right
-}
-
-local function calculateFlow(direction, tx, ty, tw, th)
-	local centerX, centerY = tx + tw / 2, ty + th / 2
-	local offsets = directionOffsets[direction]
-
-	local dx, dy = offsets.dx, offsets.dy
-	local startX, startY = centerX + dx, centerY + dy
-	local endX, endY = centerX + 2 * dx, centerY + 2 * dy
-
-	return {startX, startY, endX, endY}
-end
 
 -- [updates spawner entity with the given parameters]
 local function updateSpawnerEntity(entity)
+--	print ('updateSpawnerEntity')
 	-- [update entity's position and size]
 	local tx, ty, tw, th = entity.tx, entity.ty, entity.tw, entity.th
 
@@ -153,8 +132,6 @@ local function updateSpawnerEntity(entity)
 			entity.flowIn.line = {inputTX+dx + inputDTX, inputTY+inputDTY+dy, 
 				inputTX+dx, inputTY+dy}
 
-
-
 		elseif flowOutDirection == 6 then
 			-- right
 			dx = 0
@@ -197,18 +174,14 @@ local function updateSpawnerEntity(entity)
 end
 
 
---serpent = require ('serpent')
-
 function Preselect:updatePreselectSpawnerZone()
-
+--	print ('updatePreselectSpawnerZone')
 	local entity = self.cursorEntity
 	if entity and entity.type ~= 'spawner' then return end
 
 	-- get preselect position and size
 	local tx, ty = self.tx, self.ty -- preselect top left position
 	local tw, th = self.size.tw, self.size.th  -- preselect size
---	print ('updatePreselectSpawnerZone', tx, ty, tw, th)
-
 
 	if not entity then
 		entity = self.newEntity ('spawner')
@@ -219,10 +192,6 @@ function Preselect:updatePreselectSpawnerZone()
 	local gameTW = Game.tw-1 -- 32
 	local gameTH = Game.th-1 -- 20
 
-
-
-	-- 
---	love.window.setTitle ('updatePreselectSpawnerZone '..tx..' '..ty)
 	if tx == 0 and ty == 0 then
 		-- down-right
 		entity.tx = 0
@@ -298,25 +267,18 @@ function Preselect:updatePreselectSpawnerZone()
 		entity.flowInDirection = self.flowInDirection
 	end
 
-
-
---	print ('entity')
---	print (serpent.block (entity))
 	updateSpawnerEntity (entity)
 end
-
-
-
 
 local function drawArrow(line)
 	-- [extract the start and end points from the lines]
 	if not line then return end
 
-	local tileSize = 40
+	-- [define the tile size for scaling]
+	local tileSize = Game.tileSize
 
-	local startX, startY = line[1]*tileSize, line[2]*tileSize
---	print (startX, startY)
-	local endX, endY = line[3]*tileSize, line[4]*tileSize
+	local startX, startY = line[1] * tileSize, line[2] * tileSize
+	local endX, endY = line[3] * tileSize, line[4] * tileSize
 
 	-- [draw the main line of the arrow]
 	love.graphics.line(startX, startY, endX, endY)
@@ -326,17 +288,24 @@ local function drawArrow(line)
 	local length = math.sqrt(dx^2 + dy^2)
 	local unitX, unitY = dx / length, dy / length
 
-	-- [determine arrow tip size and angles]
-	local arrowSize = 10
-	local perpX, perpY = -unitY, unitX -- perpendicular vector for the arrow wings
-	local tip1X = endX - arrowSize * (unitX + perpX)
-	local tip1Y = endY - arrowSize * (unitY + perpY)
-	local tip2X = endX - arrowSize * (unitX - perpX)
-	local tip2Y = endY - arrowSize * (unitY - perpY)
+	-- [determine arrow tip size and width]
+	local arrowSize = 20 -- [length of the arrow tip]
+	local arrowWidth = 10 -- [distance between the wings of the tip]
+
+	-- [calculate perpendicular vector for the arrow wings]
+	local perpX, perpY = -unitY * arrowWidth / 2, unitX * arrowWidth / 2
+
+	-- [calculate the positions of the arrow tip points]
+	local tip1X = endX - arrowSize * unitX + perpX
+	local tip1Y = endY - arrowSize * unitY + perpY
+	local tip2X = endX - arrowSize * unitX - perpX
+	local tip2Y = endY - arrowSize * unitY - perpY
 
 	-- [draw the arrowhead]
 	love.graphics.polygon("fill", endX, endY, tip1X, tip1Y, tip2X, tip2Y)
 end
+
+
 
 
 local function drawEntity (entity)
@@ -382,8 +351,8 @@ local function drawEntity (entity)
 			flowOut.line[4]*tileSize
 		)
 		drawArrow(flowOut.line)
-		local x = flowOut.line[1]*tileSize
-		local y = flowOut.line[2]*tileSize
+		local x = flowOut.line[3]*tileSize
+		local y = flowOut.line[4]*tileSize
 		local amount = #flowOut
 		love.graphics.print (amount, x, y)
 	end
@@ -433,7 +402,6 @@ function Preselect:draw()
 	if entity then
 		love.graphics.setLineWidth (3)
 		drawEntity (entity)
-
 		love.graphics.setColor(1, 1, 1, 1) -- white
 		love.graphics.rectangle("line", x, y, width, height)
 		love.graphics.print (entity.ID, x, y)
@@ -444,10 +412,6 @@ function Preselect:draw()
 		love.graphics.setColor(1, 1, 1, 1) -- white
 		love.graphics.rectangle("line", x, y, width, height)	
 	end
-
-
-
-
 end
 
 -- [sets the preselect type to 'wall', or unsets it if already set]
@@ -483,15 +447,6 @@ function Preselect:setSpawner()
 		self.cursorEntity = self:newEntity ('spawner')
 		Preselect:updatePreselectSpawnerZone()
 
---		self.entity = {
---			type = 'spawner',
---			tx = self.tx,
---			ty = self.ty,
---			tw = self.size.tw,
---			th = self.size.th,
---			flowOutDirection = Preselect.flowOutDirection,
---			flowInDirection = Preselect.flowInDirection,
---		}
 	end
 end
 
@@ -612,29 +567,22 @@ end
 --serpent = require ('serpent')
 
 local function loadLevel()
-	local file = io.open("level_save.dat", "r")
+	local currentLevelIndex = WorldManager.progress.currentLevelIndex
+	local filename = 'level-'..currentLevelIndex..'.dat'
+	print ('loading level:', filename)
+	local file = io.open(filename, 'r')
 	if file then
 		local str = file:read("*a")
 		file:close()
 		currentLevel = ssl.deserializeString(str)
-
-		for i, entity in ipairs (currentLevel.entities) do
-			if entity.type == 'spawner' then
-				local tx = entity.tx
-				local ty = entity.ty
-				local tw = entity.tw
-				local th = entity.th
-
---				print (serpent.block (entity))
-
-				local flowOutDirection = entity.flowOutDirection
-				local flowInDirection = entity.flowInDirection
-
---				updateSpawnerEntity(entity, tx, ty, tw, th, flowOutDirection, flowInDirection)
-				updateSpawnerEntity(entity, tx, ty, tw, th, flowOutDirection, flowInDirection)
-			end
+		print ('currentLevel', currentLevel)
+		if not currentLevel.entities then
+			print ('####### no entities!')
+			currentLevel.entities = {}
+		else
+			print ('####### amount entities:', #currentLevel.entities)
 		end
-		print("Level loaded successfully")
+		print("Level loaded successfully", currentLevel)
 	else
 		print("No saved level found")
 	end
@@ -644,17 +592,6 @@ function Editor.enter()
 	-- [initializes editor state]
 	print("Editor state entered")
 	loadLevel()
-
-
-
---	Editor.preselect = {
---		tx=0, ty=0, 
---		tw=2, th=2,
---		entityType = 'spawner',
---		temp = nil,
-
---	}
-
 
 end
 
@@ -779,8 +716,6 @@ function Editor.draw()
 	love.graphics.setColor (1,1,1)
 	love.graphics.draw (backgroundImage)
 
-
-
 	local selectedEntity = Preselect.selectedEntity
 	for i, entity in ipairs (currentLevel.entities) do
 		love.graphics.setLineWidth (1)
@@ -791,55 +726,10 @@ function Editor.draw()
 		drawEntityTexture (entity)
 	end
 
-	--[[
-	for i, zone in ipairs (currentLevel.entities) do
-
---		love.graphics.setLineWidth (2)
-		local tx, ty = zone.tx, zone.ty
-		local tw, th = zone.tw, zone.th
-		local selected = zone.selected
-		if selected then
-			love.graphics.setLineWidth (3)
-		else
-			love.graphics.setLineWidth (1)
-		end
-
-
---		drawZone (zone)
-
-
-		if selected then
-			love.graphics.setColor (1,1,1)
-			love.graphics.rectangle ('line', ts*tx, ts*ty, ts*tw, ts*th)
-		end
-
-
-		if zone.type == 'spawner' then
-			love.graphics.setColor (0,0,0)
-			love.graphics.setLineWidth (2)
-			local flowOut = zone.flowOut
-	if flowOut then
-		drawArrow(flowOut.line)
-
---				love.graphics.print (flowOut.amount, flowOut.textPosition.x, flowOut.textPosition.y)
-	end
-
-	local flowIn = zone.flowIn
-	if flowIn then
-		drawArrow(flowIn.line)
-
-		love.graphics.print (flowIn.amount, flowIn.textPosition.x, flowIn.textPosition.y)
-	end
-
-end
-
-end
---]]
-
--- mouse
---	drawPreselect ()
-
 	Preselect:draw()
+
+	-- draw arrows from selected entity
+
 end
 
 function Editor.exit()
@@ -847,192 +737,6 @@ function Editor.exit()
 	print("Editor state exited")
 end
 
-
---[[
-local function updateSpawnerZone (zone)
-	if not (zone.type == 'spawner') then return end
-	local ts = Game.tileSize
-	local tx, ty = zone.tx, zone.ty
-	local tw, th = zone.tw, zone.th
-	local flowOut = zone.flowOut
-	local flowIn = zone.flowIn
-
-
-	if not flowOut then 
-		flowOut = {
---			direction = 1, 
-			amount=0,
-			maxAmount = 20,
---			point = {},
-			line = {},
-			textPosition = {},
-		}
-		zone.flowOut = flowOut
-	end
-	if not flowIn then 
-		flowIn = {
---			direction = 1, 
-			amount=0,
-			maxAmount = 20,
---			point = {},
-			line = {},
-			textPosition = {}, 
-		}
-		zone.flowIn = flowIn
-	end
-
-	flowOut.direction = (flowOut.direction -1)%4+1
-	flowIn.direction = (flowIn.direction -1)%4+1
-
-	if flowOut.direction == flowIn.direction then
-		if flowOut.direction == 1 then -- top
-			-- both top
-			local x = ts*(tx+(tw)/2)
-			local x1 = x-0.5*ts
-			local x2 = x+0.5*ts
-			if zone.left then
-				x1, x2 = x2, x1
-			end
-
-			local y = ts*(ty+0.5)
-			flowOut.line = {x1, y, x1, y-ts}
-			flowOut.textPosition = {x=x1-5, y=y+5}
-
-			-- in
-			flowIn.line = {x2, y-ts, x2, y}
-			flowIn.textPosition = {x=x2-5, y=y+5}
-
-
-			----
-		elseif flowOut.direction == 2 then -- right
-			-- both right
-			local y = ts * (ty + th / 2)
-			local y1 = y - 0.5 * ts
-			local y2 = y + 0.5 * ts
-			if zone.left then
-				y1, y2 = y2, y1
-			end
-
-			local x = ts * (tx + tw - 0.5)
-
-			-- out
---			flowOut.point = {x = x, y = y1}
-			flowOut.line = {x, y1, x + ts, y1}
-			flowOut.textPosition = {x = x - 5, y = y1 + 5}
-
-			-- in
---			flowIn.point = {x = x + ts, y = y2}
-			flowIn.line = {x + ts, y2, x, y2}
-			flowIn.textPosition = {x = x - 5, y = y2 + 5}
-
-		elseif flowOut.direction == 3 then -- bottom
-			-- both bottom
-			local x = ts * (tx + tw / 2)
-			local x1 = x + 0.5 * ts
-			local x2 = x - 0.5 * ts
-			if zone.left then
-				x1, x2 = x2, x1
-			end
-
-			local y = ts * (ty + th - 0.5)
-
-			-- out
---			flowOut.point = {x = x1, y = y}
-			flowOut.line = {x1, y, x1, y + ts}
-			flowOut.textPosition = {x = x1 - 5, y = y - 20}
-
-			-- in
---			flowIn.point = {x = x2, y = y + ts}
-			flowIn.line = {x2, y + ts, x2, y}
-
-			flowIn.textPosition = {x = x2 - 5, y = y - 20}
-
-		elseif flowOut.direction == 4 then -- left
-			-- both left
-			local y = ts * (ty + th / 2)
-			local y1 = y - 0.5 * ts
-			local y2 = y + 0.5 * ts
-			if zone.left then
-				y1, y2 = y2, y1
-			end
-
-			local x = ts * (tx + 0.5)
-
-			-- out
---			flowOut.point = {x = x, y = y1}
-			flowOut.line = {x, y1, x - ts, y1}
-			flowOut.textPosition = {x = x - 5, y = y1 + 5}
-
-			-- in
---			flowIn.point = {x = x - ts, y = y2}
-			flowIn.line = {x - ts, y2, x, y2}
-			flowIn.textPosition = {x = x - 5, y = y2 + 5}
-
-
-		end
-	else
-		-- not same direction
-
-		if flowOut.direction == 1 then
-			local x = ts*(tx+tw/2)
-			local y = ts*(ty+0.5)
---			flowOut.point = {x=x, y=y}
-			flowOut.line = {x, y, x, y-ts}
-			flowOut.textPosition = {x=x-5, y=y+5}
-		elseif flowOut.direction == 2 then
-			-- right
-			local x = ts*(tx+tw-0.5)
-			local y = ts*(ty+th/2)
---			flowOut.point = {x=x, y=y}
-			flowOut.line = {x, y, x+ts, y}
-			flowOut.textPosition = {x=x-5, y=y+5}
-		elseif flowOut.direction == 3 then
-			local x = ts*(tx+tw/2)
-			local y = ts*(ty+th-0.5)
---			flowOut.point = {x=x, y=y}
-			flowOut.line = {x, y, x, y+ts}
-			flowOut.textPosition = {x=x-5, y=y-20}
-		elseif flowOut.direction == 4 then
-			-- left
-			local x = ts*(tx+0.5)
-			local y = ts*(ty+th/2)
---			flowOut.point = {x=x, y=y}
-			flowOut.line = {x, y, x+tw-ts, y}
-			flowOut.textPosition = {x=x-5, y=y+5}
-		end
-
-		if flowIn.direction == 1 then
-			local x = ts*(tx+tw/2)
-			local y = ts*(ty+0.5)
---			flowIn.point = {x=x, y=y-ts}
-			flowIn.line = {x, y-ts, x, y}
-			flowIn.textPosition = {x=x-5, y=y+5}
-
-			---- errors:
-		elseif flowIn.direction == 2 then
-			local x = ts * (tx + tw - 0.5)
-			local y = ts * (ty + th / 2)
---			flowIn.point = { x = x + ts, y = y }
-			flowIn.line = { x + ts, y, x, y }
-			flowIn.textPosition = {x=x-5, y=y+5}
-		elseif flowIn.direction == 3 then
-			local x = ts * (tx + tw / 2)
-			local y = ts * (ty + th - 0.5)
---			flowIn.point = { x = x, y = y + ts }
-			flowIn.line = { x, y + ts, x, y }
-			flowIn.textPosition = { x = x - 5, y = y - 20 }
-		elseif flowIn.direction == 4 then -- 
-			local x = ts * (tx + 0.5)
-			local y = ts * (ty + th / 2)
---			flowIn.point = { x = x - ts, y = y }
-			flowIn.line = { x - ts, y, x, y }
-			flowIn.textPosition = { x = x - 5, y = y + 5 }
-		end
-
-	end
-
-end
---]]
 
 
 local function createEntity (isSpawner) -- bool
@@ -1066,7 +770,6 @@ local function createEntity (isSpawner) -- bool
 
 		Editor.selectedZone = spawnZone
 		spawnZone.selected = true
---		table.insert (currentLevel.spawners, spawnZone)
 		table.insert (currentLevel.entities, spawnZone)
 	else
 		local wallZone = {
@@ -1240,13 +943,11 @@ local function nextZoneColor ()
 end
 
 local function saveLevel ()
-	local zone = Editor.selectedZone
-	if zone then
-		zone.selected = nil
-		Editor.selectedZone = nil
-	end
+	local index = currentLevel.index
 	local str = ssl.serializeTable(currentLevel)
-	local file = io.open("level_save.dat", "w")
+	local filename = 'level-'..index..'.dat'
+	print ('save filename:', filename)
+	local file = io.open(filename, 'w')
 	if file then
 		file:write(str)
 		file:close()
@@ -1256,25 +957,11 @@ local function saveLevel ()
 	end
 end
 
-local function setZoneAsWall (zone)
-	if not (zone.type == 'wall') then
-		print ('now zone is wall')
-		zone.type = 'wall'
-	end
-end
-
-local function setZoneAsSpawner (zone)
-	if not (zone.type == 'spawner') then
-		print ('now zone is spawner')
-		zone.type = 'spawner'
-
-	end
-end
-
 
 
 function Editor.keypressed(key, scancode)
-	local isCtrl = love.keyboard.isDown ('lctrl')
+	local isCtrl = love.keyboard.isDown ('lctrl', 'rctrl')
+	local isShift = love.keyboard.isDown ('lshift', 'rshift')
 
 	if key == 'w' then
 		Preselect:setWall()
@@ -1286,19 +973,33 @@ function Editor.keypressed(key, scancode)
 
 	-- [adjusts size based on keypad + or -]
 	if key == "kp+" then
-		Preselect:increseSize(1, 1) -- increase size
+		if isCtrl then
+			Preselect:increseSize(1, 0) -- increase size
+		elseif isShift then
+			Preselect:increseSize(0, 1) -- increase size
+		else
+			Preselect:increseSize(1, 1) -- increase size
+		end
 		return
 	elseif key == "kp-" then
-		Preselect:increseSize(-1, -1) -- decrease size
+		if isCtrl then
+			Preselect:increseSize(-1, 0) -- increase size
+		elseif isShift then
+			Preselect:increseSize(0, -1) -- increase size
+		else
+			Preselect:increseSize(-1, -1) -- increase size
+		end
 		return
 	end
 
-	if isCtrl then
-		if key == "s" then
+
+	if key == "s" then
+		if isCtrl then
 			saveLevel ()
 			return
 		end
 	end
+
 
 	if key == "i" then
 		changeInputPosition ()
@@ -1309,83 +1010,7 @@ function Editor.keypressed(key, scancode)
 	if key == "delete" then
 		deleteSelectedZone ()
 	end
-
 end
---[[
-	print ('keypressed', key, scancode)
-	local mousePressed = love.mouse.isDown (1)
-	print ('mousePressed', tostring (mousePressed))
-	local isShift = love.keyboard.isDown ('lshift')
-	local isCtrl = love.keyboard.isDown ('lctrl')
-	print (tostring (isShift), key, scancode)
-	print (tostring (isCtrl), key, scancode)
-
-
-	local zone = Editor.selectedZone
-	if zone then
-		print ()
-		if key == "w" then
-			setZoneAsWall (zone)
-			return
-		elseif key == "z" then
-			setZoneAsSpawner (zone)
-			updateSpawnerZone (zone)
-			return
-		end
-	end
-
-	if isCtrl then
-		-- ctrl
-		if key == "s" then
-			saveLevel ()
-		end
-
-		-- end ctrl
-	elseif isShift then
-		-- shift
-
-
-		-- end shift
-	elseif key == "w" then
---		createWallZone ()
-		Editor.preselect.entityType = 'wall'
-		createEntity (false) -- not spawner
-	elseif key == "z" then
---		createSpawnZone ()
-		Editor.preselect.entityType = 'spawner'
-		createEntity (true) -- spawner
-	elseif key == "delete" then
-		deleteSelectedZone ()
-	elseif key == "b" then
-		swapZone () -- left side or right side
-	elseif key == "i" then
-		changeInputPosition ()
-	elseif key == "o" then
-		changeOutputPosition ()
-	elseif key == "s" then -- '<'
-		nextZoneArt ()
-	elseif key == "a" then -- '>'
-		prevZoneArt ()
-	elseif key == "c" then -- change color
-		nextZoneColor ()
-	elseif key == "kp+" then
-		Editor.preselect.tw = Editor.preselect.tw + 1
-		Editor.preselect.th = Editor.preselect.th + 1
-	elseif key == "kp-" then
-		Editor.preselect.tw = math.max(Editor.preselect.tw - 1, 1)
-		Editor.preselect.th = math.max(Editor.preselect.th - 1, 1)
-
-	end	
-
-end
---]]
-
--- utils.lua
-
-
-
-
-
 
 function Editor.mousepressed(x, y, button)
 	-- [tile size]
@@ -1400,68 +1025,13 @@ function Editor.mousepressed(x, y, button)
 
 	-- [ignore clicks outside the valid range]
 	if tx < 0 or ty < 0 or tx > txMax or ty > tyMax then
+		-- GUI if exists
 		return
 	end
 
-
-	-- [update the current tile and handle click]
---	Preselect.currentTile = {tx = tx, ty = ty}
 	Preselect:tileClicked(tx, ty)
 end
 
-
--- [handles mouse press events]
-
---	local preselect = Editor.preselect
---	print ('preselect exists:'.. tostring(preselect))
---	local tx, ty = preselect.tx, preselect.ty
-
---	preselect.pressed = {tx=tx, ty=ty}
-
-
---[[
-
-	local shiftPressed = love.keyboard.isDown('lshift', 'rshift')
-	print ('shiftPressed', tostring (shiftPressed))
-	if shiftPressed then
-		-- do nothing until moved
-	else
-		local wasSelected = Editor.selectedZone
-		if Editor.selectedZone then
-			Editor.selectedZone.selected = nil
-			Editor.selectedZone = nil
-		else
-			wasSelected = false
-		end
-
-		local zone
-		if not currentLevel.entities then currentLevel.entities = {} end
-		for i, iZone in ipairs (currentLevel.entities) do
-			if mouseLevelCursorInsideZone (iZone) then
-				iZone.selected = true
-				zone = iZone
-				break
-			else
---				iZone.selected = nil
-			end
-		end
-
-		if zone then
-			Editor.selectedZone = zone
-		else
-			if wasSelected then
-				Editor.selectedZone = nil
-			else
-				-- on click create entitly
-				print ('preselect.type: '..preselect.entityType)
-				local isSpawner = (preselect.entityType == 'spawner')
-				print ('on click, create entity, spawner: ' .. tostring (isSpawner))
-				createEntity (isSpawner)
-			end
-		end
-	end
-	--]]
---end
 
 function Editor.mousemoved(x, y, dx, dy)
 	local tileSize = 40
@@ -1480,116 +1050,6 @@ function Editor.mousemoved(x, y, dx, dy)
 	end
 end
 
-
---[[
-	-- [handles mouse movement events]
-
-	
-	local preselect = Editor.preselect
-	local tx, ty = preselect.tx, preselect.ty
-	local tw, th = preselect.tw, preselect.th
-	if preselect.tx == mtx and preselect.ty == mty then
-		return
-	elseif preselect.tx == mtx then
-		preselect.ty = mty
-	elseif preselect.ty == mty then
-		preselect.tx = mtx
-	else
-		preselect.tx = mtx
-		preselect.ty = mty
-	end
-
-
-	local mousePressed = preselect.pressed
-	local isShiftDown = love.keyboard.isDown ('lshift', 'rshift')
-	local zone = Editor.selectedZone
-	local zoneHovered = zone and mouseLevelCursorInsideZone (zone, dtx, dty)
---	love.window.setTitle (tostring (zoneHovered))
-
-	if zone and mousePressed then
-		local dtx = mtx - mousePressed.tx
-		local dty = mty - mousePressed.ty
---		love.window.setTitle (dtx..' '..dty)
-		if isShiftDown then -- resize
---			
-	local tw = math.max (1, zone.tw+dtx)
-	local th = math.max (1, zone.th+dty)
-	zone.tw = tw
-	zone.th = th
-	mousePressed.tx = mtx
-	mousePressed.ty = mty
-	updateSpawnerZone (zone) -- wip: must be checked if changed
-else -- drag and drop
-	zone.tx = zone.tx + dtx
-	zone.ty = zone.ty + dty
-
-	mousePressed.tx = mtx
-	mousePressed.ty = mty
-	updateSpawnerZone (zone) -- wip: must be checked if changed
-end
-return
-else
-local left = (mtx == 0)
-local top = (mty == 0) 
-local right = (mtx == 31) or (mtx + tw > 31)
-local bottom = (mty == 19) or (mty + th > 19)
-
-if top and (mtx + 1 >= 31) then right = true end
-if right and (mty + 1 >= 19) then bottom = true end
-
-
-if top then
-	if left then
-		preselect.type = 'topleft'
-		preselect.temp = {tx=0, ty=0, tw=1, th=1}
-	elseif right then 
-		preselect.type = 'topright'
---				preselect.temp = {tw=1, th=1}
-		preselect.temp = {tx=31, ty=0, tw=1, th=1}
-	else 
-		preselect.type = 'top'
-		preselect.temp = {tw=math.max(2, tw), th=1}
-	end
-elseif bottom then
-	if left then 
-		preselect.type = 'bottomleft'
-		preselect.temp = {tw=1, th=1}
-	elseif right then 
-		preselect.type = 'bottomright'
-		preselect.temp = {tx=31, ty=19, tw=1, th=1}
-	else 
-		preselect.type = 'bottom'
-		preselect.temp = {ty=19, tw=math.max(2, tw), th=1}
-	end
-elseif left then
-	preselect.type = 'left'
-	preselect.temp = {tw=1, th=math.max(2, th)}
-elseif right then
-	preselect.type = 'right'
-	preselect.temp = {tx=31, tw=1, th=math.max(2, th)}
-else
-
-	preselect.type = 'common'
-	preselect.temp = nil
-end
-love.window.setTitle ('preselect.type: '..preselect.type)
-end
-
-
---	print(string.format("Mouse moved to (%d, %d) with delta (%d, %d)", x, y, dx, dy))
-
---]]
---end
-
-local function getMouseSpawnerZone ()
-	local tx, ty = Preselect.tx, Preselect.ty
-	for i, zone in ipairs (currentLevel.spawners) do
-		if tx >= zone.tx and ty >=zone.ty
-		and tx < zone.tx+zone.tw and ty < zone.ty+zone.th then
-			return zone
-		end
-	end
-end
 
 function Editor.wheelmoved(x, y)
 	local tx, ty = Preselect.tx, Preselect.ty
