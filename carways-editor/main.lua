@@ -1,30 +1,10 @@
-
+GameConfig = require ('game-config')
 
 local Resolution = require("resolution")
 Resolution.setup(1280, 800)
 
-
-
-
-currentLevel = {
-	index = 1,
-	entities = {},
-	x = 0,
-	y = 0,
-}
-
-levels = {currentLevel}
-
-Game = {
-	levels = levels,
-	currentLevel = currentLevel,
-	tileSize = 40,
-	tw = 32,
-	th = 20,
-}
-
 StateManager = require("state-manager")
-Data = require("data")
+UtilsData = require("utils-data")
 WorldManager = require("world-manager")
 
 Editor = require("editor")
@@ -36,7 +16,7 @@ Editor = require("editor")
 
 function love.load()
 	-- [sets the initial state to editor]
-	StateManager.switchState(Editor)
+	StateManager.switchState(Editor, 'Editor')
 end
 
 function love.update(dt)

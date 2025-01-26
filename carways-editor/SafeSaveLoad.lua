@@ -56,13 +56,14 @@ end
 -- unsupported key or value types will raise an error
 
 function SafeSaveLoad.serializeTable(tabl, level)
+--	print ('SafeSaveLoad.serializeTable:', 'start')
 	level = level or 0
 	local result = {}
 	local indent = string.rep("  ", level)
 
 	-- check if the table is a list of numbers
 	if isNumberList(tabl) then
-		print ('serializeTable: level '..level .. ' was numbers list')
+--		print ('serializeTable: level '..level .. ' was numbers list')
 		-- handle ListNumbers type
 		table.insert(result, indent .. "start numbers list")
 		table.insert(result, indent .. table.concat(tabl, " "))
@@ -110,6 +111,8 @@ function SafeSaveLoad.serializeTable(tabl, level)
 		end
 	end
 	table.insert(result, indent .. "end table")
+
+--	print ('SafeSaveLoad.serializeTable:', 'end')
 	return table.concat(result, "\n")
 end
 
@@ -123,31 +126,41 @@ end
 function SafeSaveLoad.deserializeString(str)
 	-- [input string with serialized data]
 	local stack = {} -- stack for nested tables
+	local namesStack = {} -- stack for nested tables
 	local currentTable -- current table we are working with
 	local tempList
 	local tempIndex
 	local state = 'tableValue'
-	
+
+
 
 	for line in str:gmatch("(.-)\n") do
 		line = line:match("^%s*(.-)%s*$") -- remove leading/trailing spaces
-		print (line)
+--		print (line)
 
 		-- state machine logic
-
+--		print ('current state:', state)
 		if state == 'tableValue' then
 			if line == 'start table' then
-				
+
 				local newTable = {}
-				
+
 				table.insert(stack, newTable) -- push current table to stack
-				
+
+				if #namesStack == 0 then
+					table.insert(namesStack, 'root')
+--					print ('created root table')
+				else
+					table.insert(namesStack, 'tempIndex')
+--					print ('created ['..tempIndex..'] table')
+				end
+
 				if currentTable and tempIndex then
 					currentTable[tempIndex] = newTable
 				end
 				currentTable = newTable
-				
-				print ('new table, #stack:', #stack)
+
+--				print ('new table, #stack:', #stack)
 				state = 'indexType'
 
 			elseif line == 'start numbers list' then
@@ -160,9 +173,14 @@ function SafeSaveLoad.deserializeString(str)
 			end
 
 		elseif state == 'indexType' then
+--			print ('State: indexType', 'line: ' .. line)
 			if line == 'end table' then
 				table.remove(stack) -- pop current table from stack
-				print ('stack removed! #stack:', #stack)
+				table.remove(namesStack)
+--				print ('stack removed! #stack:', #stack)
+				if #namesStack > 0 then
+--					print ('back to table: '.. namesStack[#namesStack])
+				end
 				currentTable = stack[#stack] -- restore previous table
 			else
 				state = line -- 'numberIndex' or 'stringIndex'
@@ -189,6 +207,12 @@ function SafeSaveLoad.deserializeString(str)
 			tempIndex = nil
 			state = 'indexType' -- or end of table!
 
+		elseif state == 'booleanValue' then
+--			print (line, tostring(line == 'true'))
+			currentTable[tempIndex] = (line == 'true')
+			tempIndex = nil
+			state = 'indexType' -- or end of table!
+
 			-- new states:
 		elseif state == 'listNumbers' then
 			if line == 'end numbers list' then
@@ -208,14 +232,20 @@ function SafeSaveLoad.deserializeString(str)
 			else -- line or multiline values
 				table.insert(tempList, line)
 			end
+		else
+			error ('not state:' .. state .. '; line: ' .. line)
+			
 		end
 	end
 
+	--[[
+	print ('')
 	print ('currentTable:')
 	for i, v in pairs (currentTable) do
 		print (i, v)
 	end
 	print ('end of currentTable')
+	--]]
 
 	return currentTable -- return the deserialized table
 end

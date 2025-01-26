@@ -1,7 +1,10 @@
 -- editor.lua
 -- [editor state implementation]
 
-local ssl = require ('SafeSaveLoad')
+-- todo:
+-- F1 to show debug
+
+local SafeSaveLoad = require ('SafeSaveLoad')
 
 local Editor = {}
 --local Preselect = require ('editor-preselect')
@@ -18,6 +21,7 @@ Preselect.wallSize = {tw = 1, th = 1}
 Preselect.spawnerSize = {tw = 2, th = 2}
 
 Preselect.size = {tw = 1, th = 1}
+--Preselect.size = Preselect.nothingSize
 
 --spawnerDirections: 1, 2, 3, 4, 6, 7, 8, 9 as NumPad:
 Preselect.flowOutDirection = 8 -- [default size for spawner type preselect]
@@ -36,6 +40,7 @@ local function updateSpawnerEntity(entity)
 	local flowOutDirection = entity.flowOutDirection
 	local flowInDirection = entity.flowInDirection
 
+--	entity.transition = nil -- reset transition
 
 	-- [calculate the center position for output and input]
 	local outputTX = (tx + tw / 2)  -- keep in tiles, not pixels
@@ -50,6 +55,7 @@ local function updateSpawnerEntity(entity)
 	local outputDTY = 0
 	local inputDTX = 0
 	local inputDTY = 0
+
 
 	-- [determine the output position based on flowOutDirection]
 	if flowOutDirection == 7 or flowOutDirection == 4 or flowOutDirection == 1 then
@@ -95,7 +101,7 @@ local function updateSpawnerEntity(entity)
 		inputDTY = 1
 	end
 
-	-- 
+	-- handle flow out/in directions and set lines
 	if not (flowOutDirection == flowInDirection) then
 		entity.flowOut.line = {outputTX, outputTY, outputTX+outputDTX, outputTY+outputDTY}
 		entity.flowIn.line = {inputTX + inputDTX, inputTY+inputDTY, inputTX, inputTY}
@@ -189,93 +195,79 @@ function Preselect:updatePreselectSpawnerZone()
 		self.cursorEntity = entity
 	end
 
-	local gameTW = Game.tw-1 -- 32
-	local gameTH = Game.th-1 -- 20
+	local gameTW = GameConfig.tileCountW-1 -- 32
+	local gameTH = GameConfig.tileCountH-1 -- 20
 
-	if tx == 0 and ty == 0 then
-		-- down-right
-		entity.tx = 0
-		entity.ty = 0
-		entity.tw = 1
-		entity.th = 1
-		entity.flowOutDirection = 3 
-		entity.flowInDirection = 3   -- down-right
-		love.window.setTitle ('top left')
-	elseif tx+tw > gameTW and ty == 0 then
-		-- down-left
-		entity.tx = gameTW
-		entity.ty = 0
-		entity.tw = 1
-		entity.th = 1
-		entity.flowOutDirection = 1
-		entity.flowInDirection = 1   
-	elseif ty == 0 then
-		-- down
-		entity.tx = tx
-		entity.ty = 0
-		entity.tw = 2
-		entity.th = 1
-		entity.flowOutDirection = 2 
-		entity.flowInDirection = 2
-	elseif tx == 0 and ty+th > gameTH then
-		-- top right
-		entity.tx = 0
-		entity.ty = gameTH
-		entity.tw = 1
-		entity.th = 1
-		entity.flowOutDirection = 9
-		entity.flowInDirection = 9 
-	elseif tx == 0 then
-		-- right
-		entity.tx = 0
-		entity.ty = ty
-		entity.tw = 1
-		entity.th = 2
-		entity.flowOutDirection = 6
-		entity.flowInDirection = 6
-	elseif tx+tw > gameTW and ty+th > gameTH then
-		-- up left
-		entity.tx = gameTW
-		entity.ty = gameTH
-		entity.tw = 1
-		entity.th = 1
-		entity.flowOutDirection = 7
-		entity.flowInDirection = 7
-	elseif tx+tw > gameTW then
-		-- left
-		entity.tx = gameTW
-		entity.ty = ty
-		entity.tw = 1
-		entity.th = 2
-		entity.flowOutDirection = 4
-		entity.flowInDirection = 4
-	elseif ty+th > gameTH then
-		-- right
-		entity.tx = tx
-		entity.ty = gameTH
-		entity.tw = 2
-		entity.th = 1
-		entity.flowOutDirection = 8
-		entity.flowInDirection = 8
-	else
-		-- middle
-		entity.tx = self.tx
-		entity.ty = self.ty
-		entity.tw = self.size.tw
-		entity.th = self.size.th
-		entity.flowOutDirection = self.flowOutDirection
-		entity.flowInDirection = self.flowInDirection
+-- entity position:
+	local top = (ty == 0)
+	local left = (tx == 0)
+	local right = (tx + tw > gameTW)
+	local bottom = (ty + th > gameTH)
+	local topLeft = top and left
+
+	local topRight = top and right
+
+	local bottomLeft = bottom and left
+	local bottomRight = bottom and right
+
+--	print (top, left, right, bottom)
+
+	local positionType = top and 'top' or bottom and 'bottom' or false
+	positionType = positionType and left and positionType..'Left' 
+	or left and 'left' 
+	or positionType
+	positionType = positionType and right and positionType..'Right' 
+	or right and 'right' 
+	or positionType 
+	or 'common'
+--	print ('Preselect:updatePreselectSpawnerZone', 'position: '..positionType)
+
+
+	local positionData = {
+		topRight = {tx=gameTW, ty=0, tw=1, th=1, flowDirections=1},
+		topLeft = {tx=0, ty=0, tw=1, th=1, flowDirections=3},
+		bottomRight = {tx=gameTW, ty=gameTH, tw=1, th=1, flowDirections=7},
+		bottomLeft = {tx=0, ty=gameTH, tw=1, th=1, flowDirections=9},
+
+		top = {tx=tx, ty=0, tw=2, th=1, flowDirections=2},
+		left = {tx=0, ty=ty, tw=1, th=2, flowDirections=6},
+		right = {tx=gameTW, ty=ty, tw=1, th=2, flowDirections=4},
+		bottom = {tx=tx, ty=gameTH, tw=2, th=1, flowDirections=8},
+
+		common = {tx=tx, ty=ty, tw=self.size.tw, th=self.size.th, 
+			flowOutDirection = self.flowOutDirection,
+			flowInDirection = self.flowInDirection
+		},
+	}
+
+	local posData = positionData[positionType]
+
+	for i, v in pairs (posData) do
+		if i == 'flowDirections' then
+			entity.flowOutDirection = v
+			entity.flowInDirection = v
+		else
+			entity[i] = v
+		end
 	end
+
+	-- store the position in the entity
+	entity.positionType = positionType
+
 
 	updateSpawnerEntity (entity)
 end
+
+
+
+
 
 local function drawArrow(line)
 	-- [extract the start and end points from the lines]
 	if not line then return end
 
 	-- [define the tile size for scaling]
-	local tileSize = Game.tileSize
+	local tileSize = GameConfig.tileSize
 
 	local startX, startY = line[1] * tileSize, line[2] * tileSize
 	local endX, endY = line[3] * tileSize, line[4] * tileSize
@@ -321,9 +313,13 @@ local function drawEntity (entity)
 		love.graphics.rectangle("fill", x, y, width, height)
 		love.graphics.setColor (1,1,1)
 		love.graphics.rectangle("line", x, y, width, height)
-		if entity.ID then
-			love.graphics.print (entity.ID, x, y)
+		if entity.index then
+			love.graphics.print (entity.index, x, y)
 		end
+
+		love.graphics.print (entity.tw, x, y+12)
+		love.graphics.print (entity.th, x, y+12*2)
+
 		return
 	end
 
@@ -375,8 +371,8 @@ local function drawEntity (entity)
 		love.graphics.print (amount, x, y)
 	end
 
-	if entity.ID then
-		love.graphics.print (entity.ID, x, y)
+	if entity.index then
+		love.graphics.print (entity.index, x, y)
 	end
 
 end
@@ -404,7 +400,9 @@ function Preselect:draw()
 		drawEntity (entity)
 		love.graphics.setColor(1, 1, 1, 1) -- white
 		love.graphics.rectangle("line", x, y, width, height)
-		love.graphics.print (entity.ID, x, y)
+		if entity.index then
+			love.graphics.print (entity.index, x, y)
+		end
 	else
 		love.graphics.setLineWidth (1)
 		love.graphics.setColor(1, 1, 1, 0.3) -- white with 30% transparency
@@ -423,13 +421,6 @@ function Preselect:setWall()
 	else
 		self.size = self.wallSize
 		self.cursorEntity = self:newEntity ('wall')
---		self.cursorEntity = {
---			type = 'wall',
---			tx = self.tx,
---			ty = self.ty,
---			tw = self.size.tw,
---			th = self.size.th,
---		}
 	end
 end
 
@@ -446,26 +437,41 @@ function Preselect:setSpawner()
 		self.size = self.spawnerSize
 		self.cursorEntity = self:newEntity ('spawner')
 		Preselect:updatePreselectSpawnerZone()
-
 	end
 end
 
 
 -- [increases or decreases the size of the preselect area]
-function Preselect:increseSize(dw, dh)
-	-- increase/decrease width, ensure it doesn't go below 1
-	self.size.tw = math.max(1, self.size.tw + dw)
-	-- increase/decrease height, ensure it doesn't go below 1
-	self.size.th = math.max(1, self.size.th + dh)
-	local entity = self.cursorEntity
-	if entity then
-		entity.tw = self.size.tw
-		entity.th = self.size.th
+function Preselect:increaseSize(dw, dh)
+	local activeEntity = Preselect.selectedEntity
+	local cursorEntity = Preselect.cursorEntity
+
+	print ('Preselect:increaseSize', dw, dh)
+	if cursorEntity then
+		self.size.tw = math.max(1, self.size.tw + dw)
+		self.size.th = math.max(1, self.size.th + dh)
+		cursorEntity.tw = self.size.tw
+		cursorEntity.th = self.size.th
+
+		-- update spawner entity
+		if cursorEntity.type == 'spawner' then
+			updateSpawnerEntity(cursorEntity)
+		end
+	elseif activeEntity then
+		activeEntity.tw = math.max(1, activeEntity.tw + dw)
+		activeEntity.th = math.max(1, activeEntity.th + dh)
+
+		-- update spawner entity
+		if activeEntity.type == 'spawner' then
+			updateSpawnerEntity(activeEntity)
+		end
 	end
 end
 
 -- [creates a new entity based on the specified type]
 function Preselect:newEntity(entityType)
+	local currentLevel = Editor.currentLevel
+
 	-- [initialize base entity properties]
 	local entity = {
 		tx = self.tx,              -- [top-left x position in tiles]
@@ -487,14 +493,16 @@ function Preselect:newEntity(entityType)
 
 	-- [return the newly created entity]
 --	print ('new entity, type: '..entityType)
-	currentLevel.entityID = currentLevel.entityID or 0
-	currentLevel.entityID = currentLevel.entityID + 1
-	entity.ID = currentLevel.entityID
+--	currentLevel.entityID = currentLevel.entityID or 0
+--	currentLevel.entityID = currentLevel.entityID + 1
+--	local index = WorldManager.generateNewEntityIndex ()
+--	entity.index = index
 
 	return entity
 end
 
 local function getHoveredEntity (tx, ty)
+	local currentLevel = Editor.currentLevel
 	for entityIndex, entity in ipairs(currentLevel.entities) do
 		if tx >= entity.tx and ty >= entity.ty
 		and tx < entity.tx + entity.tw and ty < entity.ty + entity.th then
@@ -503,17 +511,84 @@ local function getHoveredEntity (tx, ty)
 	end
 end
 
+serpent = require ('serpent')
+
+
+local function placeTwinEntity (worldLevel, otherEntity)
+	-- wip
+	-- wip
+	-- wip
+	local gameTW = GameConfig.tileCountW -- total width in tiles
+	local gameTH = GameConfig.tileCountH -- total height in tiles
+
+	local tx = otherEntity.tx
+	local ty = otherEntity.ty
+	local tw = otherEntity.tw
+	local th = otherEntity.th
+
+	local otherPositionType = otherEntity.positionType
+	local positionType = UtilsData.extendedOffsetOpposites[otherPositionType]
+
+
+	if positionType == 'topLeft' then
+
+	end
+
+
+	local currentLevel = Editor.levels[worldLevel.index]
+
+
+	local entityIndex = WorldManager.generateNewEntityIndex ()
+
+end
+
+local function placeEntity (entity)
+	-- wip
+	-- wip
+	-- wip
+	local currentLevel = Editor.currentLevel
+	local entityIndex = WorldManager.generateNewEntityIndex ()
+	entity.index = entityIndex
+	table.insert (currentLevel.entities, entity)
+
+	print ('')
+	print ('placed entity:')
+	print (serpent.block (entity))
+
+
+	local positionType = entity.positionType
+	local offset = UtilsData.extendedOffsets[positionType]
+	if offset then -- the side/corner entity
+		local levelIndex = currentLevel.index
+		local worldLevel = WorldManager.getWorldLevelByIndex (levelIndex)
+		WorldManager.setWorldLevelEnabled (worldLevel)
+		Editor.backgroundImage = Editor.backgroundImageActive
+
+
+		local otherLevelIndex = worldLevel.neighbours[positionType]
+		print ('positionType', positionType)
+		print ('other level: '..positionType, 'otherLevelIndex: '..otherLevelIndex)
+		local otherWorldLevel = WorldManager.getWorldLevelByIndex (otherLevelIndex)
+
+		-- wip
+		-- wip
+		-- wip
+--		placeTwinEntity (otherWorldLevel, entity)
+
+	end
+end
+
 -- [handles tile click and updates preselect state]
 function Preselect:tileClicked(tx, ty)
+	local currentLevel = Editor.currentLevel
+
 	-- [update preselect position]
 	self.tx = tx
 	self.ty = ty
 
---	print ('tileClicked', tx, ty, self.size.tw, self.size.th)
-
 	-- [check for special cases or constraints]
-	local gameTW = Game.tw -- total width in tiles
-	local gameTH = Game.th -- total height in tiles
+	local gameTW = GameConfig.tileCountW -- total width in tiles
+	local gameTH = GameConfig.tileCountH -- total height in tiles
 
 	-- [ensure preselect stays within bounds]
 	if tx + self.size.tw > gameTW then
@@ -525,17 +600,24 @@ function Preselect:tileClicked(tx, ty)
 	end
 
 	-- [update entity linked to preselect, if any]
-	local entity = self.cursorEntity
+	local cursorEntity = Preselect.cursorEntity
+	local selectedEntity = Preselect.selectedEntity
 
-	if entity then
-		local entityType = entity.type
-		table.insert (currentLevel.entities, entity)
-		self.selectedEntity = entity
+	if cursorEntity then
+		-- [insert cursorEntity into the current level and prepare a new one]
+		local entityType = cursorEntity.type
+		placeEntity (cursorEntity)
+
+		self.selectedEntity = cursorEntity
+
 		self.cursorEntity = self:newEntity (entityType)
 		return
-	elseif Preselect.selectedEntity then
+
+	elseif selectedEntity then
+		-- [deselect the currently selected entity]
 		Preselect.selectedEntity = nil
 	end
+
 	local hoveredEntity = getHoveredEntity (tx, ty) 
 	if hoveredEntity then
 		Preselect.selectedEntity = hoveredEntity
@@ -549,7 +631,7 @@ function Preselect:cursormoved(tx, ty, dtx, dty)
 	self.tx = tx
 	self.ty = ty
 
-	love.window.setTitle (tx..' '..ty)
+--	love.window.setTitle (tx..' '..ty)
 
 	local entity = Preselect.cursorEntity
 	if entity then
@@ -564,34 +646,94 @@ function Preselect:cursormoved(tx, ty, dtx, dty)
 end
 
 -- end of Preselect
---serpent = require ('serpent')
 
-local function loadLevel()
-	local currentLevelIndex = WorldManager.progress.currentLevelIndex
-	local filename = 'level-'..currentLevelIndex..'.dat'
-	print ('loading level:', filename)
+
+
+-- initializes a new level with the given index
+-- creates an empty table for entities in the new level
+local function initLevel(index)
+	local newLevel = {}
+	-- set the index for the level
+	newLevel.index = index
+	-- initialize an empty entities table
+	newLevel.entities = {}
+	-- return the new level structure
+	return newLevel
+end
+
+
+-- loads a level from a file with the given index
+local function loadLevel(index)
+--	local currentLevelIndex = WorldManager.progress.currentLevelIndex
+	if Editor.levels[index] then return Editor.levels[index] end
+
+	local filename = 'level-'..index..'.dat'
+	local loadedLevel = {}
+
+--	print ('loading level:', filename)
+
+	-- try to open the file in read mode
 	local file = io.open(filename, 'r')
+
 	if file then
-		local str = file:read("*a")
+		-- read the entire file into a string
+		local str = file:read('*a')
 		file:close()
-		currentLevel = ssl.deserializeString(str)
-		print ('currentLevel', currentLevel)
-		if not currentLevel.entities then
-			print ('####### no entities!')
-			currentLevel.entities = {}
+
+		-- deserialize the string into a Lua table using your serialization method
+		loadedLevel = SafeSaveLoad.deserializeString(str)
+
+		-- check if the level contains the 'entities' field
+		if not loadedLevel.entities then
+--			print ('no entities! Level:', index)
+			loadedLevel.entities = {}
 		else
-			print ('####### amount entities:', #currentLevel.entities)
+--			print ('amount entities:', #loadedLevel.entities)
 		end
-		print("Level loaded successfully", currentLevel)
+--		print('Level loaded successfully', index)
 	else
-		print("No saved level found")
+--		print('No saved level found')
+		loadedLevel = initLevel(index)
+--		print('Created empty level:', index)
 	end
+
+--	print ('end of loadLevel', #loadedLevel.entities)
+
+	return loadedLevel
+end
+
+function Editor.init()
+
+--	WorldManager.loadWorld()
+	Editor.levels = {}
+
+	local worldLevels = WorldManager.world.worldLevels
+	print ('Editor.init', '#worldLevels:', #worldLevels)
+--	Editor.worldLevels = worldLevels
+	local loadedLevels = {}
+	for i, worldLevel in ipairs (worldLevels) do -- list without gaps
+		local index = worldLevel.index
+		local loadedLevel = loadLevel(index)
+		loadedLevels[index] = loadedLevel -- with gaps
+	end
+	local firstLevel = worldLevels[1]
+	local firstLevelIndex = firstLevel.index
+	local row = firstLevel.row
+	local col = firstLevel.col
+	local status = firstLevel.enabled and 'enabled' or 'disabled'
+
+	Editor.levels = loadedLevels
+	Editor.currentLevel = loadedLevels[firstLevelIndex]
+	love.window.setTitle ('Level: '..firstLevelIndex.. ' row: '..row..' col: '..col..' '..status)
+
 end
 
 function Editor.enter()
 	-- [initializes editor state]
 	print("Editor state entered")
-	loadLevel()
+
+	Editor.init()
+
 
 end
 
@@ -599,12 +741,10 @@ function Editor.update(dt)
 	-- [updates editor logic]
 end
 
-local function getBackground ()
---	local w = 1280
---	local h = 800
-	local ts = Game.tileSize -- 40
-	local tw = Game.tw -- 30
-	local th = Game.th -- 20
+local function getBackground (isActive) -- active worldLevel
+	local ts = GameConfig.tileSize -- 40
+	local tw = GameConfig.tileCountW -- 30
+	local th = GameConfig.tileCountH -- 20
 
 	local w = tw*ts
 	local h = th*ts
@@ -612,20 +752,23 @@ local function getBackground ()
 	local backgroundCanvas = love.graphics.newCanvas (w, h)
 	love.graphics.setCanvas (backgroundCanvas)
 
-	love.graphics.setBackgroundColor(love.math.colorFromBytes( 130, 210, 255 ))
+	local backgroundColor
+	local backgroundLinesColor
 
-	love.graphics.setColor (love.math.colorFromBytes( 150, 220, 255 ))
+	if isActive then
+		backgroundColor = UtilsData.colorsBackgroundActive.backgroundColor
+		backgroundLinesColor = UtilsData.colorsBackgroundActive.backgroundLinesColor
+	else
+		backgroundColor = UtilsData.colorsEditorBackgroundNotActive.backgroundColor
+		backgroundLinesColor = UtilsData.colorsEditorBackgroundNotActive.backgroundLinesColor
+	end
+
+	love.graphics.setColor(backgroundColor)
+	love.graphics.rectangle ('fill', 0, 0, w, h)
+
+	love.graphics.setColor (backgroundLinesColor)
 	love.graphics.setLineStyle ('rough')
 	love.graphics.setLineWidth (2)
-
---	for i = 0, 1280/40 do
---		local x = i * 40
---		love.graphics.line (x, 0, x, 800)
---	end
---	for j = 0, 800/40 do
---		local y = j * 40
---		love.graphics.line (0, y, 1280, y)
---	end
 
 	for i = 0, tw do
 		local x = i * ts
@@ -644,21 +787,23 @@ local function getBackground ()
 	return backgroundCanvas
 end
 
-local backgroundImage = getBackground ()
+Editor.backgroundImageActive = getBackground (true)
+Editor.backgroundImageNotActive = getBackground (false)
+Editor.backgroundImage = Editor.backgroundImageActive -- Editor.backgroundImageNotActive
 
 Editor.mouseCursor = {tx=0, ty=0, tw=1, th=1} -- tiles
 
 -- [renders a single wallZone object]
 local function drawEntityTexture (entity)
-	local ts = Game.tileSize -- 40
+	local ts = GameConfig.tileSize -- 40
 	local tx, ty = entity.tx, entity.ty
 	local tw, th = entity.tw, entity.th
 
 	local x, y = tx*ts, ty*ts
 
 
-	local texture = Data.zoneArtList[entity.zoneArt]
-	local color = Data.zoneColorList[entity.zoneColor]
+	local texture = UtilsData.zoneArtList[entity.zoneArt]
+	local color = UtilsData.zoneColorList[entity.zoneColor]
 
 	-- [sets color for the wall]
 	if color then
@@ -688,7 +833,9 @@ end
 
 
 local function drawPreselect ()
-	local ts = Game.tileSize
+	local tileCountW = GameConfig.tileCountW
+	local tileCountH = GameConfig.tileCountH
+	local ts = GameConfig.tileSize
 
 	local preselect = Editor.preselect
 	local tx = preselect.temp and preselect.temp.tx or preselect.tx
@@ -711,10 +858,13 @@ local function drawPreselect ()
 end
 
 function Editor.draw()
-	local ts = Game.tileSize
+	local ts = GameConfig.tileSize
+	local currentLevel = Editor.currentLevel
 	-- background
 	love.graphics.setColor (1,1,1)
-	love.graphics.draw (backgroundImage)
+--	love.graphics.draw (backgroundImage)
+	love.graphics.draw (Editor.backgroundImage)
+
 
 	local selectedEntity = Preselect.selectedEntity
 	for i, entity in ipairs (currentLevel.entities) do
@@ -727,9 +877,22 @@ function Editor.draw()
 	end
 
 	Preselect:draw()
+	
+	-- draw neighbour levels
+	-- wip
+	-- wip
+	-- wip
+	if Editor.neighbours then
+		for i, v in pairs (Editor.neighbours) do
+			love.graphics.print (v.text, v.x, v.y)
+		end
+	end
 
 	-- draw arrows from selected entity
-
+	-- wip
+	-- wip
+	-- wip
+	
 end
 
 function Editor.exit()
@@ -738,7 +901,7 @@ function Editor.exit()
 end
 
 
-
+--[[
 local function createEntity (isSpawner) -- bool
 	local preselect = Editor.preselect
 	print ('createEntity', Editor.preselect)
@@ -788,31 +951,39 @@ local function createEntity (isSpawner) -- bool
 		table.insert (currentLevel.entities, wallZone)
 	end
 end
+--]]
 
---wip--
---wip--
---wip--
+
+-- [removes all outgoing flows from an entity to the deleted entity]
+local function removeOutgoingFlows(entity, targetEntityIndex)
+	for i = #entity.flowOut, 1, -1 do
+		if entity.flowOut[i] == targetEntityIndex then
+			table.remove(entity.flowOut, i)
+		end
+	end
+end
+
+-- [removes all incoming flows from the deleted entity to other entities]
+local function removeIncomingFlows(entity, targetEntityIndex)
+	for i = #entity.flowIn, 1, -1 do
+		if entity.flowIn[i] == targetEntityIndex then
+			table.remove(entity.flowIn, i)
+		end
+	end
+end
+
 -- [deletes all flows related to the selected entity]
 local function deleteSelectedZoneFlow(entity)
+	local currentLevel = Editor.currentLevel
+
 	if entity.type ~= 'spawner' then return end
+
 	-- [loop through all entities and remove references to the deleted entity's ID in their flows]
 	for _, otherEntity in ipairs(currentLevel.entities) do
-		if otherEntity.type == 'spawner' then
-			if otherEntity ~= entity then
-				-- [remove outgoing flows to the deleted entity from other entities]
-				for i = #otherEntity.flowOut, 1, -1 do
-					if otherEntity.flowOut[i] == entity.ID then
-						table.remove(otherEntity.flowOut, i)
-					end
-				end
-
-				-- [remove incoming flows from the deleted entity to other entities]
-				for i = #otherEntity.flowIn, 1, -1 do
-					if otherEntity.flowIn[i] == entity.ID then
-						table.remove(otherEntity.flowIn, i)
-					end
-				end
-			end
+		if otherEntity.type == 'spawner' and otherEntity ~= entity then
+			-- [remove outgoing and incoming flows from the other entity]
+			removeOutgoingFlows(otherEntity, entity.index)
+			removeIncomingFlows(otherEntity, entity.index)
 		end
 	end
 end
@@ -825,6 +996,7 @@ end
 -- [deletes the selected entity and its associated flows]
 local function deleteSelectedZone()
 	local selectedEntity = Preselect.selectedEntity
+	local currentLevel = Editor.currentLevel
 	local entities = currentLevel.entities
 
 	if selectedEntity then
@@ -841,6 +1013,10 @@ local function deleteSelectedZone()
 end
 
 
+--[[
+-- wip
+-- wip
+-- wip
 local function swapZone ()
 	local zone = Editor.selectedZone
 	if zone and zone.type == 'spawner' then
@@ -848,6 +1024,7 @@ local function swapZone ()
 		updateSpawnerZone (zone)
 	end
 end
+--]]
 
 
 local function changeOutputPosition ()
@@ -942,9 +1119,13 @@ local function nextZoneColor ()
 	zone.zoneColor = (zoneColor + 0) % #Data.zoneColorList + 1
 end
 
-local function saveLevel ()
+--[[
+local function saveCurrentLevel ()
+	local currentLevel = Editor.currentLevel
 	local index = currentLevel.index
-	local str = ssl.serializeTable(currentLevel)
+
+	print ('saveCurrentLevel')
+	local str = SafeSaveLoad.serializeTable(currentLevel)
 	local filename = 'level-'..index..'.dat'
 	print ('save filename:', filename)
 	local file = io.open(filename, 'w')
@@ -955,15 +1136,79 @@ local function saveLevel ()
 	else
 		print("not saved")
 	end
+
+	print ('disable selected:')
+	Preselect.selectedEntity = nil
+	Preselect.cursorEntity = nil
+end
+--]]
+
+function Editor.saveLevels()
+-- iterate through all levels and save them
+	for _, level in ipairs(Editor.levels) do
+		local index = level.index
+		local filename = "level-" .. level.index .. ".dat"
+		local data = SafeSaveLoad.serializeTable(level)
+
+		-- write the data to the file
+		local file = io.open(filename, "w")
+		if file then
+			file:write(data)
+			file:close()
+			print("Level " .. level.index .. ": saved to " .. filename)
+		else
+			print("Failed to save level " .. level.index)
+		end
+	end
+
+	-- [reset preselect entities]
+	Preselect.selectedEntity = nil
+	Preselect.cursorEntity = nil
+	Preselect.size = Preselect.nothingSize
 end
 
+function Editor.changeLevel (key)
+-- [get the current level index from the editor]
+	local currentLevelIndex = Editor.currentLevel.index
 
+	-- [change the world level based on the direction key]
+	local worldLevel = WorldManager.changeLevel(currentLevelIndex, key)
+	
+	Editor.neighbours = {
+		left = {},
+		
+		}
+
+
+
+	if worldLevel.enabled then
+		Editor.backgroundImage = Editor.backgroundImageActive
+	else
+		Editor.backgroundImage = Editor.backgroundImageNotActive
+	end
+
+	-- [get the index of the new world level]
+	local index = worldLevel.index
+
+	-- [load the level from file using the new index]
+	local loadedLevel = loadLevel(index)
+	Editor.currentLevel = loadedLevel
+
+	-- [store the loaded level into the editor's levels table]
+	Editor.levels[index] = loadedLevel
+	
+	
+end
 
 function Editor.keypressed(key, scancode)
 	local isCtrl = love.keyboard.isDown ('lctrl', 'rctrl')
 	local isShift = love.keyboard.isDown ('lshift', 'rshift')
 
-	if key == 'w' then
+	if key == 'q' then
+		-- set nothing
+		Preselect.cursorEntity = nil
+		Preselect.size = Preselect.nothingSize
+	elseif key == 'w' then
 		Preselect:setWall()
 		return
 	elseif key == 'z' then
@@ -974,28 +1219,32 @@ function Editor.keypressed(key, scancode)
 	-- [adjusts size based on keypad + or -]
 	if key == "kp+" then
 		if isCtrl then
-			Preselect:increseSize(1, 0) -- increase size
+			Preselect:increaseSize(1, 0) -- increase size
 		elseif isShift then
-			Preselect:increseSize(0, 1) -- increase size
+			Preselect:increaseSize(0, 1) -- increase size
 		else
-			Preselect:increseSize(1, 1) -- increase size
+			Preselect:increaseSize(1, 1) -- increase size
 		end
 		return
 	elseif key == "kp-" then
 		if isCtrl then
-			Preselect:increseSize(-1, 0) -- increase size
+			Preselect:increaseSize(-1, 0) -- increase size
 		elseif isShift then
-			Preselect:increseSize(0, -1) -- increase size
+			Preselect:increaseSize(0, -1) -- increase size
 		else
-			Preselect:increseSize(-1, -1) -- increase size
+			Preselect:increaseSize(-1, -1) -- increase size
 		end
 		return
 	end
 
-
+	-- editor.lua
+	-- function Editor.keypressed(key, scancode)
 	if key == "s" then
 		if isCtrl then
-			saveLevel ()
+--			saveCurrentLevel ()
+			Editor.saveLevels()
+			WorldManager.saveWorld()
+			print("Levels and world saved.")
 			return
 		end
 	end
@@ -1010,18 +1259,23 @@ function Editor.keypressed(key, scancode)
 	if key == "delete" then
 		deleteSelectedZone ()
 	end
+
+	-- editor.lua
+	if key == 'up' or key == 'right' or key == 'down' or key == 'left' then
+		Editor.changeLevel (key)
+	end
 end
 
 function Editor.mousepressed(x, y, button)
 	-- [tile size]
-	local tileSize = Game.tileSize -- 40
+	local tileSize = GameConfig.tileSize -- 40
 
 	-- [calculate tile-based cursor position]
 	local tx = math.floor(x / tileSize)
 	local ty = math.floor(y / tileSize)
 
 	-- [ensure the coordinates are within valid range]
-	local txMax, tyMax = Game.tw - 1, Game.th - 1
+	local txMax, tyMax = GameConfig.tileCountW - 1, GameConfig.tileCountH - 1
 
 	-- [ignore clicks outside the valid range]
 	if tx < 0 or ty < 0 or tx > txMax or ty > tyMax then
@@ -1066,20 +1320,20 @@ function Editor.wheelmoved(x, y)
 	if y > 0 then
 		-- add flow if not exceeding flowMax for both flowOut and flowIn
 		if #flowOut < Editor.flowMax and #flowIn < Editor.flowMax then
-			table.insert(flowOut, hoveredEntity.ID)
-			table.insert(flowIn, selectedEntity.ID)
+			table.insert(flowOut, hoveredEntity.index)
+			table.insert(flowIn, selectedEntity.index)
 		end
 	elseif y < 0 then
 		-- remove flow
 		for i, flowID in ipairs(flowOut) do
-			if flowID == hoveredEntity.ID then
+			if flowID == hoveredEntity.index then
 				table.remove(flowOut, i)
 				break
 			end
 		end
 
 		for i, flowID in ipairs(flowIn) do
-			if flowID == selectedEntity.ID then
+			if flowID == selectedEntity.index then
 				table.remove(flowIn, i)
 				break
 			end
