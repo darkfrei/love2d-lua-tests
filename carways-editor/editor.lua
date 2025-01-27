@@ -478,7 +478,7 @@ local function newEntity(tx, ty, tw, th, entityType)
 		th = th,               -- height in tiles
 		type = entityType      -- type of the entity (e.g., 'spawner')
 	}
-	
+
 	-- if the entity is a spawner, initialize flow configurations
 	if entityType == 'spawner' then
 		entity.flowOut = {}           -- output flow configuration
@@ -486,7 +486,7 @@ local function newEntity(tx, ty, tw, th, entityType)
 		entity.flowOutDirection = Preselect.flowOutDirection
 		entity.flowInDirection = Preselect.flowInDirection
 	end
-	
+
 	return entity
 end
 
@@ -518,8 +518,16 @@ serpent = require ('serpent')
 function Editor.createEntityOnLevel(entity, levelIndex)
 	-- retrieves the level by its index
 	local level = Editor.levels[levelIndex]
-	if not level then
+	local worldLevel = WorldManager.getWorldLevelByIndex (levelIndex)
+	if not level and not worldLevel then
 		error("Level with index " .. tostring(levelIndex) .. " does not exist")
+	elseif not level then
+		-- init level
+		print ('Editor.createEntityOnLevel', 'level created')
+		Editor.initLevel (levelIndex)
+		level = Editor.levels[levelIndex]
+	else
+--		error ('Editor.createEntityOnLevel: no worldLevel index: '..levelIndex)
 	end
 
 	-- assigns a unique index to the entity
@@ -542,32 +550,146 @@ function Editor.setBackgroundActive ()
 	Editor.backgroundImage = Editor.backgroundImageActive
 end
 
+local function applyFlowDirections(entity)
+	-- calculate flow directions for the entity
+
+	local flowOutDirection = entity.flowOutDirection
+	local flowInDirection = entity.flowInDirection
+	local tx, ty, tw, th = entity.tx, entity.ty, entity.tw, entity.th
+
+	-- initialize flowOut and flowIn tables
+	entity.flowOut = {}
+	entity.flowIn = {}
+	
+	
+--	local tx1, tx2 = 
+
+	-- wip
+	-- wip
+	-- wip
+	-- wip UtilsData.flowConfigurations = {
+
+
+	-- calculate flowOut line
+	if flowOutDirection == 1 then
+		-- topRight
+		entity.flowOut.line = {tx + tw, ty, tx + tw - 1, ty + 1}
+	elseif flowOutDirection == 2 then
+		-- top
+		entity.flowOut.line = {tx + tw / 2, ty, tx + tw / 2, ty + 1}
+	elseif flowOutDirection == 3 then
+		-- topLeft
+		entity.flowOut.line = {tx, ty, tx + 1, ty + 1}
+	elseif flowOutDirection == 4 then
+		-- right
+		entity.flowOut.line = {tx + tw, ty + th / 2, tx + tw - 1, ty + th / 2}
+	elseif flowOutDirection == 6 then
+		-- left
+		entity.flowOut.line = {tx, ty + th / 2, tx + 1, ty + th / 2}
+	elseif flowOutDirection == 7 then
+		-- bottomRight
+		entity.flowOut.line = {tx + tw, ty + th, tx + tw - 1, ty + th - 1}
+	elseif flowOutDirection == 8 then
+		-- bottom
+		entity.flowOut.line = {tx + tw / 2, ty + th, tx + tw / 2, ty + th - 1}
+	elseif flowOutDirection == 9 then
+		-- bottomLeft
+		entity.flowOut.line = {tx, ty + th, tx + 1, ty + th - 1}
+	end
+
+	-- calculate flowIn line
+	if flowInDirection == 1 then
+		-- topRight
+		entity.flowIn.line = {tx + tw - 1, ty + 1, tx + tw, ty}
+	elseif flowInDirection == 2 then
+		-- top
+		entity.flowIn.line = {tx + tw / 2, ty + 1, tx + tw / 2, ty}
+	elseif flowInDirection == 3 then
+		-- topLeft
+		entity.flowIn.line = {tx + 1, ty + 1, tx, ty}
+	elseif flowInDirection == 4 then
+		-- right
+		entity.flowIn.line = {tx + tw - 1, ty + th / 2, tx + tw, ty + th / 2}
+	elseif flowInDirection == 6 then
+		-- left
+		entity.flowIn.line = {tx + 1, ty + th / 2, tx, ty + th / 2}
+	elseif flowInDirection == 7 then
+		-- bottomRight
+		entity.flowIn.line = {tx + tw - 1, ty + th - 1, tx + tw, ty + th}
+	elseif flowInDirection == 8 then
+		-- bottom
+		entity.flowIn.line = {tx + tw / 2, ty + th - 1, tx + tw / 2, ty + th}
+	elseif flowInDirection == 9 then
+		-- bottomLeft
+		entity.flowIn.line = {tx + 1, ty + th - 1, tx, ty + th}
+	end
+end
+
+
 
 function Editor.placeTwinEntities (levelIndex, entity)
-	
-	
+
+
 	Editor.createEntityOnLevel(entity, levelIndex)
+
 	local entityIndex = entity.index
 	local positionType = entity.positionType
-	
-	print ('place first of twin')
-	print ('levelIndex: '..levelIndex, 'entityIndex: '..entityIndex, 'positionType'..positionType)
-	
+
+	-- debug information for the first entity
+
+	print('Editor.placeTwinEntities', 'Placed first of twin')
+	print('Editor.placeTwinEntities', 'LevelIndex: ' .. levelIndex .. ', EntityIndex: ' .. entityIndex .. ', PositionType: ' .. positionType)
+
+	-- retrieve position attributes
+	--right = {tx=maxX, ty=ty, tw=1, th=2, flowDirections = 4},
 	local entityPosition = UtilsData.entityPositions[positionType]
-	
-	local offset = UtilsData.extendedOffsets[positionType]
+
+	-- get the neighboring level index based on the position type
 	local worldLevel = WorldManager.getWorldLevelByIndex (levelIndex)
-	
 	local secondLevelIndex = worldLevel.neighbours[positionType]
-	
---	local tx = 
---	local ty = 
---	local tw = 
---	local th = 
-	
---	local secondEntity = newEntity (tx, ty, tw, th, 'spawner')
-	
---	Editor.createEntityOnLevel(secondEntity, secondLevelIndex)
+
+	local secondPositionType = UtilsData.extendedOffsetOpposites[positionType]
+
+	local secondEntityPosition = UtilsData.entityPositions[secondPositionType]
+	local sep = secondEntityPosition
+
+	local tx = entity.tx
+	local ty = entity.ty
+	local tw = sep.tw
+	local th = sep.th
+
+
+
+	local minX = 0
+	local maxX = GameConfig.tileCountW - 1
+	local minY = 0
+	local maxY = GameConfig.tileCountH - 1
+
+	if sep.tx == 'minX' then
+		tx = minX
+	elseif sep.tx == 'maxX' then
+		tx = maxX
+	end
+
+	if sep.ty == 'minY' then
+		ty = minY
+	elseif sep.ty == 'maxY' then
+		ty = maxY
+	end
+
+	local secondEntity = newEntity (tx, ty, tw, th, 'spawner')
+	secondEntity.positionType = secondPositionType
+
+	secondEntity.flowOutDirection = sep.flowDirections
+	secondEntity.flowInDirection = sep.flowDirections
+
+	applyFlowDirections (secondEntity)
+
+
+	Editor.createEntityOnLevel(secondEntity, secondLevelIndex)
+
+	print('Editor.placeTwinEntities', 'Placed second of twin at level ' .. secondLevelIndex .. ', tx: ' .. tx .. ', ty: ' .. ty)
+	print ('secondEntity.positionType: '..secondPositionType)
 
 -- wip
 -- wip
@@ -579,22 +701,22 @@ function Editor.addEntity (entity)
 
 	local currentLevel = Editor.currentLevel
 	local levelIndex = currentLevel.index
-	
+
 	WorldManager.setWorldLevelEnabled (levelIndex)
 	Editor.setBackgroundActive ()
-	
+
 	local entityType = entity.type
 	if entityType == 'wall' then
 		Editor.createEntityOnLevel(entity, levelIndex)
 		return
 	end
-	
+
 	local positionType = entity.positionType
 	if positionType == 'common' then
 		Editor.createEntityOnLevel(entity, levelIndex)
 		return
 	end
-	
+
 	-- special cases!
 --	the entity and the other side
 	Editor.placeTwinEntities (levelIndex, entity)
@@ -688,12 +810,14 @@ end
 
 -- initializes a new level with the given index
 -- creates an empty table for entities in the new level
-local function initLevel(index)
+function Editor.initLevel(levelIndex)
 	local newLevel = {}
 	-- set the index for the level
-	newLevel.index = index
+	newLevel.index = levelIndex
 	-- initialize an empty entities table
 	newLevel.entities = {}
+
+	Editor.levels[levelIndex] = newLevel
 	-- return the new level structure
 	return newLevel
 end
@@ -745,8 +869,8 @@ function Editor.getOrLoadLevel(levelIndex)
 	end
 
 	-- creates a new level if it cannot be loaded
-	level = initLevel(levelIndex)
-	Editor.levels[levelIndex] = level
+	level = Editor.initLevel(levelIndex)
+
 	print('Editor.getOrLoadLevel', 'Level ' .. levelIndex .. ' created new')
 	return level
 end
@@ -1213,7 +1337,7 @@ function Editor.setLevel (levelIndex)
 
 	-- get the world level by its index
 	local worldLevel = WorldManager.getWorldLevelByIndex (levelIndex)
-	
+
 
 	-- set editor neighbours with positions and corresponding neighbour indices
 	Editor.neighbours = {
@@ -1300,9 +1424,9 @@ function Editor.keypressed(key, scancode)
 	if key == "s" then
 		if isCtrl then
 			Editor.saveLevels()
-			
+
 			WorldManager.saveWorld()
-			
+
 			print("Levels and world saved.")
 			return
 		end

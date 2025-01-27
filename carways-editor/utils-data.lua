@@ -51,13 +51,22 @@ local minY, maxY = 'minY', 'maxY'
 
 UtilsData.entityPositions = {
 	topRight = {tx=maxX, ty=minY, tw=1, th=1, flowDirections = 1},
-	top = {tx=tx, ty=maxY, tw=2, th=1, flowDirections = 2},
+	top = {tx=tx, ty=minY, tw=2, th=1, flowDirections = 2},
 	topLeft = {tx=minX, ty=minY, tw=1, th=1, flowDirections = 3},
 	right = {tx=maxX, ty=ty, tw=1, th=2, flowDirections = 4},
 	left = {tx=minX, ty=ty, tw=1, th=2, flowDirections = 6},
 	bottomRight = {tx=maxX, ty=maxY, tw=1, th=1, flowDirections = 7},
-	bottom = {tx=tx, ty=minY, tw=2, th=1, flowDirections = 8},
+	bottom = {tx=tx, ty=maxY, tw=2, th=1, flowDirections = 8},
 	bottomLeft = {tx=minX, ty=maxY, tw=1, th=1, flowDirections = 9},
+}
+
+UtilsData.flowConfigurations = {
+	topLeft = {
+		flowOut = {line = {1, 0, 2, 1}},
+		flowIn = {line = {1, 2, 0, 1}},
+		flowOutDirection = 3,
+		flowInDirection = 3
+	},
 }
 
 -- reverse lookup: flow direction to position attribute key
