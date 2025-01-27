@@ -15,6 +15,14 @@ UtilsData.colorsEditorBackgroundNotActive = {
 }
 
 
+UtilsData.cardinalOffsets = {  -- keyboard keys
+	down = { dx = 0, dy = 1 },
+	right = { dx = 1, dy = 0 },
+	up = { dx = 0, dy = -1 },
+	left = { dx = -1, dy = 0 },
+}
+
+
 UtilsData.extendedOffsets = {
 	bottom = { dx = 0, dy = 1 },
 	right = { dx = 1, dy = 0 },
@@ -36,6 +44,33 @@ UtilsData.extendedOffsetOpposites = {
 	bottomRight = 'topLeft',
 	bottomLeft = 'topRight',
 }
+
+local tx, ty = 'tx', 'ty'
+local minX, maxX = 'minX', 'maxX'
+local minY, maxY = 'minY', 'maxY'
+
+UtilsData.entityPositions = {
+	topRight = {tx=maxX, ty=minY, tw=1, th=1, flowDirections = 1},
+	top = {tx=tx, ty=maxY, tw=2, th=1, flowDirections = 2},
+	topLeft = {tx=minX, ty=minY, tw=1, th=1, flowDirections = 3},
+	right = {tx=maxX, ty=ty, tw=1, th=2, flowDirections = 4},
+	left = {tx=minX, ty=ty, tw=1, th=2, flowDirections = 6},
+	bottomRight = {tx=maxX, ty=maxY, tw=1, th=1, flowDirections = 7},
+	bottom = {tx=tx, ty=minY, tw=2, th=1, flowDirections = 8},
+	bottomLeft = {tx=minX, ty=maxY, tw=1, th=1, flowDirections = 9},
+}
+
+-- reverse lookup: flow direction to position attribute key
+--UtilsData.flowDirectionsToPosition = {
+--	[1] = "topRight",
+--	[2] = "top",
+--	[3] = "topLeft",
+--	[4] = "right",
+--	[6] = "left",
+--	[7] = "bottomRight",
+--	[8] = "bottom",
+--	[9] = "bottomLeft",
+--}
 
 local zoneColorList =  {
 	-- [red with a hint of orange]

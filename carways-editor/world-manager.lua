@@ -11,12 +11,12 @@ local SafeSaveLoad = require ('SafeSaveLoad')
 
 ------------- utils data
 
-local cardinalOffsets = { -- keyboard keys
-	down = { dx = 0, dy = 1 },
-	right = { dx = 1, dy = 0 },
-	up = { dx = 0, dy = -1 },
-	left = { dx = -1, dy = 0 },
-}
+--local cardinalOffsets = { -- keyboard keys
+--	down = { dx = 0, dy = 1 },
+--	right = { dx = 1, dy = 0 },
+--	up = { dx = 0, dy = -1 },
+--	left = { dx = -1, dy = 0 },
+--}
 
 ------------- end utils data
 
@@ -101,9 +101,9 @@ function WorldManager.loadWorld()
 			WorldManager.world = world
 			print("WorldManager.world: loaded")
 			if world.worldLevels then
-				print (' WorldManager.loadWorld()', 'Levels are loaded:', #world.worldLevels)
+				print ('WorldManager.loadWorld()', 'Levels are loaded:', #world.worldLevels)
 			else
-				print (' WorldManager.loadWorld()', 'Levels are not loaded', '###########')
+				print ('WorldManager.loadWorld()', 'Levels are not loaded', '###########')
 			end
 		else
 			print("WorldManager.world: invalid or corrupted")
@@ -183,7 +183,7 @@ function WorldManager.loadProgress()
 			WorldManager.initProgress()
 		end
 	else
-		print("WorldManager.progress: not found")
+--		print("WorldManager.progress: not found")
 		WorldManager.initProgress()
 	end
 end
@@ -215,6 +215,19 @@ end
 ------------ end of progress
 
 
+function WorldManager.getOrCreateWorldLevel(col, row, enabled)
+	local worldLevel = WorldManager.getWorldLevelByPosition(col, row)
+	if worldLevel then
+--		print ('WorldManager.getOrCreateWorldLevel', 'worldLevel exists', worldLevel.index)
+		return worldLevel
+	else
+		worldLevel = WorldManager.createNewWorldLevel(col, row, enabled)
+--		print ('WorldManager.getOrCreateWorldLevel', 'worldLevel created:', worldLevel.index)
+		return worldLevel
+	end
+end
+
+
 
 function WorldManager.changeLevel (currentLevelIndex, offsetKey)
 	local curentWorldLevel
@@ -232,32 +245,34 @@ function WorldManager.changeLevel (currentLevelIndex, offsetKey)
 		error ('no current level: '..currentLevelIndex)
 	end
 
-	local offset = cardinalOffsets[offsetKey]
+	local offset = UtilsData.cardinalOffsets[offsetKey]
+	
 	if not offset then error ('no offset: '..offsetKey) end
 
-	local newWorldLevel
+
 
 	local col = curentWorldLevel.col + offset.dx
 	local row = curentWorldLevel.row + offset.dy
 
+	local newWorldLevel = WorldManager.getOrCreateWorldLevel(col, row, false)
 
-	for _, worldLevel in ipairs (WorldManager.world.worldLevels) do
-		if col == worldLevel.col and row == worldLevel.row then
---			print ('worldLevel already exists!', worldLevel.index, worldLevel.col, worldLevel.row)
-			newWorldLevel = worldLevel
-			break
-		end
-	end
-
-
-
-	if not newWorldLevel then
-		newWorldLevel = WorldManager.createNewWorldLevel (col, row, false)
---		print (offsetKey, 'added new world level: '.. newWorldLevel.index, col, row)
-	end
 	local worldLevelIndex = newWorldLevel.index
 
-
+	-- update neighbours
+	local extendedOffsets = UtilsData.extendedOffsets
+	for offsetName, offset in pairs (extendedOffsets) do
+		local dx = offset.dx
+		local dy = offset.dy
+		local neighbourWorldLevel = WorldManager.getOrCreateWorldLevel(col+dx, row+dy, false)
+--		print ('neighbourWorldLevel', offsetName)
+		if neighbourWorldLevel then
+--			print ('neighbourWorldLevel', offsetName, neighbourWorldLevel.index)
+			newWorldLevel.neighbours[offsetName] = neighbourWorldLevel.index
+		else
+--			newWorldLevel.neighbours[offsetName] = 'no'
+		end
+	end
+	-- end update neighbours
 
 
 	love.window.setTitle ('Level: '..worldLevelIndex.. ' row: '..row..' col: '..col)
@@ -265,9 +280,9 @@ function WorldManager.changeLevel (currentLevelIndex, offsetKey)
 	return newWorldLevel
 end
 
-function WorldManager.getWorldLevelByIndex (index)
+function WorldManager.getWorldLevelByIndex (levelIndex)
 	for i, worldLevel in ipairs (WorldManager.world.worldLevels) do
-		if worldLevel.index == index then
+		if worldLevel.index == levelIndex then
 			return worldLevel
 		end
 	end
@@ -282,31 +297,35 @@ function WorldManager.getWorldLevelByPosition (col, row)
 	end
 
 	-- Return nil if no match is found
-	print("Warning: No worldLevel found at position ("..col..", "..row..")")
-
+--	print("Warning: No worldLevel found at position ("..col..", "..row..")")
 end
 
 function WorldManager.setWorldLevelEnabled (worldLevel)
+	if type (worldLevel) == 'number' then
+		local levelIndex = worldLevel
+		worldLevel = WorldManager.getWorldLevelByIndex (levelIndex)
+	end
+	
 	worldLevel.enabled = true
 
-	local index = worldLevel.index
-	local col = worldLevel.col
-	local row = worldLevel.row
+--	local index = worldLevel.index
+--	local col = worldLevel.col
+--	local row = worldLevel.row
 
-	local extendedOffsets = UtilsData.extendedOffsets
-	for _, offset in pairs (extendedOffsets) do
-		local col2 = col + offset.dx
-		local row2 = row + offset.dy
+--	local extendedOffsets = UtilsData.extendedOffsets
+--	for _, offset in pairs (extendedOffsets) do
+--		local col2 = col + offset.dx
+--		local row2 = row + offset.dy
 
-		if not WorldManager.getWorldLevelByPosition (col2, row2) then
-			local otherWorldLevel = WorldManager.createNewWorldLevel (col2, row2, false)
-			
-			worldLevel.neighbours[offset] = otherWorldLevel.index
-			
-			local oppositeOffset = UtilsData.extendedOffsetOpposites[offset]
-			otherWorldLevel.neighbours[offset] = worldLevel.index
-		end
-	end
+--		if not WorldManager.getWorldLevelByPosition (col2, row2) then
+--			local otherWorldLevel = WorldManager.createNewWorldLevel (col2, row2, false)
+
+--			worldLevel.neighbours[offset] = otherWorldLevel.index
+
+--			local oppositeOffset = UtilsData.extendedOffsetOpposites[offset]
+--			otherWorldLevel.neighbours[offset] = worldLevel.index
+--		end
+--	end
 end
 
 

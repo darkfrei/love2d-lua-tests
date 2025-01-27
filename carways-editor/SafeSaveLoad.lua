@@ -42,6 +42,12 @@ local function isStringList(tbl)
 	end
 end
 
+local function isEmptyList(tbl)
+	if isList(tbl) and (#tbl == 0) then
+		return true
+	end
+end
+
 -- checks if a table is a list of numbers and serializes it into a space-separated string
 -- returns the serialized string if the table is valid, otherwise returns nil
 local function serializeNumberList(tbl)
@@ -60,6 +66,11 @@ function SafeSaveLoad.serializeTable(tabl, level)
 	level = level or 0
 	local result = {}
 	local indent = string.rep("  ", level)
+
+	if isEmptyList(tabl) then
+		table.insert(result, indent .. "emptyList")
+		return table.concat(result, "\n")
+	end
 
 	-- check if the table is a list of numbers
 	if isNumberList(tabl) then
@@ -80,6 +91,7 @@ function SafeSaveLoad.serializeTable(tabl, level)
 		return table.concat(result, "\n")
 	end
 
+
 	-- append the start of a table marker
 	table.insert(result, indent .. "start table")
 
@@ -87,9 +99,17 @@ function SafeSaveLoad.serializeTable(tabl, level)
 		local typeKey = type(key)
 		local typeValue = type(value)
 		if (typeKey == 'number') or (typeKey == 'string') then
+--			if typeValue == "table" and isEmptyList(value) then
+--				-- stringIndex numberIndex
+--				table.insert(result, indent .. typeKey.."Index")
+--				table.insert(result, indent .. key)  -- Index (key)
+--				table.insert(result, indent .. typeValue.."Value")
+--				table.insert(result, indent .. '  ' .. 'emptyList')
+--			elseif typeValue == "table" then
 			if typeValue == "table" then
 				table.insert(result, indent .. typeKey.."Index")
 				table.insert(result, indent .. key)  -- Index (key)
+				-- tableValue numberValue booleanValue stringValue
 				table.insert(result, indent .. typeValue.."Value")
 				table.insert(result, SafeSaveLoad.serializeTable(value, level + 1))  -- recursively serialize
 			elseif (typeValue == 'string') or (typeValue == 'number') then
@@ -141,7 +161,11 @@ function SafeSaveLoad.deserializeString(str)
 		-- state machine logic
 --		print ('current state:', state)
 		if state == 'tableValue' then
-			if line == 'start table' then
+			if line == 'emptyList' then
+				currentTable[tempIndex] = {}
+--				print ('added empty list: '..tempIndex)
+				state = 'indexType'
+			elseif line == 'start table' then
 
 				local newTable = {}
 
@@ -170,6 +194,11 @@ function SafeSaveLoad.deserializeString(str)
 			elseif line == 'start strings list' then
 				tempList = {} -- reset content
 				state = 'listStrings'
+			else
+				print ('SafeSaveLoad.deserializeString', 'comment:')
+				print ('################')
+				print (line)
+				print ('################')
 			end
 
 		elseif state == 'indexType' then
@@ -234,7 +263,7 @@ function SafeSaveLoad.deserializeString(str)
 			end
 		else
 			error ('not state:' .. state .. '; line: ' .. line)
-			
+
 		end
 	end
 

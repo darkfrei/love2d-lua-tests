@@ -195,6 +195,7 @@ function Preselect:updatePreselectSpawnerZone()
 		self.cursorEntity = entity
 	end
 
+	local tileSize = GameConfig.tileSize
 	local gameTW = GameConfig.tileCountW-1 -- 32
 	local gameTH = GameConfig.tileCountH-1 -- 20
 
@@ -468,38 +469,34 @@ function Preselect:increaseSize(dw, dh)
 	end
 end
 
--- [creates a new entity based on the specified type]
-function Preselect:newEntity(entityType)
-	local currentLevel = Editor.currentLevel
-
-	-- [initialize base entity properties]
+-- creates a new entity with given properties
+local function newEntity(tx, ty, tw, th, entityType)
 	local entity = {
-		tx = self.tx,              -- [top-left x position in tiles]
-		ty = self.ty,              -- [top-left y position in tiles]
-		tw = self.size.tw,         -- [width in tiles]
-		th = self.size.th,         -- [height in tiles]
-		type = entityType          -- [type of the entity, e.g., 'spawner']
+		tx = tx,               -- top-left x position in tiles
+		ty = ty,               -- top-left y position in tiles
+		tw = tw,               -- width in tiles
+		th = th,               -- height in tiles
+		type = entityType      -- type of the entity (e.g., 'spawner')
 	}
-
-	-- [add type-specific properties]
+	
+	-- if the entity is a spawner, initialize flow configurations
 	if entityType == 'spawner' then
-		entity.flowOut = {}        -- [output flow configuration]
-		entity.flowIn = {}         -- [input flow configuration]
-		entity.flowOutDirection =  Preselect.flowOutDirection
-		entity.flowInDirection =  Preselect.flowInDirection
---		entity.flowOut.direction = Preselect.flowOutDirection
---		entity.flowIn.direction = Preselect.flowInDirection
+		entity.flowOut = {}           -- output flow configuration
+		entity.flowIn = {}            -- input flow configuration
+		entity.flowOutDirection = Preselect.flowOutDirection
+		entity.flowInDirection = Preselect.flowInDirection
 	end
-
-	-- [return the newly created entity]
---	print ('new entity, type: '..entityType)
---	currentLevel.entityID = currentLevel.entityID or 0
---	currentLevel.entityID = currentLevel.entityID + 1
---	local index = WorldManager.generateNewEntityIndex ()
---	entity.index = index
-
+	
 	return entity
 end
+
+-- creates a new entity for the current level based on preselect settings
+function Preselect:newEntity(entityType)
+	local currentLevel = Editor.currentLevel
+	local entity = newEntity (self.tx, self.ty, self.size.tw, self.size.th, entityType)
+	return entity
+end
+
 
 local function getHoveredEntity (tx, ty)
 	local currentLevel = Editor.currentLevel
@@ -511,72 +508,99 @@ local function getHoveredEntity (tx, ty)
 	end
 end
 
+
+
+
+
 serpent = require ('serpent')
 
 
-local function placeTwinEntity (worldLevel, otherEntity)
-	-- wip
-	-- wip
-	-- wip
-	local gameTW = GameConfig.tileCountW -- total width in tiles
-	local gameTH = GameConfig.tileCountH -- total height in tiles
-
-	local tx = otherEntity.tx
-	local ty = otherEntity.ty
-	local tw = otherEntity.tw
-	local th = otherEntity.th
-
-	local otherPositionType = otherEntity.positionType
-	local positionType = UtilsData.extendedOffsetOpposites[otherPositionType]
-
-
-	if positionType == 'topLeft' then
-
+function Editor.createEntityOnLevel(entity, levelIndex)
+	-- retrieves the level by its index
+	local level = Editor.levels[levelIndex]
+	if not level then
+		error("Level with index " .. tostring(levelIndex) .. " does not exist")
 	end
 
-
-	local currentLevel = Editor.levels[worldLevel.index]
-
-
-	local entityIndex = WorldManager.generateNewEntityIndex ()
-
-end
-
-local function placeEntity (entity)
-	-- wip
-	-- wip
-	-- wip
-	local currentLevel = Editor.currentLevel
-	local entityIndex = WorldManager.generateNewEntityIndex ()
+	-- assigns a unique index to the entity
+	local entityIndex = WorldManager.generateNewEntityIndex()
 	entity.index = entityIndex
-	table.insert (currentLevel.entities, entity)
 
-	print ('')
-	print ('placed entity:')
-	print (serpent.block (entity))
+	-- adds the entity to the level's entity list
+	table.insert(level.entities, entity)
 
+	-- logs information about the created entity
+	print("Entity created on level " .. levelIndex .. ":")
+	print(serpent.block(entity))
 
-	local positionType = entity.positionType
-	local offset = UtilsData.extendedOffsets[positionType]
-	if offset then -- the side/corner entity
-		local levelIndex = currentLevel.index
-		local worldLevel = WorldManager.getWorldLevelByIndex (levelIndex)
-		WorldManager.setWorldLevelEnabled (worldLevel)
-		Editor.backgroundImage = Editor.backgroundImageActive
-
-
-		local otherLevelIndex = worldLevel.neighbours[positionType]
-		print ('positionType', positionType)
-		print ('other level: '..positionType, 'otherLevelIndex: '..otherLevelIndex)
-		local otherWorldLevel = WorldManager.getWorldLevelByIndex (otherLevelIndex)
-
-		-- wip
-		-- wip
-		-- wip
---		placeTwinEntity (otherWorldLevel, entity)
-
-	end
+	return entity -- returns the created entity
 end
+
+
+
+function Editor.setBackgroundActive ()
+	Editor.backgroundImage = Editor.backgroundImageActive
+end
+
+
+function Editor.placeTwinEntities (levelIndex, entity)
+	
+	
+	Editor.createEntityOnLevel(entity, levelIndex)
+	local entityIndex = entity.index
+	local positionType = entity.positionType
+	
+	print ('place first of twin')
+	print ('levelIndex: '..levelIndex, 'entityIndex: '..entityIndex, 'positionType'..positionType)
+	
+	local entityPosition = UtilsData.entityPositions[positionType]
+	
+	local offset = UtilsData.extendedOffsets[positionType]
+	local worldLevel = WorldManager.getWorldLevelByIndex (levelIndex)
+	
+	local secondLevelIndex = worldLevel.neighbours[positionType]
+	
+--	local tx = 
+--	local ty = 
+--	local tw = 
+--	local th = 
+	
+--	local secondEntity = newEntity (tx, ty, tw, th, 'spawner')
+	
+--	Editor.createEntityOnLevel(secondEntity, secondLevelIndex)
+
+-- wip
+-- wip
+-- wip
+
+end
+
+function Editor.addEntity (entity)
+
+	local currentLevel = Editor.currentLevel
+	local levelIndex = currentLevel.index
+	
+	WorldManager.setWorldLevelEnabled (levelIndex)
+	Editor.setBackgroundActive ()
+	
+	local entityType = entity.type
+	if entityType == 'wall' then
+		Editor.createEntityOnLevel(entity, levelIndex)
+		return
+	end
+	
+	local positionType = entity.positionType
+	if positionType == 'common' then
+		Editor.createEntityOnLevel(entity, levelIndex)
+		return
+	end
+	
+	-- special cases!
+--	the entity and the other side
+	Editor.placeTwinEntities (levelIndex, entity)
+end
+
+
 
 -- [handles tile click and updates preselect state]
 function Preselect:tileClicked(tx, ty)
@@ -606,10 +630,12 @@ function Preselect:tileClicked(tx, ty)
 	if cursorEntity then
 		-- [insert cursorEntity into the current level and prepare a new one]
 		local entityType = cursorEntity.type
-		placeEntity (cursorEntity)
+--		placeEntity (cursorEntity)
+		Editor.addEntity (cursorEntity)
 
 		self.selectedEntity = cursorEntity
 
+--		self.cursorEntity = Preselect.newEntity (entityType)
 		self.cursorEntity = self:newEntity (entityType)
 		return
 
@@ -631,7 +657,18 @@ function Preselect:cursormoved(tx, ty, dtx, dty)
 	self.tx = tx
 	self.ty = ty
 
---	love.window.setTitle (tx..' '..ty)
+	-- [check for special cases or constraints]
+	local gameTW = GameConfig.tileCountW -- total width in tiles
+	local gameTH = GameConfig.tileCountH -- total height in tiles
+
+	-- [ensure preselect stays within bounds]
+	if tx + self.size.tw > gameTW then
+		self.tx = gameTW - self.size.tw
+	end
+
+	if ty + self.size.th > gameTH then
+		self.ty = gameTH - self.size.th
+	end
 
 	local entity = Preselect.cursorEntity
 	if entity then
@@ -662,79 +699,90 @@ local function initLevel(index)
 end
 
 
--- loads a level from a file with the given index
-local function loadLevel(index)
---	local currentLevelIndex = WorldManager.progress.currentLevelIndex
-	if Editor.levels[index] then return Editor.levels[index] end
-
+local function loadLevel (index)
+	-- constructs the filename for the level based on its index
 	local filename = 'level-'..index..'.dat'
-	local loadedLevel = {}
-
---	print ('loading level:', filename)
-
-	-- try to open the file in read mode
 	local file = io.open(filename, 'r')
 
-	if file then
-		-- read the entire file into a string
-		local str = file:read('*a')
-		file:close()
-
-		-- deserialize the string into a Lua table using your serialization method
-		loadedLevel = SafeSaveLoad.deserializeString(str)
-
-		-- check if the level contains the 'entities' field
-		if not loadedLevel.entities then
---			print ('no entities! Level:', index)
-			loadedLevel.entities = {}
-		else
---			print ('amount entities:', #loadedLevel.entities)
-		end
---		print('Level loaded successfully', index)
-	else
---		print('No saved level found')
-		loadedLevel = initLevel(index)
---		print('Created empty level:', index)
+	if not file then
+--		print('Warning: Level file not found: ' .. filename)
+		return nil -- returns nil if the file does not exist
 	end
 
---	print ('end of loadLevel', #loadedLevel.entities)
+	local levelData = file:read('*a')
+	file:close()
 
-	return loadedLevel
+	-- deserializes the level data
+	local level = SafeSaveLoad.deserializeString(levelData)
+
+	if not level then
+		error ('loadLevel', 'Failed to deserialize level data from file: ' .. filename)
+	elseif not level.entities then
+		-- ensures the level has an entities table
+		print('loadLevel', 'No entities found, initialized an empty table')
+	end
+
+	-- assigns the index to the level
+	level.index = index
+
+	return level
 end
 
-function Editor.init()
 
---	WorldManager.loadWorld()
-	Editor.levels = {}
-
-	local worldLevels = WorldManager.world.worldLevels
-	print ('Editor.init', '#worldLevels:', #worldLevels)
---	Editor.worldLevels = worldLevels
-	local loadedLevels = {}
-	for i, worldLevel in ipairs (worldLevels) do -- list without gaps
-		local index = worldLevel.index
-		local loadedLevel = loadLevel(index)
-		loadedLevels[index] = loadedLevel -- with gaps
+function Editor.getOrLoadLevel(levelIndex)
+	-- attempts to retrieve the level from the loaded levels table
+	local level = Editor.levels[levelIndex]
+	if level then
+		return level -- returns the level if it exists in memory
 	end
-	local firstLevel = worldLevels[1]
-	local firstLevelIndex = firstLevel.index
-	local row = firstLevel.row
-	local col = firstLevel.col
-	local status = firstLevel.enabled and 'enabled' or 'disabled'
 
-	Editor.levels = loadedLevels
-	Editor.currentLevel = loadedLevels[firstLevelIndex]
-	love.window.setTitle ('Level: '..firstLevelIndex.. ' row: '..row..' col: '..col..' '..status)
+	-- attempts to load the level from a file
+	level = loadLevel(levelIndex)
+	if level then
+		Editor.levels[levelIndex] = level
+		print('Level " .. levelIndex .. " loaded from file and added to Editor.levels')
+		return level
+	end
 
+	-- creates a new level if it cannot be loaded
+	level = initLevel(levelIndex)
+	Editor.levels[levelIndex] = level
+	print('Editor.getOrLoadLevel', 'Level ' .. levelIndex .. ' created new')
+	return level
+end
+
+
+function Editor.loadAllWorldLevels()
+	-- loads all levels from world levels and adds them to Editor.levels
+	local worldLevels = WorldManager.world.worldLevels
+
+	Editor.levels = {}
+	local amount = 0
+	for _, worldLevel in ipairs(worldLevels) do
+		local levelIndex = worldLevel.index
+		-- load from file:
+		local level = loadLevel(levelIndex) -- attempt to load the level by its index
+		if level then
+			Editor.levels[levelIndex] = level -- store the loaded level
+			amount = amount + 1
+--			print('Editor.loadAllWorldLevels', 'Level ' .. levelIndex .. ' loaded and added')
+		else
+--			print('Editor.loadAllWorldLevels', 'Level ' .. levelIndex .. ' could not be loaded')
+		end
+	end
+	print ('Editor.loadAllWorldLevels', 'Amount loaded levels: '..amount)
+end
+
+
+function Editor.init()
+	Editor.loadAllWorldLevels() -- load all levels into Editor.levels
+	Editor.setLevel(1) -- set the first level
 end
 
 function Editor.enter()
 	-- [initializes editor state]
 	print("Editor state entered")
-
 	Editor.init()
-
-
 end
 
 function Editor.update(dt)
@@ -877,14 +925,16 @@ function Editor.draw()
 	end
 
 	Preselect:draw()
-	
+
 	-- draw neighbour levels
 	-- wip
 	-- wip
 	-- wip
 	if Editor.neighbours then
 		for i, v in pairs (Editor.neighbours) do
-			love.graphics.print (v.text, v.x, v.y)
+			if v.text then
+				love.graphics.print (v.text, v.x, v.y)
+			end
 		end
 	end
 
@@ -892,7 +942,7 @@ function Editor.draw()
 	-- wip
 	-- wip
 	-- wip
-	
+
 end
 
 function Editor.exit()
@@ -1114,50 +1164,36 @@ end
 
 local function nextZoneColor ()
 	local selectedEntity = Preselect.selectedEntity
-	if not zone then return end
-	local zoneColor = zone.zoneColor
-	zone.zoneColor = (zoneColor + 0) % #Data.zoneColorList + 1
+--	if not zone then return end
+--	local zoneColor = zone.zoneColor
+--	zone.zoneColor = (zoneColor + 0) % #Data.zoneColorList + 1
 end
 
---[[
-local function saveCurrentLevel ()
-	local currentLevel = Editor.currentLevel
-	local index = currentLevel.index
-
-	print ('saveCurrentLevel')
-	local str = SafeSaveLoad.serializeTable(currentLevel)
-	local filename = 'level-'..index..'.dat'
-	print ('save filename:', filename)
-	local file = io.open(filename, 'w')
-	if file then
-		file:write(str)
-		file:close()
-		print("saved")
-	else
-		print("not saved")
-	end
-
-	print ('disable selected:')
-	Preselect.selectedEntity = nil
-	Preselect.cursorEntity = nil
-end
---]]
 
 function Editor.saveLevels()
 -- iterate through all levels and save them
-	for _, level in ipairs(Editor.levels) do
+	for _, level in pairs(Editor.levels) do
 		local index = level.index
-		local filename = "level-" .. level.index .. ".dat"
-		local data = SafeSaveLoad.serializeTable(level)
+		print ('Editor.saveLevels', 'save index: '..index)
+		if level.entities and #level.entities > 0 then
+			local filename = "level-" .. level.index .. ".dat"
+			local data = SafeSaveLoad.serializeTable(level)
 
-		-- write the data to the file
-		local file = io.open(filename, "w")
-		if file then
-			file:write(data)
-			file:close()
-			print("Level " .. level.index .. ": saved to " .. filename)
+			-- write the data to the file
+			local file = io.open(filename, "w")
+			if file then
+				file:write(data)
+				file:close()
+				print('Editor.saveLevels', 'Level ' .. index .. ' saved to ' .. filename)
+			else
+				print('Editor.saveLevels', 'Failed to save level ' .. index)
+			end
+		elseif level.entities and #level.entities == 0 then
+			print('Editor.saveLevels', 'Not saved level: ' .. index ..' - no entities')
+		elseif not level.entities then
+			print('Editor.saveLevels', 'Not saved level: ' .. index ..' - no entities as table')
 		else
-			print("Failed to save level " .. level.index)
+			error ('Editor.saveLevels - cannot save')
 		end
 	end
 
@@ -1167,37 +1203,59 @@ function Editor.saveLevels()
 	Preselect.size = Preselect.nothingSize
 end
 
-function Editor.changeLevel (key)
--- [get the current level index from the editor]
-	local currentLevelIndex = Editor.currentLevel.index
 
-	-- [change the world level based on the direction key]
-	local worldLevel = WorldManager.changeLevel(currentLevelIndex, key)
+
+function Editor.setLevel (levelIndex)
+	-- retrieve game configuration values
+	local ts = GameConfig.tileSize
+	local tw = GameConfig.tileCountW
+	local th = GameConfig.tileCountH
+
+	-- get the world level by its index
+	local worldLevel = WorldManager.getWorldLevelByIndex (levelIndex)
 	
+
+	-- set editor neighbours with positions and corresponding neighbour indices
 	Editor.neighbours = {
-		left = {},
-		
-		}
+		left = {text = worldLevel.neighbours.left, x=ts/2, y=ts*th/2},
+		right = {text = worldLevel.neighbours.right, x=ts*tw-ts/2, y=ts*th/2},
+		top = {text = worldLevel.neighbours.top, x=ts*tw/2, y=ts/2},
+		bottom = {text = worldLevel.neighbours.bottom, x=ts*tw/2, y=ts*th-ts/2},
+		topLeft = {text = worldLevel.neighbours.topLeft, x=ts/2, y=ts/2},
+		topRight = {text = worldLevel.neighbours.topRight, x=ts*tw-ts/2, y=ts/2},
+		bottomRight = {text = worldLevel.neighbours.bottomRight, x=ts*tw-ts/2, y=ts*th-ts/2},
+		bottomLeft = {text = worldLevel.neighbours.bottomLeft, x=ts/2, y=ts*th-ts/2},
+	}
 
-
-
+	-- set background image based on the world level's enabled state
 	if worldLevel.enabled then
 		Editor.backgroundImage = Editor.backgroundImageActive
 	else
 		Editor.backgroundImage = Editor.backgroundImageNotActive
 	end
 
-	-- [get the index of the new world level]
+--	local loadedLevel = loadLevel (index)
+	local level = Editor.getOrLoadLevel(levelIndex)
+	Editor.currentLevel = level
+
+	-- store the level in the editor's levels table
+	Editor.levels[levelIndex] = level
+end
+
+
+function Editor.changeLevel (key)
+
+
+-- [get the current level index from the editor]
+	local currentLevelIndex = Editor.currentLevel.index
+
+	-- [change the world level based on the direction key]
+	local worldLevel = WorldManager.changeLevel(currentLevelIndex, key)
+
 	local index = worldLevel.index
 
-	-- [load the level from file using the new index]
-	local loadedLevel = loadLevel(index)
-	Editor.currentLevel = loadedLevel
+	Editor.setLevel (index)
 
-	-- [store the loaded level into the editor's levels table]
-	Editor.levels[index] = loadedLevel
-	
-	
 end
 
 function Editor.keypressed(key, scancode)
@@ -1241,9 +1299,10 @@ function Editor.keypressed(key, scancode)
 	-- function Editor.keypressed(key, scancode)
 	if key == "s" then
 		if isCtrl then
---			saveCurrentLevel ()
 			Editor.saveLevels()
+			
 			WorldManager.saveWorld()
+			
 			print("Levels and world saved.")
 			return
 		end
