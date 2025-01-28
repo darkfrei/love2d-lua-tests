@@ -61,12 +61,15 @@ UtilsData.entityPositions = {
 }
 
 UtilsData.flowConfigurations = {
-	topLeft = {
-		flowOut = {line = {1, 0, 2, 1}},
-		flowIn = {line = {1, 2, 0, 1}},
-		flowOutDirection = 3,
-		flowInDirection = 3
-	},
+	-- for position on the level:
+	left = {tx1=0.5, ty1=1, tx2=0, ty2=-0.5, tx3=1, ty3=0},
+	right = {tx1=0.5, ty1=1, tx2=0, ty2=0.5, tx3=-1, ty3=0},
+	top = {tx1=1, ty1=0.5, tx2=0.5, ty2=0, tx3=0, ty3=1},
+	bottom = {tx1=1, ty1=0.5, tx2=-0.5, ty2=0, tx3=0, ty3=-1},
+	topLeft = {tx1=0.5, ty1=0.5, tx2=0.5, ty2=-0.5, tx3=1, ty3=1},
+	bottomRight = {tx1=0.5, ty1=0.5, tx2=-0.5, ty2=0.5, tx3=-1, ty3=-1},
+	topRight = {tx1=0.5, ty1=0.5, tx2=0.5, ty2=0.5, tx3=-1, ty3=1},
+	bottomLeft = {tx1=0.5, ty1=0.5, tx2=-0.5, ty2=-0.5, tx3=1, ty3=-1}
 }
 
 -- reverse lookup: flow direction to position attribute key

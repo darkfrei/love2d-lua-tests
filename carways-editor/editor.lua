@@ -6,8 +6,11 @@
 
 local SafeSaveLoad = require ('SafeSaveLoad')
 
+-- Editor
 local Editor = {}
---local Preselect = require ('editor-preselect')
+Editor.flowMax = 20
+
+Editor.showDebugInfoF1 = false
 
 -- Preselect
 local Preselect = {}
@@ -28,172 +31,31 @@ Preselect.flowOutDirection = 8 -- [default size for spawner type preselect]
 Preselect.flowInDirection = 2 -- [default size for spawner type preselect]
 Preselect.selectedEntity = nil -- current entity in preselect
 
-Editor.flowMax = 20
+Preselect.isLeftHandTraffic = false
 
 
--- [updates spawner entity with the given parameters]
-local function updateSpawnerEntity(entity)
---	print ('updateSpawnerEntity')
-	-- [update entity's position and size]
-	local tx, ty, tw, th = entity.tx, entity.ty, entity.tw, entity.th
-
-	local flowOutDirection = entity.flowOutDirection
-	local flowInDirection = entity.flowInDirection
-
---	entity.transition = nil -- reset transition
-
-	-- [calculate the center position for output and input]
-	local outputTX = (tx + tw / 2)  -- keep in tiles, not pixels
-	local outputTY = (ty + th / 2)
-
-	local inputTX = (tx + tw / 2)
-	local inputTY = (ty + th / 2)
-
-	-- [initialize direction deltas]
-
-	local outputDTX = 0
-	local outputDTY = 0
-	local inputDTX = 0
-	local inputDTY = 0
 
 
-	-- [determine the output position based on flowOutDirection]
-	if flowOutDirection == 7 or flowOutDirection == 4 or flowOutDirection == 1 then
-		-- [left side of entity]
-		outputTX = tx + 0.5
-		outputDTX = -1
-	elseif flowOutDirection == 9 or flowOutDirection == 6 or flowOutDirection == 3 then
-		-- [right side of entity]
-		outputTX = tx + tw - 0.5
-		outputDTX = 1
-	end
-
-	-- [determine the output position based on flowOutDirection]
-	if flowOutDirection == 7 or flowOutDirection == 8 or flowOutDirection == 9 then
-		-- [top side of entity]
-		outputTY = ty + 0.5
-		outputDTY = -1
-	elseif flowOutDirection == 1 or flowOutDirection == 2 or flowOutDirection == 3 then
-		-- [bottom side of entity]
-		outputTY = ty + th - 0.5
-		outputDTY = 1
-	end
-
-	-- [determine the input position based on flowInDirection]
-	if flowInDirection == 7 or flowInDirection == 4 or flowInDirection == 1 then
-		-- [left side]
-		inputTX = tx + 0.5
-		inputDTX = -1
-	elseif flowInDirection == 9 or flowInDirection == 6 or flowInDirection == 3 then
-		-- [right side]
-		inputTX = tx + tw - 0.5
-		inputDTX = 1
-	end
-
-	-- [determine the input position based on flowInDirection]
-	if flowInDirection == 7 or flowInDirection == 8 or flowInDirection == 9 then
-		-- [top side of entity]
-		inputTY = ty + 0.5
-		inputDTY = -1
-	elseif flowInDirection == 1 or flowInDirection == 2 or flowInDirection == 3 then
-		-- [bottom side of entity]
-		inputTY = ty + th - 0.5
-		inputDTY = 1
-	end
-
-	-- handle flow out/in directions and set lines
-	if not (flowOutDirection == flowInDirection) then
-		entity.flowOut.line = {outputTX, outputTY, outputTX+outputDTX, outputTY+outputDTY}
-		entity.flowIn.line = {inputTX + inputDTX, inputTY+inputDTY, inputTX, inputTY}
-	else
-		local dx = 0.5
-		local dy = 0.5
-		if flowOutDirection == 1 then
-			-- down left
-			entity.flowOut.line = {outputTX+dx, outputTY+dy, 
-				outputTX+outputDTX+dx, outputTY+outputDTY+dy}
-			entity.flowIn.line = {inputTX-dx + inputDTX, inputTY+inputDTY-dy, 
-				inputTX-dx, inputTY-dy}
-		elseif flowOutDirection == 2 then
-			-- down
-			dy = 0
-			entity.flowOut.line = {outputTX+dx, outputTY+dy, 
-				outputTX+outputDTX+dx, outputTY+outputDTY+dy}
-			entity.flowIn.line = {inputTX-dx + inputDTX, inputTY+inputDTY+dy, 
-				inputTX-dx, inputTY+dy}
-		elseif flowOutDirection == 3 then
---			down right
-			dy = -dy
-			entity.flowOut.line = {outputTX+dx, outputTY+dy, 
-				outputTX+outputDTX+dx, outputTY+outputDTY+dy}
-			entity.flowIn.line = {inputTX-dx + inputDTX, inputTY+inputDTY-dy, 
-				inputTX-dx, inputTY-dy}
-
-		elseif flowOutDirection == 4 then
-			-- left
-			dx = 0
-			entity.flowOut.line = {outputTX+dx, outputTY+dy, 
-				outputTX+outputDTX+dx, outputTY+outputDTY+dy}
-			dy = -dy
-			entity.flowIn.line = {inputTX+dx + inputDTX, inputTY+inputDTY+dy, 
-				inputTX+dx, inputTY+dy}
-
-		elseif flowOutDirection == 6 then
-			-- right
-			dx = 0
-			entity.flowIn.line = {inputTX+dx + inputDTX, inputTY+inputDTY+dy, 
-				inputTX+dx, inputTY+dy}
-			dy = -dy
-			entity.flowOut.line = {outputTX+dx, outputTY+dy, 
-				outputTX+outputDTX+dx, outputTY+outputDTY+dy}
-
-		elseif flowOutDirection == 7 then
-			-- up left
-			dx = -dx
-			entity.flowOut.line = {outputTX+dx, outputTY+dy, 
-				outputTX+outputDTX+dx, outputTY+outputDTY+dy}
-			dx = -dx
-			dy = -dy
-			entity.flowIn.line = {inputTX+dx + inputDTX, inputTY+inputDTY+dy, 
-				inputTX+dx, inputTY+dy}
-		elseif flowOutDirection == 8 then
-			-- up left
-			dy = 0
-			dx = -dx
-			entity.flowOut.line = {outputTX+dx, outputTY+dy, 
-				outputTX+outputDTX+dx, outputTY+outputDTY+dy}
-			dx = -dx
-
-			entity.flowIn.line = {inputTX+dx + inputDTX, inputTY+inputDTY+dy, 
-				inputTX+dx, inputTY+dy}
-		elseif flowOutDirection == 9 then
-			-- up right
-			entity.flowIn.line = {inputTX+dx + inputDTX, inputTY+inputDTY+dy, 
-				inputTX+dx, inputTY+dy}
-			dx = -dx
-			dy = -dy
-			entity.flowOut.line = {outputTX+dx, outputTY+dy, 
-				outputTX+outputDTX+dx, outputTY+outputDTY+dy}
-		end
-	end
-
-end
 
 
-function Preselect:updatePreselectSpawnerZone()
+
+function Preselect.updatePreselectSpawnerZone()
 --	print ('updatePreselectSpawnerZone')
-	local entity = self.cursorEntity
+	local entity = Preselect.cursorEntity
+
 	if entity and entity.type ~= 'spawner' then return end
 
 	-- get preselect position and size
-	local tx, ty = self.tx, self.ty -- preselect top left position
-	local tw, th = self.size.tw, self.size.th  -- preselect size
+	local tx, ty = Preselect.tx, Preselect.ty
+	local tw, th = Preselect.size.tw, Preselect.size.th
 
-	if not entity then
-		entity = self.newEntity ('spawner')
-		print ('new entity!')
-		self.cursorEntity = entity
-	end
+--	if not entity then
+--		entity = Preselect.newEntity ('spawner')
+--		print ('new entity!')
+--		Preselect.cursorEntity = entity
+--	end
+
+--	print ('Preselect.updatePreselectSpawnerZone', entity.index)
 
 	local tileSize = GameConfig.tileSize
 	local gameTW = GameConfig.tileCountW-1 -- 32
@@ -205,24 +67,24 @@ function Preselect:updatePreselectSpawnerZone()
 	local right = (tx + tw > gameTW)
 	local bottom = (ty + th > gameTH)
 	local topLeft = top and left
-
 	local topRight = top and right
-
 	local bottomLeft = bottom and left
 	local bottomRight = bottom and right
 
 --	print (top, left, right, bottom)
 
 	local positionType = top and 'top' or bottom and 'bottom' or false
+
 	positionType = positionType and left and positionType..'Left' 
 	or left and 'left' 
 	or positionType
+
 	positionType = positionType and right and positionType..'Right' 
 	or right and 'right' 
 	or positionType 
 	or 'common'
---	print ('Preselect:updatePreselectSpawnerZone', 'position: '..positionType)
 
+	--[[
 
 	local positionData = {
 		topRight = {tx=gameTW, ty=0, tw=1, th=1, flowDirections=1},
@@ -235,9 +97,9 @@ function Preselect:updatePreselectSpawnerZone()
 		right = {tx=gameTW, ty=ty, tw=1, th=2, flowDirections=4},
 		bottom = {tx=tx, ty=gameTH, tw=2, th=1, flowDirections=8},
 
-		common = {tx=tx, ty=ty, tw=self.size.tw, th=self.size.th, 
-			flowOutDirection = self.flowOutDirection,
-			flowInDirection = self.flowInDirection
+		common = {tx=tx, ty=ty, tw=Preselect.size.tw, th=Preselect.size.th, 
+			flowOutDirection = Preselect.flowOutDirection,
+			flowInDirection = Preselect.flowInDirection
 		},
 	}
 
@@ -251,12 +113,14 @@ function Preselect:updatePreselectSpawnerZone()
 			entity[i] = v
 		end
 	end
+	
+	--]]
 
 	-- store the position in the entity
 	entity.positionType = positionType
 
 
-	updateSpawnerEntity (entity)
+	Editor.updateSpawnerEntity (entity)
 end
 
 
@@ -380,19 +244,19 @@ end
 
 
 -- [renders the preselect area]
-function Preselect:draw()
-	if not self.tx or not self.ty 
-	or not self.size.tw or not self.size.th then
+function Preselect.draw()
+	if not Preselect.tx or not Preselect.ty 
+	or not Preselect.size.tw or not Preselect.size.th then
 		return -- nothing to draw if the necessary parameters are not set
 	end
 
 	local tileSize = 40
-	local x = self.tx * tileSize
-	local y = self.ty * tileSize
-	local width = self.size.tw * tileSize
-	local height = self.size.th * tileSize
+	local x = Preselect.tx * tileSize
+	local y = Preselect.ty * tileSize
+	local width = Preselect.size.tw * tileSize
+	local height = Preselect.size.th * tileSize
 
-	local entity = self.cursorEntity
+	local entity = Preselect.cursorEntity
 
 	-- set color based on the type of preselect
 
@@ -414,49 +278,49 @@ function Preselect:draw()
 end
 
 -- [sets the preselect type to 'wall', or unsets it if already set]
-function Preselect:setWall()
-	local entity = self.cursorEntity
+function Preselect.setWall()
+	local entity = Preselect.cursorEntity
 	if entity and entity.type == 'wall' then
-		self.cursorEntity = nil
-		self.size = Preselect.nothingSize
+		Preselect.cursorEntity = nil
+		Preselect.size = Preselect.nothingSize
 	else
-		self.size = self.wallSize
-		self.cursorEntity = self:newEntity ('wall')
+		Preselect.size = Preselect.wallSize
+		Preselect.cursorEntity = Preselect.newEntity ('wall')
 	end
 end
 
 -- [sets the preselect type to 'spawner', or unsets it if already set]
-function Preselect:setSpawner()
-	local entity = self.cursorEntity
+function Preselect.setSpawner()
+	local entity = Preselect.cursorEntity
 
 	if entity and entity.type == 'spawner' then
-		-- [unset the preselect type if it is already 'spawner']
-		self.cursorEntity = nil
-		self.size = Preselect.nothingSize
+		-- unset the preselect type if it is already 'spawner'
+		Preselect.cursorEntity = nil
+		Preselect.size = Preselect.nothingSize
 	else
-		-- [set the preselect type to 'spawner' and initialize properties]
-		self.size = self.spawnerSize
-		self.cursorEntity = self:newEntity ('spawner')
-		Preselect:updatePreselectSpawnerZone()
+		-- set the preselect type to 'spawner' and initialize properties
+		Preselect.size = Preselect.spawnerSize
+		Preselect.cursorEntity = Preselect.newEntity ('spawner')
+		Preselect.updatePreselectSpawnerZone()
 	end
 end
 
 
 -- [increases or decreases the size of the preselect area]
-function Preselect:increaseSize(dw, dh)
+function Preselect.increaseSize(dw, dh)
 	local activeEntity = Preselect.selectedEntity
 	local cursorEntity = Preselect.cursorEntity
 
-	print ('Preselect:increaseSize', dw, dh)
+	print ('Preselect.increaseSize', dw, dh)
 	if cursorEntity then
-		self.size.tw = math.max(1, self.size.tw + dw)
-		self.size.th = math.max(1, self.size.th + dh)
-		cursorEntity.tw = self.size.tw
-		cursorEntity.th = self.size.th
+		Preselect.size.tw = math.max(1, Preselect.size.tw + dw)
+		Preselect.size.th = math.max(1, Preselect.size.th + dh)
+		cursorEntity.tw = Preselect.size.tw
+		cursorEntity.th = Preselect.size.th
 
 		-- update spawner entity
 		if cursorEntity.type == 'spawner' then
-			updateSpawnerEntity(cursorEntity)
+			Editor.updateSpawnerEntity(cursorEntity)
 		end
 	elseif activeEntity then
 		activeEntity.tw = math.max(1, activeEntity.tw + dw)
@@ -464,7 +328,7 @@ function Preselect:increaseSize(dw, dh)
 
 		-- update spawner entity
 		if activeEntity.type == 'spawner' then
-			updateSpawnerEntity(activeEntity)
+			Editor.updateSpawnerEntity(activeEntity)
 		end
 	end
 end
@@ -491,14 +355,15 @@ local function newEntity(tx, ty, tw, th, entityType)
 end
 
 -- creates a new entity for the current level based on preselect settings
-function Preselect:newEntity(entityType)
+function Preselect.newEntity(entityType)
 	local currentLevel = Editor.currentLevel
-	local entity = newEntity (self.tx, self.ty, self.size.tw, self.size.th, entityType)
+	local entity = newEntity (Preselect.tx, Preselect.ty, 
+		Preselect.size.tw, Preselect.size.th, entityType)
 	return entity
 end
 
 
-local function getHoveredEntity (tx, ty)
+function Editor.getHoveredEntity (tx, ty)
 	local currentLevel = Editor.currentLevel
 	for entityIndex, entity in ipairs(currentLevel.entities) do
 		if tx >= entity.tx and ty >= entity.ty
@@ -550,115 +415,138 @@ function Editor.setBackgroundActive ()
 	Editor.backgroundImage = Editor.backgroundImageActive
 end
 
-local function applyFlowDirections(entity)
-	-- calculate flow directions for the entity
 
+
+function Editor.applyCommonFlowDirections (entity)
+	local tx, ty, tw, th = entity.tx, entity.ty, entity.tw, entity.th
 	local flowOutDirection = entity.flowOutDirection
 	local flowInDirection = entity.flowInDirection
-	local tx, ty, tw, th = entity.tx, entity.ty, entity.tw, entity.th
-
-	-- initialize flowOut and flowIn tables
-	entity.flowOut = {}
-	entity.flowIn = {}
-	
-	
---	local tx1, tx2 = 
-
-	-- wip
-	-- wip
-	-- wip
-	-- wip UtilsData.flowConfigurations = {
 
 
-	-- calculate flowOut line
-	if flowOutDirection == 1 then
-		-- topRight
-		entity.flowOut.line = {tx + tw, ty, tx + tw - 1, ty + 1}
-	elseif flowOutDirection == 2 then
-		-- top
-		entity.flowOut.line = {tx + tw / 2, ty, tx + tw / 2, ty + 1}
-	elseif flowOutDirection == 3 then
+	local commonFlowConfigurations = {
 		-- topLeft
-		entity.flowOut.line = {tx, ty, tx + 1, ty + 1}
-	elseif flowOutDirection == 4 then
-		-- right
-		entity.flowOut.line = {tx + tw, ty + th / 2, tx + tw - 1, ty + th / 2}
-	elseif flowOutDirection == 6 then
-		-- left
-		entity.flowOut.line = {tx, ty + th / 2, tx + 1, ty + th / 2}
-	elseif flowOutDirection == 7 then
-		-- bottomRight
-		entity.flowOut.line = {tx + tw, ty + th, tx + tw - 1, ty + th - 1}
-	elseif flowOutDirection == 8 then
-		-- bottom
-		entity.flowOut.line = {tx + tw / 2, ty + th, tx + tw / 2, ty + th - 1}
-	elseif flowOutDirection == 9 then
-		-- bottomLeft
-		entity.flowOut.line = {tx, ty + th, tx + 1, ty + th - 1}
-	end
-
-	-- calculate flowIn line
-	if flowInDirection == 1 then
+		[7] = {tx1=0.5, ty1=0.5, tx2=-0.5, ty2=0.5, tx3=-1, ty3=-1},
 		-- topRight
-		entity.flowIn.line = {tx + tw - 1, ty + 1, tx + tw, ty}
-	elseif flowInDirection == 2 then
-		-- top
-		entity.flowIn.line = {tx + tw / 2, ty + 1, tx + tw / 2, ty}
-	elseif flowInDirection == 3 then
-		-- topLeft
-		entity.flowIn.line = {tx + 1, ty + 1, tx, ty}
-	elseif flowInDirection == 4 then
-		-- right
-		entity.flowIn.line = {tx + tw - 1, ty + th / 2, tx + tw, ty + th / 2}
-	elseif flowInDirection == 6 then
-		-- left
-		entity.flowIn.line = {tx + 1, ty + th / 2, tx, ty + th / 2}
-	elseif flowInDirection == 7 then
+		[9] = {tx1=tw-0.5, ty1=0.5, tx2=-0.5, ty2=-0.5, tx3=1, ty3=-1},
 		-- bottomRight
-		entity.flowIn.line = {tx + tw - 1, ty + th - 1, tx + tw, ty + th}
-	elseif flowInDirection == 8 then
-		-- bottom
-		entity.flowIn.line = {tx + tw / 2, ty + th - 1, tx + tw / 2, ty + th}
-	elseif flowInDirection == 9 then
+		[3] = {tx1=tw-0.5, ty1=th-0.5, tx2=0.5, ty2=-0.5, tx3=1, ty3=1},
 		-- bottomLeft
-		entity.flowIn.line = {tx + 1, ty + th - 1, tx, ty + th}
+		[1] = {tx1=0.5, ty1=th-0.5, tx2=0.5, ty2=0.5, tx3=-1, ty3=1},
+		-- top
+		[8] = {tx1=tw*0.5, ty1=0.5, tx2=-0.5, ty2=0, tx3=0, ty3=-1},
+		-- right
+		[6] = {tx1=tw-0.5, ty1=th*0.5, tx2=0, ty2=-0.5, tx3=1, ty3=0},
+		-- bottom
+		[2] = {tx1=tw*0.5, ty1=th-0.5, tx2=0.5, ty2=0, tx3=0, ty3=1},
+		-- left
+		[4] = {tx1=0.5, ty1=th*0.5, tx2=0, ty2=0.5, tx3=-1, ty3=0},
+	}
+
+	if flowOutDirection == flowInDirection then
+		-- special case with left and right hand traffic
+		local fc = commonFlowConfigurations[flowOutDirection]
+		local isLeftHandTraffic = entity.isLeftHandTraffic and 1 or -1
+
+		-- calculate the center of the entity flow points
+		local txc = tx+fc.tx1
+		local tyc = ty+fc.ty1
+
+		-- determine whether to use left-hand or right-hand traffic
+		local multiplier = entity.isLeftHandTraffic and 1 or -1
+
+		-- calculate start / end line flow points
+		local x2out = txc+fc.tx2*multiplier
+		local y2out = tyc+fc.ty2*multiplier
+		local x2in = txc-fc.tx2*multiplier
+		local y2in = tyc-fc.ty2*multiplier
+
+		-- calculate directions
+		local x3 = fc.tx3
+		local y3 = fc.ty3
+
+
+		local lineOut = {x2out, y2out, x2out+x3, y2out+y3}
+		local lineIn = {x2in+x3, y2in+y3, x2in, y2in}
+
+		-- assign lines to entity
+		entity.flowOut = {line = lineOut}
+		entity.flowIn = {line = lineIn}
+	else
+		local fcOut = commonFlowConfigurations[flowOutDirection]
+
+
+		local x2out = tx+fcOut.tx1
+		local y2out = ty+fcOut.ty1
+		local x3out = x2out + fcOut.tx3
+		local y3out = y2out + fcOut.ty3
+		local lineOut = {x2out, y2out, x3out, y3out}
+		entity.flowOut = {line = lineOut}
+
+--		print ('flowInDirection: '.. flowInDirection)
+		local fcIn = commonFlowConfigurations[flowInDirection]
+--		print ('in', fcIn.tx1, fcIn.ty1, fcIn.tx3, fcIn.ty3)
+		local x2in = tx + fcIn.tx1
+		local y2in = ty + fcIn.ty1
+		local x3in = x2in + fcIn.tx3
+		local y3in = y2in + fcIn.ty3
+		print ('in', x2in, y2in, x3in, y3in)
+		local lineIn = {x3in, y3in, x2in, y2in}
+		entity.flowIn = {line = lineIn}
 	end
 end
 
+function Editor.applyFlowDirections(entity)
+	-- calculate flow directions for the entity
 
+	if entity.type == 'wall' then return end
 
-function Editor.placeTwinEntities (levelIndex, entity)
-
-
-	Editor.createEntityOnLevel(entity, levelIndex)
-
-	local entityIndex = entity.index
 	local positionType = entity.positionType
+	if positionType == "common" then
+		Editor.applyCommonFlowDirections (entity)
+		return
+	end
 
-	-- debug information for the first entity
+	local flowConfiguration = UtilsData.flowConfigurations[positionType]
+	local fc = flowConfiguration
+	local tx, ty, tw, th = entity.tx, entity.ty, entity.tw, entity.th
 
-	print('Editor.placeTwinEntities', 'Placed first of twin')
-	print('Editor.placeTwinEntities', 'LevelIndex: ' .. levelIndex .. ', EntityIndex: ' .. entityIndex .. ', PositionType: ' .. positionType)
+	-- calculate the center of the entity flow points
+	local txc = tx+fc.tx1
+	local tyc = ty+fc.ty1
 
-	-- retrieve position attributes
-	--right = {tx=maxX, ty=ty, tw=1, th=2, flowDirections = 4},
+	-- determine whether to use left-hand or right-hand traffic
+	local multiplier = entity.isLeftHandTraffic and 1 or -1
+
+	-- calculate start / end line flow points
+	local x2out = txc+fc.tx2*multiplier
+	local y2out = tyc+fc.ty2*multiplier
+	local x2in = txc-fc.tx2*multiplier
+	local y2in = tyc-fc.ty2*multiplier
+
+	-- calculate directions
+	local x3 = fc.tx3
+	local y3 = fc.ty3
+
+
+	local lineOut = {x2out, y2out, x2out+x3, y2out+y3}
+	local lineIn = {x2in+x3, y2in+y3, x2in, y2in}
+
+	-- assign lines to entity
+	entity.flowOut = {line = lineOut}
+	entity.flowIn = {line = lineIn}
+end
+
+function Editor.applySize(entity)
+
+	local positionType = entity.positionType
+	if not positionType then error ('ERROR! no positionType in Editor.applySize') end
+	if positionType == 'common' then return end
+		
 	local entityPosition = UtilsData.entityPositions[positionType]
+	local sep = entityPosition
 
-	-- get the neighboring level index based on the position type
-	local worldLevel = WorldManager.getWorldLevelByIndex (levelIndex)
-	local secondLevelIndex = worldLevel.neighbours[positionType]
-
-	local secondPositionType = UtilsData.extendedOffsetOpposites[positionType]
-
-	local secondEntityPosition = UtilsData.entityPositions[secondPositionType]
-	local sep = secondEntityPosition
-
-	local tx = entity.tx
-	local ty = entity.ty
-	local tw = sep.tw
-	local th = sep.th
-
-
+	entity.tw = sep.tw
+	entity.th = sep.th
 
 	local minX = 0
 	local maxX = GameConfig.tileCountW - 1
@@ -666,34 +554,71 @@ function Editor.placeTwinEntities (levelIndex, entity)
 	local maxY = GameConfig.tileCountH - 1
 
 	if sep.tx == 'minX' then
-		tx = minX
+		entity.tx = minX
 	elseif sep.tx == 'maxX' then
-		tx = maxX
+		entity.tx = maxX
 	end
 
 	if sep.ty == 'minY' then
-		ty = minY
+		entity.ty = minY
 	elseif sep.ty == 'maxY' then
-		ty = maxY
+		entity.ty = maxY
 	end
+end
 
+-- [updates spawner entity with the given parameters]
+function Editor.updateSpawnerEntity(entity)
+	if entity.type == 'wall' then return end
+
+	Editor.applySize(entity)
+	Editor.applyFlowDirections(entity)
+
+end
+
+
+function Editor.placeTwinEntities (levelIndex, entity)
+	-- create the first entity on the specified level
+	Editor.createEntityOnLevel(entity, levelIndex)
+
+	local entityIndex = entity.index
+	local positionType = entity.positionType
+
+	-- debug information for the first entity
+--	print('Editor.placeTwinEntities', 'Placed first of twin')
+--	print('Editor.placeTwinEntities', 'LevelIndex: ' .. levelIndex .. ', EntityIndex: ' .. entityIndex .. ', PositionType: ' .. positionType)
+
+	-- retrieve position attributes
+	local entityPosition = UtilsData.entityPositions[positionType]
+
+	-- get the neighboring level index based on the position type
+	local worldLevel = WorldManager.getWorldLevelByIndex (levelIndex)
+	local secondLevelIndex = worldLevel.neighbours[positionType]
+
+	-- determine the opposite position type for the second entity
+	local secondPositionType = UtilsData.extendedOffsetOpposites[positionType]
+	
+	-- calculate the second entity's position and size
+	local tx = entity.tx
+	local ty = entity.ty
+	local tw = entity.tw
+	local th = entity.th
+
+	-- create the second entity at the same position as the first
 	local secondEntity = newEntity (tx, ty, tw, th, 'spawner')
+	
 	secondEntity.positionType = secondPositionType
+	Editor.applySize(secondEntity)
+	Editor.applyFlowDirections (secondEntity)
 
-	secondEntity.flowOutDirection = sep.flowDirections
-	secondEntity.flowInDirection = sep.flowDirections
-
-	applyFlowDirections (secondEntity)
-
-
+	-- create the second entity on the specified level
 	Editor.createEntityOnLevel(secondEntity, secondLevelIndex)
 
-	print('Editor.placeTwinEntities', 'Placed second of twin at level ' .. secondLevelIndex .. ', tx: ' .. tx .. ', ty: ' .. ty)
-	print ('secondEntity.positionType: '..secondPositionType)
+	-- link the twin entities
+	secondEntity.twinIndex = entityIndex
+	entity.twinIndex = secondEntity.index
 
--- wip
--- wip
--- wip
+--	print('Editor.placeTwinEntities', 'Placed second of twin at level ' .. secondLevelIndex .. ', tx: ' .. tx .. ', ty: ' .. ty)
+--	print ('secondEntity.positionType: '..secondPositionType)
 
 end
 
@@ -725,24 +650,24 @@ end
 
 
 -- [handles tile click and updates preselect state]
-function Preselect:tileClicked(tx, ty)
+function Preselect.tileClicked(tx, ty)
 	local currentLevel = Editor.currentLevel
 
 	-- [update preselect position]
-	self.tx = tx
-	self.ty = ty
+	Preselect.tx = tx
+	Preselect.ty = ty
 
 	-- [check for special cases or constraints]
 	local gameTW = GameConfig.tileCountW -- total width in tiles
 	local gameTH = GameConfig.tileCountH -- total height in tiles
 
 	-- [ensure preselect stays within bounds]
-	if tx + self.size.tw > gameTW then
-		self.tx = gameTW - self.size.tw
+	if tx + Preselect.size.tw > gameTW then
+		Preselect.tx = gameTW - Preselect.size.tw
 	end
 
-	if ty + self.size.th > gameTH then
-		self.ty = gameTH - self.size.th
+	if ty + Preselect.size.th > gameTH then
+		Preselect.ty = gameTH - Preselect.size.th
 	end
 
 	-- [update entity linked to preselect, if any]
@@ -755,18 +680,21 @@ function Preselect:tileClicked(tx, ty)
 --		placeEntity (cursorEntity)
 		Editor.addEntity (cursorEntity)
 
-		self.selectedEntity = cursorEntity
+		Preselect.selectedEntity = cursorEntity
 
---		self.cursorEntity = Preselect.newEntity (entityType)
-		self.cursorEntity = self:newEntity (entityType)
+		Preselect.cursorEntity = Preselect.newEntity (entityType)
+
+		Preselect.selectedEntity = nil
 		return
+	end
 
-	elseif selectedEntity then
+
+	if selectedEntity then
 		-- [deselect the currently selected entity]
 		Preselect.selectedEntity = nil
 	end
 
-	local hoveredEntity = getHoveredEntity (tx, ty) 
+	local hoveredEntity = Editor.getHoveredEntity (tx, ty) 
 	if hoveredEntity then
 		Preselect.selectedEntity = hoveredEntity
 	end
@@ -775,21 +703,21 @@ end
 
 
 -- [updates preselect position and dimensions based on cursor movement]
-function Preselect:cursormoved(tx, ty, dtx, dty)
-	self.tx = tx
-	self.ty = ty
+function Preselect.cursormoved(tx, ty, dtx, dty)
+	Preselect.tx = tx
+	Preselect.ty = ty
 
 	-- [check for special cases or constraints]
 	local gameTW = GameConfig.tileCountW -- total width in tiles
 	local gameTH = GameConfig.tileCountH -- total height in tiles
 
 	-- [ensure preselect stays within bounds]
-	if tx + self.size.tw > gameTW then
-		self.tx = gameTW - self.size.tw
+	if tx + Preselect.size.tw > gameTW then
+		Preselect.tx = gameTW - Preselect.size.tw
 	end
 
-	if ty + self.size.th > gameTH then
-		self.ty = gameTH - self.size.th
+	if ty + Preselect.size.th > gameTH then
+		Preselect.ty = gameTH - Preselect.size.th
 	end
 
 	local entity = Preselect.cursorEntity
@@ -797,10 +725,12 @@ function Preselect:cursormoved(tx, ty, dtx, dty)
 		entity.tx = tx
 		entity.ty = ty
 		if entity.type == 'spawner' then
-			Preselect:updatePreselectSpawnerZone()
+			Preselect.updatePreselectSpawnerZone()
 		else
-
+			-- wall
 		end
+	else
+		-- not entity
 	end
 end
 
@@ -1029,6 +959,47 @@ local function drawPreselect ()
 	love.graphics.line (ts*tx, ts*ty+ts*th, ts*tx+ts*tw, ts*ty)
 end
 
+function Editor.drawDebugInfo()
+	if not Editor.showDebugInfoF1 then return end
+
+	local levelIndex = Editor.currentLevel and Editor.currentLevel.index or "None"
+
+	local infoText = {
+		"Debug Information:",
+		"Preselect.isLeftHandTraffic: " .. tostring(Preselect.isLeftHandTraffic),
+
+		"Current Level: " .. levelIndex,
+		"Entities: " .. (#Editor.currentLevel.entities or 0),
+	}
+	if Preselect.selectedEntity then
+		local e = Preselect.selectedEntity
+		table.insert (infoText, "selectedEntity.isLeftHandTraffic: " .. tostring(e.isLeftHandTraffic))
+		table.insert (infoText, "selectedEntity.flowOutDirection: " .. tostring(e.flowOutDirection))
+		table.insert (infoText, "selectedEntity.flowInDirection: " .. tostring(e.flowInDirection))
+
+		if e.twinIndex then
+			table.insert (infoText, "selectedEntity.twinIndex: " .. tostring(e.twinIndex))
+		end
+	end
+
+	local cursorEntity = Preselect.cursorEntity
+	if cursorEntity then
+		table.insert (infoText, "cursorEntity.type: " .. tostring(cursorEntity.type))
+		table.insert (infoText, "cursorEntity.positionType: " .. tostring(cursorEntity.positionType))
+		table.insert (infoText, "cursorEntity.flowOutDirection: " .. tostring(cursorEntity.flowOutDirection))
+		table.insert (infoText, "cursorEntity.flowInDirection: " .. tostring(cursorEntity.flowInDirection))
+	end
+
+
+	love.graphics.setColor(0, 0, 0)
+
+	-- draw the debug information line by line
+	for i, line in ipairs(infoText) do
+		love.graphics.print(line, 40, 40 + (i - 1) * 15)
+	end
+end
+
+
 function Editor.draw()
 	local ts = GameConfig.tileSize
 	local currentLevel = Editor.currentLevel
@@ -1048,7 +1019,7 @@ function Editor.draw()
 		drawEntityTexture (entity)
 	end
 
-	Preselect:draw()
+	Preselect.draw()
 
 	-- draw neighbour levels
 	-- wip
@@ -1067,6 +1038,7 @@ function Editor.draw()
 	-- wip
 	-- wip
 
+	Editor.drawDebugInfo()
 end
 
 function Editor.exit()
@@ -1147,7 +1119,7 @@ local function removeIncomingFlows(entity, targetEntityIndex)
 end
 
 -- [deletes all flows related to the selected entity]
-local function deleteSelectedZoneFlow(entity)
+function Editor.deleteSelectedZoneFlow(entity)
 	local currentLevel = Editor.currentLevel
 
 	if entity.type ~= 'spawner' then return end
@@ -1168,7 +1140,7 @@ end
 
 
 -- [deletes the selected entity and its associated flows]
-local function deleteSelectedZone()
+function Editor.deleteSelectedZone()
 	local selectedEntity = Preselect.selectedEntity
 	local currentLevel = Editor.currentLevel
 	local entities = currentLevel.entities
@@ -1178,7 +1150,7 @@ local function deleteSelectedZone()
 		for i, entity in ipairs(entities) do
 			if entity == selectedEntity then
 				-- [delete the flows between the selected entity and others]
-				deleteSelectedZoneFlow(selectedEntity)
+				Editor.deleteSelectedZoneFlow(selectedEntity)
 				table.remove(entities, i)
 				break
 			end
@@ -1186,19 +1158,28 @@ local function deleteSelectedZone()
 	end
 end
 
+function Editor.toggleTrafficDirection ()
+	-- toggle traffic direction based on the selected or cursor entity
+	local activeEntity = Preselect.selectedEntity
+	local cursorEntity = Preselect.cursorEntity
 
---[[
--- wip
--- wip
--- wip
-local function swapZone ()
-	local zone = Editor.selectedZone
-	if zone and zone.type == 'spawner' then
-		zone.left = not zone.left
-		updateSpawnerZone (zone)
+	if activeEntity and not cursorEntity then
+		-- toggle traffic direction for the active entity
+		activeEntity.isLeftHandTraffic = not activeEntity.isLeftHandTraffic
+
+		Editor.applyFlowDirections(activeEntity)
+	elseif cursorEntity and not activeEntity then
+		-- toggle traffic direction for the cursor entity
+		cursorEntity.isLeftHandTraffic = not cursorEntity.isLeftHandTraffic
+	else
+		-- toggle global traffic direction
+		Preselect.isLeftHandTraffic = not Preselect.isLeftHandTraffic
 	end
+
+
 end
---]]
+
+
 
 
 local function changeOutputPosition ()
@@ -1218,7 +1199,7 @@ local function changeOutputPosition ()
 		end
 		cursorEntity.flowOutDirection = i
 		Preselect.flowOutDirection = i
-		updateSpawnerEntity (cursorEntity)
+		Editor.updateSpawnerEntity (cursorEntity)
 
 	elseif activeEntity then
 		local i = activeEntity.flowOutDirection
@@ -1230,7 +1211,7 @@ local function changeOutputPosition ()
 		end
 		activeEntity.flowOutDirection = i
 		Preselect.flowOutDirection = i
-		updateSpawnerEntity (activeEntity)
+		Editor.updateSpawnerEntity (activeEntity)
 	end
 end
 
@@ -1251,7 +1232,7 @@ local function changeInputPosition ()
 		end
 		cursorEntity.flowInDirection = i
 		Preselect.flowInDirection = i
-		updateSpawnerEntity (cursorEntity)
+		Editor.updateSpawnerEntity (cursorEntity)
 	elseif activeEntity then
 		local i = activeEntity.flowInDirection
 		i = i + 1
@@ -1262,7 +1243,7 @@ local function changeInputPosition ()
 		end
 		activeEntity.flowInDirection = i
 		Preselect.flowInDirection = i
-		updateSpawnerEntity (activeEntity)
+		Editor.updateSpawnerEntity (activeEntity)
 	end
 
 end
@@ -1368,8 +1349,6 @@ end
 
 
 function Editor.changeLevel (key)
-
-
 -- [get the current level index from the editor]
 	local currentLevelIndex = Editor.currentLevel.index
 
@@ -1378,8 +1357,27 @@ function Editor.changeLevel (key)
 
 	local index = worldLevel.index
 
+	-- set the new level in the editor
 	Editor.setLevel (index)
+end
 
+function Editor.moveEntity(entity, dtx, dty)
+	-- update entity's position based on the given dx and dy
+	entity.tx = entity.tx + dtx
+	entity.ty = entity.ty + dty
+	Editor.applyFlowDirections(entity)
+end
+
+-- [moves an entity based on the given key direction]
+function Editor.changeEntityPosition(key)
+	-- [fetch the current position and dimensions of the entity]
+	local entity = Preselect.selectedEntity
+
+	local offset = UtilsData.cardinalOffsets[key]
+	local dtx = offset.dx
+	local dty = offset.dy
+
+	Editor.moveEntity(entity, dtx, dty)
 end
 
 function Editor.keypressed(key, scancode)
@@ -1391,62 +1389,92 @@ function Editor.keypressed(key, scancode)
 		Preselect.cursorEntity = nil
 		Preselect.size = Preselect.nothingSize
 	elseif key == 'w' then
-		Preselect:setWall()
+		Preselect.setWall()
 		return
 	elseif key == 'z' then
-		Preselect:setSpawner()
+		Preselect.setSpawner()
 		return
 	end
 
 	-- [adjusts size based on keypad + or -]
 	if key == "kp+" then
 		if isCtrl then
-			Preselect:increaseSize(1, 0) -- increase size
+			Preselect.increaseSize(1, 0) -- increase size
 		elseif isShift then
-			Preselect:increaseSize(0, 1) -- increase size
+			Preselect.increaseSize(0, 1) -- increase size
 		else
-			Preselect:increaseSize(1, 1) -- increase size
+			Preselect.increaseSize(1, 1) -- increase size
 		end
 		return
 	elseif key == "kp-" then
 		if isCtrl then
-			Preselect:increaseSize(-1, 0) -- increase size
+			Preselect.increaseSize(-1, 0) -- decrease  size
 		elseif isShift then
-			Preselect:increaseSize(0, -1) -- increase size
+			Preselect.increaseSize(0, -1) -- decrease  size
 		else
-			Preselect:increaseSize(-1, -1) -- increase size
+			Preselect.increaseSize(-1, -1) -- decrease  size
 		end
 		return
 	end
 
-	-- editor.lua
-	-- function Editor.keypressed(key, scancode)
+	-- save levels and world when ctrl+s is pressed
 	if key == "s" then
 		if isCtrl then
 			Editor.saveLevels()
-
 			WorldManager.saveWorld()
-
 			print("Levels and world saved.")
 			return
 		end
 	end
 
-
+	-- change input/output positions
 	if key == "i" then
 		changeInputPosition ()
 	elseif key == "o" then
 		changeOutputPosition ()
 	end
 
+	-- delete selected zone
 	if key == "delete" then
-		deleteSelectedZone ()
+		Editor.deleteSelectedZone ()
 	end
 
-	-- editor.lua
-	if key == 'up' or key == 'right' or key == 'down' or key == 'left' then
-		Editor.changeLevel (key)
+	-- toggle traffic direction (left or right)
+	if key == "b" then
+		Editor.toggleTrafficDirection ()
 	end
+
+
+	-- change level based on arrow keys
+	if key == 'up' or key == 'right' or key == 'down' or key == 'left' then
+		local entity = Preselect.selectedEntity
+		if entity and (
+			(entity.type == 'wall') 
+			or (entity.positionType == 'common') 
+			or ((entity.positionType == 'top' or entity.positionType == 'bottom') 
+				and (key == 'left' or key == 'right'))
+			or ((entity.positionType == 'left' or entity.positionType == 'right') 
+				and (key == 'up' or key == 'down'))
+			)
+			then
+			Editor.changeEntityPosition (key)
+		else
+			Editor.changeLevel (key)
+		end
+	end
+
+	-- toggle debug info
+	if key == 'f1' then
+		Editor.showDebugInfoF1 = not Editor.showDebugInfoF1
+	end
+
+	-- test (apply common flow directions)
+	if key == 'return' then -- enter
+		local entity = Preselect.selectedEntity
+		Editor.applyCommonFlowDirections (entity)
+	end
+
+--	print (key, scancode)
 end
 
 function Editor.mousepressed(x, y, button)
@@ -1466,7 +1494,7 @@ function Editor.mousepressed(x, y, button)
 		return
 	end
 
-	Preselect:tileClicked(tx, ty)
+	Preselect.tileClicked(tx, ty)
 end
 
 
@@ -1483,7 +1511,7 @@ function Editor.mousemoved(x, y, dx, dy)
 
 	-- only update if the cursor has moved to a new tile
 	if dtx ~= 0 or dty ~= 0 then
-		Preselect:cursormoved(tx, ty, dtx, dty)
+		Preselect.cursormoved(tx, ty, dtx, dty)
 	end
 end
 
@@ -1492,7 +1520,7 @@ function Editor.wheelmoved(x, y)
 	local tx, ty = Preselect.tx, Preselect.ty
 
 	local selectedEntity = Preselect.selectedEntity
-	local hoveredEntity = getHoveredEntity(tx, ty)
+	local hoveredEntity = Editor.getHoveredEntity(tx, ty)
 
 	if not selectedEntity or not hoveredEntity then return end
 	if selectedEntity.type ~= 'spawner' or hoveredEntity.type ~= 'spawner' then return end
