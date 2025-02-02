@@ -1236,13 +1236,13 @@ function Editor.keypressed(key, scancode)
 end
 
 function Editor.updateOverlayArrows(selectedEntity)
-	
+
 	-- wip
 	-- wip
 	-- wip
 	-- arrow from middle to middle
 	-- or arrow from output to input
-	
+
 	-- clear existing arrows
 	Editor.overlayArrows = {}
 
@@ -1257,7 +1257,18 @@ function Editor.updateOverlayArrows(selectedEntity)
 		local targetEntity = Editor.getEntityByIndex(flowOutIndex)
 		if targetEntity then
 			-- create a new overlay arrow from selected entity to target entity
-			local line = {selectedEntity.tx, selectedEntity.ty, targetEntity.tx, targetEntity.ty}
+
+			-- calculate the center of the selected entity (starting point)
+			local tx1 = selectedEntity.tx + selectedEntity.tw/2
+			local ty1 = selectedEntity.ty + selectedEntity.th/2
+
+			-- calculate the center of the target entity (end point)
+			local tx2 = targetEntity.tx + targetEntity.tw/2
+			local ty2 = targetEntity.ty + targetEntity.th/2
+
+--			local line = {selectedEntity.tx, selectedEntity.ty, targetEntity.tx, targetEntity.ty}
+			-- create a line from the center of the selected entity to the center of the target entity
+			local line = {tx1, ty1, tx2, ty2}
 
 			-- calculate the size based on the number of outgoing connections
 			local size = #selectedEntity.flowOut * 2  -- example: size proportional to the flow count
