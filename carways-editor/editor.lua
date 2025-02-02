@@ -22,7 +22,7 @@ function Editor.getNextColorIndex ()
 	return Editor.entityColorIndex
 end
 
-
+--[[
 function Editor.drawArrow(line, size)
 	-- check if the line is valid
 	if not line then return end
@@ -61,7 +61,50 @@ function Editor.drawArrow(line, size)
 	-- draw the arrowhead
 	love.graphics.polygon("fill", endX, endY, tip1X, tip1Y, tip2X, tip2Y)
 end
+--]]
 
+function Editor.drawArrow(line, size)
+	-- check if the line is valid
+	if not line then return end
+
+	size = size or 1
+
+	-- define the tile size for scaling
+	local tileSize = GameConfig.tileSize
+
+	-- calculate start and end points of the arrow based on tile positions
+	local startX, startY = line[1] * tileSize, line[2] * tileSize
+	local endX, endY = line[3] * tileSize, line[4] * tileSize
+
+	-- calculate the direction vector for the arrow tip
+	local dx, dy = endX - startX, endY - startY
+	local length = math.sqrt(dx^2 + dy^2)
+	local unitX, unitY = dx / length, dy / length
+
+	-- use the provided size to determine the arrow tip size and width
+	local arrowSize = 10 + 2 * size  -- length of the arrow tip (default is 20)
+	local arrowWidth = 4 + 2 * size  -- width of the arrow wings, adjusted based on size
+
+	-- reduce the line length by the arrowSize to stop the line at the start of the arrow tip
+	local adjustedEndX = endX - arrowSize * unitX
+	local adjustedEndY = endY - arrowSize * unitY
+
+	-- draw the main line of the arrow (from start to the adjusted end position)
+	love.graphics.setLineWidth(size)
+	love.graphics.line(startX, startY, adjustedEndX, adjustedEndY)
+
+	-- calculate perpendicular vector for the arrow wings
+	local perpX, perpY = -unitY * arrowWidth / 2, unitX * arrowWidth / 2
+
+	-- calculate the positions of the arrow tip points
+	local tip1X = endX - arrowSize * unitX + perpX
+	local tip1Y = endY - arrowSize * unitY + perpY
+	local tip2X = endX - arrowSize * unitX - perpX
+	local tip2Y = endY - arrowSize * unitY - perpY
+
+	-- draw the arrowhead
+	love.graphics.polygon("fill", endX, endY, tip1X, tip1Y, tip2X, tip2Y)
+end
 
 
 
