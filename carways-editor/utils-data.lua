@@ -84,7 +84,7 @@ UtilsData.flowConfigurations = {
 --	[9] = "bottomLeft",
 --}
 
-local zoneColorList =  {
+local entityColorList =  {
 	-- [red with a hint of orange]
 	{0.85, 0.3, 0.25},
 
@@ -114,8 +114,39 @@ local zoneColorList =  {
 
 	-- [forest green with muted tones]
 	{0.25, 0.5, 0.3},
+	
+    -- additional colors
+    {0.75, 0.1, 0.2},   -- deep red
+    {0.1, 0.75, 0.2},   -- bright green
+    {0.2, 0.1, 0.75},   -- deep blue
+    {0.75, 0.75, 0.1},  -- golden yellow
+    {0.5, 0.1, 0.75},   -- purple-pink
+    {0.3, 0.15, 0.1},   -- dark brown
+    {0.1, 0.3, 0.75},   -- sky blue
+    {0.6, 0.3, 0.75},   -- lavender
+    {0.9, 0.6, 0.2},    -- warm orange
+    {0.1, 0.5, 0.1},    -- deep forest green
+    {0.7, 0.2, 0.15},   -- brick red
+    {0.2, 0.7, 0.2},    -- leaf green
+    {0.15, 0.15, 0.7},  -- navy blue
+    {0.85, 0.75, 0.3},  -- mustard yellow
+    {0.7, 0.2, 0.5},    -- deep magenta
+    {0.4, 0.2, 0.1},    -- reddish brown
+    {0.2, 0.6, 0.9},    -- bright cyan
+    {0.8, 0.5, 0.9},    -- pastel purple
+    {0.9, 0.7, 0.4},    -- warm peach
+    {0.2, 0.8, 0.4},    -- lime green
+    {0.6, 0.15, 0.15},  -- muted red
+    {0.15, 0.6, 0.15},  -- subdued green
+    {0.15, 0.15, 0.6},  -- royal blue
+    {0.75, 0.6, 0.2},   -- caramel
+    {0.6, 0.2, 0.75},   -- plum
+    {0.5, 0.3, 0.1},    -- dark ochre
+    {0.1, 0.5, 0.75},   -- teal
+    {0.85, 0.5, 0.75}   -- rose pink
 }
-UtilsData.zoneColorList = zoneColorList
+
+UtilsData.entityColorList = entityColorList
 
 
 local zoneArtList = {
@@ -167,7 +198,25 @@ local zoneArtList = {
 			)
 		end
 	},
+	{ 
+		name = 'wall',
+		size = 80,
+		f = function(x, y)
+    local dx = 10  -- offset in x direction
+    local dy = 10  -- offset in y direction
+    local sx = 10  -- scale factor for x direction
+    local sy = 10  -- scale factor for y direction
+
+			love.graphics.line (dx+0*sx,dy+0*sy, 
+				dx+1,dy+5*sy, 
+				dx+3,dy+2*sy, 
+				dx+5,dy+5*sy, 
+				dx+6,dy+0*sy) -- W
+		end
+	},
 }
+
+
 UtilsData.zoneArtList = zoneArtList
 
 local routes = {

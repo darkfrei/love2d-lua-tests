@@ -2,8 +2,8 @@
 
 local GameConfig = {
 	tileSize = 40,
-	tileCountW = 30,
-	tileCountH = 19
+	tileCountW = 32,
+	tileCountH = 18
 }
 
 print('game-config.lua:')
