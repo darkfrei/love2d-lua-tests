@@ -1,9 +1,5 @@
 start table
 stringIndex
-x
-numberValue
-0
-stringIndex
 index
 numberValue
 1
@@ -16,133 +12,726 @@ tableValue
   tableValue
     start table
     stringIndex
-    th
-    numberValue
-    4
+    type
+    stringValue
+    spawner
     stringIndex
-    tx
+    twinIndex
     numberValue
-    4
+    2
+    stringIndex
+    flowInDirection
+    numberValue
+    2
+    stringIndex
+    positionType
+    stringValue
+    left
     stringIndex
     ty
     numberValue
-    12
+    8
     stringIndex
-    ID
+    flowOutDirection
     numberValue
-    17
+    8
     stringIndex
-    type
-    stringValue
-    wall
+    index
+    numberValue
+    1
+    stringIndex
+    tx
+    numberValue
+    0
     stringIndex
     tw
     numberValue
-    4
+    1
+    stringIndex
+    flowOut
+    tableValue
+      start table
+      numberIndex
+      1
+      numberValue
+      3
+      numberIndex
+      2
+      numberValue
+      5
+      numberIndex
+      3
+      numberValue
+      5
+      numberIndex
+      4
+      numberValue
+      5
+      numberIndex
+      5
+      numberValue
+      5
+      numberIndex
+      6
+      numberValue
+      5
+      numberIndex
+      7
+      numberValue
+      5
+      numberIndex
+      8
+      numberValue
+      5
+      numberIndex
+      9
+      numberValue
+      5
+      numberIndex
+      10
+      numberValue
+      5
+      numberIndex
+      11
+      numberValue
+      5
+      numberIndex
+      12
+      numberValue
+      7
+      numberIndex
+      13
+      numberValue
+      5
+      numberIndex
+      14
+      numberValue
+      5
+      numberIndex
+      15
+      numberValue
+      5
+      numberIndex
+      16
+      numberValue
+      5
+      numberIndex
+      17
+      numberValue
+      5
+      numberIndex
+      18
+      numberValue
+      5
+      numberIndex
+      19
+      numberValue
+      5
+      numberIndex
+      20
+      numberValue
+      5
+      stringIndex
+      line
+      tableValue
+        start numbers list
+        0.5 9.5 1.5 9.5
+        end numbers list
+      end table
+    stringIndex
+    flowIn
+    tableValue
+      start table
+      numberIndex
+      1
+      numberValue
+      5
+      numberIndex
+      2
+      numberValue
+      5
+      numberIndex
+      3
+      numberValue
+      5
+      numberIndex
+      4
+      numberValue
+      5
+      numberIndex
+      5
+      numberValue
+      5
+      numberIndex
+      6
+      numberValue
+      5
+      numberIndex
+      7
+      numberValue
+      5
+      numberIndex
+      8
+      numberValue
+      5
+      numberIndex
+      9
+      numberValue
+      5
+      numberIndex
+      10
+      numberValue
+      5
+      numberIndex
+      11
+      numberValue
+      5
+      numberIndex
+      12
+      numberValue
+      5
+      numberIndex
+      13
+      numberValue
+      5
+      numberIndex
+      14
+      numberValue
+      5
+      numberIndex
+      15
+      numberValue
+      5
+      numberIndex
+      16
+      numberValue
+      5
+      numberIndex
+      17
+      numberValue
+      5
+      numberIndex
+      18
+      numberValue
+      5
+      numberIndex
+      19
+      numberValue
+      7
+      numberIndex
+      20
+      numberValue
+      3
+      stringIndex
+      line
+      tableValue
+        start numbers list
+        1.5 8.5 0.5 8.5
+        end numbers list
+      end table
+    stringIndex
+    th
+    numberValue
+    2
+    stringIndex
+    entityColorIndex
+    numberValue
+    1
     end table
   numberIndex
   2
   tableValue
     start table
     stringIndex
-    th
+    type
+    stringValue
+    spawner
+    stringIndex
+    twinIndex
     numberValue
     4
     stringIndex
-    tx
+    flowInDirection
     numberValue
-    4
+    2
+    stringIndex
+    positionType
+    stringValue
+    top
     stringIndex
     ty
     numberValue
-    4
+    0
     stringIndex
-    ID
+    flowOutDirection
     numberValue
-    18
+    8
     stringIndex
-    type
-    stringValue
-    wall
+    index
+    numberValue
+    3
+    stringIndex
+    tx
+    numberValue
+    15
     stringIndex
     tw
     numberValue
-    4
+    2
+    stringIndex
+    flowOut
+    tableValue
+      start table
+      numberIndex
+      1
+      numberValue
+      1
+      numberIndex
+      2
+      numberValue
+      5
+      numberIndex
+      3
+      numberValue
+      7
+      numberIndex
+      4
+      numberValue
+      7
+      numberIndex
+      5
+      numberValue
+      7
+      numberIndex
+      6
+      numberValue
+      7
+      numberIndex
+      7
+      numberValue
+      7
+      numberIndex
+      8
+      numberValue
+      7
+      numberIndex
+      9
+      numberValue
+      7
+      numberIndex
+      10
+      numberValue
+      7
+      numberIndex
+      11
+      numberValue
+      7
+      numberIndex
+      12
+      numberValue
+      7
+      numberIndex
+      13
+      numberValue
+      7
+      numberIndex
+      14
+      numberValue
+      7
+      numberIndex
+      15
+      numberValue
+      7
+      numberIndex
+      16
+      numberValue
+      7
+      numberIndex
+      17
+      numberValue
+      7
+      numberIndex
+      18
+      numberValue
+      7
+      numberIndex
+      19
+      numberValue
+      7
+      numberIndex
+      20
+      numberValue
+      7
+      stringIndex
+      line
+      tableValue
+        start numbers list
+        15.5 0.5 15.5 1.5
+        end numbers list
+      end table
+    stringIndex
+    flowIn
+    tableValue
+      start table
+      numberIndex
+      1
+      numberValue
+      1
+      numberIndex
+      2
+      numberValue
+      5
+      numberIndex
+      3
+      numberValue
+      7
+      numberIndex
+      4
+      numberValue
+      7
+      numberIndex
+      5
+      numberValue
+      7
+      numberIndex
+      6
+      numberValue
+      7
+      numberIndex
+      7
+      numberValue
+      7
+      numberIndex
+      8
+      numberValue
+      7
+      numberIndex
+      9
+      numberValue
+      7
+      numberIndex
+      10
+      numberValue
+      7
+      numberIndex
+      11
+      numberValue
+      7
+      numberIndex
+      12
+      numberValue
+      7
+      numberIndex
+      13
+      numberValue
+      7
+      numberIndex
+      14
+      numberValue
+      7
+      numberIndex
+      15
+      numberValue
+      7
+      numberIndex
+      16
+      numberValue
+      7
+      numberIndex
+      17
+      numberValue
+      7
+      numberIndex
+      18
+      numberValue
+      7
+      stringIndex
+      line
+      tableValue
+        start numbers list
+        16.5 1.5 16.5 0.5
+        end numbers list
+      end table
+    stringIndex
+    th
+    numberValue
+    1
+    stringIndex
+    entityColorIndex
+    numberValue
+    3
     end table
   numberIndex
   3
   tableValue
     start table
     stringIndex
-    th
-    numberValue
-    4
+    type
+    stringValue
+    spawner
     stringIndex
-    tx
+    twinIndex
     numberValue
-    24
+    6
+    stringIndex
+    flowInDirection
+    numberValue
+    2
+    stringIndex
+    positionType
+    stringValue
+    right
     stringIndex
     ty
     numberValue
-    4
+    8
     stringIndex
-    ID
+    flowOutDirection
     numberValue
-    19
+    8
     stringIndex
-    type
-    stringValue
-    wall
+    index
+    numberValue
+    5
+    stringIndex
+    tx
+    numberValue
+    31
     stringIndex
     tw
     numberValue
-    4
+    1
+    stringIndex
+    flowOut
+    tableValue
+      start table
+      numberIndex
+      1
+      numberValue
+      1
+      numberIndex
+      2
+      numberValue
+      1
+      numberIndex
+      3
+      numberValue
+      1
+      numberIndex
+      4
+      numberValue
+      1
+      numberIndex
+      5
+      numberValue
+      1
+      numberIndex
+      6
+      numberValue
+      1
+      numberIndex
+      7
+      numberValue
+      1
+      numberIndex
+      8
+      numberValue
+      1
+      numberIndex
+      9
+      numberValue
+      1
+      numberIndex
+      10
+      numberValue
+      1
+      numberIndex
+      11
+      numberValue
+      1
+      numberIndex
+      12
+      numberValue
+      1
+      numberIndex
+      13
+      numberValue
+      1
+      numberIndex
+      14
+      numberValue
+      1
+      numberIndex
+      15
+      numberValue
+      1
+      numberIndex
+      16
+      numberValue
+      1
+      numberIndex
+      17
+      numberValue
+      1
+      numberIndex
+      18
+      numberValue
+      1
+      numberIndex
+      19
+      numberValue
+      3
+      numberIndex
+      20
+      numberValue
+      7
+      stringIndex
+      line
+      tableValue
+        start numbers list
+        31.5 8.5 30.5 8.5
+        end numbers list
+      end table
+    stringIndex
+    flowIn
+    tableValue
+      start table
+      numberIndex
+      1
+      numberValue
+      1
+      numberIndex
+      2
+      numberValue
+      1
+      numberIndex
+      3
+      numberValue
+      1
+      numberIndex
+      4
+      numberValue
+      1
+      numberIndex
+      5
+      numberValue
+      1
+      numberIndex
+      6
+      numberValue
+      1
+      numberIndex
+      7
+      numberValue
+      1
+      numberIndex
+      8
+      numberValue
+      1
+      numberIndex
+      9
+      numberValue
+      1
+      numberIndex
+      10
+      numberValue
+      1
+      numberIndex
+      11
+      numberValue
+      1
+      numberIndex
+      12
+      numberValue
+      1
+      numberIndex
+      13
+      numberValue
+      1
+      numberIndex
+      14
+      numberValue
+      1
+      numberIndex
+      15
+      numberValue
+      1
+      numberIndex
+      16
+      numberValue
+      1
+      numberIndex
+      17
+      numberValue
+      1
+      numberIndex
+      18
+      numberValue
+      1
+      numberIndex
+      19
+      numberValue
+      7
+      numberIndex
+      20
+      numberValue
+      3
+      stringIndex
+      line
+      tableValue
+        start numbers list
+        30.5 9.5 31.5 9.5
+        end numbers list
+      end table
+    stringIndex
+    th
+    numberValue
+    2
+    stringIndex
+    entityColorIndex
+    numberValue
+    5
     end table
   numberIndex
   4
   tableValue
     start table
     stringIndex
-    th
-    numberValue
-    4
-    stringIndex
-    tx
-    numberValue
-    24
-    stringIndex
-    ty
-    numberValue
-    12
-    stringIndex
-    ID
-    numberValue
-    20
-    stringIndex
     type
     stringValue
-    wall
+    spawner
     stringIndex
-    tw
+    twinIndex
     numberValue
-    4
-    end table
-  numberIndex
-  5
-  tableValue
-    start table
+    8
     stringIndex
-    th
+    flowInDirection
     numberValue
     2
     stringIndex
-    tx
-    numberValue
-    12
+    positionType
+    stringValue
+    bottom
     stringIndex
     ty
     numberValue
-    9
+    17
+    stringIndex
+    flowOutDirection
+    numberValue
+    8
+    stringIndex
+    index
+    numberValue
+    7
+    stringIndex
+    tx
+    numberValue
+    15
+    stringIndex
+    tw
+    numberValue
+    2
     stringIndex
     flowOut
     tableValue
@@ -150,88 +739,80 @@ tableValue
       numberIndex
       1
       numberValue
-      23
+      3
       numberIndex
       2
       numberValue
-      23
+      3
       numberIndex
       3
       numberValue
-      23
+      3
       numberIndex
       4
       numberValue
-      23
+      3
       numberIndex
       5
       numberValue
-      23
+      3
       numberIndex
       6
       numberValue
-      23
+      3
       numberIndex
       7
       numberValue
-      23
+      3
       numberIndex
       8
       numberValue
-      23
+      3
       numberIndex
       9
       numberValue
-      23
+      3
       numberIndex
       10
       numberValue
-      23
+      3
       numberIndex
       11
       numberValue
-      23
+      3
       numberIndex
       12
       numberValue
-      23
+      3
       numberIndex
       13
       numberValue
-      23
+      3
       numberIndex
       14
       numberValue
-      23
+      3
       numberIndex
       15
       numberValue
-      23
+      3
       numberIndex
       16
       numberValue
-      23
+      3
       numberIndex
       17
       numberValue
-      23
+      1
       numberIndex
       18
       numberValue
-      23
-      numberIndex
-      19
-      numberValue
-      23
-      numberIndex
-      20
-      numberValue
-      23
+      5
       stringIndex
       line
       tableValue
         start numbers list
-        13 9.5 13 8.5
+        16.5 17.5 16.5 16.5
         end numbers list
       end table
     stringIndex
@@ -241,337 +822,98 @@ tableValue
       numberIndex
       1
       numberValue
-      23
+      5
       numberIndex
       2
       numberValue
-      23
+      1
       numberIndex
       3
       numberValue
-      23
+      3
       numberIndex
       4
       numberValue
-      23
+      3
       numberIndex
       5
       numberValue
-      23
+      3
       numberIndex
       6
       numberValue
-      23
+      3
       numberIndex
       7
       numberValue
-      23
+      3
       numberIndex
       8
       numberValue
-      23
+      3
       numberIndex
       9
       numberValue
-      23
+      3
       numberIndex
       10
       numberValue
-      23
+      3
       numberIndex
       11
       numberValue
-      23
+      3
       numberIndex
       12
       numberValue
-      23
+      3
       numberIndex
       13
       numberValue
-      23
+      3
       numberIndex
       14
       numberValue
-      23
+      3
       numberIndex
       15
       numberValue
-      23
+      3
       numberIndex
       16
       numberValue
-      23
+      3
       numberIndex
       17
       numberValue
-      23
+      3
       numberIndex
       18
       numberValue
-      23
+      3
       numberIndex
       19
       numberValue
-      23
+      3
       numberIndex
       20
       numberValue
-      23
+      3
       stringIndex
       line
       tableValue
         start numbers list
-        13 11.5 13 10.5
+        15.5 16.5 15.5 17.5
         end numbers list
       end table
-    stringIndex
-    flowOutDirection
-    numberValue
-    8
-    stringIndex
-    flowInDirection
-    numberValue
-    2
-    stringIndex
-    ID
-    numberValue
-    22
-    stringIndex
-    type
-    stringValue
-    spawner
-    stringIndex
-    tw
-    numberValue
-    2
-    end table
-  numberIndex
-  6
-  tableValue
-    start table
     stringIndex
     th
     numberValue
-    2
+    1
     stringIndex
-    tx
+    entityColorIndex
     numberValue
-    18
-    stringIndex
-    ty
-    numberValue
-    9
-    stringIndex
-    flowOut
-    tableValue
-      start table
-      numberIndex
-      1
-      numberValue
-      22
-      numberIndex
-      2
-      numberValue
-      22
-      numberIndex
-      3
-      numberValue
-      22
-      numberIndex
-      4
-      numberValue
-      22
-      numberIndex
-      5
-      numberValue
-      22
-      numberIndex
-      6
-      numberValue
-      22
-      numberIndex
-      7
-      numberValue
-      22
-      numberIndex
-      8
-      numberValue
-      22
-      numberIndex
-      9
-      numberValue
-      22
-      numberIndex
-      10
-      numberValue
-      22
-      numberIndex
-      11
-      numberValue
-      22
-      numberIndex
-      12
-      numberValue
-      22
-      numberIndex
-      13
-      numberValue
-      22
-      numberIndex
-      14
-      numberValue
-      22
-      numberIndex
-      15
-      numberValue
-      22
-      numberIndex
-      16
-      numberValue
-      22
-      numberIndex
-      17
-      numberValue
-      22
-      numberIndex
-      18
-      numberValue
-      22
-      numberIndex
-      19
-      numberValue
-      22
-      numberIndex
-      20
-      numberValue
-      22
-      stringIndex
-      line
-      tableValue
-        start numbers list
-        19 10.5 19 11.5
-        end numbers list
-      end table
-    stringIndex
-    flowIn
-    tableValue
-      start table
-      numberIndex
-      1
-      numberValue
-      22
-      numberIndex
-      2
-      numberValue
-      22
-      numberIndex
-      3
-      numberValue
-      22
-      numberIndex
-      4
-      numberValue
-      22
-      numberIndex
-      5
-      numberValue
-      22
-      numberIndex
-      6
-      numberValue
-      22
-      numberIndex
-      7
-      numberValue
-      22
-      numberIndex
-      8
-      numberValue
-      22
-      numberIndex
-      9
-      numberValue
-      22
-      numberIndex
-      10
-      numberValue
-      22
-      numberIndex
-      11
-      numberValue
-      22
-      numberIndex
-      12
-      numberValue
-      22
-      numberIndex
-      13
-      numberValue
-      22
-      numberIndex
-      14
-      numberValue
-      22
-      numberIndex
-      15
-      numberValue
-      22
-      numberIndex
-      16
-      numberValue
-      22
-      numberIndex
-      17
-      numberValue
-      22
-      numberIndex
-      18
-      numberValue
-      22
-      numberIndex
-      19
-      numberValue
-      22
-      numberIndex
-      20
-      numberValue
-      22
-      stringIndex
-      line
-      tableValue
-        start numbers list
-        19 8.5 19 9.5
-        end numbers list
-      end table
-    stringIndex
-    flowOutDirection
-    numberValue
-    2
-    stringIndex
-    flowInDirection
-    numberValue
-    8
-    stringIndex
-    ID
-    numberValue
-    23
-    stringIndex
-    type
-    stringValue
-    spawner
-    stringIndex
-    tw
-    numberValue
-    2
+    7
     end table
   end table
-stringIndex
-y
-numberValue
-0
-stringIndex
-entityID
-numberValue
-25
 end table

@@ -59,8 +59,8 @@ function WorldManager.createNewWorldLevel (col, row, enabled)
 
 				otherWorldLevel.neighbours[oppositeOffsetName] = index
 
-				print ('level '..index..' has '..offsetName..' neighbour: '..otherWorldLevelIndex)
-				print ('and level '..otherWorldLevelIndex..' has '..oppositeOffsetName..' neighbour: '..index)
+				--		print ('level '..index..' has '..offsetName..' neighbour: '..otherWorldLevelIndex)
+				--		print ('and level '..otherWorldLevelIndex..' has '..oppositeOffsetName..' neighbour: '..index)
 
 			end
 		end
@@ -246,7 +246,7 @@ function WorldManager.changeLevel (currentLevelIndex, offsetKey)
 	end
 
 	local offset = UtilsData.cardinalOffsets[offsetKey]
-	
+
 	if not offset then error ('no offset: '..offsetKey) end
 
 
@@ -305,7 +305,7 @@ function WorldManager.setWorldLevelEnabled (worldLevel)
 		local levelIndex = worldLevel
 		worldLevel = WorldManager.getWorldLevelByIndex (levelIndex)
 	end
-	
+
 	worldLevel.enabled = true
 
 --	local index = worldLevel.index

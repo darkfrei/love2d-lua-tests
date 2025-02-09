@@ -22,12 +22,9 @@ function Editor.getNextColorIndex ()
 	return Editor.entityColorIndex
 end
 
---[[
-function Editor.drawArrow(line, size)
+function Editor.drawArrowOutline(line, size)
 	-- check if the line is valid
 	if not line then return end
-
-	size = size or 1
 
 	-- define the tile size for scaling
 	local tileSize = GameConfig.tileSize
@@ -36,38 +33,50 @@ function Editor.drawArrow(line, size)
 	local startX, startY = line[1] * tileSize, line[2] * tileSize
 	local endX, endY = line[3] * tileSize, line[4] * tileSize
 
-	-- draw the main line of the arrow
-	love.graphics.setLineWidth (size)
-	love.graphics.line(startX, startY, endX, endY)
-
 	-- calculate the direction vector for the arrow tip
 	local dx, dy = endX - startX, endY - startY
 	local length = math.sqrt(dx^2 + dy^2)
 	local unitX, unitY = dx / length, dy / length
+	local arrowSize = 10 + 2 * size  -- length of the arrow tip (default is 20)
+	local adjustedEndX = endX - arrowSize * unitX
+	local adjustedEndY = endY - arrowSize * unitY
+	local width = size
+	local ax, ay = startX, startY
+	local adx, ady = -unitY * width / 2, unitX * width / 2
+	
+	local bx, by = endX - arrowSize * unitX, endY - arrowSize * unitY
+	local arrowTipWidth = 4 + 2 * size
+	
+	local bdx, bdy = -unitY * arrowTipWidth / 2, unitX * arrowTipWidth / 2
+	
+	
+	local cx, cy = endX, endY
 
-	-- use the provided size to determine the arrow tip size and width
-	local arrowSize = 10 + 2*size -- length of the arrow tip (default is 20)
-	local arrowWidth = 4 + 2*size  -- width of the arrow wings, adjusted based on size
+	local vertices = {
+		ax + adx, ay + ady, 
+		bx + adx, by + ady, 
+		bx + bdx, by + bdy, 
+		cx, cy, 
+		bx - bdx, by - bdy, 
+		bx - adx, by - ady, 
+		ax - adx, ay - ady, 
+		}
+	love.graphics.polygon("line", vertices)
+	
+	-- calculate the middle point of the arrow
+	local midX = (startX + endX) / 2
+	local midY = (startY + endY) / 2
 
-	-- calculate perpendicular vector for the arrow wings
-	local perpX, perpY = -unitY * arrowWidth / 2, unitX * arrowWidth / 2
+	-- draw the size text near the middle of the arrow
+	love.graphics.print(size*0.5, midX + 5, midY + 5)
 
-	-- calculate the positions of the arrow tip points
-	local tip1X = endX - arrowSize * unitX + perpX
-	local tip1Y = endY - arrowSize * unitY + perpY
-	local tip2X = endX - arrowSize * unitX - perpX
-	local tip2Y = endY - arrowSize * unitY - perpY
-
-	-- draw the arrowhead
-	love.graphics.polygon("fill", endX, endY, tip1X, tip1Y, tip2X, tip2Y)
 end
---]]
 
 function Editor.drawArrow(line, size)
 	-- check if the line is valid
 	if not line then return end
 
-	size = size or 1
+	size = size or 2
 
 	-- define the tile size for scaling
 	local tileSize = GameConfig.tileSize
@@ -152,14 +161,15 @@ function Editor.drawEntity (entity)
 
 	-- [draw the flow-out line]
 	if flowOut and flowOut.line then
-		love.graphics.setColor(0, 0, 1)
+		love.graphics.setColor(0, 0, 1, 0.5)
 		love.graphics.line(
 			flowOut.line[1]*tileSize, 
 			flowOut.line[2]*tileSize, 
 			flowOut.line[3]*tileSize, 
 			flowOut.line[4]*tileSize
 		)
-		Editor.drawArrow(flowOut.line)
+
+		Editor.drawArrow(flowOut.line, 3)
 		local x = flowOut.line[3]*tileSize
 		local y = flowOut.line[4]*tileSize
 		local amount = #flowOut
@@ -170,14 +180,13 @@ function Editor.drawEntity (entity)
 	if flowIn and flowIn.line then
 
 		love.graphics.setColor(1, 0, 0)
---		love.graphics.line(flowIn.line)
 		love.graphics.line(
 			flowIn.line[1]*tileSize, 
 			flowIn.line[2]*tileSize, 
 			flowIn.line[3]*tileSize, 
 			flowIn.line[4]*tileSize
 		)
-		Editor.drawArrow(flowIn.line)
+		Editor.drawArrow(flowIn.line, 3)
 		local x = flowIn.line[1]*tileSize
 		local y = flowIn.line[2]*tileSize
 		local amount = #flowIn
@@ -394,7 +403,7 @@ function Editor.applySize(entity)
 	if positionType == 'common' then return end
 
 	local entityPosition = UtilsData.entityPositions[positionType]
-	local sep = entityPosition
+	local sep = entityPosition -- (second) entity position
 
 	entity.tw = sep.tw
 	entity.th = sep.th
@@ -497,7 +506,31 @@ end
 
 
 
+function Editor.getSpawnerPositionType (tx, ty, tw, th)
+	-- 
+	local gameTW = GameConfig.tileCountW-1 -- 32
+	local gameTH = GameConfig.tileCountH-1 -- 20
 
+	local top = (ty == 0)
+	local left = (tx == 0)
+	local right = (tx + tw > gameTW)
+	local bottom = (ty + th > gameTH)
+	local topLeft = top and left
+	local topRight = top and right
+	local bottomLeft = bottom and left
+	local bottomRight = bottom and right
+
+	local positionType = top and 'top' or bottom and 'bottom' or false
+
+	positionType = positionType and left and positionType..'Left' 
+	or left and 'left' or positionType
+
+	positionType = positionType and right and positionType..'Right' 
+	or right and 'right' or positionType or 'common'
+
+	return positionType
+
+end
 
 
 -- initializes a new level with the given index
@@ -515,7 +548,7 @@ function Editor.initLevel(levelIndex)
 end
 
 
-local function loadLevel (index)
+function Editor.loadLevel (index)
 	-- constructs the filename for the level based on its index
 	local filename = 'level-'..index..'.dat'
 	local file = io.open(filename, 'r')
@@ -553,7 +586,7 @@ function Editor.getOrLoadLevel(levelIndex)
 	end
 
 	-- attempts to load the level from a file
-	level = loadLevel(levelIndex)
+	level = Editor.loadLevel(levelIndex)
 	if level then
 		Editor.levels[levelIndex] = level
 		print('Level " .. levelIndex .. " loaded from file and added to Editor.levels')
@@ -577,7 +610,7 @@ function Editor.loadAllWorldLevels()
 	for _, worldLevel in ipairs(worldLevels) do
 		local levelIndex = worldLevel.index
 		-- load from file:
-		local level = loadLevel(levelIndex) -- attempt to load the level by its index
+		local level = Editor.loadLevel(levelIndex) -- attempt to load the level by its index
 		if level then
 			Editor.levels[levelIndex] = level -- store the loaded level
 			amount = amount + 1
@@ -658,30 +691,17 @@ Editor.backgroundImage = Editor.backgroundImageActive -- Editor.backgroundImageN
 Editor.mouseCursor = {tx=0, ty=0, tw=1, th=1} -- tiles
 
 -- [renders a single wallZone object]
-local function drawEntityTexture (entity)
+function Editor.drawEntityTexture (entity)
 	local ts = GameConfig.tileSize -- 40
 	local tx, ty = entity.tx, entity.ty
 	local tw, th = entity.tw, entity.th
 
 	local x, y = tx*ts, ty*ts
 
+	local entityArtIndex = entity.entityArtIndex
+	local texture = UtilsData.zoneArtList[entityArtIndex]
 
-	local texture = UtilsData.zoneArtList[entity.zoneArt]
-	local color = UtilsData.entityColorList[entity.entityColorIndex]
-
-	-- [sets color for the wall]
-	if color then
-		love.graphics.setColor(color)
-	else
-		return
-	end
-
-	-- outline
 	love.graphics.setColor (1,1,1)
-	love.graphics.rectangle ('line', ts*tx, ts*ty, ts*tw, ts*th)
-
-
-	-- [draws the texture of the wall]
 
 	if texture and texture.f then
 		local textureSize = texture.size -- 40 or 80
@@ -721,6 +741,9 @@ function Editor.drawDebugInfo()
 		end
 
 		table.insert (infoText, "selectedEntity.entityColorIndex: " .. tostring(e.entityColorIndex))
+
+		-- entity.entityArtIndex
+		table.insert (infoText, "selectedEntity.entityArtIndex: " .. tostring(e.entityArtIndex))
 	end
 
 	local cursorEntity = Preselect.cursorEntity
@@ -732,6 +755,9 @@ function Editor.drawDebugInfo()
 		table.insert (infoText, "cursorEntity.flowInDirection: " .. tostring(e.flowInDirection))
 
 		table.insert (infoText, "cursorEntity.entityColorIndex: " .. tostring(e.entityColorIndex))
+
+		-- entity.entityArtIndex
+		table.insert (infoText, "cursorEntity.entityArtIndex: " .. tostring(e.entityArtIndex))
 
 
 	end
@@ -756,17 +782,19 @@ function Editor.drawFlowArrows()
 
 	if not Editor.overlayArrows then return end
 
---	print ('Editor.drawFlowArrows', '#Editor.overlayArrows', #Editor.overlayArrows)
-
 	-- loop through overlay arrows and draw each one
 	for i, overlayArrow in ipairs (Editor.overlayArrows) do
 		local line = overlayArrow.line -- line in tiles
 		local size = overlayArrow.size -- pixels
 		local color = overlayArrow.color
 
-		local a = 0.4  -- set the transparency
-		love.graphics.setColor (color[1], color[2], color[3], a)
-		-- draw the arrow with a slightly larger size for outline effect:
+		local c = 0.75
+		love.graphics.setColor(0, 0, 0, c)
+		love.graphics.setLineWidth (2)
+		Editor.drawArrowOutline(line, size)
+
+		love.graphics.setColor(color)
+		love.graphics.setLineWidth (1)
 		Editor.drawArrow(line, size)
 	end
 end
@@ -792,15 +820,13 @@ function Editor.draw()
 			love.graphics.setLineWidth (3)
 		end
 		Editor.drawEntity (entity)
-		drawEntityTexture (entity)
+
+		love.graphics.setLineWidth (2)
+		Editor.drawEntityTexture (entity)
 	end
 
 	Preselect.draw()
 
-	-- draw neighbour levels
-	-- wip
-	-- wip
-	-- wip
 	if Editor.neighbours then
 		for i, v in pairs (Editor.neighbours) do
 			if v.text then
@@ -890,8 +916,6 @@ end
 
 function Editor.onEntityDestroyed()
 	local selectedEntity = Preselect.selectedEntity
---	local currentLevel = Editor.currentLevel
---	local entities = currentLevel.entities
 
 	local entity = Editor.destroyEntity(selectedEntity)
 	if entity and entity.twinIndex then
@@ -900,6 +924,9 @@ function Editor.onEntityDestroyed()
 			Editor.destroyEntity(twinEntity)
 		end
 	end
+	
+--	Editor.updateOverlayArrows(selectedEntity)
+	Editor.overlayArrows = {}
 end
 
 function Editor.toggleTrafficDirection ()
@@ -993,24 +1020,6 @@ local function changeInputPosition ()
 end
 
 
-local function nextZoneArt ()
-	local activeEntity = Preselect.selectedEntity
---	local zone = Editor.selectedZone
---	if not zone then return end
---	local zoneArt = zone.zoneArt
---	zone.zoneArt = (zoneArt + 0) % #Data.zoneArtList + 1
-end
-
-local function prevZoneArt ()
-	local activeEntity = Preselect.selectedEntity
-	local cursorEntity = Preselect.cursorEntity
---	local zone = Editor.selectedZone
---	if not zone then return end
---	local zoneArt = zone.zoneArt
---	zone.zoneArt = (zoneArt - 2) % #Data.zoneArtList + 1
-end
-
-
 function Editor.updateTwinEntity (twinIndex, key, value)
 	-- check if twinIndex exists
 	if twinIndex then
@@ -1023,7 +1032,56 @@ function Editor.updateTwinEntity (twinIndex, key, value)
 	end
 end
 
-function Editor.entityNextColor ()
+function Editor.nextZoneArt () -- <- A; -> S: S
+	local activeEntity = Preselect.selectedEntity
+--	local zone = Editor.selectedZone
+--	if not zone then return end
+--	local zoneArt = zone.zoneArt
+--	zone.zoneArt = (zoneArt + 0) % #Data.zoneArtList + 1
+
+	local selectedEntity = Preselect.selectedEntity
+	local cursorEntity = Preselect.cursorEntity 
+	local entity = selectedEntity
+	if entity then 
+		print ('Editor.nextZoneArt', 'selectedEntity')
+	else
+		entity = cursorEntity
+		if entity then
+			print ('Editor.nextZoneArt', 'cursorEntity')
+		else
+			print ('Editor.nextZoneArt', 'no entity')
+			return 
+		end
+	end
+
+	local zoneArtList = UtilsData.zoneArtList
+
+	local entityArtIndex = entity.entityArtIndex
+
+	if entityArtIndex then
+		-- update entityArtIndex cyclically
+		entityArtIndex = entityArtIndex % #zoneArtList + 1
+	else
+		-- set the first index
+		entityArtIndex = 1	
+	end
+
+	entity.entityArtIndex = entityArtIndex
+
+end
+
+function Editor.prevZoneArt () -- <- A; -> S: A
+	local activeEntity = Preselect.selectedEntity
+	local cursorEntity = Preselect.cursorEntity
+--	local zone = Editor.selectedZone
+--	if not zone then return end
+--	local zoneArt = zone.zoneArt
+--	zone.zoneArt = (zoneArt - 2) % #Data.zoneArtList + 1
+end
+
+
+
+function Editor.entityNextColor () 
 	-- press c to change
 	print ('next color:')
 	local selectedEntity = Preselect.selectedEntity
@@ -1172,8 +1230,10 @@ function Editor.changeEntityPosition(key)
 
 
 	local twinIndex = entity.twinIndex
-	local twinEntity = Editor.getEntityByIndex(twinIndex)
-	Editor.moveEntity(twinEntity, dtx, dty)
+	if twinIndex then
+		local twinEntity = Editor.getEntityByIndex(twinIndex)
+		Editor.moveEntity(twinEntity, dtx, dty)
+	end
 end
 
 function Editor.keypressed(key, scancode)
@@ -1221,6 +1281,11 @@ function Editor.keypressed(key, scancode)
 			print("Levels and world saved.")
 			return
 		end
+	end
+
+	if key == "s" then -- no Ctrl: it was above
+		print ('s pressed')
+		Editor.nextZoneArt ()
 	end
 
 	-- change input/output positions
@@ -1279,45 +1344,52 @@ function Editor.keypressed(key, scancode)
 end
 
 function Editor.updateOverlayArrows(selectedEntity)
-
-	-- wip
-	-- wip
-	-- wip
-	-- arrow from middle to middle
-	-- or arrow from output to input
-
 	-- clear existing arrows
 	Editor.overlayArrows = {}
 
 	-- check if selectedEntity is valid
-	if not selectedEntity then return end
+	if not selectedEntity or #selectedEntity.flowOut == 0 then return end
+	if selectedEntity.type ~= 'spawner' then return end
+
+	local arrows = {}
+
+	for i, flowOutIndex in ipairs(selectedEntity.flowOut) do
+		local foundArrow = false
+		for j, arrow in ipairs (arrows) do
+			if arrow.index == flowOutIndex then
+				foundArrow = arrow
+				break
+			end
+		end
+		if foundArrow then
+			-- if arrow found, increment its amount, otherwise create a new arrow
+			foundArrow.amount = foundArrow.amount + 1
+		else
+			local arrow = {index = flowOutIndex, amount = 1}
+			table.insert (arrows, arrow)
+		end
+	end
+
 
 	-- loop through the entities that have outgoing connections
-	for i, flowOutIndex in ipairs(selectedEntity.flowOut) do
---		print (i, 'Editor.updateOverlayArrows')
+	for _, arrowData in ipairs(arrows) do
+		local targetEntity = Editor.getEntityByIndex(arrowData.index)
 
-		-- get the target entity by index
-		local targetEntity = Editor.getEntityByIndex(flowOutIndex)
 		if targetEntity then
-			-- create a new overlay arrow from selected entity to target entity
-
-			-- calculate the center of the selected entity (starting point)
+			-- get the target entity's position and the selectedEntity's position
 			local tx1 = selectedEntity.tx + selectedEntity.tw/2
 			local ty1 = selectedEntity.ty + selectedEntity.th/2
-
-			-- calculate the center of the target entity (end point)
 			local tx2 = targetEntity.tx + targetEntity.tw/2
 			local ty2 = targetEntity.ty + targetEntity.th/2
-
---			local line = {selectedEntity.tx, selectedEntity.ty, targetEntity.tx, targetEntity.ty}
-			-- create a line from the center of the selected entity to the center of the target entity
 			local line = {tx1, ty1, tx2, ty2}
 
-			-- calculate the size based on the number of outgoing connections
-			local size = #selectedEntity.flowOut * 2  -- example: size proportional to the flow count
+			-- calculate the size of the arrow based on the flow amount
+			local size = math.max(2, arrowData.amount * 2)  -- ensure a minimum size of 2
 
-			-- choose a color (could vary based on flow or other conditions)
-			local color = {1, 0, 0}  -- red color, adjust as needed
+			-- use target entity color for the arrow
+			local colorIndex = targetEntity.entityColorIndex
+			local color = UtilsData.entityColorList[colorIndex] or {1, 1, 1}
+			color = {color[1], color[2], color[3], 0.5}
 
 			-- create the overlay arrow object
 			local overlayArrow = {
@@ -1326,7 +1398,7 @@ function Editor.updateOverlayArrows(selectedEntity)
 				color = color
 			}
 
-			-- add the new arrow to the overlay
+			-- add the new arrow to the overlay list
 			table.insert(Editor.overlayArrows, overlayArrow)
 		end
 	end
@@ -1363,44 +1435,9 @@ function Editor.isTileInBounds (tx, ty)
 end
 
 
-function Editor.mousepressed(x, y, button)
-	-- [tile size]
-	local tileSize = GameConfig.tileSize -- 40
-
-	-- [calculate tile-based cursor position]
-	local tx = math.floor(x / tileSize)
-	local ty = math.floor(y / tileSize)
-
-	-- [ensure the coordinates are within valid range]
-	local txMax, tyMax = GameConfig.tileCountW - 1, GameConfig.tileCountH - 1
-
-	if Editor.isTileInBounds (tx, ty) then
-		Editor.onTileClicked(tx, ty, button)
-	else
-		-- GUI if exists
-	end
-end
-
-
-function Editor.mousemoved(x, y, dx, dy)
-	local tileSize = 40
-
-	-- calculate tile-based cursor position
-	local tx = math.floor(x / tileSize)
-	local ty = math.floor(y / tileSize)
-
-	-- calculate delta movement in tile coordinates
-	local dtx = Preselect.tx - tx
-	local dty = Preselect.ty - ty
-
-	-- only update if the cursor has moved to a new tile
-	if dtx ~= 0 or dty ~= 0 then
-		Preselect.cursormoved(tx, ty, dtx, dty)
-	end
-end
-
 function Editor.changeFlow(sourceEntity, targetEntity, direction)
 	-- get the outgoing and incoming flow lists for both entities
+	if  sourceEntity == targetEntity then return end
 	local flowOut = sourceEntity.flowOut
 	local flowIn = targetEntity.flowIn
 
@@ -1412,6 +1449,7 @@ function Editor.changeFlow(sourceEntity, targetEntity, direction)
 			-- add the source entity index to the target's flowIn
 			table.insert(flowIn, sourceEntity.index)
 		end
+
 	elseif direction < 0 then -- remove flow if direction is negative
 		-- find and remove the target entity from the source's flowOut
 		for i, flowID in ipairs(flowOut) do
@@ -1446,8 +1484,45 @@ function Editor.wheelmoved(x, y)
 	Editor.changeFlow (selectedEntity, hoveredEntity, y)
 end
 
+function Editor.mousepressed(x, y, button)
+	-- [tile size]
+	local tileSize = GameConfig.tileSize -- 40
+
+	-- [calculate tile-based cursor position]
+	local tx = math.floor(x / tileSize)
+	local ty = math.floor(y / tileSize)
+
+	-- [ensure the coordinates are within valid range]
+	local txMax, tyMax = GameConfig.tileCountW - 1, GameConfig.tileCountH - 1
+
+	if Editor.isTileInBounds (tx, ty) then
+		Editor.onTileClicked(tx, ty, button)
+	else
+		-- GUI if exists
+	end
+end
 
 
+function Editor.mousemoved(x, y, dx, dy)
+	local tileSize = 40
+
+	-- calculate tile-based cursor position
+	local tx = math.floor(x / tileSize)
+	local ty = math.floor(y / tileSize)
+
+	-- calculate delta movement in tile coordinates
+	local dtx = Preselect.tx - tx
+	local dty = Preselect.ty - ty
+
+	-- only update if the cursor has moved to a new tile
+	if dtx ~= 0 or dty ~= 0 then
+--		Preselect.tx = tx
+--		Preselect.ty = ty
+		if Editor.isTileInBounds (tx, ty) then
+			Preselect.cursormoved(tx, ty, dtx, dty)
+		end
+	end
+end
 
 
 return Editor

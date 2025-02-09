@@ -1,0 +1,82 @@
+start table
+stringIndex
+index
+numberValue
+3
+stringIndex
+entities
+tableValue
+  start table
+  numberIndex
+  1
+  tableValue
+    start table
+    stringIndex
+    type
+    stringValue
+    spawner
+    stringIndex
+    twinIndex
+    numberValue
+    5
+    stringIndex
+    flowInDirection
+    numberValue
+    2
+    stringIndex
+    positionType
+    stringValue
+    left
+    stringIndex
+    ty
+    numberValue
+    8
+    stringIndex
+    flowOutDirection
+    numberValue
+    8
+    stringIndex
+    index
+    numberValue
+    6
+    stringIndex
+    tx
+    numberValue
+    0
+    stringIndex
+    tw
+    numberValue
+    1
+    stringIndex
+    flowOut
+    tableValue
+      start table
+      stringIndex
+      line
+      tableValue
+        start numbers list
+        0.5 9.5 1.5 9.5
+        end numbers list
+      end table
+    stringIndex
+    flowIn
+    tableValue
+      start table
+      stringIndex
+      line
+      tableValue
+        start numbers list
+        1.5 8.5 0.5 8.5
+        end numbers list
+      end table
+    stringIndex
+    th
+    numberValue
+    2
+    stringIndex
+    entityColorIndex
+    numberValue
+    5
+    end table
+  end table
+end table

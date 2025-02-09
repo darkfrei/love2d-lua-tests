@@ -72,17 +72,6 @@ UtilsData.flowConfigurations = {
 	bottomLeft = {tx1=0.5, ty1=0.5, tx2=-0.5, ty2=-0.5, tx3=1, ty3=-1}
 }
 
--- reverse lookup: flow direction to position attribute key
---UtilsData.flowDirectionsToPosition = {
---	[1] = "topRight",
---	[2] = "top",
---	[3] = "topLeft",
---	[4] = "right",
---	[6] = "left",
---	[7] = "bottomRight",
---	[8] = "bottom",
---	[9] = "bottomLeft",
---}
 
 local entityColorList =  {
 	-- [red with a hint of orange]
@@ -114,36 +103,36 @@ local entityColorList =  {
 
 	-- [forest green with muted tones]
 	{0.25, 0.5, 0.3},
-	
-    -- additional colors
-    {0.75, 0.1, 0.2},   -- deep red
-    {0.1, 0.75, 0.2},   -- bright green
-    {0.2, 0.1, 0.75},   -- deep blue
-    {0.75, 0.75, 0.1},  -- golden yellow
-    {0.5, 0.1, 0.75},   -- purple-pink
-    {0.3, 0.15, 0.1},   -- dark brown
-    {0.1, 0.3, 0.75},   -- sky blue
-    {0.6, 0.3, 0.75},   -- lavender
-    {0.9, 0.6, 0.2},    -- warm orange
-    {0.1, 0.5, 0.1},    -- deep forest green
-    {0.7, 0.2, 0.15},   -- brick red
-    {0.2, 0.7, 0.2},    -- leaf green
-    {0.15, 0.15, 0.7},  -- navy blue
-    {0.85, 0.75, 0.3},  -- mustard yellow
-    {0.7, 0.2, 0.5},    -- deep magenta
-    {0.4, 0.2, 0.1},    -- reddish brown
-    {0.2, 0.6, 0.9},    -- bright cyan
-    {0.8, 0.5, 0.9},    -- pastel purple
-    {0.9, 0.7, 0.4},    -- warm peach
-    {0.2, 0.8, 0.4},    -- lime green
-    {0.6, 0.15, 0.15},  -- muted red
-    {0.15, 0.6, 0.15},  -- subdued green
-    {0.15, 0.15, 0.6},  -- royal blue
-    {0.75, 0.6, 0.2},   -- caramel
-    {0.6, 0.2, 0.75},   -- plum
-    {0.5, 0.3, 0.1},    -- dark ochre
-    {0.1, 0.5, 0.75},   -- teal
-    {0.85, 0.5, 0.75}   -- rose pink
+
+	-- additional colors
+	{0.75, 0.1, 0.2},   -- deep red
+	{0.1, 0.75, 0.2},   -- bright green
+	{0.2, 0.1, 0.75},   -- deep blue
+	{0.75, 0.75, 0.1},  -- golden yellow
+	{0.5, 0.1, 0.75},   -- purple-pink
+	{0.3, 0.15, 0.1},   -- dark brown
+	{0.1, 0.3, 0.75},   -- sky blue
+	{0.6, 0.3, 0.75},   -- lavender
+	{0.9, 0.6, 0.2},    -- warm orange
+	{0.1, 0.5, 0.1},    -- deep forest green
+	{0.7, 0.2, 0.15},   -- brick red
+	{0.2, 0.7, 0.2},    -- leaf green
+	{0.15, 0.15, 0.7},  -- navy blue
+	{0.85, 0.75, 0.3},  -- mustard yellow
+	{0.7, 0.2, 0.5},    -- deep magenta
+	{0.4, 0.2, 0.1},    -- reddish brown
+	{0.2, 0.6, 0.9},    -- bright cyan
+	{0.8, 0.5, 0.9},    -- pastel purple
+	{0.9, 0.7, 0.4},    -- warm peach
+	{0.2, 0.8, 0.4},    -- lime green
+	{0.6, 0.15, 0.15},  -- muted red
+	{0.15, 0.6, 0.15},  -- subdued green
+	{0.15, 0.15, 0.6},  -- royal blue
+	{0.75, 0.6, 0.2},   -- caramel
+	{0.6, 0.2, 0.75},   -- plum
+	{0.5, 0.3, 0.1},    -- dark ochre
+	{0.1, 0.5, 0.75},   -- teal
+	{0.85, 0.5, 0.75}   -- rose pink
 }
 
 UtilsData.entityColorList = entityColorList
@@ -202,22 +191,162 @@ local zoneArtList = {
 		name = 'wall',
 		size = 80,
 		f = function(x, y)
-    local dx = 10  -- offset in x direction
-    local dy = 10  -- offset in y direction
-    local sx = 10  -- scale factor for x direction
-    local sy = 10  -- scale factor for y direction
+			local dx = 10  -- offset in x direction
+			local dy = 10  -- offset in y direction
+			local sx = 10  -- scale factor for x direction
+			local sy = 10  -- scale factor for y direction
+			love.graphics.line (
+				x+dx+0*sx,y+dy+0*sy, 
+				x+dx+1*sx,		y+dy+5*sy, 
+				x+dx+3*sx,		y+dy+2*sy, 
+				x+dx+5*sx,		y+dy+5*sy, 
+				x+dx+6*sx,		y+dy+0*sy) -- W
+		end
+	},
+	{ 
+		name = 'water-80',
+		size = 80,
+		f = function(x, y)
+			local dx = 0  -- offset in x direction
+			local dy = 5  -- offset in y direction
+			local sx = 80/14  -- scale factor for x direction
+			local sy = 10*6/8  -- scale factor for y direction
+			love.graphics.line (
+				x+dx+0*sx,		y+dy+2*sy, 
+				x+dx+1*sx,		y+dy+1*sy, 
+				x+dx+3*sx,		y+dy+0*sy, 
+				x+dx+4*sx,		y+dy+0*sy, 
+				x+dx+6*sx,		y+dy+1*sy, 
+				x+dx+7*sx,		y+dy+2*sy, 
+				x+dx+8*sx,		y+dy+3*sy, 
+				x+dx+10*sx,		y+dy+4*sy, 
+				x+dx+11*sx,		y+dy+4*sy, 
+				x+dx+13*sx,		y+dy+3*sy, 
+				x+dx+14*sx,		y+dy+2*sy
+			) -- ~
+			dy = 45
+			love.graphics.line (
+				x+dx+0*sx,		y+dy+2*sy, 
+				x+dx+1*sx,		y+dy+1*sy, 
+				x+dx+3*sx,		y+dy+0*sy, 
+				x+dx+4*sx,		y+dy+0*sy, 
+				x+dx+6*sx,		y+dy+1*sy, 
+				x+dx+7*sx,		y+dy+2*sy, 
+				x+dx+8*sx,		y+dy+3*sy, 
+				x+dx+10*sx,		y+dy+4*sy, 
+				x+dx+11*sx,		y+dy+4*sy, 
+				x+dx+13*sx,		y+dy+3*sy, 
+				x+dx+14*sx,		y+dy+2*sy
+			)
+		end
+	},
+	{ 
+		name = 'water-40',
+		size = 40,
+		f = function(x, y)
+			local dx = 0  -- offset in x direction
+			local dy = 10  -- offset in y direction
+			local sx = 80/14/2  -- scale factor for x direction
+			local sy = 10*6/8/2  -- scale factor for y direction
+			love.graphics.line (
+				x+dx+0*sx,		y+dy+2*sy, 
+				x+dx+1*sx,		y+dy+1*sy, 
+				x+dx+3*sx,		y+dy+0*sy, 
+				x+dx+4*sx,		y+dy+0*sy, 
+				x+dx+6*sx,		y+dy+1*sy, 
+				x+dx+7*sx,		y+dy+2*sy, 
+				x+dx+8*sx,		y+dy+3*sy, 
+				x+dx+10*sx,		y+dy+4*sy, 
+				x+dx+11*sx,		y+dy+4*sy, 
+				x+dx+13*sx,		y+dy+3*sy, 
+				x+dx+14*sx,		y+dy+2*sy
+			) -- ~
 
-			love.graphics.line (dx+0*sx,dy+0*sy, 
-				dx+1,dy+5*sy, 
-				dx+3,dy+2*sy, 
-				dx+5,dy+5*sy, 
-				dx+6,dy+0*sy) -- W
+		end
+	},
+	{ 
+		name = 'home-80',
+		size = 80,
+		f = function(x, y)
+			local dx = 15  -- offset in x direction
+			local dy = 15  -- offset in y direction
+			local sx = 8  -- scale factor for x direction
+			local sy = 8  -- scale factor for y direction
+			love.graphics.rectangle ('line', x+dx+1*sx, y+dy+3*sy, 4*sx, 4*sy)
+			love.graphics.polygon ('line', 
+				x+dx+0*sx, y+dy+3*sy, 
+				x+dx+3*sx, y+dy+0*sy, 
+				x+dx+6*sx, y+dy+3*sy
+			)
+		end
+	},
+	{ 
+		name = 'home-40',
+		size = 40,
+		f = function(x, y)
+			local dx = 7  -- offset in x direction
+			local dy = 6  -- offset in y direction
+			local sx = 8/2  -- scale factor for x direction
+			local sy = 8/2  -- scale factor for y direction
+			love.graphics.rectangle ('line', x+dx+1*sx, y+dy+3*sy, 4*sx, 4*sy)
+			love.graphics.polygon ('line', 
+				x+dx+0*sx, y+dy+3*sy, 
+				x+dx+3*sx, y+dy+0*sy, 
+				x+dx+6*sx, y+dy+3*sy
+			)
+		end
+	},
+	{ 
+		name = 'home-40-full',
+		size = 40,
+		f = function(x, y)
+			local dx = 7  -- offset in x direction
+			local dy = 6  -- offset in y direction
+			local sx = 8/2  -- scale factor for x direction
+			local sy = 8/2  -- scale factor for y direction
+			love.graphics.rectangle ('line', x+dx+1*sx, y+dy+3*sy, 4*sx, 4*sy)
+			love.graphics.polygon ('fill', 
+				x+dx+0*sx, y+dy+3*sy+1, 
+				x+dx+3*sx, y+dy+0*sy+1, 
+				x+dx+6*sx, y+dy+3*sy+1
+			)
+		end
+	},
+	{ 
+		name = 'tree-80',
+		size = 80,
+		f = function(x, y)
+			local dx = 20  -- offset in x direction
+			local dy = 10  -- offset in y direction
+			local sx = 5  -- scale factor for x direction
+			local sy = 5  -- scale factor for y direction
+			love.graphics.line (
+				x+dx+4*sx, y+dy+0*sy, 
+				x+dx+4*sx, y+dy+12*sy, 
+				x+dx+7*sx, y+dy+12*sy
+				)
+			love.graphics.line (
+				x+dx+2*sx, y+dy+2*sy, 
+				x+dx+4*sx, y+dy+0*sy, 
+				x+dx+6*sx, y+dy+2*sy
+				)
+			love.graphics.line (
+				x+dx+1*sx, y+dy+6*sy, 
+				x+dx+4*sx, y+dy+3*sy, 
+				x+dx+7*sx, y+dy+6*sy
+				)
+			love.graphics.line (
+				x+dx+0*sx, y+dy+10*sy, 
+				x+dx+4*sx, y+dy+6*sy, 
+				x+dx+8*sx, y+dy+10*sy
+				)
+
 		end
 	},
 }
 
-
 UtilsData.zoneArtList = zoneArtList
+
 
 local routes = {
 	{number = 101, type = 'Route', directions = {'Route 101', 'Route 101'}},

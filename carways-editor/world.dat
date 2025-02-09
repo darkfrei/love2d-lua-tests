@@ -1,67 +1,313 @@
 start table
-numberIndex
-1
+stringIndex
+worldLevels
 tableValue
   start table
-  stringIndex
-  row
-  numberValue
+  numberIndex
   1
-  stringIndex
-  col
-  numberValue
-  1
-  stringIndex
-  index
-  numberValue
-  1
-  end table
-numberIndex
-2
-tableValue
-  start table
-  stringIndex
-  row
-  numberValue
-  1
-  stringIndex
-  col
-  numberValue
+  tableValue
+    start table
+    stringIndex
+    neighbours
+    tableValue
+      start table
+      stringIndex
+      top
+      numberValue
+      8
+      stringIndex
+      topLeft
+      numberValue
+      9
+      stringIndex
+      topRight
+      numberValue
+      2
+      stringIndex
+      right
+      numberValue
+      3
+      stringIndex
+      bottomLeft
+      numberValue
+      4
+      stringIndex
+      left
+      numberValue
+      5
+      stringIndex
+      bottomRight
+      numberValue
+      6
+      stringIndex
+      bottom
+      numberValue
+      7
+      end table
+    stringIndex
+    col
+    numberValue
+    1
+    stringIndex
+    row
+    numberValue
+    1
+    stringIndex
+    enabled
+    booleanValue
+    true
+    stringIndex
+    index
+    numberValue
+    1
+    end table
+  numberIndex
   2
-  stringIndex
-  index
-  numberValue
-  2
-  end table
-numberIndex
-3
-tableValue
-  start table
-  stringIndex
-  row
-  numberValue
-  2
-  stringIndex
-  col
-  numberValue
-  1
-  stringIndex
-  index
-  numberValue
+  tableValue
+    start table
+    stringIndex
+    neighbours
+    tableValue
+      start table
+      stringIndex
+      bottomLeft
+      numberValue
+      1
+      end table
+    stringIndex
+    col
+    numberValue
+    2
+    stringIndex
+    row
+    numberValue
+    0
+    stringIndex
+    enabled
+    booleanValue
+    false
+    stringIndex
+    index
+    numberValue
+    2
+    end table
+  numberIndex
   3
+  tableValue
+    start table
+    stringIndex
+    neighbours
+    tableValue
+      start table
+      stringIndex
+      left
+      numberValue
+      1
+      end table
+    stringIndex
+    col
+    numberValue
+    2
+    stringIndex
+    row
+    numberValue
+    1
+    stringIndex
+    enabled
+    booleanValue
+    false
+    stringIndex
+    index
+    numberValue
+    3
+    end table
+  numberIndex
+  4
+  tableValue
+    start table
+    stringIndex
+    neighbours
+    tableValue
+      start table
+      stringIndex
+      topRight
+      numberValue
+      1
+      end table
+    stringIndex
+    col
+    numberValue
+    0
+    stringIndex
+    row
+    numberValue
+    2
+    stringIndex
+    enabled
+    booleanValue
+    false
+    stringIndex
+    index
+    numberValue
+    4
+    end table
+  numberIndex
+  5
+  tableValue
+    start table
+    stringIndex
+    neighbours
+    tableValue
+      start table
+      stringIndex
+      right
+      numberValue
+      1
+      end table
+    stringIndex
+    col
+    numberValue
+    0
+    stringIndex
+    row
+    numberValue
+    1
+    stringIndex
+    enabled
+    booleanValue
+    false
+    stringIndex
+    index
+    numberValue
+    5
+    end table
+  numberIndex
+  6
+  tableValue
+    start table
+    stringIndex
+    neighbours
+    tableValue
+      start table
+      stringIndex
+      topLeft
+      numberValue
+      1
+      end table
+    stringIndex
+    col
+    numberValue
+    2
+    stringIndex
+    row
+    numberValue
+    2
+    stringIndex
+    enabled
+    booleanValue
+    false
+    stringIndex
+    index
+    numberValue
+    6
+    end table
+  numberIndex
+  7
+  tableValue
+    start table
+    stringIndex
+    neighbours
+    tableValue
+      start table
+      stringIndex
+      top
+      numberValue
+      1
+      end table
+    stringIndex
+    col
+    numberValue
+    1
+    stringIndex
+    row
+    numberValue
+    2
+    stringIndex
+    enabled
+    booleanValue
+    false
+    stringIndex
+    index
+    numberValue
+    7
+    end table
+  numberIndex
+  8
+  tableValue
+    start table
+    stringIndex
+    neighbours
+    tableValue
+      start table
+      stringIndex
+      bottom
+      numberValue
+      1
+      end table
+    stringIndex
+    col
+    numberValue
+    1
+    stringIndex
+    row
+    numberValue
+    0
+    stringIndex
+    enabled
+    booleanValue
+    false
+    stringIndex
+    index
+    numberValue
+    8
+    end table
+  numberIndex
+  9
+  tableValue
+    start table
+    stringIndex
+    neighbours
+    tableValue
+      start table
+      stringIndex
+      bottomRight
+      numberValue
+      1
+      end table
+    stringIndex
+    col
+    numberValue
+    0
+    stringIndex
+    row
+    numberValue
+    0
+    stringIndex
+    enabled
+    booleanValue
+    false
+    stringIndex
+    index
+    numberValue
+    9
+    end table
   end table
-numberIndex
-4
-tableValue
-  start numbers list
-  1 2 3 4
-  end numbers list
-numberIndex
-5
-tableValue
-  start strings list
-  a
-  b
-  c
-  end strings list
+stringIndex
+entityIndex
+numberValue
+8
+stringIndex
+lastLevelIndex
+numberValue
+9
 end table

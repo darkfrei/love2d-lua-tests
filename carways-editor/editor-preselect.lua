@@ -33,69 +33,22 @@ function Preselect.updatePreselectSpawnerZone()
 	-- get preselect position and size
 	local tx, ty = Preselect.tx, Preselect.ty
 	local tw, th = Preselect.size.tw, Preselect.size.th
+--	print ('Preselect.updatePreselectSpawnerZone', tw, th)
 
-	local tileSize = GameConfig.tileSize
-	local gameTW = GameConfig.tileCountW-1 -- 32
-	local gameTH = GameConfig.tileCountH-1 -- 20
-
--- entity position:
-	local top = (ty == 0)
-	local left = (tx == 0)
-	local right = (tx + tw > gameTW)
-	local bottom = (ty + th > gameTH)
-	local topLeft = top and left
-	local topRight = top and right
-	local bottomLeft = bottom and left
-	local bottomRight = bottom and right
-
---	print (top, left, right, bottom)
-
-	local positionType = top and 'top' or bottom and 'bottom' or false
-
-	positionType = positionType and left and positionType..'Left' 
-	or left and 'left' 
-	or positionType
-
-	positionType = positionType and right and positionType..'Right' 
-	or right and 'right' 
-	or positionType 
-	or 'common'
-
-	--[[
-
-	local positionData = {
-		topRight = {tx=gameTW, ty=0, tw=1, th=1, flowDirections=1},
-		topLeft = {tx=0, ty=0, tw=1, th=1, flowDirections=3},
-		bottomRight = {tx=gameTW, ty=gameTH, tw=1, th=1, flowDirections=7},
-		bottomLeft = {tx=0, ty=gameTH, tw=1, th=1, flowDirections=9},
-
-		top = {tx=tx, ty=0, tw=2, th=1, flowDirections=2},
-		left = {tx=0, ty=ty, tw=1, th=2, flowDirections=6},
-		right = {tx=gameTW, ty=ty, tw=1, th=2, flowDirections=4},
-		bottom = {tx=tx, ty=gameTH, tw=2, th=1, flowDirections=8},
-
-		common = {tx=tx, ty=ty, tw=Preselect.size.tw, th=Preselect.size.th, 
-			flowOutDirection = Preselect.flowOutDirection,
-			flowInDirection = Preselect.flowInDirection
-		},
-	}
-
-	local posData = positionData[positionType]
-
-	for i, v in pairs (posData) do
-		if i == 'flowDirections' then
-			entity.flowOutDirection = v
-			entity.flowInDirection = v
-		else
-			entity[i] = v
-		end
-	end
 	
-	--]]
+	local positionType = Editor.getSpawnerPositionType (tx, ty, tw, th)
 
 	-- store the position in the entity
 	entity.positionType = positionType
-
+	
+	if UtilsData.entityPositions[positionType] then
+		tw = UtilsData.entityPositions[positionType].tw
+		th = UtilsData.entityPositions[positionType].th
+	end
+	
+	entity.tw = tw
+	entity.th = th
+	
 
 	Editor.updateSpawnerEntity (entity)
 end
@@ -172,7 +125,7 @@ function Preselect.increaseSize(dw, dh)
 	local activeEntity = Preselect.selectedEntity
 	local cursorEntity = Preselect.cursorEntity
 
-	print ('Preselect.increaseSize', dw, dh)
+--	print ('Preselect.increaseSize', dw, dh)
 	if cursorEntity then
 		Preselect.size.tw = math.max(1, Preselect.size.tw + dw)
 		Preselect.size.th = math.max(1, Preselect.size.th + dh)
@@ -219,18 +172,18 @@ function Preselect.cursormoved(tx, ty, dtx, dty)
 	Preselect.tx = tx
 	Preselect.ty = ty
 
-	-- [check for special cases or constraints]
-	local gameTW = GameConfig.tileCountW -- total width in tiles
-	local gameTH = GameConfig.tileCountH -- total height in tiles
+--	-- [check for special cases or constraints]
+--	local gameTW = GameConfig.tileCountW -- total width in tiles
+--	local gameTH = GameConfig.tileCountH -- total height in tiles
 
-	-- [ensure preselect stays within bounds]
-	if tx + Preselect.size.tw > gameTW then
-		Preselect.tx = gameTW - Preselect.size.tw
-	end
+--	-- [ensure preselect stays within bounds]
+--	if tx + Preselect.size.tw > gameTW then
+--		Preselect.tx = gameTW - Preselect.size.tw
+--	end
 
-	if ty + Preselect.size.th > gameTH then
-		Preselect.ty = gameTH - Preselect.size.th
-	end
+--	if ty + Preselect.size.th > gameTH then
+--		Preselect.ty = gameTH - Preselect.size.th
+--	end
 
 	local entity = Preselect.cursorEntity
 	if entity then
