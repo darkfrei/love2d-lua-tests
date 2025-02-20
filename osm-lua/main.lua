@@ -1,107 +1,125 @@
 --main.lua
 
+local filenames = {
+	'map-55.osm', -- https://osm.org/go/evapcHOU -- 54.92349, -2.96367
+	'map-0.osm', -- https://osm.org/go/lX8ggeT68 -- -0.697995, 10.243917
+	'map-40.osm', -- https://osm.org/go/xehPtqIcg -- 39.875064, 20.027293
+	'map-48.osm', -- https://osm.org/go/0JAeZ7oTQ -- 48.10720, 11.54670
+}
 
 -- osm
 local osm = {}
 
+local function mercatorY(lat)
+	local radLat = math.rad(lat)
+
+	return math.deg(math.log (math.tan(radLat) + 1/math.cos(radLat)))
+end
+
 function osm.parseOSM(xml)
 	local nodes = {}
+	local nodesHash = {}
+
+	local nodeIndex = 0
 	local ways = {}
-	local bounds = {}
+	for wayStr in xml:gmatch('<way.->.-</way>') do
+		local nodeIndices = {}
+		for id in wayStr:gmatch('<nd ref="(.-)"') do -- id or nd
+			if nodesHash[id] then
+				table.insert (nodeIndices, nodesHash[id])
+			else
+				nodeIndex = nodeIndex + 1
+				nodesHash[id] = nodeIndex
+				table.insert (nodeIndices, nodeIndex)
+			end
+		end
+--		print ('#nodeIndices', #nodeIndices)
+		local way = {nodeIndices = nodeIndices, line = {}}
+		table.insert (ways, way)
+	end
 
-	for node in xml:gmatch('<node.-/>') do
-		local id = node:match('id="(.-)"')
-		local lon = node:match('lon="(.-)"') -- X
-		local lat = node:match('lat="(.-)"') -- Y
-		
-		if id and lat and lon then
-			nodes[id] = {
-				lon = tonumber(lon), -- x
-				lat = tonumber(lat), -- y
-				}
+	for nodeStr in xml:gmatch('<node.-/>') do
+		local id = nodeStr:match('id="(.-)"')
+		local x = tonumber(nodeStr:match('lon="(.-)"')) -- X
+--		local y = tonumber(nodeStr:match('lat="(.-)"')) -- Y
+		local y = mercatorY(tonumber(nodeStr:match('lat="(.-)"')))
+
+		if nodesHash[id] then
+			nodes[nodesHash[id]] = {x=x, y=-y}
+		else
+
 		end
 	end
 
-	for way in xml:gmatch('<way.->.-</way>') do
-		local id = way:match('id="(.-)"')
-		if id then
-			local wayNodes = {}
-			for nd in way:gmatch('<nd ref="(.-)"') do
-				table.insert(wayNodes, nd)
-			end
-			local tags = {}
-			for k, v in way:gmatch('<tag k="(.-)" v="(.-)"') do
-				tags[k] = v
-			end
-			ways[id] = {nodes = wayNodes, tags = tags}
-		end
-	end
-
-	-- bounds
-
---	<bounds minlat="31.6953460" minlon="119.9798230" maxlat="31.7128260" maxlon="120.0172660"/>
 	local minLat, minLon, maxLat, maxLon = xml:match('<bounds minlat="(.-)" minlon="(.-)" maxlat="(.-)" maxlon="(.-)"/>')
-	
-	if minLat and minLon and maxLat and maxLon then
-		bounds = {
-			minlat = tonumber(minLat),
-			minlon = tonumber(minLon),
-			maxlat = tonumber(maxLat),
-			maxlon = tonumber(maxLon)
-		}
-	end
+
+	local minX = tonumber(minLon) -- x
+	local maxX = tonumber(maxLon) -- x
+--	local minY = tonumber(minLat) -- y
+--	local maxY = tonumber(maxLat) -- y
+	local minY = mercatorY(tonumber(minLat))
+	local maxY = mercatorY(tonumber(maxLat))
+
+	local dx = maxX-minX
+	local dy = maxY-minY
+
+	local bounds = {
+		minX=minX, 
+		maxX=maxX, 
+		dx=dx,
+		midX=minX + dx/2, 
+		minY=minY, 
+		maxY=maxY, 
+		dy=dy,
+		midY=minY + dy/2, 
+	}
 
 	return {nodes = nodes, ways = ways, bounds = bounds}
 end
 
-function osm.getScale(bounds, screenWidth, screenHeight)
-	local latDiff = bounds.maxlat - bounds.minlat
-	local lonDiff = bounds.maxlon - bounds.minlon
-	local scaleTemp = math.min(screenWidth / lonDiff, screenHeight / latDiff) * 0.9
-	print ('scaleTemp', scaleTemp)
-	return scaleTemp
-end
+function osm.updateScale(mapData)
+	local bounds = mapData.bounds
+	local screenWidth, screenHeight = love.graphics.getDimensions ()
+	mapData.scale = math.min(screenWidth / bounds.dx, screenHeight / bounds.dy)
+	print ('mapData.scale', mapData.scale)
 
--- end of osm
-
--- main
-
-local mapData
-local scale, offsetX, offsetY
-
-function love.load()
-	local file = love.filesystem.read('interchange.osm')
-	if file then
-		mapData = osm.parseOSM(file)
-		if mapData.bounds then
-			local screenWidth, screenHeight = love.graphics.getWidth(), love.graphics.getHeight()
-			scale = osm.getScale(mapData.bounds, screenWidth, screenHeight)
-			offsetX = -mapData.bounds.minlon * scale + 100
-			offsetY = mapData.bounds.maxlat * scale + 150
+	local ways = mapData.ways
+	local nodes = mapData.nodes
+	for i, way in ipairs (ways) do
+		way.line = {}
+		for j, nodeIndex in ipairs (way.nodeIndices) do
+			local node = nodes[nodeIndex]
+			local x = node.x * mapData.scale
+			local y = node.y * mapData.scale
+--			print ('x: '..x, 'y: '..y)
+			table.insert (way.line, x)
+			table.insert (way.line, y)
 		end
-	else
-		print('Error loading OSM file')
 	end
 end
 
-function love.draw()
-	if not mapData then return end
+local mapDataSet = {}
 
-	love.graphics.setColor(1, 1, 1)
-	for _, way in pairs(mapData.ways) do
-		local prevNode = nil
-		for _, nodeId in ipairs(way.nodes) do
-			local node = mapData.nodes[nodeId]
-			if node then
---				local x = (node.lon - 119.9970406) * 10000 + 400
---				local y = (31.7035039 - node.lat) * 10000 + 300
-				local x = node.lon * scale + offsetX
-				local y = -node.lat * scale + offsetY
-				if prevNode then
-					love.graphics.line(prevNode.x, prevNode.y, x, y)
-				end
-				prevNode = {x = x, y = y}
-			end
+function love.load()
+	for i, filename in ipairs (filenames) do
+		local file = love.filesystem.read(filename)
+		if file then
+			local mapData = osm.parseOSM(file)
+			osm.updateScale(mapData)
+			mapDataSet[i] = mapData
 		end
+	end
+	mapData = mapDataSet[1]
+	mapData = mapDataSet[2]
+	mapData = mapDataSet[3]
+	mapData = mapDataSet[4]
+end
+
+function love.draw()
+	local tx = mapData.bounds.midX*mapData.scale - 400
+	local ty = mapData.bounds.midY*mapData.scale + 300
+	love.graphics.translate (-tx, ty)
+	for _, way in pairs(mapData.ways) do
+		love.graphics.line(way.line)
 	end
 end
