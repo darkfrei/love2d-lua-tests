@@ -60,27 +60,71 @@ local function normalAt(curve, t)
 	return dy, -dx -- rotate by 90 degrees to get outward normal vector
 end
 
+-- function to calculate the curvature of a polyline segment using three points
+local function calculatePolylineCurvature(p1x, p1y, p2x, p2y, p3x, p3y)
+	local dx1 = p2x - p1x
+	local dy1 = p2y - p1y
+	local dx2 = p3x - p2x
+	local dy2 = p3y - p2y
+
+	local crossProduct = dx1 * dy2 - dy1 * dx2
+
+	local len1 = math.sqrt(dx1^2 + dy1^2)
+	local len2 = math.sqrt(dx2^2 + dy2^2)
+
+	local curvature = -(crossProduct) / (len1^2 * len2^2)
+--	local curvature = -(crossProduct) / (len1^3 * len2^3)
+--	local curvature = -(crossProduct)
+	return curvature*300
+end
+
+-- function to calculate the normal vector to the polyline segment
+local function calculatePolylineNormal(p1x, p1y, p2x, p2y, p3x, p3y)
+	local dx1 = p2x - p1x
+	local dy1 = p2y - p1y
+	local dx2 = p3x - p2x
+	local dy2 = p3y - p2y
+
+	-- calculate tangent vector by summing the two vectors
+	local tangentX = dx1 + dx2
+	local tangentY = dy1 + dy2
+
+	-- calculate normal vector by rotating the tangent vector 90 degrees
+	local normalX = -tangentY
+	local normalY = tangentX
+
+    local length = math.sqrt(normalX^2 + normalY^2)
+--	normalX = normalX / length
+--	normalY = normalY / length
+
+	return normalX, normalY
+end
+
 
 function love.load()
 	-- create bezier curve
 	bezierControlPoints = {
-		100, 500, 
-		200, 100, 
-		250, 500, 
-		600, 100,
-		700, 400
+		100, 300, 
+		300, 100, 
+		500, 500,
+		700, 300
 	}
 	bezier = love.math.newBezierCurve(bezierControlPoints)
 
-	bezierLine = bezier:render()
+	bezierRenderLine = bezier:render()
 
+	bezierLine = {} -- points in Love2D line format
 	bezierCurvatureLines = {}
 	bezierCurvatureHeightLine = {}
-	local nmax = 60 -- amound of height lines
+
 	local length = 20
+
+	local nmax = 10 -- amount of height lines
 	for n = 0, nmax do
 		local t = n/nmax
 		local x, y = bezier:evaluate(t)
+		x = math.floor (x + 0.5)
+		y = math.floor (y + 0.5)
 --		local k = math.abs(curvatureAt(bezier, t)) * length
 		local k = curvatureAt(bezier, t) * length
 		-- get the outward normal vector
@@ -92,7 +136,44 @@ function love.load()
 		-- store x, y as a pair for curvature height line
 		table.insert (bezierCurvatureHeightLine, x + nx)
 		table.insert (bezierCurvatureHeightLine, y + ny)
+
+
+		table.insert (bezierLine, x)
+		table.insert (bezierLine, y)
 	end
+
+	print ('polyline = {'..table.concat (bezierLine, ',')..'}')
+	polyline = bezierLine
+
+--	local length = 20
+	polylineCurvatureLines = {}
+	polylineCurvatureHeightLine = {}
+
+	table.insert (polylineCurvatureHeightLine, polyline[1])
+	table.insert (polylineCurvatureHeightLine, polyline[2])
+
+	for i = 3, #polyline - 3, 2 do
+		local p1x, p1y = polyline[i-2], polyline[i-1]
+		local p2x, p2y = polyline[i], polyline[i+1]
+		local p3x, p3y = polyline[i+2], polyline[i+3]
+
+		local k = calculatePolylineCurvature(p1x, p1y, p2x, p2y, p3x, p3y)
+--		normal
+		local nx, ny = calculatePolylineNormal (p1x, p1y, p2x, p2y, p3x, p3y)
+--		nx = nx * k * length*1000000
+--		ny = ny * k * length*1000000
+		nx = nx * k * length
+		ny = ny * k * length
+		print (p2x, p2y, p2x + nx, p2y + ny)
+
+		table.insert (polylineCurvatureLines, {p2x, p2y, p2x + nx, p2y + ny})
+		table.insert (polylineCurvatureHeightLine, p2x + nx)
+		table.insert (polylineCurvatureHeightLine, p2y + ny)
+	end
+
+
+	table.insert (polylineCurvatureHeightLine, polyline[#polyline-1])
+	table.insert (polylineCurvatureHeightLine, polyline[#polyline])
 end
 
 
@@ -100,18 +181,25 @@ function love.draw()
 	-- draw bezier curve
 	love.graphics.setLineWidth (1)
 	love.graphics.setColor(0, 1, 0, 0.5)
-	love.graphics.line(bezierControlPoints)
+--	love.graphics.line(bezierControlPoints)
 
 	love.graphics.setLineWidth (3)
-	love.graphics.setColor(1, 1, 1, 0.5)
+	love.graphics.setColor(1, 1, 1)
 	love.graphics.line(bezierLine)
 
-
-	love.graphics.setColor(1, 0, 0, 0.5) -- red color
+	love.graphics.setLineWidth (2)
+	love.graphics.setColor(1, 0, 0) -- red color
 	for i, line in ipairs (bezierCurvatureLines) do
 		love.graphics.line(line)
 	end
 
 	love.graphics.line(bezierCurvatureHeightLine)
 
+	love.graphics.setLineWidth (2)
+	love.graphics.setColor(0, 1, 0) -- green color
+	for i, line in ipairs (polylineCurvatureLines) do
+		love.graphics.line(line)
+	end
+
+	love.graphics.line(polylineCurvatureHeightLine)
 end
