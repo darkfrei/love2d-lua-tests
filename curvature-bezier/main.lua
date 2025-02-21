@@ -60,44 +60,49 @@ local function normalAt(curve, t)
 	return dy, -dx -- rotate by 90 degrees to get outward normal vector
 end
 
+---- function to calculate the curvature of a polyline segment using three points
+--local function calculatePolylineCurvature(p1x, p1y, p2x, p2y, p3x, p3y)
+--	local dx1 = p2x - p1x
+--	local dy1 = p2y - p1y
+--	local dx2 = p3x - p2x
+--	local dy2 = p3y - p2y
+
+--	local crossProduct = dx1 * dy2 - dy1 * dx2
+
+--	local len1 = math.sqrt(dx1^2 + dy1^2)
+--	local len2 = math.sqrt(dx2^2 + dy2^2)
+
+----	local curvature = -(crossProduct) / (len1 * len2) -- first
+----	local curvature = -(crossProduct) / (len1^2 * len2^2)
+--	local curvature = -(crossProduct) / (len1^3 * len2^3) -- second
+----	local curvature = -(crossProduct)
+--	return curvature*500000
+--end
+
 -- function to calculate the curvature of a polyline segment using three points
 local function calculatePolylineCurvature(p1x, p1y, p2x, p2y, p3x, p3y)
-	local dx1 = p2x - p1x
-	local dy1 = p2y - p1y
-	local dx2 = p3x - p2x
-	local dy2 = p3y - p2y
+--	https://gis.stackexchange.com/questions/195370/determining-curvature-of-polylines
+	-- compute the determinant (signed area of the triangle)
+	local numerator = 2 * ((p2x - p1x) * (p3y - p2y) - (p2y - p1y) * (p3x - p2x))
 
-	local crossProduct = dx1 * dy2 - dy1 * dx2
+	-- compute the product of the three segment lengths
+	local len1 = (p2x - p1x)^2 + (p2y - p1y)^2
+	local len2 = (p3x - p2x)^2 + (p3y - p2y)^2
+	local len3 = (p1x - p3x)^2 + (p1y - p3y)^2
 
-	local len1 = math.sqrt(dx1^2 + dy1^2)
-	local len2 = math.sqrt(dx2^2 + dy2^2)
+	local denominator = math.sqrt(len1 * len2 * len3)
 
-	local curvature = -(crossProduct) / (len1^2 * len2^2)
---	local curvature = -(crossProduct) / (len1^3 * len2^3)
---	local curvature = -(crossProduct)
-	return curvature*300
+	-- prevent division by zero
+	if denominator == 0 then
+		return nil
+	end
+	return -8.1*numerator / denominator
 end
+
 
 -- function to calculate the normal vector to the polyline segment
 local function calculatePolylineNormal(p1x, p1y, p2x, p2y, p3x, p3y)
-	local dx1 = p2x - p1x
-	local dy1 = p2y - p1y
-	local dx2 = p3x - p2x
-	local dy2 = p3y - p2y
-
-	-- calculate tangent vector by summing the two vectors
-	local tangentX = dx1 + dx2
-	local tangentY = dy1 + dy2
-
-	-- calculate normal vector by rotating the tangent vector 90 degrees
-	local normalX = -tangentY
-	local normalY = tangentX
-
-    local length = math.sqrt(normalX^2 + normalY^2)
---	normalX = normalX / length
---	normalY = normalY / length
-
-	return normalX, normalY
+	return p1y - p3y, p3x - p1x
 end
 
 
@@ -119,12 +124,12 @@ function love.load()
 
 	local length = 20
 
-	local nmax = 10 -- amount of height lines
+	local nmax = 16 -- amount of height lines
 	for n = 0, nmax do
 		local t = n/nmax
 		local x, y = bezier:evaluate(t)
-		x = math.floor (x + 0.5)
-		y = math.floor (y + 0.5)
+--		x = math.floor (x + 0.5)
+--		y = math.floor (y + 0.5)
 --		local k = math.abs(curvatureAt(bezier, t)) * length
 		local k = curvatureAt(bezier, t) * length
 		-- get the outward normal vector
@@ -145,7 +150,8 @@ function love.load()
 	print ('polyline = {'..table.concat (bezierLine, ',')..'}')
 	polyline = bezierLine
 
---	local length = 20
+	
+	local length = 20
 	polylineCurvatureLines = {}
 	polylineCurvatureHeightLine = {}
 
