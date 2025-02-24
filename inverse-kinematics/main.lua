@@ -1,9 +1,9 @@
---  https://love2d.org/forums/viewtopic.php?p=262040#p262040
 
 -- chain parameters
 local totalSum = 400
-local numSegments = 8
+local numSegments = 32
 local segmentLength = totalSum / numSegments
+local maxAngle = math.rad(15) -- maximum allowed rotation in radians
 
 -- list of polyline points
 local points = {}
@@ -17,75 +17,103 @@ local targetPoint = {x = 600, y = 300}
 -- end of the chain (may not reach target)
 local endPoint = {x = 600, y = 300}
 
---Lissajous
-local a, b = 150, 150        -- amplitudes for the trajectory
-local omegaX, omegaY = 1, 2   -- frequencies for the trajectory
-local phase = 0             -- phase shift
-local time = 0
-
 -- initialize points
 for i = 0, numSegments do
 	table.insert(points, {x = startPoint.x + i * segmentLength, y = startPoint.y})
 end
 
--- fabrik inverse kinematics function
-
 -- function to calculate distance between two points
-local function distance(x1, y1, x2, y2)
-	return math.sqrt((x2 - x1)^2 + (y2 - y1)^2)
+local function distanceP (p1, p2)
+	return math.sqrt((p2.x - p1.x)^2 + (p2.y - p1.y)^2)
 end
 
 -- function to calculate angle between two points
-local function angleBetween(x1, y1, x2, y2)
-	return math.atan2(y2 - y1, x2 - x1)
+local function angleBetweenP (p1, p2)
+	return math.atan2(p2.y - p1.y, p2.x - p1.x)
+end
+
+function math.sign(v)
+	if v > 0 then
+		return 1
+	elseif v < 0 then
+		return -1
+	else
+		return 0
+	end
 end
 
 
+
+-- function to clamp joint angle within limit
+local function clampJointAngle (baseAngle, angleDiff)
+	angleDiff = ((angleDiff-baseAngle) + math.pi) % (2 * math.pi) - math.pi
+	local absAngle = math.min (maxAngle, math.abs (angleDiff))
+	local resultAngle = baseAngle + math.sign(angleDiff) * absAngle
+	return resultAngle
+end
+
+
+-- function to solve inverse kinematics using the fabrik algorithm
 local function solveIK_FABRIK()
-	-- calculate distance to target
-	local distToTarget = distance(startPoint.x, startPoint.y, targetPoint.x, targetPoint.y)
+	-- forward pass (pull end point toward target)
+	points[#points].x = targetPoint.x
+	points[#points].y = targetPoint.y
 
-	-- if target is too far, move endPoint to the maximum possible distance
-	if distToTarget > totalSum then
-		local angle = angleBetween(startPoint.x, startPoint.y, targetPoint.x, targetPoint.y)
-		endPoint.x = startPoint.x + math.cos(angle) * totalSum
-		endPoint.y = startPoint.y + math.sin(angle) * totalSum
-	else
-		-- if target is within reach, set endPoint directly to targetPoint
-		endPoint.x = targetPoint.x
-		endPoint.y = targetPoint.y
-	end
-
-	-- move the last point to the endPoint position
-	points[#points].x = endPoint.x
-	points[#points].y = endPoint.y
-
-	-- iterate from the last segment to the first, adjusting positions
 	for i = #points - 1, 1, -1 do
-		local d = distance(points[i].x, points[i].y, points[i+1].x, points[i+1].y)
-		local angle = angleBetween(points[i+1].x, points[i+1].y, points[i].x, points[i].y)
+		local p1, p2, p3 = points[i], points[i+1], points[i+2]
+		local d = distanceP(p1, p2)
 		local ratio = segmentLength / d
 
-		-- reposition the current point at the correct distance
-		points[i].x = points[i+1].x + (points[i].x - points[i+1].x) * ratio
-		points[i].y = points[i+1].y + (points[i].y - points[i+1].y) * ratio
+		-- adjust the position of the next segment
+		p1.x = p2.x + (p1.x - p2.x) * ratio
+		p1.y = p2.y + (p1.y - p2.y) * ratio
+
+		if p3 then
+			local a1 = angleBetweenP(p1, p2)
+			local a2 = angleBetweenP(p2, p3)
+			local a3 = clampJointAngle (a2, a1)
+			p1.x = p2.x - segmentLength*math.cos (a3)
+			p1.y = p2.y - segmentLength*math.sin (a3)
+		end
 	end
 
-	-- ensure the first point remains fixed at startPoint
+	-- backward pass (fix start point)
 	points[1].x = startPoint.x
 	points[1].y = startPoint.y
 
-	-- iterate from the first segment to the last, adjusting positions
+	-- propagate adjustments forward from the start point
 	for i = 1, #points-1 do
-		local d = distance(points[i].x, points[i].y, points[i+1].x, points[i+1].y)
-		local angle = angleBetween(points[i].x, points[i].y, points[i+1].x, points[i+1].y)
+		local p1, p2, p3 = points[i], points[i+1], points[i+2]
+
+		local d = distanceP(p1, p2)
 		local ratio = segmentLength / d
 
-		points[i+1].x = points[i].x + math.cos(angle) * segmentLength
-		points[i+1].y = points[i].y + math.sin(angle) * segmentLength
+		-- adjust the position of the next segment
+		p2.x = p1.x + (p2.x - p1.x) * ratio
+		p2.y = p1.y + (p2.y - p1.y) * ratio
+
+		if p3 then
+			local a1 = angleBetweenP(p1, p2)
+			local a2 = angleBetweenP(p2, p3)
+			local a3 = clampJointAngle (a1, a2)
+			p3.x = p2.x + math.cos(a3) * segmentLength
+			p3.y = p2.y + math.sin(a3) * segmentLength
+		end
 	end
+
+	-- update end point position
+	endPoint.x = points[#points].x
+	endPoint.y = points[#points].y
 end
 
+
+-- parameters for a lissajous curve trajectory
+local a, b = 150, 150        -- amplitudes for the trajectory
+local omegaX, omegaY = 1, 2   -- frequencies for the trajectory
+local phase = 0             -- phase shift
+local time = 0
+
+-- update function, moving the target along a lissajous curve
 function love.update(dt)
 	time = time + dt
 	targetPoint.x = 400 + a * math.sin(omegaX * time)
