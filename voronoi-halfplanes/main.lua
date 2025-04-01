@@ -68,6 +68,7 @@ end
 
 -- draw the Voronoi diagram and interactive elements
 function love.draw()
+	love.graphics.setLineWidth (2)
 	-- draw the bounding polygon
 	love.graphics.setColor(1, 1, 1, 0.2) -- semi-transparent white fill
 	diagram:drawBoundingPolygon('fill')
@@ -83,17 +84,43 @@ function love.draw()
 	-- draw the sites
 	love.graphics.setColor(0, 1, 0) -- green color for sites
 	diagram:drawSites('fill', 5)
+	
+	
+	love.graphics.setColor(0, 0, 1)
+	diagram:drawVertices('fill', 3)
 
 	-- highlight the cell under the mouse cursor
 	local mx, my = love.mouse.getPosition()
-	local index, cell = diagram:getCell(mx, my)
-	if index then
-		love.graphics.setColor(1, 1, 1, 0.6) -- semi-transparent white fill
-		diagram:drawCell(index, 'fill')
-		love.graphics.setColor(1, 1, 1, 1) -- solid white outline
-		diagram:drawCell(index, 'line')
+	local indexCell, cell = diagram:getCell(mx, my)
+	local indexEdge, edge = diagram:getEdge(mx, my)
+	local indexVertex, vertex = diagram:getVertex(mx, my)
+	
+	if indexVertex then
+		love.graphics.setColor(1, 1, 1)
+		love.graphics.circle ('fill', vertex.x, vertex.y, 10)
+		local cells = vertex.cells
+		love.graphics.setColor(1, 1, 1, 0.2)
+		for i, cell in ipairs (cells) do
+			love.graphics.polygon ('fill', cell.polygon)
+		end
+	elseif indexEdge then
+		love.graphics.setColor(1, 1, 1)
+		love.graphics.setLineWidth (6)
+		love.graphics.line (edge.v1.x, edge.v1.y, edge.v2.x, edge.v2.y)
+		local cells = edge.cells
+		love.graphics.setColor(1, 1, 1, 0.4)
+		for i, cell in ipairs (cells) do
+			love.graphics.polygon ('fill', cell.polygon)
+		end
+	elseif indexCell then
+		love.graphics.setColor(1, 1, 1, 0.4) -- semi-transparent white fill
+		diagram:drawCell(indexCell, 'fill')
+		love.graphics.setColor(1, 1, 1, 0.8) -- solid white outline
+		diagram:drawCell(indexCell, 'line')
 
 		love.graphics.setColor(1, 1, 1, 1) -- solid white circle for the site
-		diagram:drawSite(index, 'fill', 5)
+		diagram:drawSite(indexCell, 'fill', 5)
 	end
+	
+	
 end

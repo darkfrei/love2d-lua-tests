@@ -76,6 +76,8 @@ function Voronoi:newDiagram()
 		sites = {},  -- list of sites in the diagram
 		boundingPolygon = defaultBoundingPolygon,
 		cells = {}, -- list of voronoi cells
+		vertices = {},
+		edges = {},
 	}
 	setmetatable(diagram, self)
 	table.insert(Voronoi.diagrams, diagram)
@@ -87,7 +89,12 @@ function Voronoi:addSite(x, y)
 	local isValid = pointInPolygon(x, y, self.boundingPolygon)
 	local site = {x=x, y=y, valid = isValid}
 
-	local cell = {site = site, polygon = {}}
+	local cell = {
+		site = site, 
+		polygon = {},
+		vertices = {},
+		edges = {},
+	}
 	site.cell = cell
 	table.insert (self.sites, site) -- adding to diagram
 	table.insert (self.cells, cell) -- adding to diagram
@@ -136,6 +143,72 @@ function Voronoi:setBoundingPolygon(polygon)
 --	self:updateSiteValids()
 end
 
+function Voronoi:updateVertices ()
+	self.vertices = {}
+	local vertexHash = {}
+
+	print ('self.sites 2', self.sites)
+
+	for i, cell in ipairs (self.cells) do
+		cell.vertices = {}
+		local cellPolygon = cell.valid and cell.polygon or {}
+		for j = 1, #cellPolygon-1, 2 do
+			local x, y = cellPolygon[j], cellPolygon[j + 1]
+			local hashKey = string.format("%.2f:%.2f", x, y)
+			if vertexHash[hashKey] then
+				local vertex = vertexHash[hashKey]
+				table.insert (vertex.cells, cell)
+				table.insert (cell.vertices, vertex)
+			else
+				local vertex = {x=x, y=y, cells = {}}
+				table.insert (vertex.cells, cell)
+				table.insert (cell.vertices, vertex)
+				table.insert (self.vertices, vertex)
+				vertexHash[hashKey] = vertex
+			end
+		end
+	end
+end
+
+
+-- update edges and their relationships with cells and vertices
+function Voronoi:updateEdges()
+	self.edges = {} -- clear the existing list of edges
+
+	-- iterate through all vertices
+	for _, vertexA in ipairs(self.vertices) do
+		-- iterate through all pairs of cells connected to the vertex
+		for cellIndex1 = 1, #vertexA.cells - 1 do
+			local cell1 = vertexA.cells[cellIndex1]
+			for cellIndex2 = cellIndex1 + 1, #vertexA.cells do
+				local cell2 = vertexA.cells[cellIndex2]
+
+				-- find another vertex shared by both cells
+				for indexVertex1, vertex1 in ipairs (cell1.vertices) do
+					if not (vertexA == vertex1) then -- ensure it's not the same vertex
+						for indexVertex2, vertex2 in ipairs (cell2.vertices) do
+							if (vertex1 == vertex2) then -- check if the vertex is common to both cells
+								local vertexB = vertex1
+								-- create an edge connecting the two vertices
+								local edge = {
+									v1 = vertexA,
+									v2 = vertexB,
+									cells = {cell1, cell2}
+								}
+								-- link the edge to both cells
+								table.insert (cell1.edges, edge)
+								table.insert (cell2.edges, edge)
+								-- add the edge to the global list of edges
+								table.insert (self.edges, edge)
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
 
 -- generate voronoi cells by clipping polygons for each site
 function Voronoi:update()
@@ -165,7 +238,34 @@ function Voronoi:update()
 		cell.valid = site.valid
 		cell.polygon = cellPolygon
 	end
+
+	print ('self.sites 1', self.sites)
+	self:updateVertices ()
+	self:updateEdges()
+
 end
+
+-- utils --
+
+local function squaredLength(x1, y1, x2, y2)
+	local dx = x2 - x1
+	local dy = y2 - y1
+	return dx * dx + dy * dy
+end
+
+local function pointToLineDistance(px, py, x1, y1, x2, y2)
+	local dx = x2 - x1
+	local dy = y2 - y1
+	if dx == 0 and dy == 0 then
+		return math.sqrt((px - x1)^2 + (py - y1)^2)
+	end
+	local t = ((px - x1) * dx + (py - y1) * dy) / (dx * dx + dy * dy)
+	t = math.max(0, math.min(1, t))
+	local closestX = x1 + t * dx
+	local closestY = y1 + t * dy
+	return math.sqrt((px - closestX)^2 + (py - closestY)^2)
+end
+
 
 -------------
 --- extra ---
@@ -179,6 +279,28 @@ function Voronoi:getCell(mx, my)
 		end
 	end
 	return nil -- return nil if the point is outside all cells
+end
+
+
+function Voronoi:getVertex(mx, my)
+	local lambdaSquared = 10^2
+	for i, vertex in ipairs(self.vertices) do
+		if squaredLength(mx, my, vertex.x, vertex.y) < lambdaSquared then
+			return i, vertex
+		end
+	end
+	return nil
+end
+
+function Voronoi:getEdge(mx, my)
+	local lambda = 5
+	for i, edge in ipairs(self.edges) do
+		local dist = pointToLineDistance(mx, my, edge.v1.x, edge.v1.y, edge.v2.x, edge.v2.y) 
+		if dist < lambda then
+			return i, edge
+		end
+	end
+	return nil
 end
 
 
@@ -224,6 +346,14 @@ function Voronoi:drawCell(index, mode)
 	mode = mode or 'fill' -- default mode is 'fill'
 	if cell.valid then
 		love.graphics.polygon(mode, cell.polygon)
+
+		if mode == 'line' and cell.vertices then
+			local x1, y1 = cell.site.x, cell.site.y
+			for i, v in ipairs (cell.vertices) do
+				local x2, y2 = v.x, v.y
+				love.graphics.line (x1, y1, x2, y2)
+			end
+		end
 	end
 end
 
@@ -238,5 +368,15 @@ function Voronoi:drawCells(mode)
 	end
 end
 
+-- draw all vertices
+function Voronoi:drawVertices(mode, radius)
+	mode = mode or "fill" -- default mode is 'fill'
+	radius = radius or 5  -- default radius is 5
+
+	-- iterate through all vertices and draw them
+	for _, vertex in pairs(self.vertices) do
+		love.graphics.circle(mode, vertex.x, vertex.y, radius)
+	end
+end
 
 return Voronoi
