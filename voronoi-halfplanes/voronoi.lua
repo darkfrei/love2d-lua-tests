@@ -84,8 +84,26 @@ function Voronoi:newDiagram()
 	return diagram
 end
 
+local function getHashPoint (x, y)
+	local hashKey = string.format("%.2f:%.2f", x, y)
+	return hashKey
+end
+
+
 -- add a single site to the diagram
 function Voronoi:addSite(x, y)
+	local siteHash = {}
+	for i, site in ipairs (self.sites) do
+		local x1, y1 = site.x, site.y
+		local hashKey = getHashPoint (x1, y1)
+		siteHash[hashKey] = true
+	end
+	
+	if siteHash [getHashPoint (x, y)] then
+		-- already there
+		return
+	end
+	
 	local isValid = pointInPolygon(x, y, self.boundingPolygon)
 	local site = {x=x, y=y, valid = isValid}
 
@@ -147,7 +165,7 @@ function Voronoi:updateVertices ()
 	self.vertices = {}
 	local vertexHash = {}
 
-	print ('self.sites 2', self.sites)
+--	print ('self.sites 2', self.sites)
 
 	for i, cell in ipairs (self.cells) do
 		cell.vertices = {}
@@ -160,7 +178,11 @@ function Voronoi:updateVertices ()
 				table.insert (vertex.cells, cell)
 				table.insert (cell.vertices, vertex)
 			else
-				local vertex = {x=x, y=y, cells = {}}
+				local vertex = {
+					x=x, y=y, 
+					edges = {},
+					cells = {}, 
+					id = #self.vertices+1}
 				table.insert (vertex.cells, cell)
 				table.insert (cell.vertices, vertex)
 				table.insert (self.vertices, vertex)
@@ -170,43 +192,74 @@ function Voronoi:updateVertices ()
 	end
 end
 
+-- normalize edge vertices to ensure consistent order
+local function getEdgeHash(v1, v2)
+	if v1.id < v2.id then  
+		-- return the normalized key as a string in the format "smallerId:largerId"
+		return string.format("%d:%d", v1.id, v2.id)
+	else
+		-- return the normalized key as a string in the format "smallerId:largerId"
+		return string.format("%d:%d", v2.id, v1.id)
+	end
+end
 
 -- update edges and their relationships with cells and vertices
 function Voronoi:updateEdges()
 	self.edges = {} -- clear the existing list of edges
+	local edgeHash = {}  -- hash table to track unique edges
 
-	-- iterate through all vertices
-	for _, vertexA in ipairs(self.vertices) do
-		-- iterate through all pairs of cells connected to the vertex
-		for cellIndex1 = 1, #vertexA.cells - 1 do
-			local cell1 = vertexA.cells[cellIndex1]
-			for cellIndex2 = cellIndex1 + 1, #vertexA.cells do
-				local cell2 = vertexA.cells[cellIndex2]
+	-- iterate through all cells in the diagram
+	for _, cell in ipairs(self.cells) do
+		-- check if the cell is valid and has at least three vertices to form edges
+		if cell.valid and #cell.vertices > 2 then
+			-- iterate through all vertices of the cell to create edges
+			for i = 1, #cell.vertices do
+				local j = (i % #cell.vertices) + 1 -- wrap around to the first vertex to close the polygon
+				local vertexA = cell.vertices[i]
+				local vertexB = cell.vertices[j]
 
-				-- find another vertex shared by both cells
-				for indexVertex1, vertex1 in ipairs (cell1.vertices) do
-					if not (vertexA == vertex1) then -- ensure it's not the same vertex
-						for indexVertex2, vertex2 in ipairs (cell2.vertices) do
-							if (vertex1 == vertex2) then -- check if the vertex is common to both cells
-								local vertexB = vertex1
-								-- create an edge connecting the two vertices
-								local edge = {
-									v1 = vertexA,
-									v2 = vertexB,
-									cells = {cell1, cell2}
-								}
-								-- link the edge to both cells
-								table.insert (cell1.edges, edge)
-								table.insert (cell2.edges, edge)
-								-- add the edge to the global list of edges
-								table.insert (self.edges, edge)
-							end
-						end
-					end
+				-- generate a unique key for the edge based on the normalized vertex IDs
+				local edgeKey = getEdgeHash(vertexA, vertexB)
+
+				-- check if the edge already exists in the hash table
+				if edgeHash[edgeKey] then
+					local edge = edgeHash[edgeKey]
+
+					-- link the current cell to the existing edge
+					table.insert(edge.cells, cell)
+					table.insert(cell.edges, edge) 
+					
+					table.insert(vertexA.edges, edge) 
+					table.insert(vertexB.edges, edge) 
+					
+					
+				else
+					-- create a new edge and initialize its properties
+					local edge = {
+						v1 = vertexA,
+						v2 = vertexB,
+						cells = {} -- each edge belongs to one or more cells
+					}
+
+					-- add the edge to the global list of edges
+					table.insert(self.edges, edge)
+
+					-- link the edge to the current cell
+					table.insert(edge.cells, cell)
+					table.insert(cell.edges, edge)
+					
+					table.insert(vertexA.edges, edge) 
+					table.insert(vertexB.edges, edge) 
+
+					-- store the edge in the hash table using its unique key
+					edgeHash[edgeKey] = edge
 				end
 			end
 		end
 	end
+
+	-- print the total number of edges found
+	print('found edges:', #self.edges)
 end
 
 
@@ -239,7 +292,7 @@ function Voronoi:update()
 		cell.polygon = cellPolygon
 	end
 
-	print ('self.sites 1', self.sites)
+--	print ('self.sites 1', self.sites)
 	self:updateVertices ()
 	self:updateEdges()
 
@@ -349,10 +402,20 @@ function Voronoi:drawCell(index, mode)
 
 		if mode == 'line' and cell.vertices then
 			local x1, y1 = cell.site.x, cell.site.y
-			for i, v in ipairs (cell.vertices) do
-				local x2, y2 = v.x, v.y
-				love.graphics.line (x1, y1, x2, y2)
-			end
+			local i = 1
+			local x2, y2 = cell.vertices[i].x,  cell.vertices[i].y
+			love.graphics.setColor (1,0,0)
+			love.graphics.line (x1, y1, x2, y2)
+
+			i = #cell.vertices
+			x2, y2 = cell.vertices[i].x,  cell.vertices[i].y
+			love.graphics.setColor (0,0,1)
+			love.graphics.line (x1, y1, x2, y2)
+
+--			for i, v in ipairs (cell.vertices) do
+--				local x2, y2 = v.x, v.y
+--				love.graphics.line (x1, y1, x2, y2)
+--			end
 		end
 	end
 end
@@ -377,6 +440,40 @@ function Voronoi:drawVertices(mode, radius)
 	for _, vertex in pairs(self.vertices) do
 		love.graphics.circle(mode, vertex.x, vertex.y, radius)
 	end
+end
+
+---------------------------
+-- export edges as graph --
+---------------------------
+
+-- export the Voronoi diagram as a graph in Lua format and copy it to clipboard
+function Voronoi:exportGraphToClipboard()
+	-- prepare the Lua code as a string
+	local output = "-- Voronoi Diagram Graph Export\n\n"
+
+	-- nodes section
+	output = output .. "nodes = {\n"
+	for i, vertex in ipairs(self.vertices) do
+		output = output .. string.format("    [%d] = {id = %d, x = %.2f, y = %.2f},\n", i, i, vertex.x, vertex.y)
+	end
+	output = output .. "}\n\n"
+
+	-- edges section
+	output = output .. "edges = {\n"
+	for i, edge in ipairs(self.edges) do
+		-- find the IDs of the vertices
+		local v1Id, v2Id
+		for j, vertex in ipairs(self.vertices) do
+			if vertex == edge.v1 then v1Id = j end
+			if vertex == edge.v2 then v2Id = j end
+		end
+		output = output .. string.format("    [%d] = {id = %d, nodes = {%d, %d}},\n", i, i, v1Id, v2Id)
+	end
+	output = output .. "}\n"
+
+	-- copy the output to the clipboard
+	love.system.setClipboardText(output)
+	print("Graph exported successfully to clipboard.")
 end
 
 return Voronoi

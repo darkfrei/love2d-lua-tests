@@ -17,17 +17,10 @@ function love.load()
 
 	-- add sites to the diagram
 	diagram:addSite(200, 200)
-	diagram:addSite(400, 200)
-	diagram:addSite(500, 200)
 	diagram:addSite(600, 200)
-	diagram:addSite(200, 400)
-	diagram:addSite(300, 300)
-	diagram:addSite(700, 300)
 	diagram:addSite(400, 400)
-	diagram:addSite(400, 500)
-	diagram:addSite(500, 500)
-	diagram:addSite(500, 400)
-	diagram:addSite(600, 400)
+	diagram:addSite(400, 400) -- will be ignored
+
 
 	-- add a site outside the bounding polygon (for testing purposes)
 	diagram:addSite(100, 200)
@@ -84,8 +77,8 @@ function love.draw()
 	-- draw the sites
 	love.graphics.setColor(0, 1, 0) -- green color for sites
 	diagram:drawSites('fill', 5)
-	
-	
+
+
 	love.graphics.setColor(0, 0, 1)
 	diagram:drawVertices('fill', 3)
 
@@ -94,14 +87,24 @@ function love.draw()
 	local indexCell, cell = diagram:getCell(mx, my)
 	local indexEdge, edge = diagram:getEdge(mx, my)
 	local indexVertex, vertex = diagram:getVertex(mx, my)
-	
+
 	if indexVertex then
 		love.graphics.setColor(1, 1, 1)
 		love.graphics.circle ('fill', vertex.x, vertex.y, 10)
+		
+		-- highlight cells
 		local cells = vertex.cells
 		love.graphics.setColor(1, 1, 1, 0.2)
 		for i, cell in ipairs (cells) do
 			love.graphics.polygon ('fill', cell.polygon)
+		end
+		
+		-- highlight edges
+		local edges = vertex.edges
+		love.graphics.setColor(1, 1, 1, 0.6)
+		love.graphics.setLineWidth (3)
+		for i, edge in ipairs (edges) do
+			love.graphics.line (edge.v1.x, edge.v1.y, edge.v2.x, edge.v2.y)
 		end
 	elseif indexEdge then
 		love.graphics.setColor(1, 1, 1)
@@ -115,12 +118,18 @@ function love.draw()
 	elseif indexCell then
 		love.graphics.setColor(1, 1, 1, 0.4) -- semi-transparent white fill
 		diagram:drawCell(indexCell, 'fill')
+		
 		love.graphics.setColor(1, 1, 1, 0.8) -- solid white outline
 		diagram:drawCell(indexCell, 'line')
 
 		love.graphics.setColor(1, 1, 1, 1) -- solid white circle for the site
 		diagram:drawSite(indexCell, 'fill', 5)
 	end
-	
-	
+end
+
+function love.keypressed(key)
+	if key == "c" and love.keyboard.isDown("lctrl") then
+		-- export the graph to clipboard
+		diagram:exportGraphToClipboard()
+	end
 end
