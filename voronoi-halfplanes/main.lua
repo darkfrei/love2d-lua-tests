@@ -4,7 +4,7 @@
 love.window.setTitle('Voronoi lib halfplanes method')
 
 -- require the Voronoi module
-local Voronoi = require("Voronoi")
+local Voronoi = require("voronoi")
 
 -- create a new Voronoi diagram object
 local diagram = Voronoi:newDiagram()

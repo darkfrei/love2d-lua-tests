@@ -98,12 +98,12 @@ function Voronoi:addSite(x, y)
 		local hashKey = getHashPoint (x1, y1)
 		siteHash[hashKey] = true
 	end
-	
+
 	if siteHash [getHashPoint (x, y)] then
 		-- already there
 		return
 	end
-	
+
 	local isValid = pointInPolygon(x, y, self.boundingPolygon)
 	local site = {x=x, y=y, valid = isValid}
 
@@ -228,11 +228,11 @@ function Voronoi:updateEdges()
 					-- link the current cell to the existing edge
 					table.insert(edge.cells, cell)
 					table.insert(cell.edges, edge) 
-					
+
 					table.insert(vertexA.edges, edge) 
 					table.insert(vertexB.edges, edge) 
-					
-					
+
+
 				else
 					-- create a new edge and initialize its properties
 					local edge = {
@@ -247,7 +247,7 @@ function Voronoi:updateEdges()
 					-- link the edge to the current cell
 					table.insert(edge.cells, cell)
 					table.insert(cell.edges, edge)
-					
+
 					table.insert(vertexA.edges, edge) 
 					table.insert(vertexB.edges, edge) 
 
