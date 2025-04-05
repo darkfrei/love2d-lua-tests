@@ -83,7 +83,7 @@ local function pathfinding(nodes, edges, startId, goalId)
 			local baseCost = neighborData.length -- segmentLength
 			local dynamicCost = dynamicCostHeuristic(edge) -- calculate dynamic cost
 --			local tentativeGScore = gScore[current.id] + dynamicCost
-			local tentativeGScore = gScore[current.id] + edge.length + dynamicCost
+			local tentativeGScore = gScore[current.id] + edge.length + dynamicCost*4
 
 			if tentativeGScore < gScore[neighbor.id] then
 				cameFrom[neighbor.id] = current

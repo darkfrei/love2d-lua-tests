@@ -119,7 +119,7 @@ local edges = {
 --	[23] = {id = 23, nodes = {19, 20}},
 	[24] = {id = 24, nodes = {18, 20, 19}},
 	[25] = {id = 25, nodes = {21, 16}},
-	[26] = {id = 26, nodes = {9, 22}},
+--	[26] = {id = 26, nodes = {9, 22}},
 	[27] = {id = 27, nodes = {22, 23}},
 	[28] = {id = 28, nodes = {23, 21}},
 	[29] = {id = 29, nodes = {24, 8}},
@@ -220,6 +220,8 @@ local edges = {
 --	[124] = {id = 124, nodes = {56, 43}},
 }
 
+
+--[[ 
 -- data.lua rest:
 
 -- round the x and y coordinates of each node to the nearest integer
@@ -244,7 +246,7 @@ for _, edge in pairs(edges) do
 	local totalLength = 0
 	edge.segments = {} -- store segments of the polyline edge
 
-	local firstNode = nodes[edge.nodes[1]]  -- get the first node of the edge
+	local firstNode = nodes[edge.nodes[1] ]  -- get the first node of the edge
 	edge.line = {firstNode.x, firstNode.y} -- initialize the line with the first node's coordinates
 
 	-- iterate through all node pairs in the edge to calculate its length and build the line
@@ -273,8 +275,8 @@ for _, edge in pairs(edges) do
 	edge.length = totalLength
 	edge.dynamicCost = 0
 
-	edge.x = (nodes[edge.nodes[1]].x + (nodes[edge.nodes[2]].x))/2
-	edge.y = (nodes[edge.nodes[1]].y + (nodes[edge.nodes[2]].y))/2
+	edge.x = (nodes[edge.nodes[1] ].x + (nodes[edge.nodes[2] ].x))/2
+	edge.y = (nodes[edge.nodes[1] ].y + (nodes[edge.nodes[2] ].y))/2
 end
 
 
@@ -287,6 +289,8 @@ end
 --	table.insert(nodes[node2Id].neighbors, newNeighbor (node1Id, length, edge.id))
 
 --end
+
+--]]
 
 return { -- require doesn't return multiple values
 	nodes = nodes, 
