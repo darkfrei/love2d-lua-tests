@@ -1,5 +1,3 @@
--- diagram.lua
-
 local nodes = {}
 local edges = {}
 
@@ -32,7 +30,7 @@ end
 
 local function getEdgeLength(nodes, edge)
 	local length = 0
-	local line = edge.line -- use precomputed points from edge.line
+	local line = edge.line
 	for i = 1, #line - 2, 2 do
 		local x1, y1 = line[i], line[i + 1]
 		local x2, y2 = line[i + 2], line[i + 3]
@@ -67,31 +65,24 @@ local function getMidpointOfLine(nodes, edge)
 	local currentDist = 0
 	local midX, midY, nx, ny
 
-	local line = edge.line -- use edge.line for line coordinates (straight or curved)
-
-	-- iterate through line points to find the midpoint
+	local line = edge.line
 	for i = 1, #line - 2, 2 do
 		local x1, y1 = line[i], line[i + 1]
 		local x2, y2 = line[i + 2], line[i + 3]
 		local segmentLength = getLength(x2 - x1, y2 - y1)
 
 		if currentDist + segmentLength >= midpointDist then
-			-- find exact midpoint position on the current segment
 			local remainingDist = midpointDist - currentDist
 			local t = remainingDist / segmentLength
 			midX = x1 + t * (x2 - x1)
 			midY = y1 + t * (y2 - y1)
-
-			-- calculate normalized direction vector
 			local dx = x2 - x1
 			local dy = y2 - y1
 			local len = getLength(dx, dy)
 			nx = dx / len
 			ny = dy / len
-
 			break
 		end
-
 		currentDist = currentDist + segmentLength
 	end
 
@@ -101,15 +92,12 @@ end
 local function getArrowLine(nodes, edge)
 	local midX, midY, nx, ny = getMidpointOfLine(nodes, edge)
 	local arrowSize = 10
-	local arrowAngle = math.pi / 6 -- 30 degrees
+	local arrowAngle = math.pi / 6
 
 	local x2 = midX + 0.5 * arrowSize * nx
 	local y2 = midY + 0.5 * arrowSize * ny
-
-	-- calculate arrow wings' direction, perpendicular to the direction vector (nx, ny)
 	local x1 = x2 - arrowSize * (nx * math.cos(arrowAngle) - ny * math.sin(arrowAngle))
 	local y1 = y2 - arrowSize * (ny * math.cos(arrowAngle) + nx * math.sin(arrowAngle))
-
 	local x3 = x2 - arrowSize * (nx * math.cos(-arrowAngle) - ny * math.sin(-arrowAngle))
 	local y3 = y2 - arrowSize * (ny * math.cos(-arrowAngle) + nx * math.sin(-arrowAngle))
 
@@ -128,17 +116,15 @@ local function initialize(newNodes, newEdges)
 	for _, edge in pairs(edges) do
 		edge.startNode = nodes[edge.nodeIndices[1]]
 		edge.endNode = nodes[edge.nodeIndices[#edge.nodeIndices]]
-
 		edge.line = getEdgeLine(nodes, edge)
 		computeSegmentLengths(edge)
-
 		edge.length = getEdgeLength(nodes, edge)
 		edge.arrow = getArrowLine(nodes, edge)
 
 		if edge.startNode.nextEdges then
 			table.insert(edge.startNode.nextEdges, edge)
 		else
-			edge.startNode.nextEdges = {edge}			
+			edge.startNode.nextEdges = {edge}            
 		end
 		if edge.endNode.prevEdges then
 			table.insert(edge.endNode.prevEdges, edge)
@@ -149,21 +135,17 @@ local function initialize(newNodes, newEdges)
 end
 
 local function draw()
-	-- draw edges
 	for _, edge in pairs(edges) do
-		love.graphics.setColor(0.2, 0.2, 0.2) -- dark gray for edges
+		love.graphics.setColor(0.2, 0.2, 0.2)
 		love.graphics.setLineWidth(2)
 		love.graphics.line(edge.line)
-
-		-- draw arrow for the directed edge
 		if edge.arrow then
-			love.graphics.setColor(1, 0, 0) -- red color for arrows
+			love.graphics.setColor(1, 0, 0)
 			love.graphics.line(edge.arrow)
 		end
 	end
 
-	-- draw nodes
-	love.graphics.setColor(0.2, 0.4, 0.9) -- blue color for nodes
+	love.graphics.setColor(0.2, 0.4, 0.9)
 	for _, node in pairs(nodes) do
 		if node.nextEdges then
 			love.graphics.circle("fill", node.x, node.y, 5)
@@ -173,16 +155,15 @@ local function draw()
 		end
 	end
 
-	-- add labels to nodes
 	for _, node in pairs(nodes) do
-		love.graphics.setColor(0, 0, 0) -- black color for text
+		love.graphics.setColor(0, 0, 0)
 		love.graphics.circle("fill", node.x, node.y, 2)
 		love.graphics.setColor(1, 1, 1)
 		love.graphics.print(tostring(node.id), node.x + 6, node.y - 3)
 		love.graphics.print(tostring(node.id), node.x + 8, node.y - 3)
 		love.graphics.print(tostring(node.id), node.x + 6, node.y - 1)
 		love.graphics.print(tostring(node.id), node.x + 8, node.y - 1)
-		love.graphics.setColor(0, 0, 0) -- black color for text
+		love.graphics.setColor(0, 0, 0)
 		love.graphics.print(tostring(node.id), node.x + 7, node.y - 2)
 	end
 end
@@ -191,6 +172,7 @@ local function findShortestPath(startId, endId)
 	local distances = {}
 	local previous = {}
 	local unvisited = {}
+	local congestionFactor = 50
 
 	for _, node in pairs(nodes) do
 		distances[node.id] = math.huge
@@ -208,7 +190,11 @@ local function findShortestPath(startId, endId)
 			end
 		end
 
-		if currentId == nil or currentId == endId then break end
+		if currentId == nil then
+			print("No path found to " .. endId)
+			break
+		end
+		if currentId == endId then break end
 
 		unvisited[currentId] = nil
 		local currentNode = nodes[currentId]
@@ -217,7 +203,10 @@ local function findShortestPath(startId, endId)
 			for _, edge in ipairs(currentNode.nextEdges) do
 				local neighborId = edge.endNode.id
 				if unvisited[neighborId] then
-					local alt = distances[currentId] + edge.length
+					local numPoints = edge.points and #edge.points or 0
+					local congestionPenalty = numPoints * congestionFactor
+					local alt = distances[currentId] + edge.length + congestionPenalty
+--					print("Edge " .. currentId .. "->" .. neighborId .. ": length=" .. edge.length .. ", points=" .. numPoints .. ", penalty=" .. congestionPenalty .. ", total=" .. alt)
 					if alt < distances[neighborId] then
 						distances[neighborId] = alt
 						previous[neighborId] = currentId
@@ -234,10 +223,18 @@ local function findShortestPath(startId, endId)
 		current = previous[current]
 	end
 
+	if #path > 1 then
+--		print("Path from " .. startId .. " to " .. endId .. ": " .. table.concat(path, " -> "))
+	else
+		print("No valid path from " .. startId .. " to " .. endId)
+	end
+
 	return path, distances[endId]
 end
 
 return {
+	nodes = nodes, 
+	edges = edges,
 	initialize = initialize,
 	draw = draw,
 	findShortestPath = findShortestPath,

@@ -110,7 +110,7 @@ local edges = {
 	[28] = {id = 28, nodeIndices = {64, 23, 21}},
 	[29] = {id = 29, nodeIndices = {24, 8}},
 	[30] = {id = 30, nodeIndices = {25, 7}},
---	[31] = {id = 31, nodeIndices = {26, 25}},
+	[31] = {id = 31, nodeIndices = {26, 25}},
 	[32] = {id = 32, nodeIndices = {27, 26}},
 	[33] = {id = 33, nodeIndices = {27, 24}},
 	[34] = {id = 34, nodeIndices = {28, 18}},

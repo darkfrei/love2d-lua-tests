@@ -4,7 +4,7 @@ local data = require("data")
 
 local points = {}
 
-local spawnInterval = 1.05
+local spawnInterval = 0.8
 local spawnTimer = 0
 local maxSpeed = 60  -- maximum speed for points
 local hardRadius = 15 -- points stop if closer than this in Case 2, yield in Case 1/3
@@ -12,7 +12,7 @@ local softRadius = 30 -- points start yielding within this distance
 local minSpeed = 5   -- minimum speed for Case 1 and Case 3 to prevent full stops
 local pointIdCounter = 0  -- counter for assigning unique point IDs
 
-print = function () end
+--print = function () end
 
 -- helper function to find an edge between two nodes
 local function findEdgeBetween(fromId, toId)
@@ -107,34 +107,154 @@ local function getPrevEdgesWithinRadius(point, edge)
 end
 
 -- spawn new points based on timer and paths
+--local function spawnParticles(dt, paths)
+--	spawnTimer = spawnTimer + dt
+--	if spawnTimer >= spawnInterval then
+--		spawnTimer = spawnTimer - spawnInterval
+--		for _, route in ipairs(paths) do
+--			if #route.edges > 0 then
+--				local startNode = data.nodes[route.path[1]]
+--				pointIdCounter = pointIdCounter + 1
+--				local point = {
+--					id = pointIdCounter,   -- unique ID for each point
+--					edges = route.edges,
+--					currentEdgeIndex = 1,
+--					nextEdgeIndex = 2,
+--					distanceTraveled = 0,
+--					x = startNode.x,
+--					y = startNode.y,
+--					maxSpeed = maxSpeed,
+--					speed = maxSpeed,
+--					hardRadius = hardRadius,
+--					softRadius = softRadius,
+--					color = {1, 1, 1},  -- default: white
+--					interactionLines = {}
+--				}
+--				table.insert(points, point)
+--				addPointToEdge(point, route.edges[1])
+--			end
+--		end
+--	end
+--end
+
+--local function spawnParticles(dt, paths)
+--	-- spawn new points periodically
+--	spawnTimer = spawnTimer + dt
+--	if spawnTimer >= spawnInterval then
+--		spawnTimer = spawnTimer - spawnInterval
+--		for _, route in ipairs(paths) do
+--			-- compute fresh path for new point
+--			local path, distance = diagram.findShortestPath(route.startId, route.endId)
+--			if #path < 2 then
+--				print("no valid path for route " .. route.startId .. "->" .. route.endId)
+--			else
+--				-- build edges from path
+--				local edges = {}
+--				for j = 1, #path - 1 do
+--					local edge = findEdgeBetween(path[j], path[j + 1])
+--					if edge then
+--						table.insert(edges, edge)
+--					else
+--						print("no edge from " .. path[j] .. " to " .. path[j + 1])
+--						edges = {}
+--						break
+--					end
+--				end
+--				if #edges == 0 then
+--					print("no valid edges for route " .. route.startId .. "->" .. route.endId)
+--				else
+--					-- create new point
+--					local startNode = data.nodes[path[1]]
+--					pointIdCounter = pointIdCounter + 1
+--					local point = {
+--						id = pointIdCounter,
+--						edges = edges,
+--						currentEdgeIndex = 1,
+--						nextEdgeIndex = 2,
+--						distanceTraveled = 0,
+--						x = startNode.x,
+--						y = startNode.y,
+--						maxSpeed = maxSpeed,
+--						speed = maxSpeed,
+--						hardRadius = hardRadius,
+--						softRadius = softRadius,
+--						color = {1, 1, 1},
+--						interactionLines = {},
+--						endNodeId = route.endId  -- store destination for recalculation
+--					}
+--					table.insert(points, point)
+--					addPointToEdge(point, edges[1])
+----                    print("spawned point " .. point.id .. " on edge " .. edges[1].nodeIndices[1] .. "->" .. edges[1].nodeIndices[#edges[1].nodeIndices] .. ", path: " .. table.concat(path, " -> "))
+--				end
+--			end
+--		end
+--	end
+--end
+
+local function buildEdgesFromPath(path)
+    -- build edges from path nodes
+    local edges = {}
+    for j = 1, #path - 1 do
+        local edge = findEdgeBetween(path[j], path[j + 1])
+        if edge then
+            table.insert(edges, edge)
+        else
+            print("no edge from " .. path[j] .. " to " .. path[j + 1])
+            return {}
+        end
+    end
+    if #edges == 0 then
+        print("no valid edges for path")
+    end
+    return edges
+end
+
+local function createPoint(edges, startNode, endNodeId)
+    -- create new point with initial properties
+    pointIdCounter = pointIdCounter + 1
+    local point = {
+        id = pointIdCounter,
+        edges = edges,
+        currentEdgeIndex = 1,
+        nextEdgeIndex = 2,
+        distanceTraveled = 0,
+        x = startNode.x,
+        y = startNode.y,
+        maxSpeed = maxSpeed,
+        speed = maxSpeed,
+        hardRadius = hardRadius,
+        softRadius = softRadius,
+        color = {1, 1, 1},
+        interactionLines = {},
+        endNodeId = endNodeId
+    }
+    return point
+end
+
 local function spawnParticles(dt, paths)
-	spawnTimer = spawnTimer + dt
-	if spawnTimer >= spawnInterval then
-		spawnTimer = spawnTimer - spawnInterval
-		for _, route in ipairs(paths) do
-			if #route.edges > 0 then
-				local startNode = data.nodes[route.path[1]]
-				pointIdCounter = pointIdCounter + 1
-				local point = {
-					id = pointIdCounter,   -- unique ID for each point
-					edges = route.edges,
-					currentEdgeIndex = 1,
-					nextEdgeIndex = 2,
-					distanceTraveled = 0,
-					x = startNode.x,
-					y = startNode.y,
-					maxSpeed = maxSpeed,
-					speed = maxSpeed,
-					hardRadius = hardRadius,
-					softRadius = softRadius,
-					color = {1, 1, 1},  -- default: white
-					interactionLines = {}
-				}
-				table.insert(points, point)
-				addPointToEdge(point, route.edges[1])
-			end
-		end
-	end
+    -- spawn new points periodically
+    spawnTimer = spawnTimer + dt
+    if spawnTimer >= spawnInterval then
+        spawnTimer = spawnTimer - spawnInterval
+        for _, route in ipairs(paths) do
+            -- get path and edges
+--            local path, _ = computePath(route.startId, route.endId)
+            local path, distance = diagram.findShortestPath(route.startId, route.endId)
+            if not path then
+                -- skip if no valid path
+            else
+                local edges = buildEdgesFromPath(path)
+                if #edges > 0 then
+                    -- create and add point
+                    local startNode = data.nodes[path[1]]
+                    local point = createPoint(edges, startNode, route.endId)
+                    table.insert(points, point)
+                    addPointToEdge(point, edges[1])
+                    -- print("spawned point " .. point.id .. " on edge " .. edges[1].nodeIndices[1] .. "->" .. edges[1].nodeIndices[#edges[1].nodeIndices] .. ", path: " .. table.concat(path, " -> "))
+                end
+            end
+        end
+    end
 end
 
 -- update velocities of all points with priority logic
@@ -291,7 +411,7 @@ local function updateParticleVelocities(dt)
 					table.insert(logMessages, string.format("Point %d: No interactions, moving freely", thisP.id))
 				end
 				for _, msg in ipairs(logMessages) do
-					print(msg)
+--					print(msg)
 				end
 			end
 		end
@@ -322,7 +442,7 @@ local function moveParticles(dt)
 					addPointToEdge(p, nextEdge)
 					-- Log transition for tracked points
 					if p.id == 3 or p.id == 4 or p.id == 8 or p.id == 9 or p.id == 13 or p.id == 14 then
-						print(string.format("Point %d transitioned to edge %d", p.id, p.currentEdgeIndex))
+						--print(string.format("Point %d transitioned to edge %d", p.id, p.currentEdgeIndex))
 					end
 				end
 			else
@@ -355,7 +475,7 @@ local function removeNotValidPoints()
 			removePointFromEdge(point, point.edges[#point.edges])
 			table.remove(points, i)
 			if point.id == 3 or point.id == 4 or point.id == 8 or point.id == 9 or point.id == 13 or point.id == 14 then
-				print(string.format("Point %d removed (reached end of path)", point.id))
+				--print(string.format("Point %d removed (reached end of path)", point.id))
 			end
 		end
 	end
@@ -374,11 +494,11 @@ function points.initialize(paths)
 				if edge then
 					table.insert(route.edges, edge)
 				else
-					print('no direct edge from ' .. path[j] .. ' to ' .. path[j + 1])
+					--print('no direct edge from ' .. path[j] .. ' to ' .. path[j + 1])
 				end
 			end
 		else
-			print('no path found from ' .. route.startId .. ' to ' .. route.endId)
+			--print('no path found from ' .. route.startId .. ' to ' .. route.endId)
 			route.path = {route.startId}
 			route.edges = {}
 		end
