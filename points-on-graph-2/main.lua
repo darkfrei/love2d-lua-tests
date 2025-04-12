@@ -1,4 +1,5 @@
 -- main.lua
+-- https://youtu.be/DDE6eMN-n-Q
 
 love.window.setMode (1980, 1080)
 
