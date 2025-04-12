@@ -110,7 +110,7 @@ local edges = {
 	[28] = {id = 28, nodeIndices = {64, 23, 21}},
 	[29] = {id = 29, nodeIndices = {24, 8}},
 	[30] = {id = 30, nodeIndices = {25, 7}},
-	[31] = {id = 31, nodeIndices = {26, 25}},
+--	[31] = {id = 31, nodeIndices = {26, 25}},
 	[32] = {id = 32, nodeIndices = {27, 26}},
 	[33] = {id = 33, nodeIndices = {27, 24}},
 	[34] = {id = 34, nodeIndices = {28, 18}},
@@ -191,6 +191,15 @@ local edges = {
 	[125] = {id = 125, nodeIndices = {83, 71}},
 	[130] = {id = 130, nodeIndices = {90, 91}},
 }
+
+
+local scaleX = 2.4
+local scaleY = 1.8
+for i, v in pairs (nodes) do
+	v.x = v.x*scaleX
+	v.y = v.y*scaleY
+end
+
 
 return {
 	nodes = nodes, 
