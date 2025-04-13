@@ -33,6 +33,11 @@ end
 function love.update(dt)
 	if dt > 1/50 then dt = 1/50 end
 	points.update(dt, paths)
+	if love.keyboard.isDown ('space') then
+		for i = 0, 100 do
+			points.update(dt, paths)
+		end
+	end
 end
 
 function love.draw()
@@ -44,8 +49,14 @@ function love.draw()
 
 	-- draw moving particles
 	points.draw()
-	
+
 	love.graphics.setColor (0,0,0)
 	love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 10, 10)
 	love.graphics.print("Points: "..tostring(#points), 10, 10+14)
+end
+
+function love.keypressed (key, scancode)
+	if key == 'f1' then
+		logEnabled = not logEnabled
+	end
 end

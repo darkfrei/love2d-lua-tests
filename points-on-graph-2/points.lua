@@ -25,6 +25,31 @@ local function getDistance(p1, p2)
 	return math.sqrt(dx * dx + dy * dy)
 end
 
+-- calculates congestion penalty based on average speed
+-- used in findShortestPath
+local function calculateCongestionPenalty(edge)
+	local maxSpeed = 60              -- max speed: no congestion penalty
+	local speedThresholdHigh = 45    -- high speed: minimal penalty
+	local speedThresholdMedium = 30  -- medium speed: moderate penalty
+	local speedThresholdLow = 15     -- low speed: significant penalty
+	local minSpeed = 5               -- minimum speed for normalization
+	local avgSpeed = edge.avgSpeed or maxSpeed
+	local congestionPenalty = 0
+	if avgSpeed < speedThresholdHigh then
+		local speedThreshold
+		if avgSpeed >= speedThresholdMedium then
+			speedThreshold = speedThresholdHigh
+		elseif avgSpeed >= speedThresholdLow then
+			speedThreshold = speedThresholdMedium
+		else
+			speedThreshold = speedThresholdLow
+		end
+		local speedRatio = (speedThreshold - avgSpeed) / (speedThreshold - minSpeed)
+		congestionPenalty = 1 + 99 * speedRatio * speedRatio * congestionFactor
+	end
+	return congestionPenalty
+end
+
 -- finds shortest path using Dijkstra with density-based penalties
 -- called by points.lua in spawnParticles and processNextEdge
 function points.findShortestPath(startId, endId)
@@ -58,13 +83,9 @@ function points.findShortestPath(startId, endId)
 			for _, edge in ipairs(currentNode.nextEdges) do
 				local neighborId = edge.endNode.id
 				if unvisited[neighborId] then
-					local numPoints = edge.points and #edge.points or 0
-					local density = numPoints / edge.length
-					local congestionPenalty = 0
-					if numPoints > 2 and density >= densityThreshold then
-						local densityRatio = (density - densityThreshold) / (maxDensity - densityThreshold)
-						congestionPenalty = 1 + 99 * densityRatio * densityRatio * congestionFactor
-					end
+
+					local congestionPenalty = calculateCongestionPenalty(edge)
+
 					local alt = distances[currentId] + edge.length + congestionPenalty
 					if alt < distances[neighborId] then
 						distances[neighborId] = alt
@@ -203,35 +224,108 @@ local function createPoint(edges, startNode, endNodeId)
 	return point
 end
 
--- spawns new points periodically for each route
--- called by points.update to add points to the simulation
-local function spawnParticles(dt, paths)
+
+-----------------------------------------
+-----------------------------------------
+-----------------------------------------
+
+
+-- updates spawn timer and checks if spawning is allowed
+-- returns true if timer exceeds interval, resets timer
+local function updateSpawnTimer(dt)
 	spawnTimer = spawnTimer + dt
 	if spawnTimer >= spawnInterval then
 		spawnTimer = spawnTimer - spawnInterval
-		for _, route in ipairs(paths) do
-			local path, _ = points.findShortestPath(route.startId, route.endId)
-			if path then
-				local edges = buildEdgesFromPath(path)
-				if #edges > 0 then
-					local startNode = data.nodes[path[1]]
-					local point = createPoint(edges, startNode, route.endId)
-					table.insert(points, point)
-					addPointToEdge(point, edges[1])
+		return true
+	end
+	return false
+end
+
+
+-- checks if a point can be spawned for a route
+-- returns false if any point on outgoing edges is closer than hardRadius to start
+local function canSpawnPointForRoute(route)
+--	local hardRadius = 15
+	local node = diagram.nodes[route.startId]
+--	print("checking route startId=" .. route.startId .. ", hardRadius=" .. hardRadius)
+	if node.nextEdges then
+		for iEdge, edge in ipairs(node.nextEdges) do
+			local edgeId = table.concat(edge.nodeIndices, "->")
+--			print("checking edge " .. edgeId)
+			if edge.points then
+				for iPoint, point in ipairs(edge.points) do
+--					if logEnabled then
+--						print ('-------------------')
+--						print ('log', iEdge, iPoint)
+--						for i, v in pairs (point) do
+--							print (i, v)
+--						end
+--					end
+					local distanceTraveled = point.distanceTraveled or 0
+--					print("point " .. iPoint .. ": distanceTraveled=" .. distanceTraveled)
+					if distanceTraveled < hardRadius then
+--						print("point too close: distanceTraveled=" .. distanceTraveled .. " < hardRadius=" .. hardRadius .. ", skipping spawn")
+						return false
+					end
 				end
+			else
+--				print("edge " .. edgeId .. ": no points")
 			end
+		end
+	else
+--		print("node " .. route.startId .. ": no nextEdges")
+	end
+--	print("all points far enough, allowing spawn")
+	return true
+end
+
+-- spawns a point for a route
+-- creates and adds point to edges and points list
+local function spawnPointForRoute(route)
+	local path, _ = points.findShortestPath(route.startId, route.endId)
+	if path then
+		local edges = buildEdgesFromPath(path)
+		if #edges > 0 then
+			local startNode = data.nodes[path[1]]
+			local point = createPoint(edges, startNode, route.endId)
+			table.insert(points, point)
+			addPointToEdge(point, edges[1])
 		end
 	end
 end
+
+-- tries to spawn a point for a single route
+-- skips if any outgoing edge of start node has a point at the start
+local function trySpawnPointForRoute(route)
+	if canSpawnPointForRoute(route) then
+		spawnPointForRoute(route)
+	end
+end
+
+-- spawns new points periodically for each route
+-- called by points.update to add points to the simulation
+local function spawnParticles(dt, paths)
+	if updateSpawnTimer(dt) then
+		for _, route in ipairs(paths) do
+			trySpawnPointForRoute(route)
+		end
+	end
+end
+
+
+-----------------------------------------
+-----------------------------------------
+-----------------------------------------
+
 
 -- updates point velocities based on collision logic
 -- called by points.update to handle interactions
 local function updateParticleVelocities(dt)
 	-- reset point states
-	for _, p in ipairs(points) do
-		p.speed = p.maxSpeed
-		p.color = {1, 1, 1}
-		p.interactionLines = {}
+	for _, point in ipairs(points) do
+		point.speed = point.maxSpeed
+		point.color = {1, 1, 1}
+		point.interactionLines = {}
 	end
 
 	-- process interactions for each point
@@ -242,9 +336,6 @@ local function updateParticleVelocities(dt)
 			local newSpeed = thisP.maxSpeed
 			local logMessages = {}
 
-			if thisP.id == 3 or thisP.id == 4 or thisP.id == 8 or thisP.id == 9 or thisP.id == 13 or thisP.id == 14 then
-				table.insert(logMessages, string.format("point %d at edge %d, distToEnd %.2f, speed %.2f", thisP.id, thisP.currentEdgeIndex, thisDistToEnd, thisP.speed))
-			end
 
 			-- case 1: points on the same edge
 			local sameEdgePoints = getPointsOnEdge(edge)
@@ -253,7 +344,12 @@ local function updateParticleVelocities(dt)
 					local dist = getDistance(thisP, otherP)
 					local otherDistToEnd = edge.length - otherP.distanceTraveled
 					if dist < thisP.softRadius then
+						if thisDistToEnd == otherDistToEnd then
+							thisDistToEnd = thisDistToEnd + (0.5-math.random())/10000
+							print ('exception: thisDistToEnd == otherDistToEnd')
+						end
 						local hasPriority = thisDistToEnd < otherDistToEnd
+
 						if not hasPriority then
 							local tempSpeed
 							if dist < thisP.hardRadius then
@@ -265,7 +361,7 @@ local function updateParticleVelocities(dt)
 							newSpeed = math.min(newSpeed, tempSpeed)
 							thisP.color = {1, 0, 0}
 							otherP.color = {0, 1, 0}
-							table.insert(thisP.interactionLines, {otherP.x, otherP.y, thisP.x, thisP.y, 1.0, 0.5, 0.0})
+							table.insert(thisP.interactionLines, {otherP.x, otherP.y, thisP.x, thisP.y})
 							if thisP.id == 3 or thisP.id == 4 or thisP.id == 8 or thisP.id == 9 or thisP.id == 13 or thisP.id == 14 then
 								table.insert(logMessages, string.format("sees point %d on same edge, dist %.2f, I'm farther (%.2f > %.2f), yielding, new speed %.2f", 
 										otherP.id, dist, thisDistToEnd, otherDistToEnd, tempSpeed))
@@ -281,11 +377,8 @@ local function updateParticleVelocities(dt)
 							otherP.speed = math.min(otherP.speed, tempSpeed)
 							otherP.color = {1, 0, 0}
 							thisP.color = {0, 1, 0}
-							table.insert(otherP.interactionLines, {thisP.x, thisP.y, otherP.x, otherP.y, 1.0, 0.5, 0.0})
-							if thisP.id == 3 or thisP.id == 4 or thisP.id == 8 or thisP.id == 9 or thisP.id == 13 or thisP.id == 14 then
-								table.insert(logMessages, string.format("sees point %d on same edge, dist %.2f, I'm closer (%.2f < %.2f), proceeding, speed %.2f", 
-										otherP.id, dist, thisDistToEnd, otherDistToEnd, newSpeed))
-							end
+							table.insert(otherP.interactionLines, {thisP.x, thisP.y, otherP.x, otherP.y})
+
 						end
 					end
 				end
@@ -306,7 +399,7 @@ local function updateParticleVelocities(dt)
 					newSpeed = math.min(newSpeed, tempSpeed)
 					thisP.color = {1, 0, 0}
 					otherP.color = {0, 1, 0}
-					table.insert(thisP.interactionLines, {otherP.x, otherP.y, thisP.x, thisP.y, 1.0, 0.5, 0.0})
+					table.insert(thisP.interactionLines, {otherP.x, otherP.y, thisP.x, thisP.y})
 					if thisP.id == 3 or thisP.id == 4 or thisP.id == 8 or thisP.id == 9 or thisP.id == 13 or thisP.id == 14 then
 						table.insert(logMessages, string.format("sees point %d on next edge, dist %.2f, yielding, new speed %.2f", 
 								otherP.id, dist, tempSpeed))
@@ -336,7 +429,7 @@ local function updateParticleVelocities(dt)
 								newSpeed = math.min(newSpeed, tempSpeed)
 								thisP.color = {1, 0, 0}
 								otherP.color = {0, 1, 0}
-								table.insert(thisP.interactionLines, {otherP.x, otherP.y, thisP.x, thisP.y, 1.0, 0.5, 0.0})
+								table.insert(thisP.interactionLines, {otherP.x, otherP.y, thisP.x, thisP.y})
 								if thisP.id == 3 or thisP.id == 4 or thisP.id == 8 or thisP.id == 9 or thisP.id == 13 or thisP.id == 14 then
 									table.insert(logMessages, string.format("sees point %d on prev edge of next, dist %.2f, I'm farther (%.2f > %.2f), yielding, new speed %.2f", 
 											otherP.id, dist, thisDistToEnd, otherDistToEnd, tempSpeed))
@@ -353,7 +446,7 @@ local function updateParticleVelocities(dt)
 								otherP.speed = math.min(otherP.speed, tempSpeed)
 								otherP.color = {1, 0, 0}
 								thisP.color = {0, 1, 0}
-								table.insert(otherP.interactionLines, {thisP.x, thisP.y, otherP.x, otherP.y, 1.0, 0.5, 0.0})
+								table.insert(otherP.interactionLines, {thisP.x, thisP.y, otherP.x, otherP.y})
 								if thisP.id == 3 or thisP.id == 4 or thisP.id == 8 or thisP.id == 9 or thisP.id == 13 or thisP.id == 14 then
 									table.insert(logMessages, string.format("sees point %d on prev edge of next, dist %.2f, I'm closer (%.2f < %.2f), proceeding, speed %.2f", 
 											otherP.id, dist, thisDistToEnd, otherDistToEnd, newSpeed))
@@ -506,6 +599,26 @@ function points.initialize(paths)
 	end
 end
 
+local function updateAvgSpeedOnEdes ()
+	for _, edge in pairs(diagram.edges) do
+		local numPoints = edge.points and #edge.points or 0
+		local newAvgSpeed
+		if numPoints == 0 then
+			newAvgSpeed = maxSpeed
+			edge.avgSpeed = newAvgSpeed
+		else
+			local totalSpeed = 0
+			for _, point in ipairs(edge.points) do
+				totalSpeed = totalSpeed + point.speed
+			end
+			newAvgSpeed = totalSpeed / numPoints
+
+			edge.avgSpeed = 0.01*newAvgSpeed + 0.99*edge.avgSpeed
+		end
+
+	end
+end
+
 -- updates simulation state
 -- called by main.lua in love.update
 function points.update(dt, paths)
@@ -513,29 +626,30 @@ function points.update(dt, paths)
 	updateParticleVelocities(dt)
 	moveParticles(dt)
 	removeNotValidPoints()
+	updateAvgSpeedOnEdes ()
 end
 
 -- draws points and interaction lines
 -- called by main.lua in love.draw
 function points.draw()
-	for _, p in ipairs(points) do
-		local x = math.floor (p.x+0.5)
-		local y = math.floor (p.y+0.5)
-		love.graphics.setColor(p.color)
-		love.graphics.circle("fill", p.x, p.y, 4)
+	for _, point in ipairs(points) do
+		local x = math.floor (point.x+0.5)
+		local y = math.floor (point.y+0.5)
+		love.graphics.setColor(point.color)
+		love.graphics.circle("fill", point.x, point.y, 6)
 		love.graphics.setColor(0, 0, 0)
-		love.graphics.circle("line", p.x, p.y, 5)
-		for _, line in ipairs(p.interactionLines) do
+		love.graphics.circle("line", point.x, point.y, 7)
+
+end
+
+	love.graphics.setColor(0,0,0)
+	love.graphics.setLineWidth(1)
+	for _, point in ipairs(points) do
+		for _, line in ipairs(point.interactionLines) do
 			local x1, y1, x2, y2, r, g, b = unpack(line)
-			love.graphics.setColor(r, g, b)
-			love.graphics.setLineWidth(2)
-			love.graphics.line(x1, y1, x2, y2)
+
+			love.graphics.line(line)
 		end
-		love.graphics.setColor(1, 1, 1)
-		love.graphics.print(tostring(p.id), x + 6, y - 2)
-		love.graphics.print(tostring(p.id), x + 6, y - 4)
-		love.graphics.setColor(0, 0, 0)
-		love.graphics.print(tostring(p.id), x + 6, y - 3)
 	end
 end
 

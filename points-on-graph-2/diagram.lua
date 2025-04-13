@@ -142,17 +142,49 @@ end
 
 -- draws graph edges, arrows, and nodes
 -- called by main.lua in love.draw
+-- edge color reflects average point speed: teal (high), yellow (medium), red (low), dark red (very low)
 function diagram.draw()
+	local speedThresholdHigh = 45    -- high speed: > 45
+	local speedThresholdMedium = 30  -- medium speed: 30-45
+	local speedThresholdLow = 15     -- low speed: 15-30
+	local width1 = 10                -- outline width
+	local width2 = 7                 -- fill width
 	for _, edge in pairs(diagram.edges) do
-		love.graphics.setColor(0.2, 0.2, 0.2)
-		love.graphics.setLineWidth(2)
+		local avgSpeed = edge.avgSpeed or 60
+		-- set colors based on average speed
+		local fillColor, outlineColor
+		if avgSpeed > speedThresholdHigh then
+			fillColor = {40/255, 220/255, 160/255}    -- teal: high speed
+			outlineColor = {20/255, 160/255, 100/255} -- dark teal outline
+		elseif avgSpeed > speedThresholdMedium then
+			fillColor = {255/255, 200/255, 80/255}    -- yellow: medium speed
+			outlineColor = {240/255, 190/255, 160/255} -- light yellow outline
+		elseif avgSpeed > speedThresholdLow then
+			fillColor = {240/255, 80/255, 70/255}     -- red: low speed
+			outlineColor = {150/255, 60/255, 60/255}  -- dark red outline
+		else
+			fillColor = {170/255, 40/255, 40/255}     -- dark red: very low speed
+			outlineColor = {110/255, 30/255, 30/255}  -- very dark red outline
+		end
+		-- draw edge with outline
+		love.graphics.setColor(outlineColor)
+		love.graphics.setLineWidth(width1)
 		love.graphics.line(edge.line)
+		love.graphics.setColor(fillColor)
+		love.graphics.setLineWidth(width2)
+		love.graphics.line(edge.line)
+		
+		
+		-- draw arrow
 		if edge.arrow then
-			love.graphics.setColor(1, 0, 0)
+			love.graphics.setColor(0, 0, 0)  -- red arrows
+			love.graphics.setLineWidth(2)
 			love.graphics.line(edge.arrow)
 		end
 	end
+	-- draw nodes
 	love.graphics.setColor(0.2, 0.4, 0.9)
+	love.graphics.setLineWidth(2)
 	for _, node in pairs(diagram.nodes) do
 		if node.nextEdges then
 			love.graphics.circle("fill", node.x, node.y, 5)
@@ -161,6 +193,7 @@ function diagram.draw()
 			love.graphics.circle("line", node.x, node.y, 3)
 		end
 	end
+	-- draw node labels
 	for _, node in pairs(diagram.nodes) do
 		love.graphics.setColor(0, 0, 0)
 		love.graphics.circle("fill", node.x, node.y, 2)
