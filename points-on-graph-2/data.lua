@@ -85,7 +85,7 @@ local nodes = {
 }
 
 local edges = {
-	[1] = {id = 1, nodeIndices = {2, 1}},
+	[1] = {id = 1, nodeIndices = {1, 2}},
 	[2] = {id = 2, nodeIndices = {3, 2}},
 	[3] = {id = 3, nodeIndices = {3, 4}},
 	[4] = {id = 4, nodeIndices = {4, 1}},
@@ -99,14 +99,14 @@ local edges = {
 	[13] = {id = 13, nodeIndices = {2, 12}},
 	[15] = {id = 15, nodeIndices = {1, 14}},
 	[16] = {id = 16, nodeIndices = {14, 10}},
-	[17] = {id = 17, nodeIndices = {15, 1}},
-	[18] = {id = 18, nodeIndices = {5, 16}},
+	[17] = {id = 17, nodeIndices = {1, 15}},
+	[18] = {id = 18, nodeIndices = {16, 5}},
 	[19] = {id = 19, nodeIndices = {16, 17}},
 	[20] = {id = 20, nodeIndices = {17, 15}},
 	[21] = {id = 21, nodeIndices = {6, 18}},
-	[22] = {id = 22, nodeIndices = {12, 19}},
+	[22] = {id = 22, nodeIndices = {19, 12}},
 	[24] = {id = 24, nodeIndices = {18, 20, 19}},
---	[25] = {id = 25, nodeIndices = {21, 16}},
+	[25] = {id = 25, nodeIndices = {21, 16}},
 	[28] = {id = 28, nodeIndices = {64, 23, 21}},
 	[29] = {id = 29, nodeIndices = {24, 8}},
 	[30] = {id = 30, nodeIndices = {25, 7}},
@@ -134,7 +134,7 @@ local edges = {
 	[52] = {id = 52, nodeIndices = {40, 41}},
 	[53] = {id = 53, nodeIndices = {36, 41}},
 	[54] = {id = 54, nodeIndices = {37, 42}},
-	[55] = {id = 55, nodeIndices = {42, 32}},
+	[55] = {id = 55, nodeIndices = {32, 42}},
 	[56] = {id = 56, nodeIndices = {44, 43, 56}},
 	[57] = {id = 57, nodeIndices = {44, 28}},
 	[59] = {id = 59, nodeIndices = {45, 44}},
@@ -150,16 +150,16 @@ local edges = {
 	[70] = {id = 70, nodeIndices = {52, 50}},
 	[71] = {id = 71, nodeIndices = {33, 53}},
 	[72] = {id = 72, nodeIndices = {51, 54}},
-	[73] = {id = 73, nodeIndices = {54, 53}},
---	[74] = {id = 74, nodeIndices = {56, 55}},
+	[73] = {id = 73, nodeIndices = {53, 54}},
+	[74] = {id = 74, nodeIndices = {47, 9, 4}},
 	[75] = {id = 75, nodeIndices = {56, 31}},
 	[76] = {id = 76, nodeIndices = {30, 57}},
 --	[77] = {id = 77, nodeIndices = {55, 57}},
-	[78] = {id = 78, nodeIndices = {58, 59}},
+--	[78] = {id = 78, nodeIndices = {58, 59}},
 	[79] = {id = 79, nodeIndices = {60, 59}},
 	[80] = {id = 80, nodeIndices = {34, 60}},
 	[81] = {id = 81, nodeIndices = {53, 58}},
-	[82] = {id = 82, nodeIndices = {61, 62}},
+--	[82] = {id = 82, nodeIndices = {61, 62}},
 	[83] = {id = 83, nodeIndices = {54, 62}},
 	[84] = {id = 84, nodeIndices = {50, 61}},
 	[85] = {id = 85, nodeIndices = {64, 63, 49}},
@@ -174,7 +174,7 @@ local edges = {
 	[96] = {id = 96, nodeIndices = {70, 67}},
 	[97] = {id = 97, nodeIndices = {71, 45}},
 	[98] = {id = 98, nodeIndices = {71, 69}},
-	[99] = {id = 99, nodeIndices = {59, 72}},
+--	[99] = {id = 99, nodeIndices = {59, 72}},
 	[100] = {id = 100, nodeIndices = {73, 72}},
 	[101] = {id = 101, nodeIndices = {74, 73}},
 	[102] = {id = 102, nodeIndices = {74, 60}},
@@ -187,17 +187,30 @@ local edges = {
 	[112] = {id = 112, nodeIndices = {79, 66}},
 	[117] = {id = 117, nodeIndices = {40, 82}},
 	[118] = {id = 118, nodeIndices = {82, 52}},
-	[121] = {id = 121, nodeIndices = {62, 58}},
+--	[121] = {id = 121, nodeIndices = {62, 58}},
 	[125] = {id = 125, nodeIndices = {83, 71}},
 	[130] = {id = 130, nodeIndices = {90, 91}},
+	[131] = {id = 131, nodeIndices = {37, 32}},
+	[132] = {id = 132, nodeIndices = {31, 56, 75}},
+	[133] = {id = 133, nodeIndices = {4, 2}},
+	[134] = {id = 134, nodeIndices = {32, 29, 74}},
+	[135] = {id = 135, nodeIndices = {28, 43, 31}},
+	[136] = {id = 136, nodeIndices = {1, 11}},
+	[137] = {id = 137, nodeIndices = {30, 34}},
+	[138] = {id = 137, nodeIndices = {16, 1}},
 }
 
 
 local scaleX = 2.4
 local scaleY = 1.8
-for i, v in pairs (nodes) do
-	v.x = v.x*scaleX
-	v.y = v.y*scaleY
+for id, node in pairs (nodes) do
+	node.x = node.x*scaleX
+	node.y = node.y*scaleY
+	node.id = id
+end
+
+for id, edge in pairs (edges) do
+	edge.id = id
 end
 
 

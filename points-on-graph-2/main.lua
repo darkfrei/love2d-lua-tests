@@ -1,5 +1,6 @@
 -- main.lua
--- https://youtu.be/l7tz9jouJ-I
+-- Moving Points on Graph 2-06
+-- https://youtu.be/6T0b0F2nMYQ
 
 love.window.setMode (1980, 1080)
 
@@ -13,13 +14,13 @@ local particles = {}
 
 
 local paths = {
---	{startId = 79, endId = 61},
---	{startId = 78, endId = 62},
---	{startId = 77, endId = 58},
---	{startId = 76, endId = 59},
---	{startId = 83, endId = 72},
 	{startId = 77, endId = 61},
 	{startId = 76, endId = 62},
+	{startId = 79, endId = 59},
+	{startId = 78, endId = 72},
+	{startId = 83, endId = 58},
+	{startId = 90, endId = 91},
+--	{startId = 83, endId = 72},
 }
 
 
@@ -43,4 +44,8 @@ function love.draw()
 
 	-- draw moving particles
 	points.draw()
+	
+	love.graphics.setColor (0,0,0)
+	love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 10, 10)
+	love.graphics.print("Points: "..tostring(#points), 10, 10+14)
 end
