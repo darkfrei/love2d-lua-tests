@@ -1,6 +1,5 @@
 -- main.lua
--- Moving Points on Graph 2-07
--- https://youtu.be/GbTO3S_-klM
+-- Moving Points on Graph 2-08
 
 love.window.setMode (1980, 1080)
 

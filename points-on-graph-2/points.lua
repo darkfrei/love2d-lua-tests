@@ -1,6 +1,6 @@
 -- points.lua
--- manages moving points along edges, handling spawning, velocity updates, path recalculation, and drawing.
--- used by main.lua in the game loop.
+-- manages moving points along edges with multiple lanes, handling spawning, velocity updates, pathfinding, and drawing
+-- used by main.lua in the game loop
 
 local diagram = require("diagram")
 local data = require("data")
@@ -8,56 +8,33 @@ local data = require("data")
 local points = {}
 
 -- configuration constants
-local spawnInterval = 0.8  -- seconds between spawning new points
-local spawnTimer = 0       -- tracks time since last spawn
-local maxSpeed = 60        -- maximum point speed (pixels per second)
-local hardRadius = 15      -- distance for stopping/yielding in collision cases
-local softRadius = 30      -- distance for starting to yield in collision cases
-local minSpeed = 5         -- minimum speed to prevent full stops in cases 1 and 3
-local pointIdCounter = 0   -- counter for unique point IDs
-local congestionFactor = 10  -- penalty multiplier for edge density
+local spawnInterval = 0.8
+local spawnTimer = 0
+local maxSpeed = 60
+local hardRadius = 15
+local softRadius = 30
+local minSpeed = 1
+local pointIdCounter = 0
+local laneWidth = 10  -- pixels between lanes for visualization (synced with diagram.lua)
+local densityThreshold = 5  -- number of points on a lane to consider it overloaded
+local laneChangeSpeed = 2  -- speed of lane change (progress per second)
+local minTransitionDuration = 0.1  -- minimum transition duration (seconds)
+local maxTransitionDuration = 0.5  -- maximum transition duration (seconds)
+local distanceThreshold = 0.1  -- threshold for zero distance (pixels)
 
--- calculates Euclidean distance between two points
--- used in updateParticleVelocities for collision detection
-local function getDistance(p1, p2)
-	local dx = p2.x - p1.x
-	local dy = p2.y - p1.y
-	return math.sqrt(dx * dx + dy * dy)
-end
-
--- calculates congestion penalty based on average speed
--- used in findShortestPath
-local function calculateCongestionPenalty(edge)
-	local maxSpeed = 60              -- max speed: no congestion penalty
-	local speedThresholdHigh = 45    -- high speed: minimal penalty
-	local speedThresholdMedium = 30  -- medium speed: moderate penalty
-	local speedThresholdLow = 15     -- low speed: significant penalty
-	local minSpeed = 5               -- minimum speed for normalization
+-- calculates travel time for an edge based on its length and average speed
+local function calculateEdgeTravelTime(edge)
+	local length = edge.length
 	local avgSpeed = edge.avgSpeed or maxSpeed
-	local congestionPenalty = 0
-	if avgSpeed < speedThresholdHigh then
-		local speedThreshold
-		if avgSpeed >= speedThresholdMedium then
-			speedThreshold = speedThresholdHigh
-		elseif avgSpeed >= speedThresholdLow then
-			speedThreshold = speedThresholdMedium
-		else
-			speedThreshold = speedThresholdLow
-		end
-		local speedRatio = (speedThreshold - avgSpeed) / (speedThreshold - minSpeed)
-		congestionPenalty = 1 + 99 * speedRatio * speedRatio * congestionFactor
-	end
-	return congestionPenalty
+	local effectiveSpeed = math.max(minSpeed, math.min(maxSpeed, avgSpeed))
+	return length / effectiveSpeed
 end
 
--- finds shortest path using Dijkstra with density-based penalties
--- called by points.lua in spawnParticles and processNextEdge
+-- finds fastest path using dijkstra's algorithm
 function points.findShortestPath(startId, endId)
 	local distances = {}
 	local previous = {}
 	local unvisited = {}
-	local densityThreshold = 0.5 / softRadius
-	local maxDensity = 0.5 / hardRadius
 	for _, node in pairs(diagram.nodes) do
 		distances[node.id] = math.huge
 		unvisited[node.id] = true
@@ -72,10 +49,7 @@ function points.findShortestPath(startId, endId)
 				currentId = id
 			end
 		end
-		if currentId == nil then
-			print("no path found to " .. endId)
-			break
-		end
+		if currentId == nil then break end
 		if currentId == endId then break end
 		unvisited[currentId] = nil
 		local currentNode = diagram.nodes[currentId]
@@ -83,10 +57,8 @@ function points.findShortestPath(startId, endId)
 			for _, edge in ipairs(currentNode.nextEdges) do
 				local neighborId = edge.endNode.id
 				if unvisited[neighborId] then
-
-					local congestionPenalty = calculateCongestionPenalty(edge)
-
-					local alt = distances[currentId] + edge.length + congestionPenalty
+					local travelTime = calculateEdgeTravelTime(edge)
+					local alt = distances[currentId] + travelTime
 					if alt < distances[neighborId] then
 						distances[neighborId] = alt
 						previous[neighborId] = currentId
@@ -102,13 +74,12 @@ function points.findShortestPath(startId, endId)
 		current = previous[current]
 	end
 	if #path < 2 then
-		print("no valid path from " .. startId .. " to " .. endId)
+		-- print("no path from " .. startId .. " to " .. endId)
 	end
 	return path, distances[endId]
 end
 
--- finds an edge connecting two nodes by their IDs
--- used in buildEdgesFromPath for path-to-edge conversion
+-- finds an edge between two nodes
 local function findEdgeBetween(fromId, toId)
 	for _, edge in pairs(data.edges) do
 		if edge.nodeIndices[1] == fromId and edge.nodeIndices[#edge.nodeIndices] == toId then
@@ -118,42 +89,13 @@ local function findEdgeBetween(fromId, toId)
 	return nil
 end
 
--- gets all points currently on a specific edge
--- used in updateParticleVelocities for same-edge collision checks
-local function getPointsOnEdge(edge)
-	return edge.points or {}
-end
-
--- gets points on next edges within softRadius from a point
--- used in updateParticleVelocities for case 2 collision logic
-local function getNextEdgesWithinRadius(point, edge)
+-- gets points on a specific edge and lane
+local function getPointsOnEdgeLane(edge, lane)
 	local result = {}
-	local endNode = data.nodes[edge.nodeIndices[#edge.nodeIndices]]
-	if endNode.nextEdges then
-		for _, nextEdge in ipairs(endNode.nextEdges) do
-			local pointsOnEdge = getPointsOnEdge(nextEdge)
-			for _, p in ipairs(pointsOnEdge) do
-				if p ~= point and getDistance(point, p) <= softRadius then
-					table.insert(result, p)
-				end
-			end
-		end
-	end
-	return result
-end
-
--- gets points on previous edges within softRadius from a point
--- used in updateParticleVelocities for case 3 collision logic
-local function getPrevEdgesWithinRadius(point, edge)
-	local result = {}
-	local startNode = data.nodes[edge.nodeIndices[1]]
-	if startNode.prevEdges then
-		for _, prevEdge in ipairs(startNode.prevEdges) do
-			local pointsOnEdge = getPointsOnEdge(prevEdge)
-			for _, p in ipairs(pointsOnEdge) do
-				if p ~= point and getDistance(point, p) <= softRadius then
-					table.insert(result, p)
-				end
+	if edge.points then
+		for _, point in ipairs(edge.points) do
+			if point.lane == lane then
+				table.insert(result, point)
 			end
 		end
 	end
@@ -161,7 +103,6 @@ local function getPrevEdgesWithinRadius(point, edge)
 end
 
 -- adds a point to an edge’s points list
--- used in spawnParticles, processNextEdge, and createPoint
 local function addPointToEdge(point, edge)
 	if not edge.points then
 		edge.points = {}
@@ -170,7 +111,6 @@ local function addPointToEdge(point, edge)
 end
 
 -- removes a point from an edge’s points list
--- used in processNextEdge and removeNotValidPoints
 local function removePointFromEdge(point, edge)
 	if edge.points then
 		for i, p in ipairs(edge.points) do
@@ -183,7 +123,6 @@ local function removePointFromEdge(point, edge)
 end
 
 -- converts a node path to a list of edges
--- used in spawnParticles, processNextEdge, and points.initialize
 local function buildEdgesFromPath(path)
 	local edges = {}
 	for j = 1, #path - 1 do
@@ -191,96 +130,164 @@ local function buildEdgesFromPath(path)
 		if edge then
 			table.insert(edges, edge)
 		else
-			print("no edge from " .. path[j] .. " to " .. path[j + 1])
+			-- print("no edge from " .. path[j] .. " to " .. path[j + 1])
 			return {}
 		end
-	end
-	if #edges == 0 then
-		print("no valid edges for path")
 	end
 	return edges
 end
 
--- creates a new point with initial properties
--- used in spawnParticles to initialize points
-local function createPoint(edges, startNode, endNodeId)
+-- chooses optimal lane based on route, speed, and density
+local function chooseLane(point, edge)
+	local lanes = edge.lanes or 2
+	local nextEdgeId = point.currentEdgeIndex + 1 <= #point.edges and point.edges[point.currentEdgeIndex + 1].id or nil
+	local bestLane = 1
+	local minDensity = math.huge
+
+	for lane = 1, lanes do
+		local validLane = true
+		if nextEdgeId and edge.laneDestinations and edge.laneDestinations[lane] then
+			validLane = false
+			for _, destId in ipairs(edge.laneDestinations[lane]) do
+				if destId == nextEdgeId then
+					validLane = true
+					break
+				end
+			end
+		end
+		if validLane then
+			local pointsOnLane = getPointsOnEdgeLane(edge, lane)
+			local density = #pointsOnLane
+			if density < minDensity then
+				minDensity = density
+				bestLane = lane
+			elseif density == minDensity and point.speed > maxSpeed * 0.8 then
+				bestLane = math.min(bestLane, lane)
+			end
+		end
+	end
+	return bestLane
+end
+
+-- finds closest lane on next edge to current position
+local function findClosestLane(edge, currentX, currentY)
+	local lanes = edge.lanes or 2
+	if lanes == 1 then
+		return 1
+	end
+	local bestLane = 1
+	local minDistance = math.huge
+	for lane = 1, lanes do
+		local laneLine = edge.laneLines[lane]
+		if laneLine and #laneLine >= 2 then
+			local x = laneLine[1]
+			local y = laneLine[2]
+			local dx = x - currentX
+			local dy = y - currentY
+			local distance = math.sqrt(dx * dx + dy * dy)
+			if distance < minDistance then
+				minDistance = distance
+				bestLane = lane
+			end
+		end
+	end
+	return bestLane
+end
+
+-- finds closest point on a lane to a given position
+local function findClosestPointOnLane(edge, lane, targetX, targetY)
+	local laneLine = edge.laneLines[lane]
+	if not laneLine or #laneLine < 4 then
+		return laneLine[1] or edge.line[1], laneLine[2] or edge.line[2], 0
+	end
+	local minDistance = math.huge
+	local closestX, closestY, closestT = laneLine[1], laneLine[2], 0
+	local totalSegments = (#laneLine / 2) - 1
+	local totalLength = edge.length
+	local segmentLength = totalLength / totalSegments
+	for seg = 1, totalSegments do
+		local i1 = (seg - 1) * 2 + 1
+		local x1, y1 = laneLine[i1], laneLine[i1 + 1]
+		local x2, y2 = laneLine[i1 + 2], laneLine[i1 + 3]
+		local dx = x2 - x1
+		local dy = y2 - y1
+		local len = math.sqrt(dx * dx + dy * dy)
+		if len > 0 then
+			local t = ((targetX - x1) * dx + (targetY - y1) * dy) / (len * len)
+			t = math.max(0, math.min(1, t))
+			local projX = x1 + t * dx
+			local projY = y1 + t * dy
+			local distX = projX - targetX
+			local distY = projY - targetY
+			local distance = math.sqrt(distX * distX + distY * distY)
+			if distance < minDistance then
+				minDistance = distance
+				closestX = projX
+				closestY = projY
+				closestT = ((seg - 1) + t) / totalSegments
+			end
+		end
+	end
+	return closestX, closestY, closestT
+end
+
+-- checks if lane change is safe
+local function canChangeLane(point, edge, targetLane)
+	local pointsOnTargetLane = getPointsOnEdgeLane(edge, targetLane)
+	for _, otherP in ipairs(pointsOnTargetLane) do
+		if otherP ~= point and math.abs(otherP.distanceTraveled - point.distanceTraveled) < hardRadius then
+			return false
+		end
+	end
+	return true
+end
+
+-- creates a new point with lane assignment (single lane)
+local function createPoint(edges, startNode, targetNodeId)
 	pointIdCounter = pointIdCounter + 1
 	local point = {
 		id = pointIdCounter,
 		edges = edges,
 		currentEdgeIndex = 1,
-		nextEdgeIndex = 2,
-		distanceTraveled = 0+math.random ()/10000,
+		distanceTraveled = math.random() / 10000,
 		x = startNode.x,
 		y = startNode.y,
-		maxSpeed = maxSpeed,
 		speed = maxSpeed,
-		hardRadius = hardRadius,
-		softRadius = softRadius,
-		color = {1, 1, 1},  -- white by default
-		interactionLines = {},  -- lines for collision visualization
-		endNodeId = endNodeId
+		effectiveSpeed = maxSpeed,
+		lastDistanceTraveled = 0,
+		lastTransitionProgress = 0,
+		lastLaneX = startNode.x,
+		lastLaneY = startNode.y,
+		status = "default",
+		interactionLines = {},
+		targetNodeId = targetNodeId,
+		case = 0,
+		lane = 1, -- single lane
+		isTransitioning = false,
+		transitionProgress = 0,
+		transitionDuration = 0.2,
+		transitionFromX = 0,
+		transitionFromY = 0,
+		transitionToX = 0,
+		transitionToY = 0,
+		laneX = startNode.x,
+		laneY = startNode.y,
+		transitionToT = 0
 	}
+	if edges[1] then
+		local laneLine = edges[1].laneLines and edges[1].laneLines[1]
+		if laneLine and #laneLine >= 2 then
+			point.laneX = laneLine[1]
+			point.laneY = laneLine[2]
+			point.lastLaneX = point.laneX
+			point.lastLaneY = point.laneY
+		end
+	end
 	return point
 end
 
 
------------------------------------------
------------------------------------------
------------------------------------------
-
-
--- updates spawn timer and checks if spawning is allowed
--- returns true if timer exceeds interval, resets timer
-local function updateSpawnTimer(dt)
-	spawnTimer = spawnTimer + dt
-	if spawnTimer >= spawnInterval then
-		spawnTimer = spawnTimer - spawnInterval
-		return true
-	end
-	return false
-end
-
-
--- checks if a point can be spawned for a route
--- returns false if any point on outgoing edges is closer than hardRadius to start
-local function canSpawnPointForRoute(route)
---	local hardRadius = 15
-	local node = diagram.nodes[route.startId]
---	print("checking route startId=" .. route.startId .. ", hardRadius=" .. hardRadius)
-	if node.nextEdges then
-		for iEdge, edge in ipairs(node.nextEdges) do
-			local edgeId = table.concat(edge.nodeIndices, "->")
---			print("checking edge " .. edgeId)
-			if edge.points then
-				for iPoint, point in ipairs(edge.points) do
---					if logEnabled then
---						print ('-------------------')
---						print ('log', iEdge, iPoint)
---						for i, v in pairs (point) do
---							print (i, v)
---						end
---					end
-					local distanceTraveled = point.distanceTraveled or 0
---					print("point " .. iPoint .. ": distanceTraveled=" .. distanceTraveled)
-					if distanceTraveled < hardRadius then
---						print("point too close: distanceTraveled=" .. distanceTraveled .. " < hardRadius=" .. hardRadius .. ", skipping spawn")
-						return false
-					end
-				end
-			else
---				print("edge " .. edgeId .. ": no points")
-			end
-		end
-	else
---		print("node " .. route.startId .. ": no nextEdges")
-	end
---	print("all points far enough, allowing spawn")
-	return true
-end
-
 -- spawns a point for a route
--- creates and adds point to edges and points list
 local function spawnPointForRoute(route)
 	local path, _ = points.findShortestPath(route.startId, route.endId)
 	if path then
@@ -294,281 +301,358 @@ local function spawnPointForRoute(route)
 	end
 end
 
--- tries to spawn a point for a single route
--- skips if any outgoing edge of start node has a point at the start
-local function trySpawnPointForRoute(route)
-	if canSpawnPointForRoute(route) then
-		spawnPointForRoute(route)
+-- updates spawn timer
+local function updateSpawnTimer(dt)
+	spawnTimer = spawnTimer + dt
+	if spawnTimer >= spawnInterval then
+		spawnTimer = spawnTimer - spawnInterval
+		return true
 	end
+	return false
 end
 
--- spawns new points periodically for each route
--- called by points.update to add points to the simulation
+-- checks if spawning is allowed
+local function canSpawnPointForRoute(route)
+	local node = diagram.nodes[route.startId]
+	if node.nextEdges then
+		for _, edge in ipairs(node.nextEdges) do
+			for lane = 1, edge.lanes or 2 do
+				local pointsOnLane = getPointsOnEdgeLane(edge, lane)
+				for _, point in ipairs(pointsOnLane) do
+					if point.distanceTraveled < hardRadius then
+						return false
+					end
+				end
+			end
+		end
+	end
+	return true
+end
+
+-- spawns new points
 local function spawnParticles(dt, paths)
 	if updateSpawnTimer(dt) then
 		for _, route in ipairs(paths) do
-			trySpawnPointForRoute(route)
+			if canSpawnPointForRoute(route) then
+				spawnPointForRoute(route)
+			end
 		end
 	end
 end
 
+-- calculates distance squared
+local function getDistanceSquared(p1, p2)
+	local dx = p2.x - p1.x
+	local dy = p2.y - p1.y
+	return dx * dx + dy * dy
+end
 
------------------------------------------
------------------------------------------
------------------------------------------
+-- interpolates speed
+local function interpolateSpeed(dist, hardRadius, softRadius, minSpeed, maxSpeed)
+	if dist < hardRadius then return minSpeed end
+	local f = (dist - hardRadius) / (softRadius - hardRadius)
+	return minSpeed + (maxSpeed - minSpeed) * math.max(0, f)
+end
 
+-- behaviour 1: collisions on same edge (single lane)
+local function behaviour1_sameEdge(thisP, edge, thisDistToEnd, logMessages)
+	local newSpeed = thisP.speed or maxSpeed
+	local sameLanePoints = getPointsOnEdgeLane(edge, 1) -- single lane
+	for _, otherP in ipairs(sameLanePoints) do
+		if thisP ~= otherP then
+			local distAlongEdge = math.abs(thisP.distanceTraveled - otherP.distanceTraveled)
+			local dist2D = math.sqrt(getDistanceSquared(thisP, otherP))
+			if distAlongEdge < softRadius then
+				local otherDistToEnd = edge.length - otherP.distanceTraveled
+				if thisDistToEnd == otherDistToEnd then
+					thisDistToEnd = thisDistToEnd + (0.5 - math.random()) / 10000
+				end
+				local hasPriority = thisDistToEnd < otherDistToEnd
+				if edge.id == 28 then
+					print(string.format("edge28: point %d, other %d, distAlongEdge: %.2f, dist2D: %.2f, distToEnd: %.2f, otherDistToEnd: %.2f, hasPriority: %s",
+							thisP.id, otherP.id, distAlongEdge, dist2D, thisDistToEnd, otherDistToEnd, tostring(hasPriority)))
+				end
+				if hasPriority then
+					local tempSpeed = interpolateSpeed(distAlongEdge, hardRadius, softRadius, minSpeed, maxSpeed)
+					otherP.speed = math.min(otherP.speed or maxSpeed, tempSpeed)
+					otherP.status = "yielding"
+					thisP.status = "priority"
+					table.insert(otherP.interactionLines, {thisP.x, thisP.y, otherP.x, otherP.y})
+					if edge.id == 28 then
+						print(string.format("edge28: point %d priority over %d, tempSpeed: %.2f, new other speed: %.2f",
+								thisP.id, otherP.id, tempSpeed, otherP.speed))
+					end
+				else
+					local tempSpeed = interpolateSpeed(distAlongEdge, hardRadius, softRadius, minSpeed, maxSpeed)
+					newSpeed = math.min(newSpeed, tempSpeed)
+					thisP.status = "yielding"
+					otherP.status = "priority"
+					table.insert(thisP.interactionLines, {otherP.x, otherP.y, thisP.x, thisP.y})
+					if edge.id == 28 then
+						print(string.format("edge28: point %d yielding to %d, tempSpeed: %.2f, new speed: %.2f",
+								thisP.id, otherP.id, tempSpeed, newSpeed))
+					end
+				end
+			elseif edge.id == 28 and dist2D < softRadius then
+				print(string.format("edge28: point %d, other %d, distAlongEdge: %.2f > softRadius, but dist2D: %.2f < softRadius",
+						thisP.id, otherP.id, distAlongEdge, dist2D))
+			end
+		end
+	end
+	if newSpeed < (thisP.speed or maxSpeed) then
+		thisP.case = 1
+		thisP.speed = newSpeed
+		if edge.id == 28 then
+			print(string.format("edge28: point %d updated speed: %.2f", thisP.id, newSpeed))
+		end
+	end
+end
 
--- updates point velocities based on collision logic
--- called by points.update to handle interactions
+-- handles lane changes based on lane overload
+local function updateLaneChanges(point, edge)
+	if point.desiredLane and point.desiredLane ~= point.lane then
+		if canChangeLane(point, edge, point.desiredLane) then
+			point.laneChangeProgress = point.laneChangeProgress + laneChangeSpeed * love.timer.getDelta()
+			if point.laneChangeProgress >= 1 then
+				point.lane = point.desiredLane
+				point.desiredLane = nil
+				point.laneChangeProgress = 0
+			end
+		else
+			point.status = "waiting"
+		end
+	else
+		local currentLanePoints = getPointsOnEdgeLane(edge, point.lane)
+		local currentDensity = #currentLanePoints
+		if currentDensity > densityThreshold then
+			local lanes = edge.lanes or 2
+			local bestLane = point.lane
+			local minDensity = currentDensity
+			for lane = 1, lanes do
+				if lane ~= point.lane then
+					local pointsOnLane = getPointsOnEdgeLane(edge, lane)
+					local density = #pointsOnLane
+					local validLane = true
+					local nextEdgeId = point.currentEdgeIndex + 1 <= #point.edges and point.edges[point.currentEdgeIndex + 1].id or nil
+					if nextEdgeId and edge.laneDestinations and edge.laneDestinations[lane] then
+						validLane = false
+						for _, destId in ipairs(edge.laneDestinations[lane]) do
+							if destId == nextEdgeId then
+								validLane = true
+								break
+							end
+						end
+					end
+					if validLane and density < minDensity then
+						minDensity = density
+						bestLane = lane
+					end
+				end
+			end
+			if bestLane ~= point.lane then
+				point.desiredLane = bestLane
+				point.laneChangeProgress = 0
+			end
+		end
+	end
+end
+
+-- updates velocities and lanes
 local function updateParticleVelocities(dt)
-	-- reset point states
 	for _, point in ipairs(points) do
-		point.speed = point.maxSpeed
-		point.color = {1, 1, 1}
+		point.speed = maxSpeed
+		point.status = "default"
 		point.interactionLines = {}
 	end
-
-	-- process interactions for each point
-	for _, thisP in ipairs(points) do
-		local edge = thisP.edges[thisP.currentEdgeIndex]
+	for _, point in ipairs(points) do
+		local edge = point.edges[point.currentEdgeIndex]
 		if edge then
-			local thisDistToEnd = edge.length - thisP.distanceTraveled
-			local newSpeed = thisP.maxSpeed
-			local logMessages = {}
-
-
-			-- case 1: points on the same edge
-			local sameEdgePoints = getPointsOnEdge(edge)
-			for _, otherP in ipairs(sameEdgePoints) do
-				if thisP ~= otherP then
-					local dist = getDistance(thisP, otherP)
-					local otherDistToEnd = edge.length - otherP.distanceTraveled
-					if dist < thisP.softRadius then
-						if thisDistToEnd == otherDistToEnd then
-							thisDistToEnd = thisDistToEnd + (0.5-math.random())/10000
-							print ('exception: thisDistToEnd == otherDistToEnd')
-						end
-						local hasPriority = thisDistToEnd < otherDistToEnd
-
-						if not hasPriority then
-							local tempSpeed
-							if dist < thisP.hardRadius then
-								tempSpeed = minSpeed
-							else
-								local f = (dist - thisP.hardRadius) / (thisP.softRadius - thisP.hardRadius)
-								tempSpeed = minSpeed + (thisP.maxSpeed - minSpeed) * math.max(0, f)
-							end
-							newSpeed = math.min(newSpeed, tempSpeed)
-							thisP.color = {1, 0, 0}
-							otherP.color = {0, 1, 0}
-							table.insert(thisP.interactionLines, {otherP.x, otherP.y, thisP.x, thisP.y})
-							if thisP.id == 3 or thisP.id == 4 or thisP.id == 8 or thisP.id == 9 or thisP.id == 13 or thisP.id == 14 then
-								table.insert(logMessages, string.format("sees point %d on same edge, dist %.2f, I'm farther (%.2f > %.2f), yielding, new speed %.2f", 
-										otherP.id, dist, thisDistToEnd, otherDistToEnd, tempSpeed))
-							end
-						else
-							local tempSpeed
-							if dist < otherP.hardRadius then
-								tempSpeed = minSpeed
-							else
-								local f = (dist - otherP.hardRadius) / (otherP.softRadius - otherP.hardRadius)
-								tempSpeed = minSpeed + (otherP.maxSpeed - minSpeed) * math.max(0, f)
-							end
-							otherP.speed = math.min(otherP.speed, tempSpeed)
-							otherP.color = {1, 0, 0}
-							thisP.color = {0, 1, 0}
-							table.insert(otherP.interactionLines, {thisP.x, thisP.y, otherP.x, otherP.y})
-
-						end
-					end
-				end
-			end
-
-			-- case 2: points on next edges
-			local nextEdgePoints = getNextEdgesWithinRadius(thisP, edge)
-			for _, otherP in ipairs(nextEdgePoints) do
-				local dist = getDistance(thisP, otherP)
-				if dist < thisP.softRadius then
-					local tempSpeed
-					if dist < thisP.hardRadius then
-						tempSpeed = 0
-					else
-						local f = (dist - thisP.hardRadius) / (thisP.softRadius - thisP.hardRadius)
-						tempSpeed = thisP.maxSpeed * math.max(0, f)
-					end
-					newSpeed = math.min(newSpeed, tempSpeed)
-					thisP.color = {1, 0, 0}
-					otherP.color = {0, 1, 0}
-					table.insert(thisP.interactionLines, {otherP.x, otherP.y, thisP.x, thisP.y})
-					if thisP.id == 3 or thisP.id == 4 or thisP.id == 8 or thisP.id == 9 or thisP.id == 13 or thisP.id == 14 then
-						table.insert(logMessages, string.format("sees point %d on next edge, dist %.2f, yielding, new speed %.2f", 
-								otherP.id, dist, tempSpeed))
-					end
-				end
-			end
-
-			-- case 3: points on previous edges of next edge
-			if thisP.nextEdgeIndex <= #thisP.edges then
-				local nextEdge = thisP.edges[thisP.nextEdgeIndex]
-				local prevEdgePoints = getPrevEdgesWithinRadius(thisP, nextEdge)
-				for _, otherP in ipairs(prevEdgePoints) do
-					local otherEdge = otherP.edges[otherP.currentEdgeIndex]
-					local otherDistToEnd = otherEdge.length - otherP.distanceTraveled
-					if otherEdge ~= edge then
-						if thisDistToEnd < thisP.softRadius and otherDistToEnd < otherP.softRadius then
-							local hasPriority = thisDistToEnd < otherDistToEnd
-							if not hasPriority then
-								local dist = getDistance(thisP, otherP)
-								local tempSpeed
-								if dist < thisP.hardRadius then
-									tempSpeed = minSpeed
-								else
-									local f = (dist - thisP.hardRadius) / (thisP.softRadius - thisP.hardRadius)
-									tempSpeed = minSpeed + (thisP.maxSpeed - minSpeed) * math.max(0, f)
-								end
-								newSpeed = math.min(newSpeed, tempSpeed)
-								thisP.color = {1, 0, 0}
-								otherP.color = {0, 1, 0}
-								table.insert(thisP.interactionLines, {otherP.x, otherP.y, thisP.x, thisP.y})
-								if thisP.id == 3 or thisP.id == 4 or thisP.id == 8 or thisP.id == 9 or thisP.id == 13 or thisP.id == 14 then
-									table.insert(logMessages, string.format("sees point %d on prev edge of next, dist %.2f, I'm farther (%.2f > %.2f), yielding, new speed %.2f", 
-											otherP.id, dist, thisDistToEnd, otherDistToEnd, tempSpeed))
-								end
-							else
-								local dist = getDistance(thisP, otherP)
-								local tempSpeed
-								if dist < otherP.hardRadius then
-									tempSpeed = minSpeed
-								else
-									local f = (dist - otherP.hardRadius) / (otherP.softRadius - otherP.hardRadius)
-									tempSpeed = minSpeed + (otherP.maxSpeed - minSpeed) * math.max(0, f)
-								end
-								otherP.speed = math.min(otherP.speed, tempSpeed)
-								otherP.color = {1, 0, 0}
-								thisP.color = {0, 1, 0}
-								table.insert(otherP.interactionLines, {thisP.x, thisP.y, otherP.x, otherP.y})
-								if thisP.id == 3 or thisP.id == 4 or thisP.id == 8 or thisP.id == 9 or thisP.id == 13 or thisP.id == 14 then
-									table.insert(logMessages, string.format("sees point %d on prev edge of next, dist %.2f, I'm closer (%.2f < %.2f), proceeding, speed %.2f", 
-											otherP.id, dist, thisDistToEnd, otherDistToEnd, newSpeed))
-								end
-							end
-						end
-					end
-				end
-			end
-
-			thisP.speed = newSpeed
-
-			if thisP.id == 3 or thisP.id == 4 or thisP.id == 8 or thisP.id == 9 or thisP.id == 13 or thisP.id == 14 then
-				if #logMessages == 1 then
-					table.insert(logMessages, string.format("point %d: no interactions, moving freely", thisP.id))
-				end
-				for _, msg in ipairs(logMessages) do
-					-- print(msg)
-				end
+			local thisDistToEnd = edge.length - point.distanceTraveled
+			behaviour1_sameEdge(point, edge, thisDistToEnd, {})
+			if not point.isTransitioning then
+				updateLaneChanges(point, edge)
 			end
 		end
 	end
 end
 
--- computes shortest path between two nodes
--- used in spawnParticles and processNextEdge for pathfinding
+-- computes shortest path
 local function computePath(startId, endId)
 	local path, distance = points.findShortestPath(startId, endId)
 	if #path < 2 then
-		print("no valid path for route " .. startId .. "->" .. endId)
 		return nil, nil
 	end
 	return path, distance
 end
 
--- handles point transition to next edge with path recalculation
--- called by moveParticles when a point reaches an edge’s end
+-- handles transition to next edge
 local function processNextEdge(point, edge)
-	point.distanceTraveled = 0
 	removePointFromEdge(point, edge)
 	point.currentEdgeIndex = point.currentEdgeIndex + 1
-	point.nextEdgeIndex = point.currentEdgeIndex + 1
-
 	if point.currentEdgeIndex <= #point.edges then
-		-- store next edge ID for comparison
-		local oldEdgeId = point.edges[point.currentEdgeIndex].id or
-		(point.edges[point.currentEdgeIndex].nodeIndices[1] .. "->" ..
-			point.edges[point.currentEdgeIndex].nodeIndices[#point.edges[point.currentEdgeIndex].nodeIndices])
-
-		-- recompute path to avoid congested edges
 		local currentNodeId = edge.nodeIndices[#edge.nodeIndices]
-		local path, _ = computePath(currentNodeId, point.endNodeId)
+		local path, _ = computePath(currentNodeId, point.targetNodeId)
 		if not path then
-			print("point " .. point.id .. ": no path from " .. currentNodeId .. " to " .. point.endNodeId .. ", removing")
 			point.remove = true
 		else
 			local newEdges = buildEdgesFromPath(path)
 			if #newEdges > 0 then
-				-- compare with new edge ID
-				local newEdgeId = newEdges[1].id or
-				(newEdges[1].nodeIndices[1] .. "->" ..
-					newEdges[1].nodeIndices[#newEdges[1].nodeIndices])
-				if oldEdgeId ~= newEdgeId then
---					print("point " .. point.id .. ": next edge changed from " .. oldEdgeId .. " to " .. newEdgeId)
-				end
-
-				-- update point with new path
 				point.edges = newEdges
 				point.currentEdgeIndex = 1
-				point.nextEdgeIndex = 2
 				local nextEdge = point.edges[1]
-				point.x = nextEdge.line[1]
-				point.y = nextEdge.line[2]
-				point.speed = point.maxSpeed
+				local currentLanes = edge.lanes or 2
+				local nextLanes = nextEdge.lanes or 2
+				point.transitionFromX = point.laneX
+				point.transitionFromY = point.laneY
+				if currentLanes == 1 and nextLanes == 1 then
+					point.isTransitioning = false
+					point.distanceTraveled = 0
+					point.lane = 1
+					point.desiredLane = nil
+					point.laneChangeProgress = 0
+					point.transitionToT = 0
+					local laneLine = nextEdge.laneLines[1]
+					point.transitionToX = laneLine and laneLine[1] or nextEdge.line[1]
+					point.transitionToY = laneLine and laneLine[2] or nextEdge.line[2]
+					point.laneX = point.transitionToX
+					point.laneY = point.transitionToY
+					point.x = point.laneX
+					point.y = point.laneY
+				else
+					point.isTransitioning = true
+					point.transitionProgress = 0
+					point.lane = findClosestLane(nextEdge, point.transitionFromX, point.transitionFromY)
+					point.desiredLane = nil
+					point.laneChangeProgress = 0
+					local laneLine = nextEdge.laneLines[point.lane]
+					if laneLine and #laneLine >= 2 then
+						local startX, startY = laneLine[1], laneLine[2]
+						local dx = startX - point.transitionFromX
+						local dy = startY - point.transitionFromY
+						local distance = math.sqrt(dx * dx + dy * dy)
+						if distance <= distanceThreshold then
+							point.isTransitioning = false
+							point.distanceTraveled = 0
+							point.transitionToX = startX
+							point.transitionToY = startY
+							point.transitionToT = 0
+							point.laneX = startX
+							point.laneY = startY
+							point.x = point.laneX
+							point.y = point.laneY
+						else
+							local edgeDirX, edgeDirY = nextEdge.line[3] - nextEdge.line[1], nextEdge.line[4] - nextEdge.line[2]
+							local edgeLen = math.sqrt(edgeDirX * edgeDirX + edgeDirY * edgeDirY)
+							if edgeLen > 0 then
+								edgeDirX, edgeDirY = edgeDirX / edgeLen, edgeDirY / edgeLen
+								local dot = dx * edgeDirX + dy * edgeDirY
+								if dot < 0 then
+									local closestX, closestY, closestT = findClosestPointOnLane(nextEdge, point.lane, point.transitionFromX, point.transitionFromY)
+									point.transitionToX = closestX
+									point.transitionToY = closestY
+									point.transitionToT = closestT
+									distance = math.sqrt((closestX - point.transitionFromX)^2 + (closestY - point.transitionFromY)^2)
+								else
+									point.transitionToX = startX
+									point.transitionToY = startY
+									point.transitionToT = 0
+								end
+							else
+								point.transitionToX = startX
+								point.transitionToY = startY
+								point.transitionToT = 0
+							end
+							point.transitionDuration = math.max(minTransitionDuration, math.min(maxTransitionDuration, distance / math.max(point.speed, minSpeed)))
+						end
+					else
+						point.transitionToX = nextEdge.line[1]
+						point.transitionToY = nextEdge.line[2]
+						point.transitionToT = 0
+						point.transitionDuration = minTransitionDuration
+					end
+				end
 				addPointToEdge(point, nextEdge)
 			else
-				print("point " .. point.id .. ": no valid edges from " .. currentNodeId .. " to " .. point.endNodeId .. ", removing")
 				point.remove = true
 			end
 		end
 	else
 		point.remove = true
-		-- print("point " .. point.id .. " reached destination")
 	end
 end
 
--- moves points along edges based on their speed
--- called by points.update to update point positions
+-- moves points along edges
 local function moveParticles(dt)
-	for i, p in ipairs(points) do
-		if p.speed > 0 then
-			p.distanceTraveled = p.distanceTraveled + p.speed * dt
-			local edge = p.edges[p.currentEdgeIndex]
-			local totalLength = edge.length
-			local line = edge.line
-			local totalSegments = (#line / 2) - 1
-
-			if p.distanceTraveled >= totalLength then
-				processNextEdge(p, edge)
-			else
-				local dist = p.distanceTraveled
-				for seg = 1, totalSegments do
-					local i1 = (seg - 1) * 2 + 1
-					local x1, y1 = line[i1], line[i1 + 1]
-					local x2, y2 = line[i1 + 2], line[i1 + 3]
-					local segLen = math.sqrt((x2 - x1)^2 + (y2 - y1)^2)
-					if dist < segLen then
-						local t = dist / segLen
-						p.x = x1 + (x2 - x1) * t
-						p.y = y1 + (y2 - y1) * t
-						break
-					else
-						dist = dist - segLen
-					end
+	for i, point in ipairs(points) do
+		local edge = point.edges[point.currentEdgeIndex]
+--		print(string.format("point %d on edge %s", point.id, edge and edge.id or "none"))
+		if point.speed > 0 then
+			point.lastDistanceTraveled = point.distanceTraveled
+			point.lastTransitionProgress = point.transitionProgress
+			point.lastLaneX = point.laneX or point.x
+			point.lastLaneY = point.laneY or point.y
+			if point.isTransitioning then
+				point.transitionProgress = point.transitionProgress + dt / point.transitionDuration
+				if point.transitionProgress >= 1 then
+					point.isTransitioning = false
+					point.transitionProgress = 0
+					point.distanceTraveled = point.transitionToT * point.edges[point.currentEdgeIndex].length
+					point.laneX = point.transitionToX
+					point.laneY = point.transitionToY
+					point.x = point.laneX
+					point.y = point.laneY
 				end
+				point.x = point.transitionFromX + (point.transitionToX - point.transitionFromX) * point.transitionProgress
+				point.y = point.transitionFromY + (point.transitionToY - point.transitionFromY) * point.transitionProgress
+				point.laneX = point.x
+				point.laneY = point.y
+				local deltaProgress = point.transitionProgress - point.lastTransitionProgress
+				local transitionDistance = math.sqrt((point.transitionToX - point.transitionFromX)^2 + (point.transitionToY - point.transitionFromY)^2)
+				point.effectiveSpeed = deltaProgress > 0 and (deltaProgress * transitionDistance) / dt or (point.speed or maxSpeed)
+			else
+				point.distanceTraveled = point.distanceTraveled + (point.speed or maxSpeed) * dt
+				local totalLength = edge.length
+				if point.distanceTraveled >= totalLength then
+					processNextEdge(point, edge)
+				else
+					local t = point.distanceTraveled / totalLength
+					local newLaneX, newLaneY = diagram.getLanePosition(edge, 1, nil, 0, t) -- single lane
+					if newLaneX == nil or newLaneY == nil then
+						print(string.format("edge %d: getLanePosition returned nil for point %d, lane 1, t: %.4f",
+								edge.id, point.id, t))
+						newLaneX = point.x
+						newLaneY = point.y
+					end
+					point.laneX = newLaneX
+					point.laneY = newLaneY
+					point.x = point.laneX
+					point.y = point.laneY
+				end
+				local deltaX = (point.laneX or point.x) - (point.lastLaneX or point.x)
+				local deltaY = (point.laneY or point.y) - (point.lastLaneY or point.y)
+				point.effectiveSpeed = dt > 0 and math.sqrt(deltaX * deltaX + deltaY * deltaY) / dt or (point.speed or maxSpeed)
+			end
+			if edge.id == 28 then
+				local laneLinesStr = edge.laneLines and edge.laneLines[1] and table.concat(edge.laneLines[1], ", ") or "none"
+				local laneLinesPoints = edge.laneLines and edge.laneLines[1] and (#edge.laneLines[1] / 2) or 0
+				if point.effectiveSpeed == nil then
+					print(string.format("edge28: point %d, effectiveSpeed is nil, deltaX: %.2f, deltaY: %.2f, dt: %.4f",
+							point.id, deltaX or 0, deltaY or 0, dt))
+					point.effectiveSpeed = point.speed or maxSpeed
+				end
+
+			end
+		else
+			point.effectiveSpeed = 0
+			if edge.id == 28 then
+				print(string.format("edge28: point %d stopped, lane: 1, distanceTraveled: %.2f, effectiveSpeed: %.2f, speed: %.2f",
+						point.id, point.distanceTraveled, point.effectiveSpeed or 0, point.speed or maxSpeed))
 			end
 		end
 	end
 end
 
--- removes points that have finished their paths
--- called by points.update to clean up completed points
+-- removes invalid points
 local function removeNotValidPoints()
 	for i = #points, 1, -1 do
 		local point = points[i]
@@ -577,14 +661,17 @@ local function removeNotValidPoints()
 				removePointFromEdge(point, point.edges[point.currentEdgeIndex])
 			end
 			table.remove(points, i)
-
 		end
 	end
 end
 
--- initializes routes with paths and edges
--- called by main.lua during love.load
+-- initializes routes and edge lanes
 function points.initialize(paths)
+	points.list = points
+	for _, edge in pairs(diagram.edges) do
+		edge.lanes = edge.lanes or 2
+		edge.laneDestinations = edge.laneDestinations or {}
+	end
 	for _, route in ipairs(paths) do
 		local path, distance = points.findShortestPath(route.startId, route.endId)
 		if path then
@@ -592,65 +679,75 @@ function points.initialize(paths)
 			route.distance = distance
 			route.edges = buildEdgesFromPath(path)
 		else
-			print("no path found from " .. route.startId .. " to " .. route.endId)
 			route.path = {route.startId}
 			route.edges = {}
 		end
 	end
 end
 
-local function updateAvgSpeedOnEdes ()
+-- updates average speed on edges
+local function updateAvgSpeedOnEdges()
 	for _, edge in pairs(diagram.edges) do
-		local numPoints = edge.points and #edge.points or 0
-		local newAvgSpeed
-		if numPoints == 0 then
-			newAvgSpeed = maxSpeed
-			edge.avgSpeed = newAvgSpeed
-		else
+		local avgSpeed = maxSpeed
+		if edge.points and #edge.points > 0 then
 			local totalSpeed = 0
 			for _, point in ipairs(edge.points) do
 				totalSpeed = totalSpeed + point.speed
 			end
-			newAvgSpeed = totalSpeed / numPoints
-
-			edge.avgSpeed = 0.01*newAvgSpeed + 0.99*edge.avgSpeed
+			avgSpeed = totalSpeed / #edge.points
 		end
-
+		edge.avgSpeed = edge.avgSpeed and (0.01 * avgSpeed + 0.99 * edge.avgSpeed) or avgSpeed
 	end
 end
 
--- updates simulation state
--- called by main.lua in love.update
+-- updates simulation
 function points.update(dt, paths)
 	spawnParticles(dt, paths)
 	updateParticleVelocities(dt)
 	moveParticles(dt)
 	removeNotValidPoints()
-	updateAvgSpeedOnEdes ()
+	updateAvgSpeedOnEdges()
 end
 
--- draws points and interaction lines
--- called by main.lua in love.draw
+-- gets point color
+local function getColorFromStatus(status)
+	if status == "yielding" then return {1, 0, 0}
+	elseif status == "priority" then return {0, 1, 0}
+	elseif status == "waiting" then return {1, 1, 0}
+	else return {1, 1, 1} end
+end
+
+-- draws points, interaction lines, and speed indicators
 function points.draw()
-	for _, point in ipairs(points) do
-		local x = math.floor (point.x+0.5)
-		local y = math.floor (point.y+0.5)
-		love.graphics.setColor(point.color)
+	-- set font for speed text
+	local font = love.graphics.newFont(12)
+	love.graphics.setFont(font)
+
+	for _, point in ipairs(points.list) do
+		-- draw point
+		love.graphics.setColor(getColorFromStatus(point.status))
 		love.graphics.circle("fill", point.x, point.y, 6)
 		love.graphics.setColor(0, 0, 0)
 		love.graphics.circle("line", point.x, point.y, 7)
-
-end
-
-	love.graphics.setColor(0,0,0)
+		-- draw effective speed text
+		love.graphics.setColor(0, 0, 0)
+		love.graphics.print(math.floor(point.effectiveSpeed), point.x + 10, point.y - 5)
+	end
+	-- draw interaction lines
+	love.graphics.setColor(0, 0, 0)
 	love.graphics.setLineWidth(1)
-	for _, point in ipairs(points) do
+	for _, point in ipairs(points.list) do
 		for _, line in ipairs(point.interactionLines) do
-			local x1, y1, x2, y2, r, g, b = unpack(line)
-
 			love.graphics.line(line)
 		end
 	end
 end
+
+
+
+
+
+
+--return points
 
 return points

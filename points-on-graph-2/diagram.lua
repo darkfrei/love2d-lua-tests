@@ -1,17 +1,26 @@
--- diagram.lua
--- manages graph structure, pathfinding, and visualization
--- used by main.lua for initialization and drawing, points.lua for pathfinding
-
 local diagram = {}
 
+local speedThresholds = {
+	{threshold = 45, fillColor = {0.16, 0.86, 0.625}, outlineColor = {0.08, 0.625, 0.4}}, -- high speed: teal
+	{threshold = 30, fillColor = {1, 0.8, 0.3}, outlineColor = {0.94, 0.75, 0.625}}, -- medium speed: yellow
+	{threshold = 15, fillColor = {0.94, 0.3, 0.27}, outlineColor = {0.6, 0.23, 0.23}},   -- low speed: red
+	{threshold = 0,  fillColor = {0.66, 0.16, 0.16}, outlineColor = {0.4, 0.12, 0}}    -- very low speed: dark red
+}
+
+-- configuration constants
+local laneWidth = 10  -- pixels between lanes for visualization
+
+-- assigns random number of lanes (1, 2, or 3) to an edge
+local function assignRandomLanes(edge)
+	return 1
+end
+
 -- calculates Euclidean distance between two points
--- used in getEdgeLength, computeSegmentLengths, getMidpointOfLine
 local function getLength(dx, dy)
 	return math.sqrt(dx * dx + dy * dy)
 end
 
 -- generates line coordinates for an edge
--- used in initialize to set edge.line
 local function getEdgeLine(nodes, edge)
 	local line = {}
 	for _, nodeIndex in ipairs(edge.nodeIndices) do
@@ -24,7 +33,7 @@ local function getEdgeLine(nodes, edge)
 	elseif #edge.nodeIndices == 3 then
 		local curve = love.math.newBezierCurve(line)
 		local line2 = {}
-		local amount = 8
+		local amount = 16
 		for i = 0, amount do
 			local x, y = curve:evaluate(i / amount)
 			table.insert(line2, x)
@@ -36,7 +45,6 @@ local function getEdgeLine(nodes, edge)
 end
 
 -- calculates total length of an edge
--- used in initialize to set edge.length
 local function getEdgeLength(nodes, edge)
 	local length = 0
 	local line = edge.line
@@ -49,7 +57,6 @@ local function getEdgeLength(nodes, edge)
 end
 
 -- computes lengths of edge segments
--- used in initialize to set edge.segmentLengths and edge.segmentCumulative
 local function computeSegmentLengths(edge)
 	local line = edge.line
 	local lengths = {}
@@ -68,7 +75,6 @@ local function computeSegmentLengths(edge)
 end
 
 -- finds midpoint and direction of an edge
--- used in getArrowLine to position arrows
 local function getMidpointOfLine(nodes, edge)
 	local totalLength = edge.length
 	local midpointDist = totalLength / 2
@@ -97,7 +103,6 @@ local function getMidpointOfLine(nodes, edge)
 end
 
 -- generates arrow coordinates for edge direction
--- used in initialize to set edge.arrow
 local function getArrowLine(nodes, edge)
 	local midX, midY, nx, ny = getMidpointOfLine(nodes, edge)
 	local arrowSize = 10
@@ -111,14 +116,50 @@ local function getArrowLine(nodes, edge)
 	return {x1, y1, x2, y2, x3, y3}
 end
 
+-- gets interpolated position on an edge for a given lane and progress
+function diagram.getLanePosition(edge, lane, targetLane, laneChangeProgress, t)
+	local laneLine = edge.laneLines[lane]
+	local targetLaneLine = targetLane and edge.laneLines[targetLane] or laneLine
+	local numSegments = (#laneLine - 2) / 2
+	local segmentLength = edge.length / numSegments
+	local segmentIndex = math.floor(t * numSegments)
+	local segmentT = (t * numSegments) - segmentIndex
+	segmentIndex = math.max(0, math.min(segmentIndex, numSegments - 1))
+
+	local i = segmentIndex * 2 + 1
+	local x1, y1 = laneLine[i], laneLine[i + 1]
+	local x2, y2 = laneLine[i + 2] or x1, laneLine[i + 3] or y1
+	local tx1, ty1 = targetLaneLine[i], targetLaneLine[i + 1]
+	local tx2, ty2 = targetLaneLine[i + 2] or tx1, targetLaneLine[i + 3] or ty1
+
+	local x = x1 + (x2 - x1) * segmentT
+	local y = y1 + (y2 - y1) * segmentT
+	local tx = tx1 + (tx2 - tx1) * segmentT
+	local ty = ty1 + (ty2 - ty1) * segmentT
+
+	if laneChangeProgress > 0 and lane ~= targetLane then
+		x = x + (tx - x) * laneChangeProgress
+		y = y + (ty - y) * laneChangeProgress
+	end
+
+	return x, y
+end
+
 -- initializes nodes and edges with precomputed properties
--- called by main.lua in love.load
 function diagram.initialize(newNodes, newEdges)
 	diagram.nodes = newNodes
 	diagram.edges = newEdges
 	for _, node in pairs(diagram.nodes) do
-		node.x = math.floor(node.x + 0.5)
-		node.y = math.floor(node.y + 0.5)
+		if node.x and node.y then
+			node.x = math.floor(node.x + 0.5)
+			node.y = math.floor(node.y + 0.5)
+		else
+			print("warning: node " .. (node.id or "unknown") .. " has missing x or y, setting to 0")
+			node.x = node.x or 0
+			node.y = node.y or 0
+		end
+		node.nextEdges = node.nextEdges or {}
+		node.prevEdges = node.prevEdges or {}
 	end
 	for _, edge in pairs(diagram.edges) do
 		edge.startNode = diagram.nodes[edge.nodeIndices[1]]
@@ -127,62 +168,131 @@ function diagram.initialize(newNodes, newEdges)
 		computeSegmentLengths(edge)
 		edge.length = getEdgeLength(diagram.nodes, edge)
 		edge.arrow = getArrowLine(diagram.nodes, edge)
-		if edge.startNode.nextEdges then
-			table.insert(edge.startNode.nextEdges, edge)
-		else
-			edge.startNode.nextEdges = {edge}
+		edge.lanes = edge.lanes or assignRandomLanes(edge)
+		if edge.lanes < 1 or edge.lanes > 3 then
+			print("warning: edge " .. edge.id .. " has invalid lanes (" .. edge.lanes .. "), setting to 2")
+			edge.lanes = 2
 		end
-		if edge.endNode.prevEdges then
-			table.insert(edge.endNode.prevEdges, edge)
-		else
-			edge.endNode.prevEdges = {edge}
+		table.insert(edge.startNode.nextEdges, edge)
+		table.insert(edge.endNode.prevEdges, edge)
+
+		-- calculate lane lines with vertex-based normals
+		edge.laneLines = {}
+		for lane = 1, edge.lanes do
+			local offset = (lane - (edge.lanes + 1) / 2) * laneWidth
+			local laneLine = {}
+			local normals = {}
+			local numSegments = (#edge.line - 2) / 2
+
+			-- calculate normals for each segment
+			for i = 1, #edge.line - 2, 2 do
+				local x1, y1 = edge.line[i], edge.line[i + 1]
+				local x2, y2 = edge.line[i + 2], edge.line[i + 3]
+				local dx = x2 - x1
+				local dy = y2 - y1
+				local len = math.sqrt(dx * dx + dy * dy)
+				if len > 0 then
+					local nx = -dy / len
+					local ny = dx / len
+					table.insert(normals, {nx = nx, ny = ny})
+				else
+					if #normals > 0 then
+						table.insert(normals, normals[#normals])
+					else
+						table.insert(normals, {nx = 0, ny = 0})
+					end
+				end
+			end
+
+			-- average normals at vertices
+			local vertexNormals = {}
+			for i = 0, numSegments do
+				if i == 0 then
+					vertexNormals[1] = normals[1] or {nx = 0, ny = 0}
+				elseif i == numSegments then
+					vertexNormals[i + 1] = normals[#normals] or {nx = 0, ny = 0}
+				else
+					local prev = normals[i] or {nx = 0, ny = 0}
+					local curr = normals[i + 1] or {nx = 0, ny = 0}
+					local nx = (prev.nx + curr.nx) / 2
+					local ny = (prev.ny + curr.ny) / 2
+					local len = math.sqrt(nx * nx + ny * ny)
+					if len > 0 then
+						nx = nx / len
+						ny = ny / len
+					else
+						nx, ny = 0, 0
+					end
+					vertexNormals[i + 1] = {nx = nx, ny = ny}
+				end
+			end
+
+			-- generate laneLine using vertex normals
+			for i = 1, #edge.line - 2, 2 do
+				local x1, y1 = edge.line[i], edge.line[i + 1]
+				local x2, y2 = edge.line[i + 2], edge.line[i + 3]
+				local idx1 = math.floor((i + 1) / 2)
+				local idx2 = math.floor((i + 3) / 2)
+				local n1 = vertexNormals[idx1] or {nx = 0, ny = 0}
+				local n2 = vertexNormals[idx2] or {nx = 0, ny = 0}
+				table.insert(laneLine, x1 + n1.nx * offset)
+				table.insert(laneLine, y1 + n1.ny * offset)
+				table.insert(laneLine, x2 + n2.nx * offset)
+				table.insert(laneLine, y2 + n2.ny * offset)
+			end
+			edge.laneLines[lane] = laneLine
 		end
 	end
 end
 
--- draws graph edges, arrows, and nodes
--- called by main.lua in love.draw
--- edge color reflects average point speed: teal (high), yellow (medium), red (low), dark red (very low)
+-- draws graph edges, lanes, arrows, and nodes
 function diagram.draw()
-	local speedThresholdHigh = 45    -- high speed: > 45
-	local speedThresholdMedium = 30  -- medium speed: 30-45
-	local speedThresholdLow = 15     -- low speed: 15-30
-	local width1 = 10                -- outline width
-	local width2 = 7                 -- fill width
+	local laneWidth2 = 6
 	for _, edge in pairs(diagram.edges) do
 		local avgSpeed = edge.avgSpeed or 60
-		-- set colors based on average speed
+		local lanes = edge.lanes or 2
+		local width1 = 2 + laneWidth * lanes
 		local fillColor, outlineColor
-		if avgSpeed > speedThresholdHigh then
-			fillColor = {40/255, 220/255, 160/255}    -- teal: high speed
-			outlineColor = {20/255, 160/255, 100/255} -- dark teal outline
-		elseif avgSpeed > speedThresholdMedium then
-			fillColor = {255/255, 200/255, 80/255}    -- yellow: medium speed
-			outlineColor = {240/255, 190/255, 160/255} -- light yellow outline
-		elseif avgSpeed > speedThresholdLow then
-			fillColor = {240/255, 80/255, 70/255}     -- red: low speed
-			outlineColor = {150/255, 60/255, 60/255}  -- dark red outline
-		else
-			fillColor = {170/255, 40/255, 40/255}     -- dark red: very low speed
-			outlineColor = {110/255, 30/255, 30/255}  -- very dark red outline
+		for _, speed in ipairs(speedThresholds) do
+			if avgSpeed > speed.threshold then
+				fillColor = speed.fillColor
+				outlineColor = speed.outlineColor
+				break
+			end
 		end
-		-- draw edge with outline
 		love.graphics.setColor(outlineColor)
 		love.graphics.setLineWidth(width1)
 		love.graphics.line(edge.line)
+	end
+
+	for _, edge in pairs(diagram.edges) do
+		local avgSpeed = edge.avgSpeed or 60
+		local lanes = edge.lanes or 2
+		local fillColor
+		for _, speed in ipairs(speedThresholds) do
+			if avgSpeed > speed.threshold then
+				fillColor = speed.fillColor
+				break
+			end
+		end
 		love.graphics.setColor(fillColor)
-		love.graphics.setLineWidth(width2)
-		love.graphics.line(edge.line)
-		
-		
-		-- draw arrow
+		love.graphics.setLineWidth(laneWidth2)
+		for lane = 1, lanes do
+			local laneLine = edge.laneLines[lane]
+			if laneLine and #laneLine >= 4 then
+				love.graphics.line(laneLine)
+			end
+		end
+	end
+
+	for _, edge in pairs(diagram.edges) do
 		if edge.arrow then
-			love.graphics.setColor(0, 0, 0)  -- red arrows
+			love.graphics.setColor(0, 0, 0)
 			love.graphics.setLineWidth(2)
 			love.graphics.line(edge.arrow)
 		end
 	end
-	-- draw nodes
+
 	love.graphics.setColor(0.2, 0.4, 0.9)
 	love.graphics.setLineWidth(2)
 	for _, node in pairs(diagram.nodes) do
@@ -193,7 +303,6 @@ function diagram.draw()
 			love.graphics.circle("line", node.x, node.y, 3)
 		end
 	end
-	-- draw node labels
 	for _, node in pairs(diagram.nodes) do
 		love.graphics.setColor(0, 0, 0)
 		love.graphics.circle("fill", node.x, node.y, 2)
@@ -206,7 +315,5 @@ function diagram.draw()
 		love.graphics.print(tostring(node.id), node.x + 7, node.y - 2)
 	end
 end
-
-
 
 return diagram
