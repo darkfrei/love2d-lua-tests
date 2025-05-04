@@ -201,7 +201,7 @@ local edges = {
 	[137] = {id = 137, nodeIndices = {30, 33}},
 	[138] = {id = 138, nodeIndices = {16, 1}},
 	[139] = {id = 139, nodeIndices = {3, 2, 15}},
-	[140] = {id = 139, nodeIndices = {50, 54, 53}},
+	[140] = {id = 139, nodeIndices = {41, 42, 53}},
 	[141] = {id = 139, nodeIndices = {33, 60}},
 	[142] = {id = 139, nodeIndices = {10, 42}},
 	[143] = {id = 139, nodeIndices = {2, 14}},
