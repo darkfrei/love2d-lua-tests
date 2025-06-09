@@ -100,59 +100,59 @@ end
 
 -- undo last action
 function PolyPath.undo(polylines)
-    local action = table.remove(PolyPath.undoStack)
-    if action and action.poly then
-        print("undo: action = " .. serpent.block(action)) -- debug
-        -- verify poly still exists in polylines
-        local polyExists = false
-        for _, poly in ipairs(polylines) do
-            if poly == action.poly then
-                polyExists = true
-                break
-            end
-        end
-        if not polyExists and action.action ~= "delete" then
-            print("undo: poly no longer exists, skipping") -- debug
-            return
-        end
-        if action.action == "add" then
-            if action.poly.points[action.index] then
-                table.remove(action.poly.points, action.index)
-            end
-        elseif action.action == "remove" then
-            if action.point.x and action.point.y then
-                table.insert(action.poly.points, action.index, action.point)
-            end
-        elseif action.action == "drag" then
-            if action.poly.points[action.index] then
-                if action.startX and action.startY then
-                    action.poly.points[action.index].x = action.startX
-                    action.poly.points[action.index].y = action.startY
-                    print("undo drag: point[" .. action.index .. "] restored to x=" .. action.startX .. ", y=" .. action.startY) -- debug
-                else
-                    print("undo drag: invalid startX or startY: " .. serpent.block({startX = action.startX, startY = action.startY})) -- debug
-                end
-                if action.type == "segment" and action.poly.points[action.index + 1] then
-                    if action.startX2 and action.startY2 then
-                        action.poly.points[action.index + 1].x = action.startX2
-                        action.poly.points[action.index + 1].y = action.startY2
-                        print("undo drag segment: point[" .. (action.index + 1) .. "] restored to x=" .. action.startX2 .. ", y=" .. action.startY2) -- debug
-                    else
-                        print("undo drag segment: invalid startX2 or startY2: " .. serpent.block({startX2 = action.startX2, startY2 = action.startY2})) -- debug
-                    end
-                end
-            else
-                print("undo drag: invalid point at index " .. action.index) -- debug
-            end
-        elseif action.action == "create" then
-            table.remove(polylines, action.index)
-        elseif action.action == "delete" then
-            table.insert(polylines, action.index, action.poly)
-        end
-        table.insert(PolyPath.redoStack, action)
-    else
-        print("undo: no action or invalid poly") -- debug
-    end
+	local action = table.remove(PolyPath.undoStack)
+	if action and action.poly then
+--		print("undo: action = " .. serpent.block(action)) -- debug
+		-- verify poly still exists in polylines
+		local polyExists = false
+		for _, poly in ipairs(polylines) do
+			if poly == action.poly then
+				polyExists = true
+				break
+			end
+		end
+		if not polyExists and action.action ~= "delete" then
+--			print("undo: poly no longer exists, skipping") -- debug
+			return
+		end
+		if action.action == "add" then
+			if action.poly.points[action.index] then
+				table.remove(action.poly.points, action.index)
+			end
+		elseif action.action == "remove" then
+			if action.point.x and action.point.y then
+				table.insert(action.poly.points, action.index, action.point)
+			end
+		elseif action.action == "drag" then
+			if action.poly.points[action.index] then
+				if action.startX and action.startY then
+					action.poly.points[action.index].x = action.startX
+					action.poly.points[action.index].y = action.startY
+--					print("undo drag: point[" .. action.index .. "] restored to x=" .. action.startX .. ", y=" .. action.startY) -- debug
+				else
+--					print("undo drag: invalid startX or startY: " .. serpent.block({startX = action.startX, startY = action.startY})) -- debug
+				end
+				if action.type == "segment" and action.poly.points[action.index + 1] then
+					if action.startX2 and action.startY2 then
+						action.poly.points[action.index + 1].x = action.startX2
+						action.poly.points[action.index + 1].y = action.startY2
+--						print("undo drag segment: point[" .. (action.index + 1) .. "] restored to x=" .. action.startX2 .. ", y=" .. action.startY2) -- debug
+					else
+--						print("undo drag segment: invalid startX2 or startY2: " .. serpent.block({startX2 = action.startX2, startY2 = action.startY2})) -- debug
+					end
+				end
+			else
+--				print("undo drag: invalid point at index " .. action.index) -- debug
+			end
+		elseif action.action == "create" then
+			table.remove(polylines, action.index)
+		elseif action.action == "delete" then
+			table.insert(polylines, action.index, action.poly)
+		end
+		table.insert(PolyPath.redoStack, action)
+	else
+--		print("undo: no action or invalid poly") -- debug
+	end
 end
 
 
@@ -184,33 +184,26 @@ serpent = require('serpent')
 
 -- handle double-click
 function PolyPath:handleDoubleClick(x, y, closest)
---	print("handleDoubleClick, closest:") -- debug
---	print(serpent.block(closest)) -- debug
-	if closest.type == "point" and #self.points > 1 then
-		self:removePoint(closest.index)
-		self.interaction = nil
-	elseif closest.type == "segment" then
-		local p1 = self.points[closest.index]
-		local p2 = self.points[closest.index + 1]
-		local newX, newY = getProjectionOnSegment(x, y, p1, p2)
-		local newIndex = self:addPoint(newX, newY, closest.index + 1)
-		self.interaction = {
-			type = "point",
-			index = newIndex,
-			data = {x = newX, y = newY},
-			state = "selected"
-		}
-		local action = {
-			action = "add",
-			poly = self,
-			index = newIndex,
-			point = {x = newX, y = newY}
-		}
-		table.insert(PolyPath.undoStack, action)
-		PolyPath.redoStack = {}
---		print("after double click, interaction:") -- debug
---		print(serpent.block(self.interaction)) -- debug
-	end
+--    print("handleDoubleClick, closest:") -- debug
+--    print(serpent.block(closest)) -- debug
+    if closest.type == "point" and #self.points > 1 then
+        self:removePoint(closest.index)
+        self.interaction = nil
+    elseif closest.type == "segment" then
+        local p1 = self.points[closest.index]
+        local p2 = self.points[closest.index + 1]
+        local newX, newY = getProjectionOnSegment(x, y, p1, p2)
+        local newIndex = self:addPoint(newX, newY, closest.index + 1)
+        self.interaction = {
+            type = "point",
+            index = newIndex,
+            data = {x = newX, y = newY},
+            state = "selected"
+        }
+        PolyPath.redoStack = {} -- clear redo stack
+--        print("after double click, interaction:") -- debug
+--        print(serpent.block(self.interaction)) -- debug
+    end
 end
 
 -- handle left click for dragging
@@ -469,10 +462,10 @@ end
 -- handle mouse movement for a single polyline
 function PolyPath:handleMouseMove(x, y)
 	if self.interaction and self.interaction.state == "dragging" then
-		print("handleMouseMove: interaction = " .. serpent.block(self.interaction)) -- debug
+--		print("handleMouseMove: interaction = " .. serpent.block(self.interaction)) -- debug
 		if love.mouse.isDown(1) then
 			if not self.interaction.prevX or not self.interaction.prevY then
-				print("error: prevX or prevY is nil in dragging state") -- debug
+--				print("error: prevX or prevY is nil in dragging state") -- debug
 				self.interaction = nil
 				return
 			end
@@ -482,7 +475,7 @@ function PolyPath:handleMouseMove(x, y)
 				self.points[self.interaction.index].x = self.points[self.interaction.index].x + dx
 				self.points[self.interaction.index].y = self.points[self.interaction.index].y + dy
 				self.interaction.data = {x = self.points[self.interaction.index].x, y = self.points[self.interaction.index].y}
-				print("handleMouseMove: point[" .. self.interaction.index .. "] moved to x=" .. self.points[self.interaction.index].x .. ", y=" .. self.points[self.interaction.index].y) -- debug
+--				print("handleMouseMove: point[" .. self.interaction.index .. "] moved to x=" .. self.points[self.interaction.index].x .. ", y=" .. self.points[self.interaction.index].y) -- debug
 			elseif self.interaction.type == "segment" then
 				local p1 = self.points[self.interaction.index]
 				local p2 = self.points[self.interaction.index + 1]
@@ -493,7 +486,7 @@ function PolyPath:handleMouseMove(x, y)
 				self.interaction.data = {x = x, y = y}
 				self.interaction.prevX2 = p2.x
 				self.interaction.prevY2 = p2.y
-				print("handleMouseMove: segment[" .. self.interaction.index .. "] moved to p1={x=" .. p1.x .. ", y=" .. p1.y .. "}, p2={x=" .. p2.x .. ", y=" .. p2.y .. "}") -- debug
+--				print("handleMouseMove: segment[" .. self.interaction.index .. "] moved to p1={x=" .. p1.x .. ", y=" .. p1.y .. "}, p2={x=" .. p2.x .. ", y=" .. p2.y .. "}") -- debug
 			end
 			self.interaction.prevX = x
 			self.interaction.prevY = y
@@ -519,25 +512,37 @@ end
 -- handle mouse release for a single polyline
 function PolyPath:handleMouseRelease(x, y)
 	if self.interaction and self.interaction.state == "dragging" then
-		local action = {
-			action = "drag",
-			poly = self,
-			type = self.interaction.type,
-			index = self.interaction.index,
-			startX = self.interaction.startX,
-			startY = self.interaction.startY,
-			newX = self.points[self.interaction.index].x,
-			newY = self.points[self.interaction.index].y
-		}
+		local newX = self.points[self.interaction.index].x
+		local newY = self.points[self.interaction.index].y
+		local moved = newX ~= self.interaction.startX or newY ~= self.interaction.startY
 		if self.interaction.type == "segment" then
-			action.startX2 = self.interaction.startX2
-			action.startY2 = self.interaction.startY2
-			action.newX2 = self.points[self.interaction.index + 1].x
-			action.newY2 = self.points[self.interaction.index + 1].y
+			local newX2 = self.points[self.interaction.index + 1].x
+			local newY2 = self.points[self.interaction.index + 1].y
+			moved = moved or newX2 ~= self.interaction.startX2 or newY2 ~= self.interaction.startY2
 		end
-		print("handleMouseRelease: adding drag action = " .. serpent.block(action)) -- debug
-		table.insert(PolyPath.undoStack, action)
-		PolyPath.redoStack = {}
+		if moved then
+			local action = {
+				action = "drag",
+				poly = self,
+				type = self.interaction.type,
+				index = self.interaction.index,
+				startX = self.interaction.startX,
+				startY = self.interaction.startY,
+				newX = newX,
+				newY = newY
+			}
+			if self.interaction.type == "segment" then
+				action.startX2 = self.interaction.startX2
+				action.startY2 = self.interaction.startY2
+				action.newX2 = self.points[self.interaction.index + 1].x
+				action.newY2 = self.points[self.interaction.index + 1].y
+			end
+--			print("handleMouseRelease: adding drag action = " .. serpent.block(action)) -- debug
+			table.insert(PolyPath.undoStack, action)
+			PolyPath.redoStack = {}
+		else
+--			print("handleMouseRelease: no movement detected, skipping undo action") -- debug
+		end
 		self.interaction.state = "selected"
 	end
 	self.interaction = self.interaction and {
