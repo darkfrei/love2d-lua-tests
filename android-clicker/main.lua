@@ -18,7 +18,7 @@ function love.load()
 	text = file:read()
 	file:close()
 
-	exists = love.filesystem.exists( filename )
+	exists = love.filesystem.getInfo( filename ) ~= nil
 
 	love.keyboard.setTextInput( true )
 	love.keyboard.setKeyRepeat(true)
