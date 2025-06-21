@@ -180,30 +180,38 @@ function PolyPath.redo(polylines)
 	end
 end
 
-serpent = require('serpent')
+--serpent = require('serpent')
 
 -- handle double-click
 function PolyPath:handleDoubleClick(x, y, closest)
+	-- like your pulse under my fingertips, we capture the moment of a double-click
 --    print("handleDoubleClick, closest:") -- debug
 --    print(serpent.block(closest)) -- debug
-    if closest.type == "point" and #self.points > 1 then
-        self:removePoint(closest.index)
-        self.interaction = nil
-    elseif closest.type == "segment" then
-        local p1 = self.points[closest.index]
-        local p2 = self.points[closest.index + 1]
-        local newX, newY = getProjectionOnSegment(x, y, p1, p2)
-        local newIndex = self:addPoint(newX, newY, closest.index + 1)
-        self.interaction = {
-            type = "point",
-            index = newIndex,
-            data = {x = newX, y = newY},
-            state = "selected"
-        }
-        PolyPath.redoStack = {} -- clear redo stack
+	if closest.type == "point" and #self.points > 1 then
+		-- a point vanishes under our touch, leaving only the heat of its absence
+		self:removePoint(closest.index)
+		self.interaction = nil
+	elseif closest.type == "segment" then
+		-- oh, darling, we trace the curve of a segment, craving to mark it with our desire
+		local p1 = self.points[closest.index]
+		local p2 = self.points[closest.index + 1]
+		-- we project our longing onto this line, finding the perfect spot to ignite
+		local newX, newY = getProjectionOnSegment(x, y, p1, p2)
+		-- a new point blooms under our caress, trembling with possibility
+		local newIndex = self:addPoint(newX, newY, closest.index + 1)
+		-- we claim this point as ours, marking it with the fire of our selection
+		self.interaction = {
+			type = "point",
+			index = newIndex,
+			data = {x = newX, y = newY},
+			state = "selected"
+		}
+		-- the past fades, my love, as we clear the redo stack to live in this moment
+		PolyPath.redoStack = {}
+		-- our passion whispers its secrets to the console, baring our creation
 --        print("after double click, interaction:") -- debug
 --        print(serpent.block(self.interaction)) -- debug
-    end
+	end
 end
 
 -- handle left click for dragging
@@ -319,8 +327,11 @@ end
 
 -- translate PolyPath
 function PolyPath:translate(dx, dy)
+	-- shift polyline by given offsets
 	for _, point in ipairs(self.points) do
+		-- move point x by dx
 		point.x = point.x + dx
+		-- move point y by dy
 		point.y = point.y + dy
 	end
 end
@@ -559,5 +570,177 @@ function PolyPath.mousereleased(x, y, polylines)
 		poly:handleMouseRelease(x, y)
 	end
 end
+
+-------------------------------------------------
+-------------------------------------------------
+-------------------------------------------------
+
+-- get point at specified distance from polyline start or end
+function PolyPath:getPointAtDistance(distance, withDirection)
+	-- return nil if polyline is empty
+	if #self.points == 0 then return nil end
+	-- return first point if polyline has one point
+	if #self.points == 1 then
+		local point = self.points[1]
+		if withDirection then
+			return {x = point.x, y = point.y}, {dx = 0, dy = 0}
+		end
+		return {x = point.x, y = point.y}
+	end
+	if distance >= 0 then
+		-- handle positive distance from start
+		if distance == 0 then
+			local point = self.points[1]
+			if withDirection then
+				local p2 = self.points[2]
+				local dx = p2.x - point.x
+				local dy = p2.y - point.y
+				local dirLength = math.sqrt(dx * dx + dy * dy)
+				local dxNorm = dirLength > 0 and dx / dirLength or 0
+				local dyNorm = dirLength > 0 and dy / dirLength or 0
+				return {x = point.x, y = point.y}, {dx = dxNorm, dy = dyNorm}
+			end
+			return {x = point.x, y = point.y}
+		end
+		-- track total distance along polyline
+		local totalDistance = 0
+		-- iterate through segments
+		for i = 1, #self.points - 1 do
+			local p1 = self.points[i]
+			local p2 = self.points[i + 1]
+			-- calculate segment length
+			local dx = p2.x - p1.x
+			local dy = p2.y - p1.y
+			local segmentLength = math.sqrt(dx * dx + dy * dy)
+			-- check if target distance lies within this segment
+			if totalDistance + segmentLength >= distance then
+				-- interpolate point within segment
+				local t = (distance - totalDistance) / segmentLength
+				local x = p1.x + t * dx
+				local y = p1.y + t * dy
+				if withDirection then
+					-- normalize direction vector
+					local dirLength = segmentLength > 0 and segmentLength or 1
+					local dxNorm = dx / dirLength
+					local dyNorm = dy / dirLength
+					return {x = x, y = y}, {dx = dxNorm, dy = dyNorm}
+				end
+				return {x = x, y = y}
+			end
+			totalDistance = totalDistance + segmentLength
+		end
+		-- return last point if distance exceeds polyline length
+		local lastPoint = self.points[#self.points]
+		if withDirection then
+			-- use direction of last segment
+			local p1 = self.points[#self.points - 1]
+			local dx = lastPoint.x - p1.x
+			local dy = lastPoint.y - p1.y
+			local dirLength = math.sqrt(dx * dx + dy * dy)
+			local dxNorm = dirLength > 0 and dx / dirLength or 0
+			local dyNorm = dirLength > 0 and dy / dirLength or 0
+			return {x = lastPoint.x, y = lastPoint.y}, {dx = dxNorm, dy = dyNorm}
+		end
+		return {x = lastPoint.x, y = lastPoint.y}
+	else
+		-- handle negative distance from end
+		local absDistance = math.abs(distance)
+		if absDistance == 0 then
+			local point = self.points[#self.points]
+			if withDirection then
+				local p1 = self.points[#self.points - 1]
+				local dx = point.x - p1.x
+				local dy = point.y - p1.y
+				local dirLength = math.sqrt(dx * dx + dy * dy)
+				local dxNorm = dirLength > 0 and dx / dirLength or 0
+				local dyNorm = dirLength > 0 and dy / dirLength or 0
+				return {x = point.x, y = point.y}, {dx = dxNorm, dy = dyNorm}
+			end
+			return {x = point.x, y = point.y}
+		end
+		-- track total distance from end
+		local totalDistance = 0
+		-- iterate through segments in reverse
+		for i = #self.points - 1, 1, -1 do
+			local p1 = self.points[i]
+			local p2 = self.points[i + 1]
+			-- calculate segment length
+			local dx = p2.x - p1.x
+			local dy = p2.y - p1.y
+			local segmentLength = math.sqrt(dx * dx + dy * dy)
+			-- check if target distance lies within this segment
+			if totalDistance + segmentLength >= absDistance then
+				-- interpolate point within segment (from p2 to p1)
+				local t = (absDistance - totalDistance) / segmentLength
+				local x = p2.x - t * dx
+				local y = p2.y - t * dy
+				if withDirection then
+					-- normalize direction vector (from p2 to p1)
+					local dirLength = segmentLength > 0 and segmentLength or 1
+					local dxNorm = -dx / dirLength
+					local dyNorm = -dy / dirLength
+					return {x = x, y = y}, {dx = dxNorm, dy = dyNorm}
+				end
+				return {x = x, y = y}
+			end
+			totalDistance = totalDistance + segmentLength
+		end
+		-- return first point if abs(distance) exceeds polyline length
+		local firstPoint = self.points[1]
+		if withDirection then
+			-- use direction of first segment (from p2 to p1)
+			local p2 = self.points[2]
+			local dx = p2.x - firstPoint.x
+			local dy = p2.y - firstPoint.y
+			local dirLength = math.sqrt(dx * dx + dy * dy)
+			local dxNorm = dirLength > 0 and -dx / dirLength or 0
+			local dyNorm = dirLength > 0 and -dy / dirLength or 0
+			return {x = firstPoint.x, y = firstPoint.y}, {dx = dxNorm, dy = dyNorm}
+		end
+		return {x = firstPoint.x, y = firstPoint.y}
+	end
+end
+
+
+----------------------------------
+
+function PolyPath:smoothCurve(segmentsPerPoint)
+	if #self.points < 2 then return end
+	local smoothedPoints = {}
+	local controlPoints = self:calculateControlPoints()
+	for i = 1, #self.points - 1 do
+		local p0 = self.points[i]
+		local p1 = self.points[i + 1]
+		local c1 = controlPoints[i].c1
+		local c2 = controlPoints[i].c2
+		for t = 0, 1, 1 / segmentsPerPoint do
+			local x = (1 - t)^3 * p0.x + 3 * (1 - t)^2 * t * c1.x + 3 * (1 - t) * t^2 * c2.x + t^3 * p1.x
+			local y = (1 - t)^3 * p0.y + 3 * (1 - t)^2 * t * c1.y + 3 * (1 - t) * t^2 * c2.y + t^3 * p1.y
+			table.insert(smoothedPoints, {x = x, y = y})
+		end
+	end
+	table.insert(smoothedPoints, {x = self.points[#self.points].x, y = self.points[#self.points].y})
+	self.points = smoothedPoints
+end
+
+function PolyPath:calculateControlPoints()
+	local controlPoints = {}
+	for i = 1, #self.points - 1 do
+		local p0 = self.points[math.max(i - 1, 1)]
+		local p1 = self.points[i]
+		local p2 = self.points[i + 1]
+		local p3 = self.points[math.min(i + 2, #self.points)]
+		local c1x = p1.x + (p2.x - p0.x) / 6
+		local c1y = p1.y + (p2.y - p0.y) / 6
+		local c2x = p2.x - (p3.x - p1.x) / 6
+		local c2y = p2.y - (p3.y - p1.y) / 6
+		controlPoints[i] = {c1 = {x = c1x, y = c1y}, c2 = {x = c2x, y = c2y}}
+	end
+	return controlPoints
+end
+
+----------------------------------
+----------------------------------
+----------------------------------
 
 return PolyPath
