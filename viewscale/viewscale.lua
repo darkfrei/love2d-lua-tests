@@ -1,5 +1,7 @@
 -- viewscale.lua
 -- 2025-06-28
+-- https://github.com/darkfrei/viewscale.lua
+-- https://github.com/darkfrei/love2d-lua-tests/tree/main/viewscale
 
 -- handles screen scaling and coordinate transformations for maintaining consistent
 -- rendering across different display resolutions. provides:
