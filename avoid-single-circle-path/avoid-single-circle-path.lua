@@ -1,3 +1,5 @@
+-- https://github.com/darkfrei/love2d-lua-tests/tree/main/avoid-single-circle-path
+-- 2025-07-12
 local M = {}
 
 -- calculate distance between two points
@@ -108,18 +110,14 @@ function M.drawPath(path)
 			)
 		elseif segment.type == "arc" then
 			-- draw smooth arc
-			local segments = 30
-			local angleStep = (segment.endAngle - segment.startAngle)/segments
-			local lastX, lastY
-			for i = 0, segments do
-				local angle = segment.startAngle + angleStep*i
-				local x = segment.center.x + segment.radius * math.cos(angle)
-				local y = segment.center.y + segment.radius * math.sin(angle)
-				if i > 0 then
-					love.graphics.line(lastX, lastY, x, y)
-				end
-				lastX, lastY = x, y
-			end
+			local drawmode = 'line'
+			local arctype = 'open'
+			local center = segment.center
+			local radius = segment.radius
+			local angle1 = segment.startAngle
+			local angle2 = segment.endAngle
+			
+			love.graphics.arc( drawmode, arctype, center.x, center.y, radius, angle1, angle2)
 		end
 	end
 end

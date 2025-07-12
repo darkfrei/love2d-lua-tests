@@ -1,9 +1,17 @@
+-- https://github.com/darkfrei/love2d-lua-tests/tree/main/avoid-single-circle-path
+-- 2025-07-12
 local pathfinder = require("avoid-single-circle-path")
 
 function love.load()
 	start = {x = 250, y = 200}
 	goal = {x = 700, y = 500}
 	circle = {x = 400, y = 300, radius = 100}
+	path = pathfinder.getPath(start, goal, circle)
+end
+
+function love.mousepressed (x, y)
+	start.x = x
+	start.y = y
 	path = pathfinder.getPath(start, goal, circle)
 end
 
