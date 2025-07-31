@@ -1,6 +1,9 @@
 -- load pathfinding module
 local pathfinding = require("circular-obstacle-pathfinding")
 
+-- circle overlapping is not allowed;
+-- start/goal overlapping is not allowed;
+
 -- game setup
 function love.load()
 	love.window.setMode(800, 600)

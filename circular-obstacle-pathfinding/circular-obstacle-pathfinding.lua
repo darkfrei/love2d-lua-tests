@@ -1,5 +1,10 @@
 -- circular obstacle pathfinding module
 -- implements a* with lazy edge generation for circular obstacles
+
+-- circle overlapping is not allowed;
+-- start/goal overlapping is not allowed;
+
+
 local pathfinding = {}
 
 -- calculate distance between two points
@@ -194,38 +199,75 @@ end
 
 -- a* pathfinding algorithm with lazy edge generation
 local function aStar(circles, start, goal)
-	local diagram = {}
-	diagram.start = start
-	diagram.goal = goal
-	diagram.circles = circles
+	local diagram = {
+		start = start,
+		goal = goal,
+		circles = circles,
+
+		openList = {},
+		debugLines = {},
+		closedHash = {},  -- track visited nodes by id
+		nodeCount = 0     -- count total processed nodes
+	}
 
 	-- check if current node reaches the goal directly
 	local directNode = getDirectNode (diagram)
 	if directNode then
-		return {directNode}
+		return {directNode}, diagram
 	end
 
-	diagram.openList = {}
-	diagram.debugLines = {}
+--	diagram.openList = {}
+--	diagram.debugLines = {}
 
 	for _, circle in ipairs(circles) do
 		addStartPointToCircleNode (diagram, circle, true) -- right
 		addStartPointToCircleNode (diagram, circle, false) -- left
 	end
 
---	local edgeCache = {}
---	local nodeInfo = initNodeInfo(start, goal, hFunc)
+--	local closedHash  = {}
 
 	print("#diagram.openList:", #diagram.openList)
 	print("Starting A* algorithm")
+
 	while #diagram.openList > 0 do
 		local currentNode = getMinFNodeIndex (diagram)
-		print(string.format("Current node: %s, f=%.2f", 
-				currentNode.id, currentNode.f))
+		local currentId = currentNode.id
+
+		if diagram.closedHash[currentId] then
+			-- do nothing
+		else
+			diagram.closedHash[currentId] = true
+			diagram.nodeCount = diagram.nodeCount + 1
+
+			print(string.format("processing node %d: %s (f=%.2f)", 
+					diagram.nodeCount, currentId, currentNode.f))
+
+--			check goal condition
+			if currentNode.type == "direct" then
+				print(string.format("path found! nodes processed: %d", diagram.nodeCount))
+				return reconstructPath(currentNode), diagram
+			end
+
+			-- expand node based on type
+			local newNodes = {}
+			if currentNode.type == "surfing" then
+--				newNodes = generateHuggingEdges(diagram, currentNode)
+			elseif currentNode.type == "hugging" then
+				newNodes = generateExitEdges(diagram, currentNode)
+			end
+
+			-- add new nodes to open list
+			for _, node in ipairs(newNodes) do
+				if not diagram.closedHash[node.id] then
+					table.insert(diagram.openList, node)
+				end
+			end
 
 
+		end
 	end
-	print("No path found")
+
+	print("no valid path found")
 	return nil, diagram
 end
 
