@@ -1,0 +1,60 @@
+project_root/
+│── main.lua                # точка входа
+│── conf.lua                # настройки окна, title и т.п.
+│
+├── core/                   # ядро ecs
+│   ├── ecs.lua             # регистрация сущностей, компонентов, систем
+│   ├── entity.lua          # фабрики сущностей
+│   ├── component.lua       # базовая логика компонентов
+│   └── system.lua          # базовая логика систем
+
+├── entities/               # сборка готовых объектов
+│   ├── scout.lua           # фабрика скаута
+│   ├── woodcutter.lua      # фабрика дровосека
+│   ├── village.lua         # фабрика деревни
+│   ├── enemy.lua           # фабрика врага
+│   └── tile.lua            # фабрика тайла
+││
+├── components/             # все компоненты
+│   ├── camera.lua
+│   ├── position.lua
+│   ├── renderable.lua
+│   ├── tile.lua
+│   ├── scout.lua
+│   ├── woodcutter.lua
+│   ├── village.lua
+│   ├── resource.lua
+│   ├── enemy.lua
+│   └── ai.lua
+│
+├── systems/                # вся логика игры
+│   ├── renderSystem.lua
+│   ├── inputSystem.lua
+│   ├── turnManagerSystem.lua
+
+│   ├── scoutSystem.lua
+│   ├── woodcutterSystem.lua
+│   ├── enemySystem.lua
+│   └── resourceSystem.lua
+
+  map/
+    mapLoader.lua
+    maps/
+      testMap.lua│
+
+├── assets/                 # ресурсы
+        loader.lua
+│   ├── sprites/
+│   ├── tilesets/
+│   ├── sounds/
+│   └── fonts/
+│
+├── states/                 # игровые состояния
+│   ├── menu.lua
+│   ├── game.lua
+│   └── pause.lua
+│
+└── utils/                  # вспомогательные модули
+    ├── grid.lua            # работа с картой
+    ├── pathfinding.lua     # поиск пути
+    └── math.lua            # мат. утилиты
