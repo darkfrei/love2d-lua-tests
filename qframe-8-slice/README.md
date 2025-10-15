@@ -1,3 +1,7 @@
+
+![qframe example](./qframe-8-slice_01.png)
+
+
 ```lua
 
 -- =============================================
@@ -126,6 +130,7 @@ end
 -- MIT License, darkfrei 2025
 
 ```
+
 
 
 
