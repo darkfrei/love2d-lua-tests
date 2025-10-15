@@ -60,7 +60,9 @@ frame:updateBackground()
 frame:draw(50, 50)
 -- draws the background and the 8-patch frame
 
+```
 
+```lua
 -- -------------------------------------------------
 -- 9 - Example in Love2D
 -- -------------------------------------------------
@@ -95,3 +97,4 @@ end
 -- MIT License, darkfrei 2025
 
 ```
+
