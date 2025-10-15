@@ -63,27 +63,55 @@ frame:draw(50, 50)
 ```
 
 ```lua
--- -------------------------------------------------
--- 9 - Example in Love2D
--- -------------------------------------------------
+-- 1 - Load the module
+local qframe = require("qframe")
+
 function love.load()
-    local qframe = require("qframe")
+	love.graphics.setBackgroundColor (69/255,84/255,143/255)
+	
+-- 2 - Create a frame object
+-- qframe.new(filename)
+-- returns a new frame object
+-- optional second and third arguments can be x, y position
+	frame = qframe.new("frame.png")
+	frame:setPosition(50, 50)  -- set top-left corner position
 
-    frame = qframe.new("frame.png")
-    frame:setBackgroud("background.png", true)
-    frame:setBackgroudPadding({left=30, top=25, right=30, bottom=30})
+-- 3 - Set a background image
+-- frame:setBackgroud(filename, fitToFrame)
+-- if fitToFrame == true, frame size adjusts to fit background + padding
+	frame:setBackgroud("background.png", true)
 
+-- 4 - Set padding around the background
+-- frame:setBackgroudPadding({left, top, right, bottom})
+-- frame size automatically increases to include padding
+	frame:setBackgroudPadding({left = 30, top = 25, right = 30, bottom = 30})
 end
 
-function love.update(dt)
-    local x, y = love.mouse.getPosition()
-    frame:setSize(x, y)
-    frame:updateBackground()
+-- 5 - Update frame size interactively with mouse
+function love.mousemoved(x, y)
+	-- get current top-left position
+	local x1, y1 = frame:getPosition()
+
+	-- calculate new size based on mouse position
+	local newWidth  = x - x1
+	local newHeight = y - y1
+
+	-- set new frame size
+	frame:setSize(newWidth, newHeight)
+
+	-- update background scaling inside frame
+	frame:updateBackground()
 end
 
+-- 6 - Draw frame and background
+-- frame:draw() automatically draws at frame.x, frame.y
 function love.draw()
-    frame:draw(50, 50)
+	frame:draw()
 end
+
+```
+
+```lua
 
 -- -------------------------------------------------
 -- 10 - Requirements
@@ -97,4 +125,5 @@ end
 -- MIT License, darkfrei 2025
 
 ```
+
 
