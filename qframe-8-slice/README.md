@@ -62,6 +62,7 @@ frame:draw(50, 50)
 
 ```
 
+Example main.lua:
 ```lua
 -- 1 - Load the module
 local qframe = require("qframe")
@@ -125,5 +126,6 @@ end
 -- MIT License, darkfrei 2025
 
 ```
+
 
 
