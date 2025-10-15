@@ -1,4 +1,16 @@
 
+
+
+1. Load the frame image:
+   
+![qframe example](./frame.png)
+
+It will be automatical parsed with the key pixel at (0,0).
+
+1a. Oprional adding the background (stars in example).
+
+2. Result image:
+
 ![qframe example](./qframe-8-slice_01.png)
 
 
@@ -130,6 +142,15 @@ end
 -- MIT License, darkfrei 2025
 
 ```
+
+Sources:
+
+https://github.com/darkfrei/love2d-lua-tests/tree/main/qframe-8-slice
+
+https://github.com/darkfrei/qframe-8-slice/tree/main
+
+
+
 
 
 
