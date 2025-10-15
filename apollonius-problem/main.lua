@@ -1,84 +1,99 @@
--- 
+local apollonius = require("apollonius")
+local geom = require("apollonius-geom")
 
-local apollonius = require ('apollonius')
+-- задачи
+local tasks = {
+	{
+		name = 'PPP',
+		points = {
+			{x=200, y=300},
+			{x=400, y=100},
+			{x=600, y=350}
+		},
+		solutions = {},
+	},
+	{
+		name = 'PLL',
+		points = {{x=400, y=300}},
+		lines = {
+			{x1=100, y1=200, x2=700, y2=250},
+			{x1=100, y1=450, x2=700, y2=400}
+		},
+		solutions = {},
+	},
+}
 
-local c1 = {x=400, y=500, r=50}
-local c2 = {x=600, y=500, r=50}
-local c3 = {x=350, y=400, r=50}
+local currentTaskIndex = 1
 
---local c4 = apollonius.ccc (c1, c2, c3) -- wrong
+local function recalcSolution()
+	local task = tasks[currentTaskIndex]
 
-local c5 = apollonius.ppp (c1, c2, c3) -- ok
-
-local l1 = {x1=0, y1=100, x2=800, y2=100}
-local l2 = {x1=200, y1=0, x2=200, y2=600}
-local l3 = {x1=0, y1=600, x2=600, y2=0}
-
-local c6, c6a, c6b, c6c = apollonius.lll (l1, l2, l3)
-
-local function drawCircle (...)
-	for _, c in ipairs({...}) do
-		love.graphics.circle ('line', c.x, c.y, c.r)
-		love.graphics.circle ('fill', c.x, c.y, 2)
+	if task.name == "PPP" then
+		task.solutions = apollonius.solvePPP(task.points[1], task.points[2], task.points[3])
+	elseif task.name == "PLL" then
+		
+		task.solutions = apollonius.solvePLL(task.points[1], task.lines[1], task.lines[2])
 	end
 end
 
-local function drawPoint (p)
-	love.graphics.circle ('fill', p.x, p.y, 4)
+function love.load()
+	recalcSolution()
 end
 
+function love.draw()
+	love.graphics.setBackgroundColor(1,1,1)
+	local task = tasks[currentTaskIndex]
 
-local function drawLine (l)
-	if not l.line then
-		local a, b, c = l.a, l.b, l.c
-		local screenWidth, screenHeight = love.graphics.getDimensions()
-		if b == 0 then
-			-- vertical line
-			local x = -c/a
-			local line = {x, 0, x, screenHeight}
-			l.line = line
-		elseif a == 0 then
-			-- horizontal line
-			local y = -c/b
-			local line = {0, y, screenWidth, y}
-			print ('line', 0, y, screenWidth, y)
-			l.line = line
-		else
-			local y1 = -c/b
-			local y2 = -(a*screenWidth+c)/b
-			local line = {0, y1, screenWidth, y2}
-			print ('line', 0, y1, screenWidth, y2)
-			l.line = line
+	-- рисуем точки
+	love.graphics.setColor(1,0,0)
+	for _, p in ipairs(task.points) do
+		love.graphics.circle("fill", p.x, p.y, 5)
+	end
+
+	-- рисуем линии (для PLL)
+	if task.lines then
+		love.graphics.setColor(0,0,0)
+		for _, l in ipairs(task.lines) do
+			love.graphics.line(l.x1, l.y1, l.x2, l.y2)
+			love.graphics.circle('line', l.x1, l.y1, 6)
+			love.graphics.circle('fill', l.x2, l.y2, 6)
 		end
 	end
---	love.graphics.line (l.line)
-	love.graphics.line (l.x1, l.y1, l.x2, l.y2)
+
+	-- рисуем решения
+	love.graphics.setColor(0,0,1)
+	for _, c in ipairs(task.solutions) do
+		love.graphics.circle("line", c.x, c.y, c.r)
+	end
+
+	-- подпись
+	love.graphics.setColor(0,0,0)
+	love.graphics.print("Task: "..task.name, 10, 10)
 end
 
-function love.draw ()
-	love.graphics.setColor (1,1,1)
-	
-	drawPoint (c1)
-	drawPoint (c2)
-	drawPoint (c3)
+function love.keypressed(key)
+	if key == "space" then
+		currentTaskIndex = currentTaskIndex % #tasks + 1
+		recalcSolution()
+	end
+end
 
-	-- results:
---	drawCircle (c4) -- wrong
-	drawCircle (c5) -- ok
-
-	love.graphics.setColor (1,0,0)
-	drawLine (l1)
-	love.graphics.setColor (1,1,0)
-	drawLine (l2)
-	love.graphics.setColor (0,1,0)
-	drawLine (l3)
-
-	love.graphics.setColor (1,1,1, 0.75)
-	drawCircle (c6)
-	love.graphics.setColor (1,0,0, 0.75)
-	drawCircle (c6a)
-	love.graphics.setColor (1,1,0, 0.75)
-	drawCircle (c6b)
-	love.graphics.setColor (0,1,0, 0.75)
-	drawCircle (c6c)
+function love.mousemoved(x, y)
+	local task = tasks[currentTaskIndex]
+	if task.name == "PPP" then
+		local point = task.points[3]
+		
+		point.x = x
+		point.y = y
+		recalcSolution()
+		
+	elseif task.name == "PLL" then
+		local line = task.lines[2]
+		line.a = nil
+		
+		line.x2 = x
+		line.y2 = y
+		geom.lineFromTwoPointsCoords(line)
+		recalcSolution()
+	end
 end
