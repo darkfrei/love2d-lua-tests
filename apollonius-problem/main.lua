@@ -50,12 +50,22 @@ local tasks = {
 			{x1=100, y1=400, x2=700, y2=100},
 			{x1=100, y1=200, x2=700, y2=500},
 		},
+	},
+	{
+		name = 'CPP',
+		circles = {
+			{x=410, y=100, r=60}
+		},
+		points = {
+			{x=300, y = 300},
+			{x=500, y = 310},
+		},
 		solutions = {},
 	},
 }
 
 -- current task index
-local currentTaskIndex = 5
+local currentTaskIndex = 6
 
 -- recompute solutions for current task
 local function recalcSolution()
@@ -71,6 +81,8 @@ local function recalcSolution()
 		task.solutions = apollonius.solveLLL(task.lines[1], task.lines[2], task.lines[3])
 	elseif task.name == "CLL" then
 		task.solutions = apollonius.solveCLL(task.circles[1], task.lines[1], task.lines[2])
+	elseif task.name == "CPP" then
+		task.solutions = apollonius.solveCPP(task.circles[1], task.points[1], task.points[2])
 	end
 end
 
@@ -98,7 +110,7 @@ function love.draw()
 			love.graphics.circle('fill', c.x, c.y, 3)
 		end
 	end
-	
+
 	-- draw lines
 	if task.lines then
 		love.graphics.setColor(0,0,0)
@@ -160,6 +172,11 @@ function love.mousemoved(x, y)
 		recalcSolution()
 
 	elseif task.name == "CLL" then
+		local circle = task.circles[1]
+		circle.x, circle.y = x, y
+		recalcSolution()
+
+	elseif task.name == "CPP" then
 		local circle = task.circles[1]
 		circle.x, circle.y = x, y
 		recalcSolution()

@@ -382,4 +382,83 @@ function geom.pplSolutionFromT(t, m, u, p1, line, eps)
 	return {x=cx, y=cy, r=r, valid=valid, dl=dl, dp1=dp1}
 end
 
+
+
+-------------------------------------------------
+-- cpp
+
+
+-- returns midpoint (mx,my), perpendicular unit vector (ux,uy) and distance d
+function geom.linePerpendicularParam(p1, p2, eps)
+	local dx = p2.x - p1.x
+	local dy = p2.y - p1.y
+	local d = math.sqrt(dx * dx + dy * dy)
+	if d < (eps or 1e-9) then return nil end
+	local mx = (p1.x + p2.x) / 2
+	local my = (p1.y + p2.y) / 2
+	local ux = -dy / d
+	local uy =  dx / d
+	return mx, my, ux, uy, d
+end
+
+-- compute tangency parameters with given circle
+-- m - point on perpendicular (midpoint)
+-- u - unit vector of perpendicular
+-- d - distance between points
+-- c - circle {x, y, r}
+-- returns d_half, dot_dc_perp, k
+function geom.tangencyParams(m, u, d, c)
+	local d_half = d / 2
+	local dcx = m.x - c.x
+	local dcy = m.y - c.y
+	local dot_dc_perp = dcx * u.x + dcy * u.y
+	local dc_sq = dcx * dcx + dcy * dcy
+	local k = dc_sq - d_half * d_half - c.r * c.r
+	return d_half, dot_dc_perp, k
+end
+
+-- quadratic coefficients for cpp problem
+function geom.cppQuadraticCoeffs(dot_dc_perp, k, cr, d_half)
+	local a = 2 * dot_dc_perp
+	local A_coef = a * a - 4 * cr * cr
+	local B_coef = 2 * k * a
+	local C_coef = k * k - 4 * cr * cr * d_half * d_half
+	return A_coef, B_coef, C_coef
+end
+
+-- solveQuadratic above
+
+
+-- validate root after squaring equations
+-- used to filter false tangency roots
+function geom.validateTangencyRoot(t, dot_dc_perp, k, sign, cr, d_half, eps)
+	eps = eps or 1e-8
+	local a = 2 * dot_dc_perp
+	local left_side = k + a * t
+	local right_side = 2 * sign * cr * math.sqrt(t * t + d_half * d_half)
+	return math.abs(left_side - right_side) < eps
+end
+
+-- build circle from perpendicular param
+-- m - point on perpendicular (usually midpoint)
+-- u - unit direction vector
+-- t - parameter (distance along perpendicular)
+-- d_half - half of chord length
+function geom.circleFromPerpendicularParam(m, u, t, d_half)
+	local cx = m.x + t * u.x
+	local cy = m.y + t * u.y
+	local r = math.sqrt(t * t + d_half * d_half)
+	return {x = cx, y = cy, r = r}
+end
+
+-- check if cpp solution is valid
+function geom.validateCPPSolution(center, r, p1, p2, eps)
+	eps = eps or 1e-6
+	local dist1 = geom.distance(center, p1)
+	local dist2 = geom.distance(center, p2)
+	return math.abs(dist1 - r) < eps and math.abs(dist2 - r) < eps
+end
+
+
+-------------------------------------------------
 return geom
