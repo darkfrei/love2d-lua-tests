@@ -279,7 +279,7 @@ local function parseLocationQmm(r, paramsCount)
 	for i = 1, paramsCount do
 		loc.paramsChanges[i] = {
 			change = 0,
-			showingType = 0,
+			showingType = 0, -- don't change
 			isChangePercentage = false,
 			isChangeValue = false,
 			isChangeFormula = false,
@@ -1055,6 +1055,12 @@ local defaultParamChange = {
 	isChangeFormula = true,
 }
 
+local showingTypeStr = {
+	[0] = "don't change",
+	[1] = "show",
+	[2] = "hide",
+}
+
 -- merge paramsChanges block for location or jump
 local function mergeParamsChangesUniversal(lines, obj, context)
 	-- detect object type for clarity
@@ -1099,7 +1105,7 @@ local function mergeParamsChangesUniversal(lines, obj, context)
 				lines[#lines+1] = "					change = " .. pch.change .. ","
 			end
 			if pch.showingType ~= defaultParamChange.showingType then
-				lines[#lines+1] = "					showingType = " .. pch.showingType .. ","
+				lines[#lines+1] = "					showingType = " .. pch.showingType .. ", -- " .. showingTypeStr[pch.showingType]
 			end
 			if pch.isChangePercentage ~= defaultParamChange.isChangePercentage then
 				lines[#lines+1] = "					isChangePercentage = " .. tostring(pch.isChangePercentage) .. ","
@@ -1406,7 +1412,8 @@ local function mergeDefaults (lines)
 	
 	lines[#lines+1] = "	defaultParamChange = {"
 	lines[#lines+1] = "		change = " .. defaultParamChange.change .. ','
-	lines[#lines+1] = "		showingType = " .. defaultParamChange.showingType .. ','
+	lines[#lines+1] = "		showingType = " .. defaultParamChange.showingType .. ", -- " .. showingTypeStr[defaultParamChange.showingType]
+
 	lines[#lines+1] = "		isChangePercentage = " .. tostring(defaultParamChange.isChangePercentage) .. ','
 	lines[#lines+1] = "		isChangeValue = " .. tostring(defaultParamChange.isChangeValue) .. ','
 	lines[#lines+1] = "		isChangeFormula = " .. tostring(defaultParamChange.isChangeFormula) .. ','
@@ -1594,4 +1601,4 @@ local function convertAllQmm()
 	print(string.format("Processed %d / %d files successfully", successCount, #files))
 end
 
---convertAllQmm()
+convertAllQmm()
