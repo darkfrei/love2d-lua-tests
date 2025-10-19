@@ -627,18 +627,18 @@ local function validateQuest(quest)
 
 		if not fromExists then
 			table.insert(errors, string.format(
-				"jump %d: fromLocationId=%d does not exist",
-				jmp.id, jmp.fromLocationId
-			))
+					"jump %d: fromLocationId=%d does not exist",
+					jmp.id, jmp.fromLocationId
+				))
 		else
 			linksFrom[jmp.fromLocationId] = (linksFrom[jmp.fromLocationId] or 0) + 1
 		end
 
 		if not toExists then
 			table.insert(errors, string.format(
-				"jump %d: toLocationId=%d does not exist",
-				jmp.id, jmp.toLocationId
-			))
+					"jump %d: toLocationId=%d does not exist",
+					jmp.id, jmp.toLocationId
+				))
 		else
 			linksTo[jmp.toLocationId] = (linksTo[jmp.toLocationId] or 0) + 1
 		end
@@ -651,17 +651,17 @@ local function validateQuest(quest)
 
 		if fromCount == 0 and toCount == 0 then
 			table.insert(errors, string.format(
-				"location [L%d] (%s) is isolated (no incoming/outgoing jumps)",
-				loc.id, loc.texts and loc.texts[1] and loc.texts[1]:sub(1, 30) or "no text"
-			))
+					"location [L%d] (%s) is isolated (no incoming/outgoing jumps)",
+					loc.id, loc.texts and loc.texts[1] and loc.texts[1]:sub(1, 30) or "no text"
+				))
 		elseif fromCount == 0 then
 			table.insert(errors, string.format(
-				"location [L%d] has no outgoing jumps", loc.id
-			))
+					"location [L%d] has no outgoing jumps", loc.id
+				))
 		elseif toCount == 0 then
 			table.insert(errors, string.format(
-				"location [L%d] has no incoming jumps", loc.id
-			))
+					"location [L%d] has no incoming jumps", loc.id
+				))
 		end
 	end
 
@@ -726,7 +726,7 @@ local function findUnusedLocations(quest)
 
 	-- report
 	if #unused == 0 then
-		print("\nno unused locations found ✅")
+		print("\nno unused locations found [OK]")
 	else
 		print("\nunused locations:")
 		for _, loc in ipairs(unused) do
@@ -758,12 +758,13 @@ local function findUnreachableLocations(quest)
 	local startIds = {}
 	for _, loc in ipairs(quest.locations) do
 		if loc.type == 1 or loc.isStarting == true then
+			print ('isStarting: ', loc.id)
 			table.insert(startIds, loc.id)
 		end
 	end
 
 	if #startIds == 0 then
-		print("⚠️  no start locations found")
+		print("No start locations found!")
 		return
 	end
 
@@ -795,12 +796,12 @@ local function findUnreachableLocations(quest)
 
 	-- report
 	if #unreachable > 0 then
-		print("\nunreachable locations found:")
+		print("unreachable locations found:")
 		for _, loc in ipairs(unreachable) do
 			print(string.format("  - id=%d  (%s)", loc.id, loc.texts and loc.texts[1] or "no text"))
 		end
 	else
-		print("\nall locations are reachable ✅")
+		print("all locations are reachable [OK]")
 	end
 end
 
@@ -854,8 +855,8 @@ local function findAllPathsSorted(quest, fromId, toId)
 
 	-- sort by path length (shortest first)
 	table.sort(finalPaths, function(a, b)
-		return #a < #b
-	end)
+			return #a < #b
+		end)
 
 	-- print summary
 	print(string.format("\npaths from %d to %d:", fromId, toId))
@@ -976,6 +977,19 @@ local function mergeStrings (lines, q)
 	lines[#lines+1] = "	successText = " .. escapeString(q.base2.successText) .. ","
 end
 
+
+local defaultParam = {
+--	min = 0,
+--	max = 100000000,
+	type = 0,
+	showWhenZero = true,
+	critType = 0,
+	active = true,
+	isMoney = false,
+	critValueString = "",
+--	starting = 0,
+}
+
 local function mergeParams (lines, q)
 	-- params - FULL VERSION
 	lines[#lines+1] = "	-- amount params: " .. #q.params
@@ -984,21 +998,40 @@ local function mergeParams (lines, q)
 		lines[#lines+1] = "		{"
 		lines[#lines+1] = '			index = "[p' .. id .. ']",'
 		lines[#lines+1] = "			name = " .. escapeString(p.name) .. ","
+
 		lines[#lines+1] = "			min = " .. p.min .. ","
 		lines[#lines+1] = "			max = " .. p.max .. ","
-		lines[#lines+1] = "			type = " .. p.type .. ","
-		lines[#lines+1] = "			showWhenZero = " .. tostring(p.showWhenZero) .. ","
-		lines[#lines+1] = "			critType = " .. p.critType .. ","
-		lines[#lines+1] = "			active = " .. tostring(p.active) .. ","
-		lines[#lines+1] = "			isMoney = " .. tostring(p.isMoney) .. ","
+
+		if p.type ~= defaultParam.type then
+			lines[#lines+1] = "			type = " .. p.type .. ","
+		end
+
+		if p.showWhenZero ~= defaultParam.showWhenZero then
+			lines[#lines+1] = "			showWhenZero = " .. tostring(p.showWhenZero) .. ","
+		end
+
+		if p.critType ~= defaultParam.critType then
+			lines[#lines+1] = "			critType = " .. p.critType .. ","
+		end
+
+		if p.active ~= defaultParam.active then
+			lines[#lines+1] = "			active = " .. tostring(p.active) .. ","
+		end
+
+		if p.isMoney ~= defaultParam.isMoney then
+			lines[#lines+1] = "			isMoney = " .. tostring(p.isMoney) .. ","
+		end
+
+		if p.critValueString ~= defaultParam.critValueString then 
+		lines[#lines+1] = "			critValueString = " .. escapeString(p.critValueString) .. ","
+		end
+
 		if type (p.starting) == "string" then
 			lines[#lines+1] = "			starting = " .. escapeString(p.starting) .. ","
 		else
 			lines[#lines+1] = "			starting = " .. p.starting .. ","
 		end
-		if p.critValueString and p.critValueString ~= "" then 
-			lines[#lines+1] = "			critValueString = " .. escapeString(p.critValueString) .. ","
-		end
+
 		if p.img and p.img ~= "" then lines[#lines+1] = "			img = " .. escapeString(p.img) .. "," end
 		if p.sound and p.sound ~= ""	then lines[#lines+1] = "			sound = " .. escapeString(p.sound) .. "," end
 		if p.track and p.track ~= ""	then lines[#lines+1] = "			track = " .. escapeString(p.track) .. "," end
@@ -1014,34 +1047,85 @@ local function mergeParams (lines, q)
 	lines[#lines+1] = "	},"
 end
 
+local defaultParamChange = {
+	change = 0,
+	showingType = 0,
+	isChangePercentage = false,
+	isChangeValue = false,
+	isChangeFormula = true,
+}
 
 -- merge paramsChanges block for location or jump
 local function mergeParamsChangesUniversal(lines, obj, context)
 	-- detect object type for clarity
 	local objType = context or "unknown"
 	local paramsChanges = obj.paramsChanges
+	local hadAny = false
 --	lines[#lines+1] = "			paramsChanges = { -- for " .. objType .. ", amount: " .. #paramsChanges
+
 	lines[#lines+1] = "			paramsChanges = { -- amount: " .. #paramsChanges
 
+--	print ('mergeParamsChangesUniversal')
 	for id, pch in ipairs(paramsChanges) do
 		-- only output non-default changes
-		if pch.change ~= 0 or pch.changingFormula ~= "" or pch.critText ~= "" then
+		local hasContent = (
+			pch.change ~= 0 or
+			(pch.changingFormula and pch.changingFormula ~= "") or
+			(pch.critText and pch.critText ~= "")
+		)
+
+		if hasContent then
+			hadAny = true
+--			print ('pch.change ~= 0 ', tostring (pch.change ~= 0 ))
+--			print ('pch.changingFormula ~= 0 ', tostring (pch.changingFormula ~= ""  ))
+--			print ('pch.critText ~= 0 ', tostring (pch.critText ~= ""  ))
+--			for i, v in pairs (pch) do
+--				print ('	', i, v)
+--			end
+
+--			if pch.change ~= 0 then
+--				lines[#lines+1] = "				-- pch.change: " .. pch.change
+--			end
+--			if pch.changingFormula ~= "" then
+--				lines[#lines+1] = "				-- pch.changingFormula: " .. pch.changingFormula
+--			end
+--			if pch.critText ~= "" then
+--				lines[#lines+1] = "				-- pch.critText: " .. pch.critText
+--			end
 			lines[#lines+1] = "				{"
 			lines[#lines+1] = '					index = "[p' .. id .. ']",'
-			lines[#lines+1] = "					change = " .. pch.change .. ","
-			lines[#lines+1] = "					showingType = " .. pch.showingType .. ","
-			lines[#lines+1] = "					isChangePercentage = " .. tostring(pch.isChangePercentage) .. ","
-			lines[#lines+1] = "					isChangeValue = " .. tostring(pch.isChangeValue) .. ","
-			lines[#lines+1] = "					isChangeFormula = " .. tostring(pch.isChangeFormula) .. ","
+
+			if pch.change ~= defaultParamChange.change then
+				lines[#lines+1] = "					change = " .. pch.change .. ","
+			end
+			if pch.showingType ~= defaultParamChange.showingType then
+				lines[#lines+1] = "					showingType = " .. pch.showingType .. ","
+			end
+			if pch.isChangePercentage ~= defaultParamChange.isChangePercentage then
+				lines[#lines+1] = "					isChangePercentage = " .. tostring(pch.isChangePercentage) .. ","
+			end
+			if pch.isChangeValue ~= defaultParamChange.isChangeValue then
+				lines[#lines+1] = "					isChangeValue = " .. tostring(pch.isChangeValue) .. ","
+			end
+			if pch.isChangeFormula ~= defaultParamChange.isChangeFormula then
+				lines[#lines+1] = "					isChangeFormula = " .. tostring(pch.isChangeFormula) .. ","
+			end
 			if pch.changingFormula ~= "" then
 				lines[#lines+1] = "					changingFormula = " .. escapeString(pch.changingFormula) .. ","
 			end
+
 			if pch.critText ~= "" then
 				lines[#lines+1] = "					critText = " .. escapeString(pch.critText) .. ","
 			end
-			if pch.img and pch.img ~= "" then lines[#lines+1] = "					img = " .. escapeString(pch.img) .. "," end
-			if pch.sound and pch.sound ~= ""	then lines[#lines+1] = "					sound = " .. escapeString(pch.sound) .. "," end
-			if pch.track and pch.track ~= ""	then lines[#lines+1] = "					track = " .. escapeString(pch.track) .. "," end
+			if pch.img and pch.img ~= "" then 
+				lines[#lines+1] = "					img = " .. escapeString(pch.img) .. "," 
+			end
+			if pch.sound and pch.sound ~= ""	then 
+				lines[#lines+1] = "					sound = " .. escapeString(pch.sound) .. "," 
+			end
+			if pch.track and pch.track ~= ""	then 
+				lines[#lines+1] = "					track = " .. escapeString(pch.track) .. "," 
+			end
 			lines[#lines+1] = "				},"
 		elseif false then
 			-- empty disabled
@@ -1049,41 +1133,46 @@ local function mergeParamsChangesUniversal(lines, obj, context)
 		end
 	end
 
-	lines[#lines+1] = "			},"
-end
-
-
-local function mergeParamsChanges (lines, loc)
-	-- paramsChanges
-
-	lines[#lines+1] = "			paramsChanges = { -- location, amount: " .. #loc.paramsChanges
-	for id, pc in ipairs(loc.paramsChanges) do
-		-- only output non-default changes
-		if pc.change ~= 0 or pc.changingFormula ~= "" or pc.critText ~= "" then
-			lines[#lines+1] = "				{"
-			lines[#lines+1] = '					index = "[p' .. id .. ']",'
-			lines[#lines+1] = "					change = " .. pc.change .. ","
-			lines[#lines+1] = "					showingType = " .. pc.showingType .. ","
-			lines[#lines+1] = "					isChangePercentage = " .. tostring(pc.isChangePercentage) .. ","
-			lines[#lines+1] = "					isChangeValue = " .. tostring(pc.isChangeValue) .. ","
-			lines[#lines+1] = "					isChangeFormula = " .. tostring(pc.isChangeFormula) .. ","
-			if pc.changingFormula ~= "" then
-				lines[#lines+1] = "					changingFormula = " .. escapeString(pc.changingFormula) .. ","
-			end
-			if pc.critText ~= "" then
-				lines[#lines+1] = "					critText = " .. escapeString(pc.critText) .. ","
-			end
-			if pc.img then lines[#lines+1] = "					img = " .. escapeString(pc.img) .. "," end
-			if pc.sound then lines[#lines+1] = "					sound = " .. escapeString(pc.sound) .. "," end
-			if pc.track then lines[#lines+1] = "					track = " .. escapeString(pc.track) .. "," end
-			lines[#lines+1] = "				},"
-		elseif false then
-			-- empty disabled
-			lines[#lines+1] = '				{}, -- [p' .. id .. ']'
-		end
+	if not hadAny then
+--		lines[#lines] = "			paramsChanges = {},"  -- no paramsChanges
+		lines[#lines] = nil
+	else
+		lines[#lines+1] = "			},"
 	end
-	lines[#lines+1] = "			},"
 end
+
+
+--local function mergeParamsChanges (lines, loc)
+--	-- paramsChanges
+
+--	lines[#lines+1] = "			paramsChanges = { -- location, amount: " .. #loc.paramsChanges
+--	for id, pc in ipairs(loc.paramsChanges) do
+--		-- only output non-default changes
+--		if pc.change ~= 0 or pc.changingFormula ~= "" or pc.critText ~= "" then
+--			lines[#lines+1] = "				{"
+--			lines[#lines+1] = '					index = "[p' .. id .. ']",'
+--			lines[#lines+1] = "					change = " .. pc.change .. ","
+--			lines[#lines+1] = "					showingType = " .. pc.showingType .. ","
+--			lines[#lines+1] = "					isChangePercentage = " .. tostring(pc.isChangePercentage) .. ","
+--			lines[#lines+1] = "					isChangeValue = " .. tostring(pc.isChangeValue) .. ","
+--			lines[#lines+1] = "					isChangeFormula = " .. tostring(pc.isChangeFormula) .. ","
+--			if pc.changingFormula ~= "" then
+--				lines[#lines+1] = "					changingFormula = " .. escapeString(pc.changingFormula) .. ","
+--			end
+--			if pc.critText ~= "" then
+--				lines[#lines+1] = "					critText = " .. escapeString(pc.critText) .. ","
+--			end
+--			if pc.img then lines[#lines+1] = "					img = " .. escapeString(pc.img) .. "," end
+--			if pc.sound then lines[#lines+1] = "					sound = " .. escapeString(pc.sound) .. "," end
+--			if pc.track then lines[#lines+1] = "					track = " .. escapeString(pc.track) .. "," end
+--			lines[#lines+1] = "				},"
+--		elseif false then
+--			-- empty disabled
+--			lines[#lines+1] = '				{}, -- [p' .. id .. ']'
+--		end
+--	end
+--	lines[#lines+1] = "			},"
+--end
 
 local lotTypeStr = {
 	[1] = 'isStarting',
@@ -1092,8 +1181,18 @@ local lotTypeStr = {
 	[4] = 'isFaily',
 	[5] = 'isFailyDeadly',
 	[0] = 'undefined',
-	}
+}
 
+local defaultLocation = {
+	type = 2,
+	maxVisits = 0,
+	dayPassed = false,
+	isTextByFormula = false,
+	textSelectFormula = "",
+--	texts = {},
+--	media = {},
+--	paramsChanges = {},
+}
 
 local function mergeLocations (lines, q)
 	-- locations - FULL VERSION
@@ -1105,17 +1204,28 @@ local function mergeLocations (lines, q)
 		lines[#lines+1] = "			type = " .. loc.type .. ", -- " .. lotTypeStr[loc.type]
 		lines[#lines+1] = "			locX = " .. loc.locX .. ","
 		lines[#lines+1] = "			locY = " .. loc.locY .. ","
-		lines[#lines+1] = "			maxVisits = " .. (loc.maxVisits or 0) .. ","
-		lines[#lines+1] = "			dayPassed = " .. tostring(loc.dayPassed) .. ","
-		lines[#lines+1] = "			isTextByFormula = " .. tostring(loc.isTextByFormula) .. ","
-		lines[#lines+1] = "			textSelectFormula = " .. escapeString(loc.textSelectFormula) .. ","
-
-		-- texts
-		lines[#lines+1] = "			texts = {"
-		for _, text in ipairs(loc.texts) do
-			lines[#lines+1] = "				" .. escapeString(text) .. ","
+		if loc.maxVisits ~= defaultLocation.maxVisits then
+			lines[#lines+1] = "			maxVisits = " .. (loc.maxVisits or 0) .. ","
 		end
-		lines[#lines+1] = "			},"
+		if loc.dayPassed ~= defaultLocation.dayPassed then
+			lines[#lines+1] = "			dayPassed = " .. tostring(loc.dayPassed) .. ","
+		end
+		if loc.isTextByFormula ~= defaultLocation.isTextByFormula then
+			lines[#lines+1] = "			isTextByFormula = " .. tostring(loc.isTextByFormula) .. ","
+		end
+		if loc.textSelectFormula ~= defaultLocation.textSelectFormula then
+			lines[#lines+1] = "			textSelectFormula = " .. escapeString(loc.textSelectFormula) .. ","
+		end
+		-- texts
+		if isTableEmpty (loc.texts) then
+--			lines[#lines+1] = "			texts = {},"
+		else
+			lines[#lines+1] = "			texts = {"
+			for _, text in ipairs(loc.texts) do
+				lines[#lines+1] = "				" .. escapeString(text) .. ","
+			end
+			lines[#lines+1] = "			},"
+		end
 
 		-- media
 --		if #loc.media > 0 then
@@ -1132,7 +1242,8 @@ local function mergeLocations (lines, q)
 			end
 			lines[#lines+1] = "			},"
 		else
-			lines[#lines+1] = "			-- no media"
+--			lines[#lines+1] = "			media = {},"
+--			lines[#lines+1] = "			-- no media"
 		end
 
 --		mergeParamsChanges (lines, loc)
@@ -1153,11 +1264,11 @@ local function mergeParamsConditionsJumps (lines, jmp)
 			break
 		end
 	end
-	
+
 	if not anyCondition then
 		return
 	end
-	
+
 	lines[#lines+1] = "			paramsConditions = { -- " .. #jmp.paramsConditions
 	for id, pcond in ipairs(jmp.paramsConditions) do
 		-- only output non-default conditions
@@ -1186,38 +1297,52 @@ local function mergeParamsConditionsJumps (lines, jmp)
 	lines[#lines+1] = "			},"
 end
 
-local function mergeParamsChangesJumps (lines, jmp)
+--local function mergeParamsChangesJumps (lines, jmp)
 
-	-- paramsChanges
-	lines[#lines+1] = "			paramsChanges = {"
-	for id, pch in ipairs(jmp.paramsChanges) do
-		-- only output non-default changes
-		if pch.change ~= 0 or pch.changingFormula ~= "" or pch.critText ~= "" then
-			lines[#lines+1] = "				{"
-			lines[#lines+1] = '					index = "[p' .. id .. ']",'
-			lines[#lines+1] = "					change = " .. pch.change .. ","
-			lines[#lines+1] = "					showingType = " .. pch.showingType .. ","
-			lines[#lines+1] = "					isChangePercentage = " .. tostring(pch.isChangePercentage) .. ","
-			lines[#lines+1] = "					isChangeValue = " .. tostring(pch.isChangeValue) .. ","
-			lines[#lines+1] = "					isChangeFormula = " .. tostring(pch.isChangeFormula) .. ","
-			if pch.changingFormula ~= "" then
-				lines[#lines+1] = "					changingFormula = " .. escapeString(pch.changingFormula) .. ","
-			end
-			if pch.critText ~= "" then
-				lines[#lines+1] = "					critText = " .. escapeString(pch.critText) .. ","
-			end
-			if pch.img then lines[#lines+1] = "					img = " .. escapeString(pch.img) .. "," end
-			if pch.sound then lines[#lines+1] = "					sound = " .. escapeString(pch.sound) .. "," end
-			if pch.track then lines[#lines+1] = "					track = " .. escapeString(pch.track) .. "," end
-			lines[#lines+1] = "				},"
-		elseif false then
-			-- empty disabled
-			lines[#lines+1] = '				{}, -- [p' .. id .. ']'
---				lines[#lines+1] = "				{},"
-		end
-	end
-	lines[#lines+1] = "			},"
-end
+--	-- paramsChanges
+--	lines[#lines+1] = "			paramsChanges = {"
+--	for id, pch in ipairs(jmp.paramsChanges) do
+--		-- only output non-default changes
+--		if pch.change ~= 0 or pch.changingFormula ~= "" or pch.critText ~= "" then
+--			lines[#lines+1] = "				{"
+--			lines[#lines+1] = '					index = "[p' .. id .. ']",'
+--			lines[#lines+1] = "					change = " .. pch.change .. ","
+--			lines[#lines+1] = "					showingType = " .. pch.showingType .. ","
+--			lines[#lines+1] = "					isChangePercentage = " .. tostring(pch.isChangePercentage) .. ","
+--			lines[#lines+1] = "					isChangeValue = " .. tostring(pch.isChangeValue) .. ","
+--			lines[#lines+1] = "					isChangeFormula = " .. tostring(pch.isChangeFormula) .. ","
+--			if pch.changingFormula ~= "" then
+--				lines[#lines+1] = "					changingFormula = " .. escapeString(pch.changingFormula) .. ","
+--			end
+--			if pch.critText ~= "" then
+--				lines[#lines+1] = "					critText = " .. escapeString(pch.critText) .. ","
+--			end
+--			if pch.img then lines[#lines+1] = "					img = " .. escapeString(pch.img) .. "," end
+--			if pch.sound then lines[#lines+1] = "					sound = " .. escapeString(pch.sound) .. "," end
+--			if pch.track then lines[#lines+1] = "					track = " .. escapeString(pch.track) .. "," end
+--			lines[#lines+1] = "				},"
+--		elseif false then
+--			-- empty disabled
+--			lines[#lines+1] = '				{}, -- [p' .. id .. ']'
+----				lines[#lines+1] = "				{},"
+--		end
+--	end
+--	lines[#lines+1] = "			},"
+--end
+
+-- default "empty" jump pattern
+local defaultJump = {
+	priority = 1.0,
+	dayPassed = false,
+	alwaysShow = false,
+	jumpingCountLimit = 0,
+	showingOrder = 5,
+	text = "",
+	description = "",
+	formulaToPass = "",
+--	paramsChanges = {},
+}
+
 
 local function mergeJumps (lines, q)
 	-- jumps - FULL VERSION
@@ -1228,14 +1353,30 @@ local function mergeJumps (lines, q)
 		lines[#lines+1] = "			id = " .. jmp.id .. ", -- jump [J".. jmp.id .."]"
 		lines[#lines+1] = "			fromLocationId = " .. jmp.fromLocationId .. ", -- from[L"..jmp.fromLocationId.."]"
 		lines[#lines+1] = "			toLocationId = " .. jmp.toLocationId .. ", -- to[L"..jmp.toLocationId.."]"
-		lines[#lines+1] = "			priority = " .. jmp.priority .. ","
-		lines[#lines+1] = "			dayPassed = " .. tostring(jmp.dayPassed) .. ","
-		lines[#lines+1] = "			alwaysShow = " .. tostring(jmp.alwaysShow) .. ","
-		lines[#lines+1] = "			jumpingCountLimit = " .. jmp.jumpingCountLimit .. ","
-		lines[#lines+1] = "			showingOrder = " .. jmp.showingOrder .. ","
-		lines[#lines+1] = "			text = " .. escapeString(jmp.text) .. ","
-		lines[#lines+1] = "			description = " .. escapeString(jmp.description) .. ","
-		lines[#lines+1] = "			formulaToPass = " .. escapeString(jmp.formulaToPass) .. ","
+		if jmp.priority ~= defaultJump.priority then
+			lines[#lines+1] = "			priority = " .. jmp.priority .. ","
+		end
+		if jmp.dayPassed ~= defaultJump.dayPassed then
+			lines[#lines+1] = "			dayPassed = " .. tostring(jmp.dayPassed) .. ","
+		end
+		if jmp.alwaysShow ~= defaultJump.alwaysShow then
+			lines[#lines+1] = "			alwaysShow = " .. tostring(jmp.alwaysShow) .. ","
+		end
+		if jmp.jumpingCountLimit ~= defaultJump.jumpingCountLimit then
+			lines[#lines+1] = "			jumpingCountLimit = " .. jmp.jumpingCountLimit .. ","
+		end
+		if jmp.showingOrder ~= defaultJump.showingOrder then
+			lines[#lines+1] = "			showingOrder = " .. jmp.showingOrder .. ","
+		end
+		if jmp.text ~= defaultJump.text then
+			lines[#lines+1] = "			text = " .. escapeString(jmp.text) .. ","
+		end
+		if jmp.description ~= defaultJump.description then
+			lines[#lines+1] = "			description = " .. escapeString(jmp.description) .. ","
+		end
+		if jmp.formulaToPass ~= defaultJump.formulaToPass then
+			lines[#lines+1] = "			formulaToPass = " .. escapeString(jmp.formulaToPass) .. ","
+		end
 		if jmp.img and jmp.img ~= "" then lines[#lines+1] = "			img = " .. escapeString(jmp.img) .. "," end
 		if jmp.sound and jmp.sound ~= ""  then lines[#lines+1] = "			sound = " .. escapeString(jmp.sound) .. "," end
 		if jmp.track and jmp.track ~= ""  then lines[#lines+1] = "			track = " .. escapeString(jmp.track) .. "," end
@@ -1248,6 +1389,51 @@ local function mergeJumps (lines, q)
 	end
 	lines[#lines+1] = "	},"
 end
+
+
+local function mergeDefaults (lines)
+
+	lines[#lines+1] = "	 "
+	lines[#lines+1] = "	defaultParam = {"
+	lines[#lines+1] = "		type = " .. defaultParam.type .. ','
+	lines[#lines+1] = "		showWhenZero = " .. tostring(defaultParam.showWhenZero) .. ','
+	lines[#lines+1] = "		critType = " .. defaultParam.critType .. ','
+	lines[#lines+1] = "		active = " .. tostring(defaultParam.active) .. ','
+	lines[#lines+1] = "		isMoney = " .. tostring(defaultParam.isMoney) .. ','
+	lines[#lines+1] = "		critValueString = " .. escapeString(defaultParam.critValueString) .. ','
+	lines[#lines+1] = "	},"
+	
+	
+	lines[#lines+1] = "	defaultParamChange = {"
+	lines[#lines+1] = "		change = " .. defaultParamChange.change .. ','
+	lines[#lines+1] = "		showingType = " .. defaultParamChange.showingType .. ','
+	lines[#lines+1] = "		isChangePercentage = " .. tostring(defaultParamChange.isChangePercentage) .. ','
+	lines[#lines+1] = "		isChangeValue = " .. tostring(defaultParamChange.isChangeValue) .. ','
+	lines[#lines+1] = "		isChangeFormula = " .. tostring(defaultParamChange.isChangeFormula) .. ','
+	lines[#lines+1] = "	},"
+
+	lines[#lines+1] = "	defaultLocation = {"
+	lines[#lines+1] = "		type = " .. defaultLocation.type .. ','
+	lines[#lines+1] = "		maxVisits = " .. defaultLocation.maxVisits .. ','
+	lines[#lines+1] = "		dayPassed = " .. tostring(defaultLocation.dayPassed) .. ','
+	lines[#lines+1] = "		isTextByFormula = " .. tostring(defaultLocation.isTextByFormula) .. ','
+	lines[#lines+1] = "		textSelectFormula = " .. escapeString(defaultLocation.textSelectFormula) .. ','
+	lines[#lines+1] = "	},"
+
+	lines[#lines+1] = "	defaultJump = {"
+	lines[#lines+1] = "		priority = " .. defaultJump.priority .. ','
+	lines[#lines+1] = "		dayPassed = " .. tostring(defaultJump.dayPassed) .. ','
+	lines[#lines+1] = "		alwaysShow = " .. tostring(defaultJump.alwaysShow) .. ','
+	lines[#lines+1] = "		jumpingCountLimit = " .. defaultJump.jumpingCountLimit .. ','
+	lines[#lines+1] = "		showingOrder = " .. defaultJump.showingOrder .. ','
+	lines[#lines+1] = "		text = " .. escapeString(defaultJump.text) .. ','
+	lines[#lines+1] = "		description = " .. escapeString(defaultJump.description) .. ','
+	lines[#lines+1] = "		formulaToPass = " .. escapeString(defaultJump.formulaToPass) .. ','
+	lines[#lines+1] = "	},"
+
+	lines[#lines+1] = "	 "
+	
+end
 ---------------------------------------------
 
 -- convert parsed quest to lua table text - COMPLETE VERSION
@@ -1257,6 +1443,9 @@ local function convertToLua(q)
 
 
 	mergeBaseProperties (lines, q)
+
+	mergeDefaults (lines)
+
 	mergeStrings (lines, q)
 	mergeParams (lines, q)
 	mergeLocations (lines, q)
@@ -1295,3 +1484,114 @@ local function convertQmmToLua()
 end
 
 convertQmmToLua()
+
+
+------------------------------------------------------------------
+
+
+-- qmm_batch_converter.lua
+-- convert all .qmm files in a folder to .lua
+
+local lfs = require("lfs") -- standard LuaFileSystem, нужна для обхода папок
+
+-- user configuration
+--local inputFolder = "input_qmm"
+local inputFolder = scriptDir .. "\\input_qmm"
+--local outputFolder = "output_lua"
+local outputFolder = scriptDir .. "\\output_lua"
+
+-- ensure folder exists
+local function ensureDir(path)
+	local attr = lfs.attributes(path)
+	if not attr then
+		assert(lfs.mkdir(path), "cannot create folder: " .. path)
+	end
+end
+
+ensureDir(outputFolder)
+
+-- utility: get list of files in folder
+local function getFilesWithExtension(path, ext)
+	local files = {}
+	for file in lfs.dir(path) do
+		if file ~= "." and file ~= ".." then
+			if file:sub(-#ext) == ext then
+				table.insert(files, path .. "/" .. file)
+			end
+		end
+	end
+	return files
+end
+
+-- conversion utilities (your parser + converter)
+-- here you should already have these functions defined:
+--   parse(data)
+--   convertToLua(quest)
+-- they must be required or defined in this file before using
+
+-- process single file
+local function processFile(qmmPath)
+	local name = qmmPath:match("([^/\\]+)%.qmm$")
+	local luaPath = outputFolder .. "/" .. name .. ".lua"
+
+	print("--------------------------------------------")
+	print("Processing:", qmmPath)
+
+	local f = io.open(qmmPath, "rb")
+	if not f then
+		print("  error: cannot open file")
+		return false
+	end
+	local data = f:read("*a")
+	f:close()
+
+	local ok, quest = pcall(parse, data)
+	if not ok then
+		print("  error during parsing:", quest)
+		return false
+	end
+	findUnreachableLocations(quest)
+
+	local ok2, luaText = pcall(convertToLua, quest)
+	if not ok2 then
+		print("  error during conversion:", luaText)
+		return false
+	end
+
+	local f2 = io.open(luaPath, "w")
+	if not f2 then
+		print("  error: cannot write to output file:", luaPath)
+		return false
+	end
+	f2:write(luaText)
+	f2:close()
+
+	print("  done -> " .. luaPath .. " (" .. #luaText .. " bytes)")
+	return true
+end
+
+-- main batch conversion
+local function convertAllQmm()
+	print("QMM to LUA Batch Converter")
+	print("Input folder: " .. inputFolder)
+	print("Output folder: " .. outputFolder)
+	print("")
+
+	local files = getFilesWithExtension(inputFolder, ".qmm")
+	if #files == 0 then
+		print("No .qmm files found in " .. inputFolder)
+		return
+	end
+
+	local successCount = 0
+	for _, file in ipairs(files) do
+		if processFile(file) then
+			successCount = successCount + 1
+		end
+	end
+
+	print("--------------------------------------------")
+	print(string.format("Processed %d / %d files successfully", successCount, #files))
+end
+
+--convertAllQmm()

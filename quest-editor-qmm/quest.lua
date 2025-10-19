@@ -15,6 +15,40 @@ return {
 	majorVersion = 1,
 	minorVersion = 0,
 	changeLogString = "",
+	 
+	defaultParam = {
+		type = 0,
+		showWhenZero = true,
+		critType = 0,
+		active = true,
+		isMoney = false,
+		critValueString = "",
+	},
+	defaultParamChange = {
+		change = 0,
+		showingType = 0,
+		isChangePercentage = false,
+		isChangeValue = false,
+		isChangeFormula = true,
+	},
+	defaultLocation = {
+		type = 2,
+		maxVisits = 0,
+		dayPassed = false,
+		isTextByFormula = false,
+		textSelectFormula = "",
+	},
+	defaultJump = {
+		priority = 1.0,
+		dayPassed = false,
+		alwaysShow = false,
+		jumpingCountLimit = 0,
+		showingOrder = 5,
+		text = "",
+		description = "",
+		formulaToPass = "",
+	},
+	 
 	strings = {
 		ToStar = "<ToStar>",
 		ToPlanet = "<ToPlanet>",
@@ -33,11 +67,6 @@ return {
 			name = "RRR",
 			min = 0,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -45,11 +74,6 @@ return {
 			name = "cred",
 			min = 0,
 			max = 10000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 1000,
 		},
 		{
@@ -57,11 +81,6 @@ return {
 			name = "bet",
 			min = 0,
 			max = 1000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 500,
 		},
 		{
@@ -69,11 +88,6 @@ return {
 			name = "rRR",
 			min = 0,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -81,11 +95,6 @@ return {
 			name = "rXn",
 			min = -100000000,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -93,11 +102,6 @@ return {
 			name = "rXd",
 			min = 1,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 1,
 		},
 		{
@@ -105,11 +109,6 @@ return {
 			name = "rYn",
 			min = -100000000,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -117,11 +116,6 @@ return {
 			name = "rYd",
 			min = 1,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 1,
 		},
 		{
@@ -129,11 +123,6 @@ return {
 			name = "rZn",
 			min = -100000000,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -141,11 +130,6 @@ return {
 			name = "rZd",
 			min = 1,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 1,
 		},
 		{
@@ -153,11 +137,6 @@ return {
 			name = "rTn",
 			min = -100000000,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -165,11 +144,6 @@ return {
 			name = "rTd",
 			min = 1,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 1,
 		},
 		{
@@ -177,11 +151,6 @@ return {
 			name = "rRn",
 			min = -100000000,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -189,11 +158,6 @@ return {
 			name = "rRd",
 			min = 1,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 1,
 		},
 		{
@@ -201,11 +165,6 @@ return {
 			name = "r0n",
 			min = -100000000,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -213,11 +172,6 @@ return {
 			name = "r0d",
 			min = 1,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 1,
 		},
 		{
@@ -225,11 +179,6 @@ return {
 			name = "r1n",
 			min = -100000000,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -237,11 +186,6 @@ return {
 			name = "r1d",
 			min = 1,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 1,
 		},
 		{
@@ -249,11 +193,6 @@ return {
 			name = "r2n",
 			min = -100000000,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -261,11 +200,6 @@ return {
 			name = "r2d",
 			min = 1,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 1,
 		},
 		{
@@ -273,11 +207,6 @@ return {
 			name = "r3n",
 			min = -100000000,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -285,11 +214,6 @@ return {
 			name = "r3d",
 			min = 1,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 1,
 		},
 		{
@@ -297,11 +221,6 @@ return {
 			name = "r4n",
 			min = -100000000,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -309,11 +228,6 @@ return {
 			name = "r4d",
 			min = 1,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 1,
 		},
 		{
@@ -321,11 +235,6 @@ return {
 			name = "r5n",
 			min = -100000000,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -333,11 +242,6 @@ return {
 			name = "r5d",
 			min = 1,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 1,
 		},
 		{
@@ -345,11 +249,6 @@ return {
 			name = "r6n",
 			min = -100000000,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -357,11 +256,6 @@ return {
 			name = "r6d",
 			min = 1,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 1,
 		},
 		{
@@ -369,11 +263,6 @@ return {
 			name = "r7n",
 			min = -100000000,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -381,11 +270,6 @@ return {
 			name = "r7d",
 			min = 1,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 1,
 		},
 		{
@@ -393,11 +277,6 @@ return {
 			name = "r8n",
 			min = -100000000,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -405,11 +284,6 @@ return {
 			name = "r8d",
 			min = 1,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 1,
 		},
 		{
@@ -417,11 +291,6 @@ return {
 			name = "r9n",
 			min = -100000000,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -429,11 +298,6 @@ return {
 			name = "r9d",
 			min = 1,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 1,
 		},
 		{
@@ -441,11 +305,6 @@ return {
 			name = "rAn",
 			min = -100000000,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -453,11 +312,6 @@ return {
 			name = "rAd",
 			min = 1,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 1,
 		},
 		{
@@ -465,11 +319,6 @@ return {
 			name = "rBn",
 			min = -100000000,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -477,11 +326,6 @@ return {
 			name = "rBd",
 			min = 1,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 1,
 		},
 		{
@@ -489,11 +333,6 @@ return {
 			name = "rCn",
 			min = -100000000,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -501,11 +340,6 @@ return {
 			name = "rCd",
 			min = 1,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 1,
 		},
 		{
@@ -513,11 +347,6 @@ return {
 			name = "rDn",
 			min = -100000000,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -525,11 +354,6 @@ return {
 			name = "rDd",
 			min = 1,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 1,
 		},
 		{
@@ -537,11 +361,6 @@ return {
 			name = "rEn",
 			min = -100000000,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -549,11 +368,6 @@ return {
 			name = "rEd",
 			min = 1,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 1,
 		},
 		{
@@ -561,11 +375,6 @@ return {
 			name = "rA",
 			min = 0,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -573,11 +382,6 @@ return {
 			name = "rB",
 			min = 0,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -585,11 +389,6 @@ return {
 			name = "rC",
 			min = 0,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -597,11 +396,6 @@ return {
 			name = "rD",
 			min = 0,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -609,11 +403,6 @@ return {
 			name = "rE",
 			min = 0,
 			max = 100000000,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -621,11 +410,6 @@ return {
 			name = "eMD",
 			min = 0,
 			max = 2,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -633,11 +417,6 @@ return {
 			name = "coffe",
 			min = 0,
 			max = 10,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -645,11 +424,6 @@ return {
 			name = "variant",
 			min = 1,
 			max = 10,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 1,
 		},
 		{
@@ -657,11 +431,6 @@ return {
 			name = "fuel",
 			min = 0,
 			max = 100,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 		{
@@ -669,11 +438,6 @@ return {
 			name = "time",
 			min = 1,
 			max = 100,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 10,
 		},
 		{
@@ -681,11 +445,6 @@ return {
 			name = "angl",
 			min = -180,
 			max = 180,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 			showingInfo = {
 				{from=-180, to=179, str=""},
@@ -697,11 +456,6 @@ return {
 			name = "stage",
 			min = 0,
 			max = 2,
-			type = 0,
-			showWhenZero = true,
-			critType = 0,
-			active = true,
-			isMoney = false,
 			starting = 0,
 		},
 	},
@@ -712,10 +466,6 @@ return {
 			type = 1, -- isStarting
 			locX = 288,
 			locY = 231,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
 			texts = {
 				"Самое увлекательное приключение XXI века началось с чашки кофе. Мы с Эдиком Рыжковским завтракали в буфете астровокзала на девятом этаже. Лучший лунный кофе делали здесь, но получить его было непросто. \n\nСовсем недавно на раздачу установили игровой автомат и с этих пор, для получения чашки вожделенного напитка, приходилось решать астронавигационные задачи. Кофе помогал в их решении, но именно его то и не было.\n\n- Спорим на [p3] кредов, что железка опять тебя прокатит? - сказал Эдик\n\nНедавно он совершил почти невозможное: выиграл целых две кружки подряд, но похоже, что полоса его везения на этом закончилась.\n",
 			},
@@ -724,8 +474,6 @@ return {
 					img = "lunolet_6.jpg",
 				},
 			},
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 2, -- number
@@ -733,8 +481,6 @@ return {
 			type = 0, -- undefined
 			locX = 352,
 			locY = 231,
-			maxVisits = 0,
-			dayPassed = false,
 			isTextByFormula = true,
 			textSelectFormula = "([p51]>0)+1",
 			texts = {
@@ -752,11 +498,6 @@ return {
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p56]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 			},
@@ -767,10 +508,6 @@ return {
 			type = 0, -- undefined
 			locX = 288,
 			locY = 189,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
 			texts = {
 				"Я поднялся на ноги, потянулся и не спеша побрёл к игровому автомату. В последнюю неделю, он мучал нас всех посадкой на безатмосферное тело.\n\nАппарат с химическим реактивным двигателем начинал своё движение к Луне на произвольно заданной высоте, от соискателя же требовалось подавать команды двигателю таким образом, чтобы завершить движение у самой поверхности со скоростью не более <clr>5<clrEnd> метров в секунду.\n\nПревышать ускорение свыше <clr>3g<clrEnd> также не рекомендовалась. Аппарат имитировал потерю пилотом сознания, а за то время что он \"приходил в себя\" можно было и в Луну врезаться...\n",
 			},
@@ -779,8 +516,6 @@ return {
 					img = "lunolet_10.jpg",
 				},
 			},
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 4, -- number
@@ -788,16 +523,11 @@ return {
 			type = 0, -- undefined
 			locX = 352,
 			locY = 189,
-			maxVisits = 0,
-			dayPassed = false,
 			isTextByFormula = true,
 			textSelectFormula = "[p52]",
 			texts = {
 				"Отхлебнув оранджа, незнакомец повёл носом. В воздухе плавал кофейный аромат.\n\n- Вы с какой-нибудь дальней базы? - спросил Эдик.\n- С дальней? - незнакомец прищурился. - Можно и так сказать. А почему вы так решили?\n- Селенита видно по походке, - объяснил Эдик. В Центре мы вас раньше не встречали, да и во всех ближних точках я тоже бывал.\n- Понял вашу логику, - кивнул незнакомец, но скажите, где взять кофе? В баре я видел только это, - он поднял свой стакан, - и минеральную воду.\n- Кофе в автомате. - Эдик махнул рукой. - Только не выиграешь. Раздобыть сразу две чашки выпадает раз в жизни.\n- А что за игра? Шахматы? Или какой-нибудь \"Стартрек\"?\n- Нет, здесь игра для профессионалов, чтобы кофе шёл основному лётному составу, а не всяким там...\n\nНезнакомец посмотрел на Эдика с недоумением.\n\n- Надо попробовать. - Он встал со своего места. - Вам принести?\n- Я, право, не знаю... - заколебался я.\n- Несите, - сказал Элик. В голосе его звучало злорадство. - Две..., нет, лучше три чашки...\n",
 				"- А где взять кофе? В баре я видел только это, - он поднял свой стакан, - и минеральную воду.\n- Кофе в автомате. - Эдик махнул рукой. - Только не выиграешь. Раздобыть две чашки выпадает раз в жизни.\n- А что за игра? Шахматы? Или какой-нибудь \"Стартрек\"?\n- Нет, здесь игра для профессионалов, чтобы кофе шёл основному лётному составу, а не всяким там...\n\nНезнакомец посмотрел на Эдика с недоумением.\n\n- Надо попробовать. - Он встал со своего места. - Вам принести?\n- Я, право, не знаю... - заколебался я.\n- Несите, - сказал Элик. В голосе его звучало злорадство. - Две..., нет, лучше три чашки...\n",
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
 			},
 		},
 		{
@@ -806,382 +536,172 @@ return {
 			type = 0, -- undefined
 			locX = 416,
 			locY = 231,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
 			texts = {
 				"<fix> Высота: {[p35] div [p36]}<clr>.<clrEnd>{((([p35]*100) div [p36]) mod 100)*(1-2*([p35]<0))} м</fix>\n<fix> Запас топлива: {[p41] div [p42]}<clr>.<clrEnd>{((([p41]*100) div [p42]) mod 100)*(1-2*([p41]<0))} кг</fix>\n",
 			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p4]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p15]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p16]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p17]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p18]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p19]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p20]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p21]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p22]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p23]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "162",
 				},
 				{
 					index = "[p24]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "100",
 				},
 				{
 					index = "[p25]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "2250",
 				},
 				{
 					index = "[p26]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p27]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "3660",
 				},
 				{
 					index = "[p28]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p29]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "2943",
 				},
 				{
 					index = "[p30]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "100",
 				},
 				{
 					index = "[p31]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p32]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p33]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "505",
 				},
 				{
 					index = "[p34]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p35]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[300..800]",
 				},
 				{
 					index = "[p36]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p37]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p38]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p39]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p40]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p41]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[200..500]",
 				},
 				{
 					index = "[p42]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p43]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p44]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 			},
@@ -1192,10 +712,6 @@ return {
 			type = 0, -- undefined
 			locX = 416,
 			locY = 189,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
 			texts = {
 				"- Я его прищемил, - сказал Эдик. - Думает, раз он профессионал, всё получится. Как бы не так!\n- Зачем ты так? Ты же его не знаешь.\n- Человека видно по походке, - произнёс Эдик. - Обыкновенный пижон...\n\nОн замолчал, потому что по залу пронёсся восхищённый ропот. Наш новый знакомый возвращался, балансируя подносом, уставленным чашками кофе.\n\n- Себе я взял две, если не возражаете, - сказал он, опускаясь в кресло. - А вам по три, как и просили...\n",
 			},
@@ -1204,8 +720,6 @@ return {
 					img = "lunolet_5.jpg",
 				},
 			},
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 7, -- number
@@ -1213,93 +727,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 288,
 			locY = 315,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p35]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p36]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -1310,10 +772,6 @@ return {
 			type = 0, -- undefined
 			locX = 480,
 			locY = 189,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
 			texts = {
 				"Эдик сидел, опустив глаза. Лицо у него полыхало. Он, обжигаясь, пил кофе большими глотками.\n\n- А где вы раньше летали? - спросил я чуть погодя.\n- Юпитер, - сказал он. - Ио, Европа, Каллисто... А сейчас в отставке... По возрасту.\n- И что теперь?\n- Теперь на Землю, - сказал он.\n",
 			},
@@ -1322,8 +780,6 @@ return {
 					img = "lunolet_1.jpg",
 				},
 			},
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 9, -- number
@@ -1331,15 +787,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 352,
 			locY = 315,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 10, -- number
@@ -1347,15 +794,8 @@ return {
 			type = 0, -- undefined
 			locX = 480,
 			locY = 231,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
 			texts = {
 				"Я тоже туда собираюсь. В отпуск.\n\n- По рукам. Вы мне нравитесь. Пойдёте со мной штурманом? Меня зовут Михаил Коршунов. Профессиональная кличка Лунный Коршун. Так договорились - летим вместе?\n- Договорились, - сказал я. Меня зовут <Ranger>. Только лайнер ушёл вчера. Теперь две недели ждать...\n\nМихаил поморщился. Лайнер. Скукотища... Стюардесса разносит конфеты и воду. Заставляют сидеть в кресле...\n\n- А как же иначе? Космический лифт пока не построили.\n- Вот и я думаю, - сказал Михаил Коршунов. - Простите, Эдуард, если не ошибаюсь? Вы говорили что много летаете? Не знаете, где можно раздобыть корабль? Хотя бы плохонький?\n",
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
 			},
 		},
 		{
@@ -1364,15 +804,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 480,
 			locY = 315,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 12, -- number
@@ -1380,15 +811,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 416,
 			locY = 315,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 13, -- number
@@ -1396,15 +818,8 @@ return {
 			type = 0, -- undefined
 			locX = 544,
 			locY = 189,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
 			texts = {
 				"Краска с него уже схлынула, а в глазах появилось выражение, которое мне очень не понравилось. Что-то нехорошое, мстительное.\n\n- Плохонький? - повторил он.\n- Меня устроит любой, лишь бы двигатель был цел.\n- Тогда я вам помогу. У меня есть именно то что вам нужно.\n",
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
 			},
 		},
 		{
@@ -1413,84 +828,37 @@ return {
 			type = 2, -- isEmpty
 			locX = 480,
 			locY = 357,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 			},
@@ -1501,30 +869,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 480,
 			locY = 399,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]+2",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 			},
@@ -1535,15 +886,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1184,
 			locY = 315,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 17, -- number
@@ -1551,10 +893,6 @@ return {
 			type = 4, -- isFaily
 			locX = 544,
 			locY = 231,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
 			texts = {
 				"Я решительно встал из-за стола. Лунный Коршун смотрел на меня с недоумением и... какой-то жалостью?\nРазвернувшись, я зашагал к выходу. Я дождался своего лайнера, там были стюардесса, вода и конфеты...\nА про завершение этой истории я узнал из газет. \n\nЗнаменитый рейс Кон-Тики! Лунный Коршун в одиночку осуществляет перелёт с Луны на Землю!\nТриумфальный рейс на ржавом корыте, завершившийся где-то в Атлантике. Там Михаил вызвал спасателей.\nЛунный Коршун не умел плавать...\n\nИменно из газет я узнал о самом интересном приключении XXI-го века, в котором так и не принял участие.\n",
 			},
@@ -1563,8 +901,6 @@ return {
 					img = "lunolet_8.jpg",
 				},
 			},
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 18, -- number
@@ -1572,15 +908,8 @@ return {
 			type = 0, -- undefined
 			locX = 608,
 			locY = 189,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
 			texts = {
 				"Я знал что было у Эдика. Ведь именно на этом корыте я чуть не разбился пару недель назад!\n\n- На этом нельзя летать! Даже на орбиту нельзя выйти!\n- Давайте, посмотрим описание? - сказал Лунный Коршун.\n\nЭдик выложил на стол паспорт - да-да, того самого лунолёта!\n\nКоршунов погрузился в чтение. Он шевелил губами, иногда повторяя вслух: сухая масса - две тонны. Топливо - керосин и кислород. Предназначен для перелётов вдоль поверхности Луны на расстояния не свыше 1000 километров...\n",
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
 			},
 		},
 		{
@@ -1589,93 +918,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 544,
 			locY = 315,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p7]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p8]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p11]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p12]",
 				},
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -1686,15 +963,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1248,
 			locY = 315,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 21, -- number
@@ -1702,15 +970,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1312,
 			locY = 315,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 22, -- number
@@ -1718,382 +977,172 @@ return {
 			type = 0, -- undefined
 			locX = 608,
 			locY = 231,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
 			texts = {
 				"Он смеялся долго и искренне. Эдик тоже засмеялся - сначала робко, потом всё уверенней. На них оглядывались. Я молча ждал, пытаясь сообразить, во что может вылиться эта ситуация.\n\n- Ну и колымага!- отсмеявшись сказал Коршунов. - Но зачем все эти дурацкие ограничители? На ускорение, на расход, на время манёвра? Учтите - я всё это выброшу.\n\nЛицо у Эдика Рыжковского стало растерянным.\n\n- Да вы что... берёте?\n- Конечно. Мы же с вами договорились. Разве не так?\n- Но я же просто пошутил! - воскликнул Эдик. - Прошу вас меня извинить...\n- Извинения не принимаются, - холодно заявил Дунный Коршун. Я беру ваше судно.\n- Но это безумие! - рассвирипел Эдик. Эта машина никогда не поднималась на орбиту, идти на ней в космос - это всё равно что переплывать океан на плоту!\n- Но ведь переплывали же, - спокойно возразил Коршунов. С вашего разрешения, нарекаю это судно \"Кон-Тики\".\n\nТак началась эта удивительная история. Мы выбросили с Кон-Тики всё лишнее, установили на него дополнительные баки...\n",
 			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p4]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p15]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p16]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p17]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p18]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p19]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p20]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p21]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p22]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p23]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "162",
 				},
 				{
 					index = "[p24]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "100",
 				},
 				{
 					index = "[p25]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "2250",
 				},
 				{
 					index = "[p26]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p27]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "3660",
 				},
 				{
 					index = "[p28]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p29]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "2943",
 				},
 				{
 					index = "[p30]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "100",
 				},
 				{
 					index = "[p31]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p32]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p33]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "505",
 				},
 				{
 					index = "[p34]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p35]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p36]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p37]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p38]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p39]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "250000",
 				},
 				{
 					index = "[p40]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p41]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1000",
 				},
 				{
 					index = "[p42]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p43]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p44]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 			},
@@ -2104,15 +1153,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1952,
 			locY = 609,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 24, -- number
@@ -2120,21 +1160,9 @@ return {
 			type = 2, -- isEmpty
 			locX = 992,
 			locY = 567,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p4]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p4]*100+32",
 				},
 			},
@@ -2145,84 +1173,37 @@ return {
 			type = 2, -- isEmpty
 			locX = 1312,
 			locY = 357,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 			},
@@ -2233,30 +1214,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 1312,
 			locY = 399,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]+0",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 			},
@@ -2267,15 +1231,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 2016,
 			locY = 609,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 28, -- number
@@ -2283,15 +1238,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1952,
 			locY = 651,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 29, -- number
@@ -2299,15 +1245,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1440,
 			locY = 231,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 30, -- number
@@ -2315,93 +1252,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 1376,
 			locY = 315,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p21]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p22]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -2412,15 +1297,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 2016,
 			locY = 651,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 32, -- number
@@ -2428,15 +1304,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 2016,
 			locY = 399,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 33, -- number
@@ -2444,15 +1311,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1120,
 			locY = 189,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 34, -- number
@@ -2460,15 +1318,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 2016,
 			locY = 735,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 35, -- number
@@ -2476,15 +1325,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 544,
 			locY = 357,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 36, -- number
@@ -2492,15 +1332,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 736,
 			locY = 357,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 37, -- number
@@ -2508,15 +1339,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 800,
 			locY = 441,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 38, -- number
@@ -2524,15 +1346,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 864,
 			locY = 357,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 39, -- number
@@ -2540,15 +1353,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 992,
 			locY = 441,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 40, -- number
@@ -2556,15 +1360,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1504,
 			locY = 441,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 41, -- number
@@ -2572,15 +1367,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1248,
 			locY = 651,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 42, -- number
@@ -2588,15 +1374,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1504,
 			locY = 693,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 43, -- number
@@ -2604,15 +1381,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 288,
 			locY = 903,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 44, -- number
@@ -2620,15 +1388,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 416,
 			locY = 861,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 45, -- number
@@ -2636,15 +1395,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 736,
 			locY = 861,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 46, -- number
@@ -2652,15 +1402,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 736,
 			locY = 903,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 47, -- number
@@ -2668,15 +1409,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 800,
 			locY = 861,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 48, -- number
@@ -2684,15 +1416,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 928,
 			locY = 861,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 49, -- number
@@ -2700,15 +1423,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1056,
 			locY = 945,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 50, -- number
@@ -2716,15 +1430,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1312,
 			locY = 945,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 51, -- number
@@ -2732,15 +1437,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 416,
 			locY = 1197,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 52, -- number
@@ -2748,15 +1444,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 736,
 			locY = 1197,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 53, -- number
@@ -2764,15 +1451,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1056,
 			locY = 1113,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 54, -- number
@@ -2780,15 +1458,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1120,
 			locY = 1197,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 55, -- number
@@ -2796,15 +1465,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1440,
 			locY = 1155,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 56, -- number
@@ -2812,15 +1472,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 608,
 			locY = 1365,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 57, -- number
@@ -2828,15 +1479,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 608,
 			locY = 1407,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 58, -- number
@@ -2844,15 +1486,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 672,
 			locY = 1365,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 59, -- number
@@ -2860,15 +1493,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 736,
 			locY = 1449,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 60, -- number
@@ -2876,15 +1500,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 800,
 			locY = 1365,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 61, -- number
@@ -2892,15 +1507,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1056,
 			locY = 1449,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 62, -- number
@@ -2908,15 +1514,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1184,
 			locY = 1407,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 63, -- number
@@ -2924,15 +1521,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1312,
 			locY = 1365,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 64, -- number
@@ -2940,15 +1528,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1376,
 			locY = 231,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 65, -- number
@@ -2956,15 +1535,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1504,
 			locY = 231,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 66, -- number
@@ -2972,15 +1542,8 @@ return {
 			type = 0, -- undefined
 			locX = 1440,
 			locY = 189,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
 			texts = {
 				"<clr>!!! ПЕРЕГРУЗКА !!!<clrEnd>\n",
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
 			},
 		},
 		{
@@ -2989,93 +1552,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 1440,
 			locY = 315,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p29]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p30]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -3086,30 +1597,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 2016,
 			locY = 357,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -3120,15 +1614,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1952,
 			locY = 399,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 70, -- number
@@ -3136,15 +1621,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1120,
 			locY = 231,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 71, -- number
@@ -3152,30 +1628,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 1952,
 			locY = 735,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -3186,15 +1645,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1952,
 			locY = 693,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 73, -- number
@@ -3202,15 +1652,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 544,
 			locY = 441,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 74, -- number
@@ -3218,30 +1659,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 544,
 			locY = 399,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -3252,15 +1676,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 736,
 			locY = 441,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 76, -- number
@@ -3268,30 +1683,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 736,
 			locY = 399,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -3302,15 +1700,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 800,
 			locY = 525,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 78, -- number
@@ -3318,30 +1707,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 800,
 			locY = 483,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -3352,93 +1724,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 928,
 			locY = 315,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p37]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p38]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -3449,15 +1769,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 992,
 			locY = 525,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 81, -- number
@@ -3465,30 +1776,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 992,
 			locY = 483,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -3499,15 +1793,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1504,
 			locY = 525,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 83, -- number
@@ -3515,30 +1800,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 1504,
 			locY = 483,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -3549,15 +1817,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1248,
 			locY = 735,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 85, -- number
@@ -3565,30 +1824,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 1248,
 			locY = 693,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -3599,15 +1841,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1504,
 			locY = 777,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 87, -- number
@@ -3615,30 +1848,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 1504,
 			locY = 735,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -3649,15 +1865,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 288,
 			locY = 987,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 89, -- number
@@ -3665,30 +1872,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 288,
 			locY = 945,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -3699,15 +1889,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 416,
 			locY = 945,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 91, -- number
@@ -3715,30 +1896,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 416,
 			locY = 903,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -3749,15 +1913,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1952,
 			locY = 819,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 93, -- number
@@ -3765,93 +1920,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 800,
 			locY = 819,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p7]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p8]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p11]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p12]",
 				},
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -3862,15 +1965,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 800,
 			locY = 945,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 95, -- number
@@ -3878,30 +1972,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 800,
 			locY = 903,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -3912,15 +1989,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 928,
 			locY = 945,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 97, -- number
@@ -3928,30 +1996,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 928,
 			locY = 903,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -3962,15 +2013,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1056,
 			locY = 1029,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 99, -- number
@@ -3978,30 +2020,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 1056,
 			locY = 987,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -4012,15 +2037,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1312,
 			locY = 1029,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 101, -- number
@@ -4028,30 +2044,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 1312,
 			locY = 987,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -4062,15 +2061,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 416,
 			locY = 1281,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 103, -- number
@@ -4078,30 +2068,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 416,
 			locY = 1239,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -4112,15 +2085,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 736,
 			locY = 1281,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 105, -- number
@@ -4128,30 +2092,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 736,
 			locY = 1239,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -4162,15 +2109,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1056,
 			locY = 1197,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 107, -- number
@@ -4178,30 +2116,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 1056,
 			locY = 1155,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -4212,15 +2133,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1120,
 			locY = 1281,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 109, -- number
@@ -4228,30 +2140,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 1120,
 			locY = 1239,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -4262,15 +2157,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1440,
 			locY = 1239,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 111, -- number
@@ -4278,30 +2164,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 1440,
 			locY = 1197,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -4312,21 +2181,9 @@ return {
 			type = 2, -- isEmpty
 			locX = 1952,
 			locY = 777,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "90*[p6]-[p5]",
 				},
 			},
@@ -4337,93 +2194,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 672,
 			locY = 1323,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p7]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p8]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p11]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p12]",
 				},
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -4434,15 +2239,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 672,
 			locY = 1449,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 115, -- number
@@ -4450,30 +2246,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 672,
 			locY = 1407,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -4484,15 +2263,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 736,
 			locY = 1533,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 117, -- number
@@ -4500,30 +2270,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 736,
 			locY = 1491,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -4534,15 +2287,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 800,
 			locY = 1449,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 119, -- number
@@ -4550,30 +2294,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 800,
 			locY = 1407,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -4584,15 +2311,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1056,
 			locY = 1533,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 121, -- number
@@ -4600,30 +2318,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 1056,
 			locY = 1491,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -4634,15 +2335,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1184,
 			locY = 1491,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 123, -- number
@@ -4650,30 +2342,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 1184,
 			locY = 1449,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -4684,15 +2359,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1312,
 			locY = 1449,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 125, -- number
@@ -4700,30 +2366,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 1312,
 			locY = 1407,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -4734,22 +2383,12 @@ return {
 			type = 0, -- undefined
 			locX = 1248,
 			locY = 189,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
 			texts = {
 				"<fix> Высота: {[p5] div [p6]}<clr>.<clrEnd>{((([p5]*100) div [p6]) mod 100)*(1-2*([p5]<0))} м</fix>\n<fix> Запас топлива: {[p7] div [p8]}<clr>.<clrEnd>{((([p7]*100) div [p8]) mod 100)*(1-2*([p7]<0))} кг</fix>\n<fix> Вертикальная скорость: {[p37] div [p38]}<clr>.<clrEnd>{((([p37]*100) div [p38]) mod 100)*(1-2*([p37]<0))} м/с</fix>\n<fix> -----------------------------</fix>\n<fix> Расход топлива: [p53] кг</fix>\n<fix> Время: [p54] с</fix>\n<fix> [d55]</fix>\n\n<clr>!!! Поздравляем с успешным прилунением !!!<clrEnd>\n",
 			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p51]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p51] + 1",
 				},
 			},
@@ -4760,15 +2399,8 @@ return {
 			type = 0, -- undefined
 			locX = 1632,
 			locY = 231,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
 			texts = {
 				"<fix> Высота: {[p5] div [p6]}<clr>.<clrEnd>{((([p5]*100) div [p6]) mod 100)*(1-2*([p5]<0))} м</fix>\n<fix> Запас топлива: {[p7] div [p8]}<clr>.<clrEnd>{((([p7]*100) div [p8]) mod 100)*(1-2*([p7]<0))} кг</fix>\n<fix> Вертикальная скорость: {[p37] div [p38]}<clr>.<clrEnd>{((([p37]*100) div [p38]) mod 100)*(1-2*([p37]<0))} м/с</fix>\n<fix> -----------------------------</fix>\n<fix> Расход топлива: [p53] кг</fix>\n<fix> Время: [p54] с</fix>\n<fix> [d55]</fix>\n",
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
 			},
 		},
 		{
@@ -4777,10 +2409,6 @@ return {
 			type = 3, -- isSuccess
 			locX = 1568,
 			locY = 273,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
 			texts = {
 				"<fix> Высота: {[p5] div [p6]}<clr>.<clrEnd>{((([p5]*100) div [p6]) mod 100)*(1-2*([p5]<0))} м</fix>\n<fix> Запас топлива: {[p7] div [p8]}<clr>.<clrEnd>{((([p7]*100) div [p8]) mod 100)*(1-2*([p7]<0))} кг</fix>\n<fix> Вертикальная скорость: {[p37] div [p38]}<clr>.<clrEnd>{((([p37]*100) div [p38]) mod 100)*(1-2*([p37]<0))} м/с</fix>\n<fix> Горизонтальная скорость: {[p15] div [p16]}<clr>.<clrEnd>{((([p15]*100) div [p16]) mod 100)*(1-2*([p15]<0))} м/с</fix>\n<fix> Расстояние до цели: {[p39] div [p40]}<clr>.<clrEnd>{((([p39]*100) div [p40]) mod 100)*(1-2*([p39]<0))} км</fix>\n<fix> -----------------------------</fix>\n<fix> Расход топлива: [p53] кг</fix>\n<fix> Время: [p54] с</fix>\n<fix> Угол: [p55] г</fix>\n\nВот так я успешно приземлился в Море Спокойствия. \n\nС этого небольшого перелёта началась наша знаменитая эпопея. Перелёт Кон-Тики с Луны на Землю. Нам предстояло многое - стыковка с орбитальной станцией, выход в точку либрации, вход в атмосферу и успешное приводнение в Атлантическом океане...\n\nНо это уже другая история.\n",
 			},
@@ -4789,8 +2417,6 @@ return {
 					img = "lunolet_4.jpg",
 				},
 			},
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 129, -- number
@@ -4798,10 +2424,6 @@ return {
 			type = 4, -- isFaily
 			locX = 1568,
 			locY = 231,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
 			texts = {
 				"<fix> Высота: {[p5] div [p6]}<clr>.<clrEnd>{((([p5]*100) div [p6]) mod 100)*(1-2*([p5]<0))} м</fix>\n<fix> Запас топлива: {[p7] div [p8]}<clr>.<clrEnd>{((([p7]*100) div [p8]) mod 100)*(1-2*([p7]<0))} кг</fix>\n<fix> Вертикальная скорость: {[p37] div [p38]}<clr>.<clrEnd>{((([p37]*100) div [p38]) mod 100)*(1-2*([p37]<0))} м/с</fix>\n<fix> Горизонтальная скорость: {[p15] div [p16]}<clr>.<clrEnd>{((([p15]*100) div [p16]) mod 100)*(1-2*([p15]<0))} м/с</fix>\n<fix> Расстояние до цели: {[p39] div [p40]}<clr>.<clrEnd>{((([p39]*100) div [p40]) mod 100)*(1-2*([p39]<0))} км</fix>\n<fix> -----------------------------</fix>\n<fix> Расход топлива: [p53] кг</fix>\n<fix> Время: [p54] с</fix>\n<fix> Угол: [p55] г</fix>\n\nНе представляю, как это могло получиться. Прилунился я вполне удачно, но не совсем там где планировалось.\nКоршунов много и с выражением ругался. В результате, меня спасли до того как кончился кислород, Коршунов перегнал корабль сам и полетел один.\n\nОб успешном завершении рейса Кон-Тики я узнал из газет. А в отпуск на Землю полетел как и все, на лайнере.\nСо стюардессами, водой и конфетами...\n",
 			},
@@ -4810,8 +2432,6 @@ return {
 					img = "lunolet_7.jpg",
 				},
 			},
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 130, -- number
@@ -4819,10 +2439,6 @@ return {
 			type = 4, -- isFaily
 			locX = 1568,
 			locY = 189,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
 			texts = {
 				"<fix> Высота: {[p5] div [p6]}<clr>.<clrEnd>{((([p5]*100) div [p6]) mod 100)*(1-2*([p5]<0))} м</fix>\n<fix> Запас топлива: {[p7] div [p8]}<clr>.<clrEnd>{((([p7]*100) div [p8]) mod 100)*(1-2*([p7]<0))} кг</fix>\n<fix> Вертикальная скорость: {[p37] div [p38]}<clr>.<clrEnd>{((([p37]*100) div [p38]) mod 100)*(1-2*([p37]<0))} м/с</fix>\n<fix> Горизонтальная скорость: {[p15] div [p16]}<clr>.<clrEnd>{((([p15]*100) div [p16]) mod 100)*(1-2*([p15]<0))} м/с</fix>\n<fix> Расстояние до цели: {[p39] div [p40]}<clr>.<clrEnd>{((([p39]*100) div [p40]) mod 100)*(1-2*([p39]<0))} км</fix>\n<fix> -----------------------------</fix>\n<fix> Расход топлива: [p53] кг</fix>\n<fix> Время: [p54] с</fix>\n<fix> Угол: [p55] г</fix>\n\nВот так, не начавшись, завершилась эта история. \n\nМне удалось выпрыгнуть в последний момент, но аппарат разбился вдребезги.\n\nНа Землю мы полетели на лайнере. Коршунов со мной не разговаривал.\n",
 			},
@@ -4831,8 +2447,6 @@ return {
 					img = "lunolet_7.jpg",
 				},
 			},
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 131, -- number
@@ -4840,15 +2454,8 @@ return {
 			type = 0, -- undefined
 			locX = 1504,
 			locY = 273,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
 			texts = {
 				"<fix> Высота: {[p5] div [p6]}<clr>.<clrEnd>{((([p5]*100) div [p6]) mod 100)*(1-2*([p5]<0))} м</fix>\n<fix> Запас топлива: {[p7] div [p8]}<clr>.<clrEnd>{((([p7]*100) div [p8]) mod 100)*(1-2*([p7]<0))} кг</fix>\n<fix> Вертикальная скорость: {[p37] div [p38]}<clr>.<clrEnd>{((([p37]*100) div [p38]) mod 100)*(1-2*([p37]<0))} м/с</fix>\n<fix> Горизонтальная скорость: {[p15] div [p16]}<clr>.<clrEnd>{((([p15]*100) div [p16]) mod 100)*(1-2*([p15]<0))} м/с</fix>\n<fix> Расстояние до цели: {[p39] div [p40]}<clr>.<clrEnd>{((([p39]*100) div [p40]) mod 100)*(1-2*([p39]<0))} км</fix>\n<fix> -----------------------------</fix>\n<fix> Расход топлива: [p53] кг</fix>\n<fix> Время: [p54] с</fix>\n<fix> Угол: [p55] г</fix>\n",
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
 			},
 		},
 		{
@@ -4857,15 +2464,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1504,
 			locY = 189,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 133, -- number
@@ -4873,39 +2471,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 1504,
 			locY = 315,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -4916,21 +2492,9 @@ return {
 			type = 2, -- isEmpty
 			locX = 608,
 			locY = 315,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p4]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p4]*100+7",
 				},
 			},
@@ -4941,39 +2505,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 800,
 			locY = 315,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -4984,39 +2526,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 864,
 			locY = 315,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -5027,39 +2547,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 992,
 			locY = 315,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -5070,15 +2568,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1056,
 			locY = 315,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 139, -- number
@@ -5086,15 +2575,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 288,
 			locY = 567,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 140, -- number
@@ -5102,39 +2582,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 1312,
 			locY = 567,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p31]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p32]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -5145,39 +2603,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 288,
 			locY = 819,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -5188,93 +2624,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 352,
 			locY = 819,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p27]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p28]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -5285,39 +2669,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 480,
 			locY = 819,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p21]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p22]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -5328,15 +2690,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 2016,
 			locY = 777,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 145, -- number
@@ -5344,15 +2697,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 2016,
 			locY = 861,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 146, -- number
@@ -5360,93 +2704,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 864,
 			locY = 819,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p19]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p20]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -5457,93 +2749,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 992,
 			locY = 819,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p15]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p16]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -5554,39 +2794,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 1120,
 			locY = 819,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p15]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p16]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -5597,39 +2815,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 1376,
 			locY = 819,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p39]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p40]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -5640,39 +2836,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 480,
 			locY = 1071,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p37]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p38]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -5683,39 +2857,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 800,
 			locY = 1071,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p35]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p36]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -5726,39 +2878,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 1120,
 			locY = 1071,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -5769,39 +2899,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 1184,
 			locY = 1071,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p41]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p42]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -5812,39 +2920,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 1504,
 			locY = 1071,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p19]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p20]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -5855,39 +2941,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 736,
 			locY = 1323,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -5898,93 +2962,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 800,
 			locY = 1323,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p7]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p8]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p11]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p12]",
 				},
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -5995,93 +3007,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 864,
 			locY = 1323,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p37]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p38]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -6092,15 +3052,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1120,
 			locY = 1323,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 159, -- number
@@ -6108,93 +3059,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 1248,
 			locY = 1323,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p19]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p20]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -6205,15 +3104,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1376,
 			locY = 1323,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 161, -- number
@@ -6221,15 +3111,8 @@ return {
 			type = 0, -- undefined
 			locX = 1632,
 			locY = 189,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
 			texts = {
 				"<fix> Высота: {[p5] div [p6]}<clr>.<clrEnd>{((([p5]*100) div [p6]) mod 100)*(1-2*([p5]<0))} м</fix>\n<fix> Запас топлива: {[p7] div [p8]}<clr>.<clrEnd>{((([p7]*100) div [p8]) mod 100)*(1-2*([p7]<0))} кг</fix>\n<fix> Вертикальная скорость: {[p37] div [p38]}<clr>.<clrEnd>{((([p37]*100) div [p38]) mod 100)*(1-2*([p37]<0))} м/с</fix>\n<fix> -----------------------------</fix>\n<fix> Расход топлива: [p53] кг</fix>\n<fix> Время: [p54] с</fix>\n<fix> [d55]</fix>\n",
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
 			},
 		},
 		{
@@ -6238,15 +3121,8 @@ return {
 			type = 0, -- undefined
 			locX = 1696,
 			locY = 189,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
 			texts = {
 				"<fix> Высота: {[p5] div [p6]}<clr>.<clrEnd>{((([p5]*100) div [p6]) mod 100)*(1-2*([p5]<0))} м</fix>\n<fix> Запас топлива: {[p7] div [p8]}<clr>.<clrEnd>{((([p7]*100) div [p8]) mod 100)*(1-2*([p7]<0))} кг</fix>\n<fix> Вертикальная скорость: {[p37] div [p38]}<clr>.<clrEnd>{((([p37]*100) div [p38]) mod 100)*(1-2*([p37]<0))} м/с</fix>\n<fix> -----------------------------</fix>\n<fix> Расход топлива: [p53] кг</fix>\n<fix> Время: [p54] с</fix>\n<fix> [d55]</fix>\n",
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
 			},
 		},
 		{
@@ -6255,15 +3131,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1696,
 			locY = 231,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 164, -- number
@@ -6271,15 +3138,8 @@ return {
 			type = 0, -- undefined
 			locX = 1312,
 			locY = 231,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
 			texts = {
 				"<fix> Высота: {[p5] div [p6]}<clr>.<clrEnd>{((([p5]*100) div [p6]) mod 100)*(1-2*([p5]<0))} м</fix>\n<fix> Запас топлива: {[p7] div [p8]}<clr>.<clrEnd>{((([p7]*100) div [p8]) mod 100)*(1-2*([p7]<0))} кг</fix>\n<fix> Вертикальная скорость: {[p37] div [p38]}<clr>.<clrEnd>{((([p37]*100) div [p38]) mod 100)*(1-2*([p37]<0))} м/с</fix>\n<fix> Горизонтальная скорость: {[p15] div [p16]}<clr>.<clrEnd>{((([p15]*100) div [p16]) mod 100)*(1-2*([p15]<0))} м/с</fix>\n<fix> Расстояние до цели: {[p39] div [p40]}<clr>.<clrEnd>{((([p39]*100) div [p40]) mod 100)*(1-2*([p39]<0))} км</fix>\n<fix> -----------------------------</fix>\n<fix> Расход топлива: [p53] кг</fix>\n<fix> Время: [p54] с</fix>\n<fix> Угол: [p55] г</fix>\n",
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
 			},
 		},
 		{
@@ -6288,15 +3148,8 @@ return {
 			type = 0, -- undefined
 			locX = 1312,
 			locY = 189,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
 			texts = {
 				"<fix> Высота: {[p5] div [p6]}<clr>.<clrEnd>{((([p5]*100) div [p6]) mod 100)*(1-2*([p5]<0))} м</fix>\n<fix> Запас топлива: {[p7] div [p8]}<clr>.<clrEnd>{((([p7]*100) div [p8]) mod 100)*(1-2*([p7]<0))} кг</fix>\n<fix> Вертикальная скорость: {[p37] div [p38]}<clr>.<clrEnd>{((([p37]*100) div [p38]) mod 100)*(1-2*([p37]<0))} м/с</fix>\n<fix> Горизонтальная скорость: {[p15] div [p16]}<clr>.<clrEnd>{((([p15]*100) div [p16]) mod 100)*(1-2*([p15]<0))} м/с</fix>\n<fix> Расстояние до цели: {[p39] div [p40]}<clr>.<clrEnd>{((([p39]*100) div [p40]) mod 100)*(1-2*([p39]<0))} км</fix>\n<fix> -----------------------------</fix>\n<fix> Расход топлива: [p53] кг</fix>\n<fix> Время: [p54] с</fix>\n<fix> Угол: [p55] г</fix>\n",
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
 			},
 		},
 		{
@@ -6305,15 +3158,8 @@ return {
 			type = 0, -- undefined
 			locX = 1312,
 			locY = 273,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
 			texts = {
 				"<fix> Высота: {[p5] div [p6]}<clr>.<clrEnd>{((([p5]*100) div [p6]) mod 100)*(1-2*([p5]<0))} м</fix>\n<fix> Запас топлива: {[p7] div [p8]}<clr>.<clrEnd>{((([p7]*100) div [p8]) mod 100)*(1-2*([p7]<0))} кг</fix>\n<fix> Вертикальная скорость: {[p37] div [p38]}<clr>.<clrEnd>{((([p37]*100) div [p38]) mod 100)*(1-2*([p37]<0))} м/с</fix>\n<fix> Горизонтальная скорость: {[p15] div [p16]}<clr>.<clrEnd>{((([p15]*100) div [p16]) mod 100)*(1-2*([p15]<0))} м/с</fix>\n<fix> Расстояние до цели: {[p39] div [p40]}<clr>.<clrEnd>{((([p39]*100) div [p40]) mod 100)*(1-2*([p39]<0))} км</fix>\n<fix> -----------------------------</fix>\n<fix> Расход топлива: [p53] кг</fix>\n<fix> Время: [p54] с</fix>\n<fix> Угол: [p55] г</fix>\n",
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
 			},
 		},
 		{
@@ -6322,15 +3168,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 800,
 			locY = 567,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 168, -- number
@@ -6338,39 +3175,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 1056,
 			locY = 567,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p17]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p18]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -6381,57 +3196,25 @@ return {
 			type = 2, -- isEmpty
 			locX = 1504,
 			locY = 399,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]-[p5]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p11]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p12]",
 				},
 			},
@@ -6442,48 +3225,21 @@ return {
 			type = 2, -- isEmpty
 			locX = 1504,
 			locY = 357,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p8]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p8]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]*[p6]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]*[p6]",
 				},
 			},
@@ -6494,15 +3250,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 672,
 			locY = 315,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 172, -- number
@@ -6510,57 +3257,25 @@ return {
 			type = 2, -- isEmpty
 			locX = 800,
 			locY = 399,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]+[p7]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p11]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p12]",
 				},
 			},
@@ -6571,48 +3286,21 @@ return {
 			type = 2, -- isEmpty
 			locX = 800,
 			locY = 357,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p8]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p8]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]*[p6]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]*[p6]",
 				},
 			},
@@ -6623,10 +3311,6 @@ return {
 			type = 4, -- isFaily
 			locX = 1952,
 			locY = 945,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
 			texts = {
 				"ЕГГОГ\n",
 			},
@@ -6635,8 +3319,6 @@ return {
 					img = "lunolet_7.jpg",
 				},
 			},
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 175, -- number
@@ -6644,39 +3326,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 1952,
 			locY = 441,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p45]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p6]",
 				},
 				{
 					index = "[p46]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p47]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -6687,57 +3347,25 @@ return {
 			type = 2, -- isEmpty
 			locX = 992,
 			locY = 399,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]-[p5]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p11]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p12]",
 				},
 			},
@@ -6748,48 +3376,21 @@ return {
 			type = 2, -- isEmpty
 			locX = 992,
 			locY = 357,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p8]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p8]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]*[p6]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]*[p6]",
 				},
 			},
@@ -6800,15 +3401,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1120,
 			locY = 315,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 179, -- number
@@ -6816,93 +3408,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 416,
 			locY = 567,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p41]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p42]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -6913,15 +3453,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 352,
 			locY = 567,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 181, -- number
@@ -6929,93 +3460,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 1376,
 			locY = 567,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p25]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p26]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -7026,66 +3505,29 @@ return {
 			type = 2, -- isEmpty
 			locX = 288,
 			locY = 861,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p7]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p8]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p11]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p12]",
 				},
 			},
@@ -7096,93 +3538,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 416,
 			locY = 819,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p7]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p8]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p11]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p12]",
 				},
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -7193,93 +3583,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 544,
 			locY = 819,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p39]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p40]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -7290,30 +3628,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 1952,
 			locY = 861,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "(180*[p6]-[p5])*[p5]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p6]",
 				},
 			},
@@ -7324,93 +3645,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 928,
 			locY = 819,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p7]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p8]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p11]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p12]",
 				},
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -7421,39 +3690,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 1056,
 			locY = 819,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -7464,21 +3711,9 @@ return {
 			type = 2, -- isEmpty
 			locX = 1184,
 			locY = 819,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p4]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p4]*100+56",
 				},
 			},
@@ -7489,93 +3724,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 1440,
 			locY = 819,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p19]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p20]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -7586,21 +3769,9 @@ return {
 			type = 2, -- isEmpty
 			locX = 544,
 			locY = 1071,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p4]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p4]*100+66",
 				},
 			},
@@ -7611,93 +3782,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 864,
 			locY = 1071,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p41]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p42]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -7708,57 +3827,25 @@ return {
 			type = 2, -- isEmpty
 			locX = 1120,
 			locY = 1155,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]-[p5]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p11]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p12]",
 				},
 			},
@@ -7769,48 +3856,21 @@ return {
 			type = 2, -- isEmpty
 			locX = 1120,
 			locY = 1113,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p8]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p8]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]*[p6]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]*[p6]",
 				},
 			},
@@ -7821,15 +3881,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1248,
 			locY = 1071,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 195, -- number
@@ -7837,15 +3888,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 288,
 			locY = 1323,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 196, -- number
@@ -7853,57 +3895,25 @@ return {
 			type = 2, -- isEmpty
 			locX = 736,
 			locY = 1407,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]-[p5]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p11]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p12]",
 				},
 			},
@@ -7914,48 +3924,21 @@ return {
 			type = 2, -- isEmpty
 			locX = 736,
 			locY = 1365,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p8]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p8]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]*[p6]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]*[p6]",
 				},
 			},
@@ -7966,15 +3949,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 928,
 			locY = 1323,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 199, -- number
@@ -7982,84 +3956,37 @@ return {
 			type = 2, -- isEmpty
 			locX = 1120,
 			locY = 1365,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 			},
@@ -8070,30 +3997,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 1120,
 			locY = 1407,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]+2",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 			},
@@ -8104,93 +4014,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 1312,
 			locY = 1323,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p7]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p8]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p11]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p12]",
 				},
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -8201,57 +4059,25 @@ return {
 			type = 2, -- isEmpty
 			locX = 736,
 			locY = 315,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p5]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p6]",
 				},
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -8262,39 +4088,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 1312,
 			locY = 819,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -8305,39 +4109,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 416,
 			locY = 1071,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -8348,93 +4130,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 672,
 			locY = 1071,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p35]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p36]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -8445,15 +4175,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1312,
 			locY = 273,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 207, -- number
@@ -8461,15 +4182,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 864,
 			locY = 567,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 208, -- number
@@ -8477,93 +4189,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 1120,
 			locY = 567,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p11]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p12]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -8574,93 +4234,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 416,
 			locY = 1323,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p23]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p24]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -8671,15 +4279,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 2016,
 			locY = 441,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 211, -- number
@@ -8687,39 +4286,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 1440,
 			locY = 1071,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -8730,15 +4307,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 480,
 			locY = 567,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 213, -- number
@@ -8746,93 +4314,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 672,
 			locY = 567,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p33]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p34]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -8843,93 +4359,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 1440,
 			locY = 567,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p41]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p42]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -8940,93 +4404,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 608,
 			locY = 819,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p21]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p22]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -9037,39 +4449,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 1952,
 			locY = 903,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*4",
 				},
 				{
 					index = "[p45]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "40500*[p6]-[p5]",
 				},
 				{
 					index = "[p46]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 			},
@@ -9080,57 +4470,25 @@ return {
 			type = 2, -- isEmpty
 			locX = 1056,
 			locY = 903,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]+[p7]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p11]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p12]",
 				},
 			},
@@ -9141,48 +4499,21 @@ return {
 			type = 2, -- isEmpty
 			locX = 1056,
 			locY = 861,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p8]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p8]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]*[p6]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]*[p6]",
 				},
 			},
@@ -9193,15 +4524,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1248,
 			locY = 819,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 220, -- number
@@ -9209,30 +4531,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 1504,
 			locY = 819,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "-[p5]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -9243,15 +4548,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 608,
 			locY = 1071,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 222, -- number
@@ -9259,93 +4555,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 928,
 			locY = 1071,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p31]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p32]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -9356,93 +4600,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 1376,
 			locY = 1071,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p31]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p32]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -9453,15 +4645,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1312,
 			locY = 1071,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 225, -- number
@@ -9469,15 +4652,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 352,
 			locY = 1323,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 226, -- number
@@ -9485,39 +4659,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 1184,
 			locY = 1323,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -9528,57 +4680,25 @@ return {
 			type = 2, -- isEmpty
 			locX = 1312,
 			locY = 903,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]-[p5]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p11]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p12]",
 				},
 			},
@@ -9589,48 +4709,21 @@ return {
 			type = 2, -- isEmpty
 			locX = 1312,
 			locY = 861,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p8]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p8]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]*[p6]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]*[p6]",
 				},
 			},
@@ -9641,57 +4734,25 @@ return {
 			type = 2, -- isEmpty
 			locX = 416,
 			locY = 1155,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]+[p7]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p11]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p12]",
 				},
 			},
@@ -9702,48 +4763,21 @@ return {
 			type = 2, -- isEmpty
 			locX = 416,
 			locY = 1113,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p8]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p8]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]*[p6]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]*[p6]",
 				},
 			},
@@ -9754,39 +4788,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 736,
 			locY = 1071,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -9797,39 +4809,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 1184,
 			locY = 567,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p19]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p20]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -9840,93 +4830,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 480,
 			locY = 1323,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p21]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p22]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -9937,15 +4875,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1952,
 			locY = 483,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 235, -- number
@@ -9953,30 +4882,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 2016,
 			locY = 483,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p14]*[p5]+[p13]*[p6]*[p6]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p5]*[p14]*2",
 				},
 			},
@@ -9987,66 +4899,29 @@ return {
 			type = 2, -- isEmpty
 			locX = 1440,
 			locY = 1113,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p7]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p8]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p11]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p12]",
 				},
 			},
@@ -10057,93 +4932,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 608,
 			locY = 567,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p27]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p28]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -10154,15 +4977,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 544,
 			locY = 567,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 239, -- number
@@ -10170,21 +4984,9 @@ return {
 			type = 2, -- isEmpty
 			locX = 736,
 			locY = 567,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p4]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p4]*100+28",
 				},
 			},
@@ -10195,39 +4997,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 1504,
 			locY = 567,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -10238,93 +5018,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 672,
 			locY = 819,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p17]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p18]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -10335,30 +5063,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 2016,
 			locY = 903,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p46]*[p47]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p45]",
 				},
 			},
@@ -10369,93 +5080,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 992,
 			locY = 1323,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p13]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p14]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -10466,21 +5125,9 @@ return {
 			type = 2, -- isEmpty
 			locX = 288,
 			locY = 1071,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p4]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p4]*100+62",
 				},
 			},
@@ -10491,93 +5138,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 992,
 			locY = 1071,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p19]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p20]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -10588,66 +5183,29 @@ return {
 			type = 2, -- isEmpty
 			locX = 1184,
 			locY = 1365,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p7]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p8]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p11]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p12]",
 				},
 			},
@@ -10658,57 +5216,25 @@ return {
 			type = 2, -- isEmpty
 			locX = 736,
 			locY = 1155,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]+[p7]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p11]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p12]",
 				},
 			},
@@ -10719,48 +5245,21 @@ return {
 			type = 2, -- isEmpty
 			locX = 736,
 			locY = 1113,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p8]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p8]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]*[p6]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]*[p6]",
 				},
 			},
@@ -10771,39 +5270,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 1248,
 			locY = 567,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -10814,93 +5291,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 544,
 			locY = 1323,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p17]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p18]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -10911,93 +5336,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 928,
 			locY = 567,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p35]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p36]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -11008,57 +5381,25 @@ return {
 			type = 2, -- isEmpty
 			locX = 1504,
 			locY = 651,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]+[p7]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p11]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p12]",
 				},
 			},
@@ -11069,48 +5410,21 @@ return {
 			type = 2, -- isEmpty
 			locX = 1504,
 			locY = 609,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p8]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p8]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]*[p6]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]*[p6]",
 				},
 			},
@@ -11121,39 +5435,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 736,
 			locY = 819,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -11164,15 +5456,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 2016,
 			locY = 819,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 256, -- number
@@ -11180,39 +5463,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 1056,
 			locY = 1323,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -11223,15 +5484,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 352,
 			locY = 1071,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 258, -- number
@@ -11239,93 +5491,41 @@ return {
 			type = 2, -- isEmpty
 			locX = 1056,
 			locY = 1071,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p7]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p8]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p11]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p12]",
 				},
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -11336,66 +5536,29 @@ return {
 			type = 2, -- isEmpty
 			locX = 1248,
 			locY = 609,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p7]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p8]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p11]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p12]",
 				},
 			},
@@ -11406,39 +5569,17 @@ return {
 			type = 2, -- isEmpty
 			locX = 608,
 			locY = 1323,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p13]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p14]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 				{
 					index = "[p50]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -11449,30 +5590,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 992,
 			locY = 189,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*180*113",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*355",
 				},
 			},
@@ -11483,30 +5607,13 @@ return {
 			type = 2, -- isEmpty
 			locX = 1056,
 			locY = 189,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*9",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*10",
 				},
 			},
@@ -11517,57 +5624,25 @@ return {
 			type = 2, -- isEmpty
 			locX = 1056,
 			locY = 1407,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]+[p7]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p9]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p10]",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p11]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p12]",
 				},
 			},
@@ -11578,48 +5653,21 @@ return {
 			type = 2, -- isEmpty
 			locX = 1056,
 			locY = 1365,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*[p8]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]*[p8]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p7]*[p6]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p8]*[p6]",
 				},
 			},
@@ -11630,15 +5678,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1376,
 			locY = 189,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 266, -- number
@@ -11646,15 +5685,8 @@ return {
 			type = 0, -- undefined
 			locX = 1248,
 			locY = 273,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
 			texts = {
 				"<fix> Высота: {[p5] div [p6]}<clr>.<clrEnd>{((([p5]*100) div [p6]) mod 100)*(1-2*([p5]<0))} м</fix>\n<fix> Запас топлива: {[p7] div [p8]}<clr>.<clrEnd>{((([p7]*100) div [p8]) mod 100)*(1-2*([p7]<0))} кг</fix>\n<fix> Вертикальная скорость: {[p37] div [p38]}<clr>.<clrEnd>{((([p37]*100) div [p38]) mod 100)*(1-2*([p37]<0))} м/с</fix>\n<fix> -----------------------------</fix>\n<fix> Расход топлива: [p53] кг</fix>\n<fix> Время: [p54] с</fix>\n<fix> [d55]</fix>\n\n<clr>!!! Вы разбились !!!<clrEnd>\n",
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
 			},
 		},
 		{
@@ -11663,15 +5695,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1632,
 			locY = 273,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 268, -- number
@@ -11679,15 +5702,6 @@ return {
 			type = 2, -- isEmpty
 			locX = 1696,
 			locY = 273,
-			maxVisits = 0,
-			dayPassed = false,
-			isTextByFormula = false,
-			textSelectFormula = "",
-			texts = {
-			},
-			-- no media
-			paramsChanges = { -- amount: 56
-			},
 		},
 	},
 	jumps = {
@@ -11696,38 +5710,17 @@ return {
 			id = 450, -- jump [J450]
 			fromLocationId = 236, -- from[L236]
 			toLocationId = 239, -- to[L239]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Сегодня обойдёмся без полётов",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 2, -- number
 			id = 451, -- jump [J451]
 			fromLocationId = 236, -- from[L236]
 			toLocationId = 237, -- to[L237]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Деньги - ничто, жажда - всё",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p3]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -11737,31 +5730,15 @@ return {
 			id = 452, -- jump [J452]
 			fromLocationId = 236, -- from[L236]
 			toLocationId = 237, -- to[L237]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Идёт",
-			description = "",
 			formulaToPass = "[p2]>=500",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p2]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p2] - 500",
 				},
 				{
 					index = "[p3]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "500",
 				},
 			},
@@ -11771,31 +5748,16 @@ return {
 			id = 453, -- jump [J453]
 			fromLocationId = 236, -- from[L236]
 			toLocationId = 237, -- to[L237]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Спорим на тысячу",
 			description = "Мелко, Эдик, если спорить, то уж на все деньги!\n",
 			formulaToPass = "[p2]>=1000",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p2]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p2] - 1000",
 				},
 				{
 					index = "[p3]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1000",
 				},
 			},
@@ -11805,22 +5767,10 @@ return {
 			id = 458, -- jump [J458]
 			fromLocationId = 239, -- from[L239]
 			toLocationId = 240, -- to[L240]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Конечно присоединяйтесь",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p52]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 			},
@@ -11830,22 +5780,10 @@ return {
 			id = 459, -- jump [J459]
 			fromLocationId = 239, -- from[L239]
 			toLocationId = 240, -- to[L240]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Мы уже уходим, кофе всё равно нет",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p52]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "2",
 				},
 			},
@@ -11855,128 +5793,59 @@ return {
 			id = 454, -- jump [J454]
 			fromLocationId = 237, -- from[L237]
 			toLocationId = 238, -- to[L238]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Посмотрим что тут у нас",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 8, -- number
 			id = 460, -- jump [J460]
 			fromLocationId = 240, -- from[L240]
 			toLocationId = 241, -- to[L241]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Незнакомец встал и пошёл в дальний конец зала",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 9, -- number
 			id = 455, -- jump [J455]
 			fromLocationId = 238, -- from[L238]
 			toLocationId = 28, -- to[L28]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Полетели!",
-			description = "",
 			formulaToPass = "[p51]<10",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 10, -- number
 			id = 456, -- jump [J456]
 			fromLocationId = 238, -- from[L238]
 			toLocationId = 239, -- to[L239]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Хватит полётов на сегодня",
-			description = "",
 			formulaToPass = "[p51]>0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 11, -- number
 			id = 457, -- jump [J457]
 			fromLocationId = 238, -- from[L238]
 			toLocationId = 239, -- to[L239]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Обойдёмся без полётов сегодня",
 			description = "Согласно показаниям, погода была нелётная и я вернулся за столик.\n",
 			formulaToPass = "[p51]=0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 12, -- number
 			id = 461, -- jump [J461]
 			fromLocationId = 241, -- from[L241]
 			toLocationId = 242, -- to[L242]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Восемь чашек???",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 13, -- number
 			id = 174, -- jump [J174]
 			fromLocationId = 28, -- from[L28]
 			toLocationId = 29, -- to[L29]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 14, -- number
 			id = 462, -- jump [J462]
 			fromLocationId = 242, -- from[L242]
 			toLocationId = 243, -- to[L243]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Давайте полетим вместе",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 15, -- number
@@ -11984,85 +5853,38 @@ return {
 			fromLocationId = 29, -- from[L29]
 			toLocationId = 31, -- to[L31]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]<0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 16, -- number
 			id = 176, -- jump [J176]
 			fromLocationId = 29, -- from[L29]
 			toLocationId = 30, -- to[L30]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]>=0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 17, -- number
 			id = 463, -- jump [J463]
 			fromLocationId = 243, -- from[L243]
 			toLocationId = 244, -- to[L244]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Эдик поднял лицо",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 18, -- number
 			id = 178, -- jump [J178]
 			fromLocationId = 31, -- from[L31]
 			toLocationId = 32, -- to[L32]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p50]=0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 19, -- number
 			id = 179, -- jump [J179]
 			fromLocationId = 31, -- from[L31]
 			toLocationId = 33, -- to[L33]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p50]=1",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*10",
 				},
 			},
@@ -12072,22 +5894,10 @@ return {
 			id = 180, -- jump [J180]
 			fromLocationId = 31, -- from[L31]
 			toLocationId = 33, -- to[L33]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p50]=2",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -12097,80 +5907,32 @@ return {
 			id = 177, -- jump [J177]
 			fromLocationId = 30, -- from[L30]
 			toLocationId = 61, -- to[L61]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 22, -- number
 			id = 464, -- jump [J464]
 			fromLocationId = 244, -- from[L244]
 			toLocationId = 245, -- to[L245]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Это безумие! Я отказываюсь принимать в этом участие!",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 23, -- number
 			id = 465, -- jump [J465]
 			fromLocationId = 244, -- from[L244]
 			toLocationId = 246, -- to[L246]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Эдик, имей совесть",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 24, -- number
 			id = 181, -- jump [J181]
 			fromLocationId = 32, -- from[L32]
 			toLocationId = 33, -- to[L33]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 25, -- number
 			id = 182, -- jump [J182]
 			fromLocationId = 33, -- from[L33]
 			toLocationId = 34, -- to[L34]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 26, -- number
@@ -12178,69 +5940,30 @@ return {
 			fromLocationId = 61, -- from[L61]
 			toLocationId = 62, -- to[L62]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]=0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 27, -- number
 			id = 220, -- jump [J220]
 			fromLocationId = 61, -- from[L61]
 			toLocationId = 63, -- to[L63]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]<>0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 28, -- number
 			id = 466, -- jump [J466]
 			fromLocationId = 246, -- from[L246]
 			toLocationId = 247, -- to[L247]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Вдруг Коршунов захохотал!",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 29, -- number
 			id = 183, -- jump [J183]
 			fromLocationId = 34, -- from[L34]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+35",
 				},
 			},
@@ -12250,54 +5973,23 @@ return {
 			id = 221, -- jump [J221]
 			fromLocationId = 62, -- from[L62]
 			toLocationId = 85, -- to[L85]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 31, -- number
 			id = 222, -- jump [J222]
 			fromLocationId = 63, -- from[L63]
 			toLocationId = 64, -- to[L64]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p50]=0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 32, -- number
 			id = 223, -- jump [J223]
 			fromLocationId = 63, -- from[L63]
 			toLocationId = 65, -- to[L65]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p50]=1",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*10",
 				},
 			},
@@ -12307,22 +5999,10 @@ return {
 			id = 224, -- jump [J224]
 			fromLocationId = 63, -- from[L63]
 			toLocationId = 65, -- to[L65]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p50]=2",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -12332,47 +6012,22 @@ return {
 			id = 467, -- jump [J467]
 			fromLocationId = 247, -- from[L247]
 			toLocationId = 28, -- to[L28]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "но перед этим...",
 			description = "Предстояло перегнать наш лунолёт за <clr>250<clrEnd> км. в Море Спокойствия. Там мы собирались его дооборудовать, провести испытательные полёты и стартовать, наконец, к Земле.\n\nПилотировать аппарат предстояло мне, поскольку Коршунов остался улаживать юридические формальности.\n",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 35, -- number
 			id = 1, -- jump [J1]
 			fromLocationId = 1, -- from[L1]
 			toLocationId = 2, -- to[L2]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]>0",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p45]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p46]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 			},
@@ -12382,31 +6037,14 @@ return {
 			id = 2, -- jump [J2]
 			fromLocationId = 1, -- from[L1]
 			toLocationId = 2, -- to[L2]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]<0",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p45]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "-[p5]",
 				},
 				{
 					index = "[p46]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 			},
@@ -12417,21 +6055,10 @@ return {
 			fromLocationId = 1, -- from[L1]
 			toLocationId = 4, -- to[L4]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]=0",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 			},
@@ -12441,48 +6068,18 @@ return {
 			id = 250, -- jump [J250]
 			fromLocationId = 85, -- from[L85]
 			toLocationId = 248, -- to[L248]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 39, -- number
 			id = 225, -- jump [J225]
 			fromLocationId = 64, -- from[L64]
 			toLocationId = 65, -- to[L65]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 40, -- number
 			id = 226, -- jump [J226]
 			fromLocationId = 65, -- from[L65]
 			toLocationId = 66, -- to[L66]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 41, -- number
@@ -12490,21 +6087,10 @@ return {
 			fromLocationId = 2, -- from[L2]
 			toLocationId = 4, -- to[L4]
 			priority = 100.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>10 and [p46]>10000 and [p46]>[p45]",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p46]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p45]",
 				},
 			},
@@ -12515,21 +6101,10 @@ return {
 			fromLocationId = 2, -- from[L2]
 			toLocationId = 4, -- to[L4]
 			priority = 100.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>10000 and [p46]>10 and [p45]>[p46]",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p45]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p46]",
 				},
 			},
@@ -12539,22 +6114,10 @@ return {
 			id = 6, -- jump [J6]
 			fromLocationId = 2, -- from[L2]
 			toLocationId = 3, -- to[L3]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<[p46] and [p45]>0",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p46]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p46] mod [p45]",
 				},
 			},
@@ -12564,22 +6127,10 @@ return {
 			id = 7, -- jump [J7]
 			fromLocationId = 2, -- from[L2]
 			toLocationId = 3, -- to[L3]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>[p46] and [p46]>0",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p45]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p45] mod [p46]",
 				},
 			},
@@ -12590,15 +6141,7 @@ return {
 			fromLocationId = 2, -- from[L2]
 			toLocationId = 4, -- to[L4]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]=[p46] and [p45]>0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 46, -- number
@@ -12606,21 +6149,10 @@ return {
 			fromLocationId = 2, -- from[L2]
 			toLocationId = 4, -- to[L4]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]=0",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p45]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p46]",
 				},
 			},
@@ -12631,21 +6163,10 @@ return {
 			fromLocationId = 2, -- from[L2]
 			toLocationId = 4, -- to[L4]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p46]=0",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p46]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p45]",
 				},
 			},
@@ -12655,22 +6176,10 @@ return {
 			id = 12, -- jump [J12]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 9, -- to[L9]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=9",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -12680,22 +6189,10 @@ return {
 			id = 13, -- jump [J13]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 14, -- to[L14]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=14",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -12705,22 +6202,10 @@ return {
 			id = 14, -- jump [J14]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 14, -- to[L14]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=14",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -12730,22 +6215,10 @@ return {
 			id = 15, -- jump [J15]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 24, -- to[L24]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=24",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -12755,22 +6228,10 @@ return {
 			id = 16, -- jump [J16]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 35, -- to[L35]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=35",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -12780,22 +6241,10 @@ return {
 			id = 17, -- jump [J17]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 41, -- to[L41]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=41",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -12805,22 +6254,10 @@ return {
 			id = 18, -- jump [J18]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 47, -- to[L47]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=47",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -12830,22 +6267,10 @@ return {
 			id = 19, -- jump [J19]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 51, -- to[L51]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=51",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -12855,22 +6280,10 @@ return {
 			id = 20, -- jump [J20]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 56, -- to[L56]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=56",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -12880,22 +6293,10 @@ return {
 			id = 21, -- jump [J21]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 71, -- to[L71]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=71",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -12905,22 +6306,10 @@ return {
 			id = 22, -- jump [J22]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 91, -- to[L91]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=91",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -12930,22 +6319,10 @@ return {
 			id = 23, -- jump [J23]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 100, -- to[L100]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=100",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -12955,22 +6332,10 @@ return {
 			id = 24, -- jump [J24]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 105, -- to[L105]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=105",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -12980,22 +6345,10 @@ return {
 			id = 25, -- jump [J25]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 110, -- to[L110]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=110",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -13005,22 +6358,10 @@ return {
 			id = 26, -- jump [J26]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 118, -- to[L118]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=118",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -13030,22 +6371,10 @@ return {
 			id = 27, -- jump [J27]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 118, -- to[L118]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=118",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -13055,22 +6384,10 @@ return {
 			id = 28, -- jump [J28]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 119, -- to[L119]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=119",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -13080,22 +6397,10 @@ return {
 			id = 29, -- jump [J29]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 121, -- to[L121]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=121",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -13105,22 +6410,10 @@ return {
 			id = 30, -- jump [J30]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 126, -- to[L126]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=126",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -13130,22 +6423,10 @@ return {
 			id = 31, -- jump [J31]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 133, -- to[L133]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=133",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -13155,22 +6436,10 @@ return {
 			id = 32, -- jump [J32]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 142, -- to[L142]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=142",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -13180,22 +6449,10 @@ return {
 			id = 33, -- jump [J33]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 153, -- to[L153]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=153",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -13205,22 +6462,10 @@ return {
 			id = 34, -- jump [J34]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 163, -- to[L163]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=163",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -13230,22 +6475,10 @@ return {
 			id = 35, -- jump [J35]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 171, -- to[L171]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=171",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -13255,22 +6488,10 @@ return {
 			id = 36, -- jump [J36]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 177, -- to[L177]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=177",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -13280,22 +6501,10 @@ return {
 			id = 37, -- jump [J37]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 186, -- to[L186]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=186",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -13305,22 +6514,10 @@ return {
 			id = 38, -- jump [J38]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 196, -- to[L196]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=196",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -13330,22 +6527,10 @@ return {
 			id = 39, -- jump [J39]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 196, -- to[L196]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=196",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -13355,22 +6540,10 @@ return {
 			id = 40, -- jump [J40]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 197, -- to[L197]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=197",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -13380,22 +6553,10 @@ return {
 			id = 41, -- jump [J41]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 199, -- to[L199]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=199",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -13405,22 +6566,10 @@ return {
 			id = 42, -- jump [J42]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 205, -- to[L205]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=205",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -13430,22 +6579,10 @@ return {
 			id = 43, -- jump [J43]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 209, -- to[L209]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=209",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -13455,22 +6592,10 @@ return {
 			id = 44, -- jump [J44]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 218, -- to[L218]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=218",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -13480,22 +6605,10 @@ return {
 			id = 45, -- jump [J45]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 226, -- to[L226]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=226",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -13505,22 +6618,10 @@ return {
 			id = 46, -- jump [J46]
 			fromLocationId = 4, -- from[L4]
 			toLocationId = 231, -- to[L231]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=231",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -13530,112 +6631,47 @@ return {
 			id = 468, -- jump [J468]
 			fromLocationId = 248, -- from[L248]
 			toLocationId = 250, -- to[L250]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p4]=32 and [p56]=0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 84, -- number
 			id = 469, -- jump [J469]
 			fromLocationId = 248, -- from[L248]
 			toLocationId = 259, -- to[L259]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p4]=32 and [p56]>0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 85, -- number
 			id = 470, -- jump [J470]
 			fromLocationId = 248, -- from[L248]
 			toLocationId = 249, -- to[L249]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p4]=28",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 86, -- number
 			id = 227, -- jump [J227]
 			fromLocationId = 66, -- from[L66]
 			toLocationId = 67, -- to[L67]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 87, -- number
 			id = 11, -- jump [J11]
 			fromLocationId = 3, -- from[L3]
 			toLocationId = 2, -- to[L2]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 88, -- number
 			id = 52, -- jump [J52]
 			fromLocationId = 9, -- from[L9]
 			toLocationId = 10, -- to[L10]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 89, -- number
 			id = 53, -- jump [J53]
 			fromLocationId = 9, -- from[L9]
 			toLocationId = 11, -- to[L11]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<2",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 90, -- number
@@ -13643,30 +6679,14 @@ return {
 			fromLocationId = 14, -- from[L14]
 			toLocationId = 15, -- to[L15]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5] div [p45]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6] div [p45]",
 				},
 			},
@@ -13676,64 +6696,28 @@ return {
 			id = 93, -- jump [J93]
 			fromLocationId = 14, -- from[L14]
 			toLocationId = 15, -- to[L15]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 92, -- number
 			id = 139, -- jump [J139]
 			fromLocationId = 24, -- from[L24]
 			toLocationId = 25, -- to[L25]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 93, -- number
 			id = 140, -- jump [J140]
 			fromLocationId = 24, -- from[L24]
 			toLocationId = 26, -- to[L26]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<2",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 94, -- number
 			id = 184, -- jump [J184]
 			fromLocationId = 35, -- from[L35]
 			toLocationId = 37, -- to[L37]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 95, -- number
@@ -13741,31 +6725,14 @@ return {
 			fromLocationId = 35, -- from[L35]
 			toLocationId = 36, -- to[L36]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 96, -- number
 			id = 191, -- jump [J191]
 			fromLocationId = 41, -- from[L41]
 			toLocationId = 43, -- to[L43]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 97, -- number
@@ -13773,31 +6740,14 @@ return {
 			fromLocationId = 41, -- from[L41]
 			toLocationId = 42, -- to[L42]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 98, -- number
 			id = 199, -- jump [J199]
 			fromLocationId = 47, -- from[L47]
 			toLocationId = 49, -- to[L49]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 99, -- number
@@ -13805,47 +6755,20 @@ return {
 			fromLocationId = 47, -- from[L47]
 			toLocationId = 48, -- to[L48]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 100, -- number
 			id = 207, -- jump [J207]
 			fromLocationId = 51, -- from[L51]
 			toLocationId = 52, -- to[L52]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 101, -- number
 			id = 213, -- jump [J213]
 			fromLocationId = 56, -- from[L56]
 			toLocationId = 58, -- to[L58]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 102, -- number
@@ -13853,31 +6776,14 @@ return {
 			fromLocationId = 56, -- from[L56]
 			toLocationId = 57, -- to[L57]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 103, -- number
 			id = 233, -- jump [J233]
 			fromLocationId = 71, -- from[L71]
 			toLocationId = 73, -- to[L73]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 104, -- number
@@ -13885,31 +6791,14 @@ return {
 			fromLocationId = 71, -- from[L71]
 			toLocationId = 72, -- to[L72]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 105, -- number
 			id = 258, -- jump [J258]
 			fromLocationId = 91, -- from[L91]
 			toLocationId = 93, -- to[L93]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 106, -- number
@@ -13917,31 +6806,14 @@ return {
 			fromLocationId = 91, -- from[L91]
 			toLocationId = 92, -- to[L92]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 107, -- number
 			id = 269, -- jump [J269]
 			fromLocationId = 100, -- from[L100]
 			toLocationId = 102, -- to[L102]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 108, -- number
@@ -13949,31 +6821,14 @@ return {
 			fromLocationId = 100, -- from[L100]
 			toLocationId = 101, -- to[L101]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 109, -- number
 			id = 277, -- jump [J277]
 			fromLocationId = 105, -- from[L105]
 			toLocationId = 107, -- to[L107]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 110, -- number
@@ -13981,31 +6836,14 @@ return {
 			fromLocationId = 105, -- from[L105]
 			toLocationId = 106, -- to[L106]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 111, -- number
 			id = 283, -- jump [J283]
 			fromLocationId = 110, -- from[L110]
 			toLocationId = 112, -- to[L112]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 112, -- number
@@ -14013,37 +6851,16 @@ return {
 			fromLocationId = 110, -- from[L110]
 			toLocationId = 111, -- to[L111]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 113, -- number
 			id = 294, -- jump [J294]
 			fromLocationId = 118, -- from[L118]
 			toLocationId = 17, -- to[L17]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+119",
 				},
 			},
@@ -14053,32 +6870,13 @@ return {
 			id = 295, -- jump [J295]
 			fromLocationId = 119, -- from[L119]
 			toLocationId = 120, -- to[L120]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 115, -- number
 			id = 297, -- jump [J297]
 			fromLocationId = 121, -- from[L121]
 			toLocationId = 123, -- to[L123]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 116, -- number
@@ -14086,31 +6884,14 @@ return {
 			fromLocationId = 121, -- from[L121]
 			toLocationId = 122, -- to[L122]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 117, -- number
 			id = 303, -- jump [J303]
 			fromLocationId = 126, -- from[L126]
 			toLocationId = 128, -- to[L128]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 118, -- number
@@ -14118,31 +6899,14 @@ return {
 			fromLocationId = 126, -- from[L126]
 			toLocationId = 127, -- to[L127]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 119, -- number
 			id = 312, -- jump [J312]
 			fromLocationId = 133, -- from[L133]
 			toLocationId = 135, -- to[L135]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 120, -- number
@@ -14150,31 +6914,14 @@ return {
 			fromLocationId = 133, -- from[L133]
 			toLocationId = 134, -- to[L134]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 121, -- number
 			id = 323, -- jump [J323]
 			fromLocationId = 142, -- from[L142]
 			toLocationId = 144, -- to[L144]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 122, -- number
@@ -14182,31 +6929,14 @@ return {
 			fromLocationId = 142, -- from[L142]
 			toLocationId = 143, -- to[L143]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 123, -- number
 			id = 336, -- jump [J336]
 			fromLocationId = 153, -- from[L153]
 			toLocationId = 155, -- to[L155]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 124, -- number
@@ -14214,31 +6944,14 @@ return {
 			fromLocationId = 153, -- from[L153]
 			toLocationId = 154, -- to[L154]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 125, -- number
 			id = 348, -- jump [J348]
 			fromLocationId = 163, -- from[L163]
 			toLocationId = 165, -- to[L165]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 126, -- number
@@ -14246,31 +6959,14 @@ return {
 			fromLocationId = 163, -- from[L163]
 			toLocationId = 164, -- to[L164]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 127, -- number
 			id = 357, -- jump [J357]
 			fromLocationId = 171, -- from[L171]
 			toLocationId = 173, -- to[L173]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 128, -- number
@@ -14278,31 +6974,14 @@ return {
 			fromLocationId = 171, -- from[L171]
 			toLocationId = 172, -- to[L172]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 129, -- number
 			id = 365, -- jump [J365]
 			fromLocationId = 177, -- from[L177]
 			toLocationId = 179, -- to[L179]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 130, -- number
@@ -14310,31 +6989,14 @@ return {
 			fromLocationId = 177, -- from[L177]
 			toLocationId = 178, -- to[L178]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 131, -- number
 			id = 378, -- jump [J378]
 			fromLocationId = 186, -- from[L186]
 			toLocationId = 188, -- to[L188]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 132, -- number
@@ -14342,37 +7004,16 @@ return {
 			fromLocationId = 186, -- from[L186]
 			toLocationId = 187, -- to[L187]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 133, -- number
 			id = 391, -- jump [J391]
 			fromLocationId = 196, -- from[L196]
 			toLocationId = 16, -- to[L16]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+197",
 				},
 			},
@@ -14382,32 +7023,13 @@ return {
 			id = 392, -- jump [J392]
 			fromLocationId = 197, -- from[L197]
 			toLocationId = 198, -- to[L198]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 135, -- number
 			id = 394, -- jump [J394]
 			fromLocationId = 199, -- from[L199]
 			toLocationId = 201, -- to[L201]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 136, -- number
@@ -14415,31 +7037,14 @@ return {
 			fromLocationId = 199, -- from[L199]
 			toLocationId = 200, -- to[L200]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 137, -- number
 			id = 402, -- jump [J402]
 			fromLocationId = 205, -- from[L205]
 			toLocationId = 207, -- to[L207]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 138, -- number
@@ -14447,31 +7052,14 @@ return {
 			fromLocationId = 205, -- from[L205]
 			toLocationId = 206, -- to[L206]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 139, -- number
 			id = 407, -- jump [J407]
 			fromLocationId = 209, -- from[L209]
 			toLocationId = 211, -- to[L211]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 140, -- number
@@ -14479,31 +7067,14 @@ return {
 			fromLocationId = 209, -- from[L209]
 			toLocationId = 210, -- to[L210]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 141, -- number
 			id = 421, -- jump [J421]
 			fromLocationId = 218, -- from[L218]
 			toLocationId = 220, -- to[L220]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 142, -- number
@@ -14511,31 +7082,14 @@ return {
 			fromLocationId = 218, -- from[L218]
 			toLocationId = 219, -- to[L219]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 143, -- number
 			id = 434, -- jump [J434]
 			fromLocationId = 226, -- from[L226]
 			toLocationId = 228, -- to[L228]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 144, -- number
@@ -14543,31 +7097,14 @@ return {
 			fromLocationId = 226, -- from[L226]
 			toLocationId = 227, -- to[L227]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 145, -- number
 			id = 440, -- jump [J440]
 			fromLocationId = 231, -- from[L231]
 			toLocationId = 233, -- to[L233]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 146, -- number
@@ -14575,15 +7112,7 @@ return {
 			fromLocationId = 231, -- from[L231]
 			toLocationId = 232, -- to[L232]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 147, -- number
@@ -14591,15 +7120,7 @@ return {
 			fromLocationId = 250, -- from[L250]
 			toLocationId = 251, -- to[L251]
 			priority = 100.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]<[p6] and -[p37]<5*[p38]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 148, -- number
@@ -14607,31 +7128,13 @@ return {
 			fromLocationId = 250, -- from[L250]
 			toLocationId = 252, -- to[L252]
 			priority = 50.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]<[p6] and -[p37]>=5*[p38]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 149, -- number
 			id = 474, -- jump [J474]
 			fromLocationId = 250, -- from[L250]
 			toLocationId = 253, -- to[L253]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 150, -- number
@@ -14639,15 +7142,7 @@ return {
 			fromLocationId = 259, -- from[L259]
 			toLocationId = 260, -- to[L260]
 			priority = 100.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]<[p6] and [p56]=2 and -[p37]<5*[p38] and -[p15]<5*[p16] and [p15]<5*[p16] and [p39]<10*[p40] and -[p39]<10*[p40]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 151, -- number
@@ -14655,15 +7150,7 @@ return {
 			fromLocationId = 259, -- from[L259]
 			toLocationId = 261, -- to[L261]
 			priority = 90.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]<[p6] and [p56]=2 and -[p37]<5*[p38] and -[p15]<5*[p16] and [p15]<5*[p16] and ([p39]>=10*[p40] or -[p39]>=10*[p40])",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 152, -- number
@@ -14671,15 +7158,7 @@ return {
 			fromLocationId = 259, -- from[L259]
 			toLocationId = 262, -- to[L262]
 			priority = 50.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]<[p6] and (-[p37]>=5*[p38] or -[p15]>=5*[p16] or [p15]>=5*[p16])",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 153, -- number
@@ -14687,21 +7166,10 @@ return {
 			fromLocationId = 259, -- from[L259]
 			toLocationId = 263, -- to[L263]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]>=50*[p6] and [p56]<2",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p56]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "2",
 				},
 			},
@@ -14711,86 +7179,35 @@ return {
 			id = 499, -- jump [J499]
 			fromLocationId = 259, -- from[L259]
 			toLocationId = 263, -- to[L263]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 155, -- number
 			id = 471, -- jump [J471]
 			fromLocationId = 249, -- from[L249]
 			toLocationId = 235, -- to[L235]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Прийти в себя",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 156, -- number
 			id = 228, -- jump [J228]
 			fromLocationId = 67, -- from[L67]
 			toLocationId = 68, -- to[L68]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 157, -- number
 			id = 54, -- jump [J54]
 			fromLocationId = 10, -- from[L10]
 			toLocationId = 11, -- to[L11]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 158, -- number
 			id = 55, -- jump [J55]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 9, -- to[L9]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=9",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -14800,22 +7217,10 @@ return {
 			id = 56, -- jump [J56]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 14, -- to[L14]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=14",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -14825,22 +7230,10 @@ return {
 			id = 57, -- jump [J57]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 14, -- to[L14]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=14",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -14850,22 +7243,10 @@ return {
 			id = 58, -- jump [J58]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 24, -- to[L24]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=24",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -14875,22 +7256,10 @@ return {
 			id = 59, -- jump [J59]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 35, -- to[L35]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=35",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -14900,22 +7269,10 @@ return {
 			id = 60, -- jump [J60]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 41, -- to[L41]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=41",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -14925,22 +7282,10 @@ return {
 			id = 61, -- jump [J61]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 47, -- to[L47]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=47",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -14950,22 +7295,10 @@ return {
 			id = 62, -- jump [J62]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 51, -- to[L51]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=51",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -14975,22 +7308,10 @@ return {
 			id = 63, -- jump [J63]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 56, -- to[L56]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=56",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15000,22 +7321,10 @@ return {
 			id = 64, -- jump [J64]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 71, -- to[L71]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=71",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15025,22 +7334,10 @@ return {
 			id = 65, -- jump [J65]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 91, -- to[L91]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=91",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15050,22 +7347,10 @@ return {
 			id = 66, -- jump [J66]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 100, -- to[L100]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=100",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15075,22 +7360,10 @@ return {
 			id = 67, -- jump [J67]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 105, -- to[L105]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=105",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15100,22 +7373,10 @@ return {
 			id = 68, -- jump [J68]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 110, -- to[L110]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=110",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15125,22 +7386,10 @@ return {
 			id = 69, -- jump [J69]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 118, -- to[L118]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=118",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15150,22 +7399,10 @@ return {
 			id = 70, -- jump [J70]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 118, -- to[L118]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=118",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15175,22 +7412,10 @@ return {
 			id = 71, -- jump [J71]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 119, -- to[L119]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=119",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15200,22 +7425,10 @@ return {
 			id = 72, -- jump [J72]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 121, -- to[L121]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=121",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15225,22 +7438,10 @@ return {
 			id = 73, -- jump [J73]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 126, -- to[L126]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=126",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15250,22 +7451,10 @@ return {
 			id = 74, -- jump [J74]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 133, -- to[L133]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=133",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15275,22 +7464,10 @@ return {
 			id = 75, -- jump [J75]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 142, -- to[L142]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=142",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15300,22 +7477,10 @@ return {
 			id = 76, -- jump [J76]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 153, -- to[L153]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=153",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15325,22 +7490,10 @@ return {
 			id = 77, -- jump [J77]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 163, -- to[L163]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=163",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15350,22 +7503,10 @@ return {
 			id = 78, -- jump [J78]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 171, -- to[L171]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=171",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15375,22 +7516,10 @@ return {
 			id = 79, -- jump [J79]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 177, -- to[L177]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=177",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15400,22 +7529,10 @@ return {
 			id = 80, -- jump [J80]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 186, -- to[L186]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=186",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15425,22 +7542,10 @@ return {
 			id = 81, -- jump [J81]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 196, -- to[L196]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=196",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15450,22 +7555,10 @@ return {
 			id = 82, -- jump [J82]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 196, -- to[L196]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=196",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15475,22 +7568,10 @@ return {
 			id = 83, -- jump [J83]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 197, -- to[L197]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=197",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15500,22 +7581,10 @@ return {
 			id = 84, -- jump [J84]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 199, -- to[L199]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=199",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15525,22 +7594,10 @@ return {
 			id = 85, -- jump [J85]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 205, -- to[L205]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=205",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15550,22 +7607,10 @@ return {
 			id = 86, -- jump [J86]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 209, -- to[L209]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=209",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15575,22 +7620,10 @@ return {
 			id = 87, -- jump [J87]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 218, -- to[L218]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=218",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15600,22 +7633,10 @@ return {
 			id = 88, -- jump [J88]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 226, -- to[L226]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=226",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15625,22 +7646,10 @@ return {
 			id = 89, -- jump [J89]
 			fromLocationId = 11, -- from[L11]
 			toLocationId = 231, -- to[L231]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=231",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15650,22 +7659,10 @@ return {
 			id = 94, -- jump [J94]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 14, -- to[L14]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=14",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15675,22 +7672,10 @@ return {
 			id = 95, -- jump [J95]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 14, -- to[L14]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=14",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15700,22 +7685,10 @@ return {
 			id = 96, -- jump [J96]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 24, -- to[L24]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=24",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15725,22 +7698,10 @@ return {
 			id = 97, -- jump [J97]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 35, -- to[L35]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=35",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15750,22 +7711,10 @@ return {
 			id = 98, -- jump [J98]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 41, -- to[L41]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=41",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15775,22 +7724,10 @@ return {
 			id = 99, -- jump [J99]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 47, -- to[L47]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=47",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15800,22 +7737,10 @@ return {
 			id = 100, -- jump [J100]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 51, -- to[L51]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=51",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15825,22 +7750,10 @@ return {
 			id = 101, -- jump [J101]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 56, -- to[L56]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=56",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15850,22 +7763,10 @@ return {
 			id = 102, -- jump [J102]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 71, -- to[L71]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=71",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15875,22 +7776,10 @@ return {
 			id = 103, -- jump [J103]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 91, -- to[L91]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=91",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15900,22 +7789,10 @@ return {
 			id = 104, -- jump [J104]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 100, -- to[L100]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=100",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15925,22 +7802,10 @@ return {
 			id = 105, -- jump [J105]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 105, -- to[L105]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=105",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15950,22 +7815,10 @@ return {
 			id = 106, -- jump [J106]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 110, -- to[L110]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=110",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -15975,22 +7828,10 @@ return {
 			id = 107, -- jump [J107]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 118, -- to[L118]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=118",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16000,22 +7841,10 @@ return {
 			id = 108, -- jump [J108]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 118, -- to[L118]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=118",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16025,22 +7854,10 @@ return {
 			id = 109, -- jump [J109]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 119, -- to[L119]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=119",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16050,22 +7867,10 @@ return {
 			id = 110, -- jump [J110]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 121, -- to[L121]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=121",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16075,22 +7880,10 @@ return {
 			id = 111, -- jump [J111]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 126, -- to[L126]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=126",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16100,22 +7893,10 @@ return {
 			id = 112, -- jump [J112]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 133, -- to[L133]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=133",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16125,22 +7906,10 @@ return {
 			id = 113, -- jump [J113]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 142, -- to[L142]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=142",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16150,22 +7919,10 @@ return {
 			id = 114, -- jump [J114]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 153, -- to[L153]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=153",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16175,22 +7932,10 @@ return {
 			id = 115, -- jump [J115]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 163, -- to[L163]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=163",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16200,22 +7945,10 @@ return {
 			id = 116, -- jump [J116]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 171, -- to[L171]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=171",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16225,22 +7958,10 @@ return {
 			id = 117, -- jump [J117]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 177, -- to[L177]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=177",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16250,22 +7971,10 @@ return {
 			id = 118, -- jump [J118]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 186, -- to[L186]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=186",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16275,22 +7984,10 @@ return {
 			id = 119, -- jump [J119]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 196, -- to[L196]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=196",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16300,22 +7997,10 @@ return {
 			id = 120, -- jump [J120]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 196, -- to[L196]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=196",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16325,22 +8010,10 @@ return {
 			id = 121, -- jump [J121]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 197, -- to[L197]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=197",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16350,22 +8023,10 @@ return {
 			id = 122, -- jump [J122]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 199, -- to[L199]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=199",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16375,22 +8036,10 @@ return {
 			id = 123, -- jump [J123]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 205, -- to[L205]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=205",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16400,22 +8049,10 @@ return {
 			id = 124, -- jump [J124]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 209, -- to[L209]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=209",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16425,22 +8062,10 @@ return {
 			id = 125, -- jump [J125]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 218, -- to[L218]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=218",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16450,22 +8075,10 @@ return {
 			id = 126, -- jump [J126]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 226, -- to[L226]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=226",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16475,22 +8088,10 @@ return {
 			id = 127, -- jump [J127]
 			fromLocationId = 15, -- from[L15]
 			toLocationId = 231, -- to[L231]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=231",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16500,38 +8101,16 @@ return {
 			id = 141, -- jump [J141]
 			fromLocationId = 25, -- from[L25]
 			toLocationId = 26, -- to[L26]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 228, -- number
 			id = 142, -- jump [J142]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 24, -- to[L24]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=24",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16541,22 +8120,10 @@ return {
 			id = 143, -- jump [J143]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 35, -- to[L35]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=35",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16566,22 +8133,10 @@ return {
 			id = 144, -- jump [J144]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 41, -- to[L41]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=41",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16591,22 +8146,10 @@ return {
 			id = 145, -- jump [J145]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 47, -- to[L47]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=47",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16616,22 +8159,10 @@ return {
 			id = 146, -- jump [J146]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 51, -- to[L51]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=51",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16641,22 +8172,10 @@ return {
 			id = 147, -- jump [J147]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 56, -- to[L56]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=56",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16666,22 +8185,10 @@ return {
 			id = 148, -- jump [J148]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 71, -- to[L71]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=71",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16691,22 +8198,10 @@ return {
 			id = 149, -- jump [J149]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 91, -- to[L91]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=91",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16716,22 +8211,10 @@ return {
 			id = 150, -- jump [J150]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 100, -- to[L100]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=100",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16741,22 +8224,10 @@ return {
 			id = 151, -- jump [J151]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 105, -- to[L105]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=105",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16766,22 +8237,10 @@ return {
 			id = 152, -- jump [J152]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 110, -- to[L110]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=110",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16791,22 +8250,10 @@ return {
 			id = 153, -- jump [J153]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 118, -- to[L118]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=118",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16816,22 +8263,10 @@ return {
 			id = 154, -- jump [J154]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 118, -- to[L118]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=118",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16841,22 +8276,10 @@ return {
 			id = 155, -- jump [J155]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 119, -- to[L119]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=119",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16866,22 +8289,10 @@ return {
 			id = 156, -- jump [J156]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 121, -- to[L121]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=121",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16891,22 +8302,10 @@ return {
 			id = 157, -- jump [J157]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 126, -- to[L126]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=126",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16916,22 +8315,10 @@ return {
 			id = 158, -- jump [J158]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 133, -- to[L133]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=133",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16941,22 +8328,10 @@ return {
 			id = 159, -- jump [J159]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 142, -- to[L142]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=142",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16966,22 +8341,10 @@ return {
 			id = 160, -- jump [J160]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 153, -- to[L153]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=153",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -16991,22 +8354,10 @@ return {
 			id = 161, -- jump [J161]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 163, -- to[L163]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=163",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -17016,22 +8367,10 @@ return {
 			id = 162, -- jump [J162]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 171, -- to[L171]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=171",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -17041,22 +8380,10 @@ return {
 			id = 163, -- jump [J163]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 177, -- to[L177]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=177",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -17066,22 +8393,10 @@ return {
 			id = 164, -- jump [J164]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 186, -- to[L186]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=186",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -17091,22 +8406,10 @@ return {
 			id = 165, -- jump [J165]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 196, -- to[L196]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=196",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -17116,22 +8419,10 @@ return {
 			id = 166, -- jump [J166]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 196, -- to[L196]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=196",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -17141,22 +8432,10 @@ return {
 			id = 167, -- jump [J167]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 197, -- to[L197]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=197",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -17166,22 +8445,10 @@ return {
 			id = 168, -- jump [J168]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 199, -- to[L199]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=199",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -17191,22 +8458,10 @@ return {
 			id = 169, -- jump [J169]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 205, -- to[L205]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=205",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -17216,22 +8471,10 @@ return {
 			id = 170, -- jump [J170]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 209, -- to[L209]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=209",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -17241,22 +8484,10 @@ return {
 			id = 171, -- jump [J171]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 218, -- to[L218]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=218",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -17266,22 +8497,10 @@ return {
 			id = 172, -- jump [J172]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 226, -- to[L226]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=226",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -17291,22 +8510,10 @@ return {
 			id = 173, -- jump [J173]
 			fromLocationId = 26, -- from[L26]
 			toLocationId = 231, -- to[L231]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "([p1] mod 256)=231",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1] div 256",
 				},
 			},
@@ -17316,304 +8523,114 @@ return {
 			id = 187, -- jump [J187]
 			fromLocationId = 37, -- from[L37]
 			toLocationId = 38, -- to[L38]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 261, -- number
 			id = 186, -- jump [J186]
 			fromLocationId = 36, -- from[L36]
 			toLocationId = 37, -- to[L37]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 262, -- number
 			id = 194, -- jump [J194]
 			fromLocationId = 43, -- from[L43]
 			toLocationId = 44, -- to[L44]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 263, -- number
 			id = 193, -- jump [J193]
 			fromLocationId = 42, -- from[L42]
 			toLocationId = 43, -- to[L43]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 264, -- number
 			id = 202, -- jump [J202]
 			fromLocationId = 49, -- from[L49]
 			toLocationId = 50, -- to[L50]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 265, -- number
 			id = 201, -- jump [J201]
 			fromLocationId = 48, -- from[L48]
 			toLocationId = 49, -- to[L49]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 266, -- number
 			id = 208, -- jump [J208]
 			fromLocationId = 52, -- from[L52]
 			toLocationId = 53, -- to[L53]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 267, -- number
 			id = 216, -- jump [J216]
 			fromLocationId = 58, -- from[L58]
 			toLocationId = 59, -- to[L59]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 268, -- number
 			id = 215, -- jump [J215]
 			fromLocationId = 57, -- from[L57]
 			toLocationId = 58, -- to[L58]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 269, -- number
 			id = 236, -- jump [J236]
 			fromLocationId = 73, -- from[L73]
 			toLocationId = 74, -- to[L74]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 270, -- number
 			id = 235, -- jump [J235]
 			fromLocationId = 72, -- from[L72]
 			toLocationId = 73, -- to[L73]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 271, -- number
 			id = 261, -- jump [J261]
 			fromLocationId = 93, -- from[L93]
 			toLocationId = 94, -- to[L94]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 272, -- number
 			id = 260, -- jump [J260]
 			fromLocationId = 92, -- from[L92]
 			toLocationId = 93, -- to[L93]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 273, -- number
 			id = 272, -- jump [J272]
 			fromLocationId = 102, -- from[L102]
 			toLocationId = 103, -- to[L103]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 274, -- number
 			id = 271, -- jump [J271]
 			fromLocationId = 101, -- from[L101]
 			toLocationId = 102, -- to[L102]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 275, -- number
 			id = 280, -- jump [J280]
 			fromLocationId = 107, -- from[L107]
 			toLocationId = 108, -- to[L108]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 276, -- number
 			id = 279, -- jump [J279]
 			fromLocationId = 106, -- from[L106]
 			toLocationId = 107, -- to[L107]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 277, -- number
 			id = 286, -- jump [J286]
 			fromLocationId = 112, -- from[L112]
 			toLocationId = 113, -- to[L113]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 278, -- number
 			id = 285, -- jump [J285]
 			fromLocationId = 111, -- from[L111]
 			toLocationId = 112, -- to[L112]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 279, -- number
@@ -17621,21 +8638,10 @@ return {
 			fromLocationId = 17, -- from[L17]
 			toLocationId = 18, -- to[L18]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]>360*[p6]",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]-360*[p6]",
 				},
 			},
@@ -17646,21 +8652,10 @@ return {
 			fromLocationId = 17, -- from[L17]
 			toLocationId = 18, -- to[L18]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]<0",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]+360*[p6]",
 				},
 			},
@@ -17670,38 +8665,16 @@ return {
 			id = 131, -- jump [J131]
 			fromLocationId = 17, -- from[L17]
 			toLocationId = 19, -- to[L19]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]>=0 and [p5]<=360*[p6]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 282, -- number
 			id = 296, -- jump [J296]
 			fromLocationId = 120, -- from[L120]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+121",
 				},
 			},
@@ -17711,326 +8684,123 @@ return {
 			id = 300, -- jump [J300]
 			fromLocationId = 123, -- from[L123]
 			toLocationId = 124, -- to[L124]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 284, -- number
 			id = 299, -- jump [J299]
 			fromLocationId = 122, -- from[L122]
 			toLocationId = 123, -- to[L123]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 285, -- number
 			id = 306, -- jump [J306]
 			fromLocationId = 128, -- from[L128]
 			toLocationId = 129, -- to[L129]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 286, -- number
 			id = 305, -- jump [J305]
 			fromLocationId = 127, -- from[L127]
 			toLocationId = 128, -- to[L128]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 287, -- number
 			id = 315, -- jump [J315]
 			fromLocationId = 135, -- from[L135]
 			toLocationId = 136, -- to[L136]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 288, -- number
 			id = 314, -- jump [J314]
 			fromLocationId = 134, -- from[L134]
 			toLocationId = 135, -- to[L135]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 289, -- number
 			id = 326, -- jump [J326]
 			fromLocationId = 144, -- from[L144]
 			toLocationId = 145, -- to[L145]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 290, -- number
 			id = 325, -- jump [J325]
 			fromLocationId = 143, -- from[L143]
 			toLocationId = 144, -- to[L144]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 291, -- number
 			id = 339, -- jump [J339]
 			fromLocationId = 155, -- from[L155]
 			toLocationId = 156, -- to[L156]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 292, -- number
 			id = 338, -- jump [J338]
 			fromLocationId = 154, -- from[L154]
 			toLocationId = 155, -- to[L155]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 293, -- number
 			id = 351, -- jump [J351]
 			fromLocationId = 165, -- from[L165]
 			toLocationId = 166, -- to[L166]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 294, -- number
 			id = 350, -- jump [J350]
 			fromLocationId = 164, -- from[L164]
 			toLocationId = 165, -- to[L165]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 295, -- number
 			id = 360, -- jump [J360]
 			fromLocationId = 173, -- from[L173]
 			toLocationId = 174, -- to[L174]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 296, -- number
 			id = 359, -- jump [J359]
 			fromLocationId = 172, -- from[L172]
 			toLocationId = 173, -- to[L173]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 297, -- number
 			id = 368, -- jump [J368]
 			fromLocationId = 179, -- from[L179]
 			toLocationId = 180, -- to[L180]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 298, -- number
 			id = 367, -- jump [J367]
 			fromLocationId = 178, -- from[L178]
 			toLocationId = 179, -- to[L179]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 299, -- number
 			id = 381, -- jump [J381]
 			fromLocationId = 188, -- from[L188]
 			toLocationId = 189, -- to[L189]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 300, -- number
 			id = 380, -- jump [J380]
 			fromLocationId = 187, -- from[L187]
 			toLocationId = 188, -- to[L188]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 301, -- number
 			id = 128, -- jump [J128]
 			fromLocationId = 16, -- from[L16]
 			toLocationId = 17, -- to[L17]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 302, -- number
 			id = 393, -- jump [J393]
 			fromLocationId = 198, -- from[L198]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+199",
 				},
 			},
@@ -18040,214 +8810,82 @@ return {
 			id = 397, -- jump [J397]
 			fromLocationId = 201, -- from[L201]
 			toLocationId = 202, -- to[L202]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 304, -- number
 			id = 396, -- jump [J396]
 			fromLocationId = 200, -- from[L200]
 			toLocationId = 201, -- to[L201]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 305, -- number
 			id = 405, -- jump [J405]
 			fromLocationId = 207, -- from[L207]
 			toLocationId = 208, -- to[L208]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 306, -- number
 			id = 404, -- jump [J404]
 			fromLocationId = 206, -- from[L206]
 			toLocationId = 207, -- to[L207]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 307, -- number
 			id = 410, -- jump [J410]
 			fromLocationId = 211, -- from[L211]
 			toLocationId = 212, -- to[L212]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 308, -- number
 			id = 409, -- jump [J409]
 			fromLocationId = 210, -- from[L210]
 			toLocationId = 211, -- to[L211]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 309, -- number
 			id = 424, -- jump [J424]
 			fromLocationId = 220, -- from[L220]
 			toLocationId = 221, -- to[L221]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 310, -- number
 			id = 423, -- jump [J423]
 			fromLocationId = 219, -- from[L219]
 			toLocationId = 220, -- to[L220]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 311, -- number
 			id = 437, -- jump [J437]
 			fromLocationId = 228, -- from[L228]
 			toLocationId = 229, -- to[L229]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 312, -- number
 			id = 436, -- jump [J436]
 			fromLocationId = 227, -- from[L227]
 			toLocationId = 228, -- to[L228]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 313, -- number
 			id = 443, -- jump [J443]
 			fromLocationId = 233, -- from[L233]
 			toLocationId = 234, -- to[L234]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 314, -- number
 			id = 442, -- jump [J442]
 			fromLocationId = 232, -- from[L232]
 			toLocationId = 233, -- to[L233]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 315, -- number
 			id = 475, -- jump [J475]
 			fromLocationId = 251, -- from[L251]
 			toLocationId = 239, -- to[L239]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "На сегодня достаточно",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p2]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p2] + 2*[p3]",
 				},
 			},
@@ -18257,102 +8895,45 @@ return {
 			id = 476, -- jump [J476]
 			fromLocationId = 251, -- from[L251]
 			toLocationId = 238, -- to[L238]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Сыграем ещё разок?",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 317, -- number
 			id = 477, -- jump [J477]
 			fromLocationId = 252, -- from[L252]
 			toLocationId = 239, -- to[L239]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "На сегодня достаточно",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 318, -- number
 			id = 478, -- jump [J478]
 			fromLocationId = 252, -- from[L252]
 			toLocationId = 238, -- to[L238]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Сыграем ещё разок?",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 319, -- number
 			id = 479, -- jump [J479]
 			fromLocationId = 253, -- from[L253]
 			toLocationId = 255, -- to[L255]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Задать расход топлива",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 320, -- number
 			id = 480, -- jump [J480]
 			fromLocationId = 253, -- from[L253]
 			toLocationId = 257, -- to[L257]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Задать время расхода",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 321, -- number
 			id = 481, -- jump [J481]
 			fromLocationId = 253, -- from[L253]
 			toLocationId = 254, -- to[L254]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Реверс тяги",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p55]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "180-[p55]",
 				},
 			},
@@ -18362,101 +8943,46 @@ return {
 			id = 482, -- jump [J482]
 			fromLocationId = 253, -- from[L253]
 			toLocationId = 239, -- to[L239]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Прервать игру",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 323, -- number
 			id = 483, -- jump [J483]
 			fromLocationId = 253, -- from[L253]
 			toLocationId = 235, -- to[L235]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Применить",
-			description = "",
 			formulaToPass = "[p54]>0 and [p53]*[p42]<=[p41]",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p55]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p54]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p53]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 			},
@@ -18466,133 +8992,60 @@ return {
 			id = 500, -- jump [J500]
 			fromLocationId = 263, -- from[L263]
 			toLocationId = 266, -- to[L266]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Задать расход топлива",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 325, -- number
 			id = 501, -- jump [J501]
 			fromLocationId = 263, -- from[L263]
 			toLocationId = 268, -- to[L268]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Задать время расхода",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 326, -- number
 			id = 502, -- jump [J502]
 			fromLocationId = 263, -- from[L263]
 			toLocationId = 265, -- to[L265]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Задать угол",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 327, -- number
 			id = 503, -- jump [J503]
 			fromLocationId = 263, -- from[L263]
 			toLocationId = 235, -- to[L235]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Применить",
-			description = "",
 			formulaToPass = "[p54]>0 and [p53]*[p42]<=[p41]",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p55]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p54]",
 				},
 				{
 					index = "[p8]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p9]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p53]",
 				},
 				{
 					index = "[p10]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 				{
 					index = "[p11]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]",
 				},
 				{
 					index = "[p12]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p6]",
 				},
 			},
@@ -18602,22 +9055,10 @@ return {
 			id = 448, -- jump [J448]
 			fromLocationId = 235, -- from[L235]
 			toLocationId = 82, -- to[L82]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p4] mod 100 = 28",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p4]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p4] div 100",
 				},
 			},
@@ -18627,22 +9068,10 @@ return {
 			id = 449, -- jump [J449]
 			fromLocationId = 235, -- from[L235]
 			toLocationId = 86, -- to[L86]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p4] mod 100 = 32",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p4]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p4] div 100",
 				},
 			},
@@ -18653,47 +9082,20 @@ return {
 			fromLocationId = 68, -- from[L68]
 			toLocationId = 70, -- to[L70]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]=[p8]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 331, -- number
 			id = 230, -- jump [J230]
 			fromLocationId = 68, -- from[L68]
 			toLocationId = 69, -- to[L69]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]<>[p8]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 332, -- number
 			id = 188, -- jump [J188]
 			fromLocationId = 38, -- from[L38]
 			toLocationId = 39, -- to[L39]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 333, -- number
@@ -18701,31 +9103,14 @@ return {
 			fromLocationId = 44, -- from[L44]
 			toLocationId = 46, -- to[L46]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]=[p8]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 334, -- number
 			id = 196, -- jump [J196]
 			fromLocationId = 44, -- from[L44]
 			toLocationId = 45, -- to[L45]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]<>[p8]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 335, -- number
@@ -18733,15 +9118,7 @@ return {
 			fromLocationId = 50, -- from[L50]
 			toLocationId = 27, -- to[L27]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]<0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 336, -- number
@@ -18749,15 +9126,7 @@ return {
 			fromLocationId = 50, -- from[L50]
 			toLocationId = 51, -- to[L51]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]=0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 337, -- number
@@ -18765,37 +9134,17 @@ return {
 			fromLocationId = 50, -- from[L50]
 			toLocationId = 51, -- to[L51]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]=1 and [p6]=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 338, -- number
 			id = 206, -- jump [J206]
 			fromLocationId = 50, -- from[L50]
 			toLocationId = 5, -- to[L5]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]>1 or [p6]<>1",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+51",
 				},
 			},
@@ -18806,47 +9155,20 @@ return {
 			fromLocationId = 53, -- from[L53]
 			toLocationId = 55, -- to[L55]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]=[p8]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 340, -- number
 			id = 210, -- jump [J210]
 			fromLocationId = 53, -- from[L53]
 			toLocationId = 54, -- to[L54]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]<>[p8]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 341, -- number
 			id = 217, -- jump [J217]
 			fromLocationId = 59, -- from[L59]
 			toLocationId = 60, -- to[L60]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 342, -- number
@@ -18854,47 +9176,20 @@ return {
 			fromLocationId = 74, -- from[L74]
 			toLocationId = 76, -- to[L76]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]<0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 343, -- number
 			id = 238, -- jump [J238]
 			fromLocationId = 74, -- from[L74]
 			toLocationId = 75, -- to[L75]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]>=0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 344, -- number
 			id = 262, -- jump [J262]
 			fromLocationId = 94, -- from[L94]
 			toLocationId = 95, -- to[L95]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 345, -- number
@@ -18902,15 +9197,7 @@ return {
 			fromLocationId = 103, -- from[L103]
 			toLocationId = 27, -- to[L27]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]=0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 346, -- number
@@ -18918,30 +9205,14 @@ return {
 			fromLocationId = 103, -- from[L103]
 			toLocationId = 104, -- to[L104]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]<0",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "-[p5]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "-[p7]",
 				},
 			},
@@ -18951,64 +9222,25 @@ return {
 			id = 275, -- jump [J275]
 			fromLocationId = 103, -- from[L103]
 			toLocationId = 104, -- to[L104]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]>0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 348, -- number
 			id = 281, -- jump [J281]
 			fromLocationId = 108, -- from[L108]
 			toLocationId = 109, -- to[L109]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 349, -- number
 			id = 287, -- jump [J287]
 			fromLocationId = 113, -- from[L113]
 			toLocationId = 114, -- to[L114]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 350, -- number
 			id = 132, -- jump [J132]
 			fromLocationId = 18, -- from[L18]
 			toLocationId = 17, -- to[L17]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 351, -- number
@@ -19016,30 +9248,14 @@ return {
 			fromLocationId = 19, -- from[L19]
 			toLocationId = 20, -- to[L20]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]>180*[p6]",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]-180*[p6]",
 				},
 				{
 					index = "[p47]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "-1",
 				},
 			},
@@ -19049,22 +9265,10 @@ return {
 			id = 134, -- jump [J134]
 			fromLocationId = 19, -- from[L19]
 			toLocationId = 20, -- to[L20]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]<=180*[p6]",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p47]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 			},
@@ -19074,96 +9278,36 @@ return {
 			id = 301, -- jump [J301]
 			fromLocationId = 124, -- from[L124]
 			toLocationId = 125, -- to[L125]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 354, -- number
 			id = 307, -- jump [J307]
 			fromLocationId = 129, -- from[L129]
 			toLocationId = 130, -- to[L130]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 355, -- number
 			id = 316, -- jump [J316]
 			fromLocationId = 136, -- from[L136]
 			toLocationId = 137, -- to[L137]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 356, -- number
 			id = 327, -- jump [J327]
 			fromLocationId = 145, -- from[L145]
 			toLocationId = 146, -- to[L146]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 357, -- number
 			id = 340, -- jump [J340]
 			fromLocationId = 156, -- from[L156]
 			toLocationId = 157, -- to[L157]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 358, -- number
 			id = 352, -- jump [J352]
 			fromLocationId = 166, -- from[L166]
 			toLocationId = 167, -- to[L167]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 359, -- number
@@ -19171,63 +9315,26 @@ return {
 			fromLocationId = 174, -- from[L174]
 			toLocationId = 176, -- to[L176]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]=[p8]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 360, -- number
 			id = 362, -- jump [J362]
 			fromLocationId = 174, -- from[L174]
 			toLocationId = 175, -- to[L175]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]<>[p8]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 361, -- number
 			id = 369, -- jump [J369]
 			fromLocationId = 180, -- from[L180]
 			toLocationId = 181, -- to[L181]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 362, -- number
 			id = 382, -- jump [J382]
 			fromLocationId = 189, -- from[L189]
 			toLocationId = 190, -- to[L190]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 363, -- number
@@ -19235,53 +9342,23 @@ return {
 			fromLocationId = 202, -- from[L202]
 			toLocationId = 204, -- to[L204]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]=[p8]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 364, -- number
 			id = 399, -- jump [J399]
 			fromLocationId = 202, -- from[L202]
 			toLocationId = 203, -- to[L203]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]<>[p8]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 365, -- number
 			id = 406, -- jump [J406]
 			fromLocationId = 208, -- from[L208]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+209",
 				},
 			},
@@ -19291,54 +9368,23 @@ return {
 			id = 411, -- jump [J411]
 			fromLocationId = 212, -- from[L212]
 			toLocationId = 213, -- to[L213]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 367, -- number
 			id = 425, -- jump [J425]
 			fromLocationId = 221, -- from[L221]
 			toLocationId = 222, -- to[L222]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p50]=0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 368, -- number
 			id = 426, -- jump [J426]
 			fromLocationId = 221, -- from[L221]
 			toLocationId = 223, -- to[L223]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p50]=1",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p5]*10",
 				},
 			},
@@ -19348,22 +9394,10 @@ return {
 			id = 427, -- jump [J427]
 			fromLocationId = 221, -- from[L221]
 			toLocationId = 223, -- to[L223]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p50]=2",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -19373,38 +9407,16 @@ return {
 			id = 438, -- jump [J438]
 			fromLocationId = 229, -- from[L229]
 			toLocationId = 230, -- to[L230]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 371, -- number
 			id = 444, -- jump [J444]
 			fromLocationId = 234, -- from[L234]
 			toLocationId = 40, -- to[L40]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p4] mod 100 = 7",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p4]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p4] div 100",
 				},
 			},
@@ -19414,22 +9426,10 @@ return {
 			id = 445, -- jump [J445]
 			fromLocationId = 234, -- from[L234]
 			toLocationId = 139, -- to[L139]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p4] mod 100 = 56",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p4]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p4] div 100",
 				},
 			},
@@ -19439,22 +9439,10 @@ return {
 			id = 446, -- jump [J446]
 			fromLocationId = 234, -- from[L234]
 			toLocationId = 150, -- to[L150]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p4] mod 100 = 62",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p4]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p4] div 100",
 				},
 			},
@@ -19464,22 +9452,10 @@ return {
 			id = 447, -- jump [J447]
 			fromLocationId = 234, -- from[L234]
 			toLocationId = 159, -- to[L159]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p4] mod 100 = 66",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p4]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p4] div 100",
 				},
 			},
@@ -19489,22 +9465,10 @@ return {
 			id = 485, -- jump [J485]
 			fromLocationId = 255, -- from[L255]
 			toLocationId = 256, -- to[L256]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Расход топлива: +1",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p53]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p53]+1",
 				},
 			},
@@ -19514,22 +9478,10 @@ return {
 			id = 486, -- jump [J486]
 			fromLocationId = 255, -- from[L255]
 			toLocationId = 256, -- to[L256]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Расход топлива: +10",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p53]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p53]+10",
 				},
 			},
@@ -19539,22 +9491,10 @@ return {
 			id = 487, -- jump [J487]
 			fromLocationId = 255, -- from[L255]
 			toLocationId = 256, -- to[L256]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Сбросить",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p53]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -19564,38 +9504,17 @@ return {
 			id = 488, -- jump [J488]
 			fromLocationId = 255, -- from[L255]
 			toLocationId = 253, -- to[L253]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Назад",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 379, -- number
 			id = 490, -- jump [J490]
 			fromLocationId = 257, -- from[L257]
 			toLocationId = 258, -- to[L258]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Время расхода: +1",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p54]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p54]+1",
 				},
 			},
@@ -19605,22 +9524,10 @@ return {
 			id = 491, -- jump [J491]
 			fromLocationId = 257, -- from[L257]
 			toLocationId = 258, -- to[L258]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Время расхода: +10",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p54]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p54]+10",
 				},
 			},
@@ -19630,22 +9537,10 @@ return {
 			id = 492, -- jump [J492]
 			fromLocationId = 257, -- from[L257]
 			toLocationId = 258, -- to[L258]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Сбросить",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p54]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -19655,54 +9550,23 @@ return {
 			id = 493, -- jump [J493]
 			fromLocationId = 257, -- from[L257]
 			toLocationId = 253, -- to[L253]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Назад",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 383, -- number
 			id = 484, -- jump [J484]
 			fromLocationId = 254, -- from[L254]
 			toLocationId = 253, -- to[L253]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 384, -- number
 			id = 513, -- jump [J513]
 			fromLocationId = 266, -- from[L266]
 			toLocationId = 267, -- to[L267]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Расход топлива: +1",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p53]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p53]+1",
 				},
 			},
@@ -19712,22 +9576,10 @@ return {
 			id = 514, -- jump [J514]
 			fromLocationId = 266, -- from[L266]
 			toLocationId = 267, -- to[L267]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Расход топлива: +10",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p53]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p53]+10",
 				},
 			},
@@ -19737,22 +9589,10 @@ return {
 			id = 515, -- jump [J515]
 			fromLocationId = 266, -- from[L266]
 			toLocationId = 267, -- to[L267]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Сбросить",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p53]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -19762,38 +9602,17 @@ return {
 			id = 516, -- jump [J516]
 			fromLocationId = 266, -- from[L266]
 			toLocationId = 263, -- to[L263]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Назад",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 388, -- number
 			id = 518, -- jump [J518]
 			fromLocationId = 268, -- from[L268]
 			toLocationId = 269, -- to[L269]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Время расхода: +1",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p54]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p54]+1",
 				},
 			},
@@ -19803,22 +9622,10 @@ return {
 			id = 519, -- jump [J519]
 			fromLocationId = 268, -- from[L268]
 			toLocationId = 269, -- to[L269]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Время расхода: +10",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p54]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p54]+10",
 				},
 			},
@@ -19828,22 +9635,10 @@ return {
 			id = 520, -- jump [J520]
 			fromLocationId = 268, -- from[L268]
 			toLocationId = 269, -- to[L269]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Сбросить",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p54]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -19853,38 +9648,17 @@ return {
 			id = 521, -- jump [J521]
 			fromLocationId = 268, -- from[L268]
 			toLocationId = 263, -- to[L263]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Назад",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 392, -- number
 			id = 505, -- jump [J505]
 			fromLocationId = 265, -- from[L265]
 			toLocationId = 259, -- to[L259]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Угол: 0 градусов",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p55]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "0",
 				},
 			},
@@ -19894,22 +9668,10 @@ return {
 			id = 506, -- jump [J506]
 			fromLocationId = 265, -- from[L265]
 			toLocationId = 259, -- to[L259]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Угол: 45 градусов",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p55]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "45",
 				},
 			},
@@ -19919,22 +9681,10 @@ return {
 			id = 507, -- jump [J507]
 			fromLocationId = 265, -- from[L265]
 			toLocationId = 259, -- to[L259]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Угол: -45 градусов",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p55]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "-45",
 				},
 			},
@@ -19944,22 +9694,10 @@ return {
 			id = 508, -- jump [J508]
 			fromLocationId = 265, -- from[L265]
 			toLocationId = 259, -- to[L259]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Угол: 90 градусов",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p55]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "90",
 				},
 			},
@@ -19969,22 +9707,10 @@ return {
 			id = 509, -- jump [J509]
 			fromLocationId = 265, -- from[L265]
 			toLocationId = 259, -- to[L259]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Угол: -90 градусов",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p55]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "-90",
 				},
 			},
@@ -19994,22 +9720,10 @@ return {
 			id = 510, -- jump [J510]
 			fromLocationId = 265, -- from[L265]
 			toLocationId = 259, -- to[L259]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Угол: 135 градусов",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p55]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "135",
 				},
 			},
@@ -20019,22 +9733,10 @@ return {
 			id = 511, -- jump [J511]
 			fromLocationId = 265, -- from[L265]
 			toLocationId = 259, -- to[L259]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Угол: -135 градусов",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p55]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "-135",
 				},
 			},
@@ -20044,22 +9746,10 @@ return {
 			id = 512, -- jump [J512]
 			fromLocationId = 265, -- from[L265]
 			toLocationId = 259, -- to[L259]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
 			text = "Угол: 180 градусов",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p55]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "180",
 				},
 			},
@@ -20069,54 +9759,21 @@ return {
 			id = 247, -- jump [J247]
 			fromLocationId = 82, -- from[L82]
 			toLocationId = 83, -- to[L83]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 401, -- number
 			id = 251, -- jump [J251]
 			fromLocationId = 86, -- from[L86]
 			toLocationId = 87, -- to[L87]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 402, -- number
 			id = 232, -- jump [J232]
 			fromLocationId = 70, -- from[L70]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+71",
 				},
 			},
@@ -20126,54 +9783,21 @@ return {
 			id = 231, -- jump [J231]
 			fromLocationId = 69, -- from[L69]
 			toLocationId = 70, -- to[L70]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 404, -- number
 			id = 189, -- jump [J189]
 			fromLocationId = 39, -- from[L39]
 			toLocationId = 192, -- to[L192]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 405, -- number
 			id = 198, -- jump [J198]
 			fromLocationId = 46, -- from[L46]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+47",
 				},
 			},
@@ -20183,54 +9807,21 @@ return {
 			id = 197, -- jump [J197]
 			fromLocationId = 45, -- from[L45]
 			toLocationId = 46, -- to[L46]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 407, -- number
 			id = 47, -- jump [J47]
 			fromLocationId = 5, -- from[L5]
 			toLocationId = 6, -- to[L6]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 408, -- number
 			id = 212, -- jump [J212]
 			fromLocationId = 55, -- from[L55]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+56",
 				},
 			},
@@ -20240,102 +9831,40 @@ return {
 			id = 211, -- jump [J211]
 			fromLocationId = 54, -- from[L54]
 			toLocationId = 55, -- to[L55]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 410, -- number
 			id = 218, -- jump [J218]
 			fromLocationId = 60, -- from[L60]
 			toLocationId = 184, -- to[L184]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 411, -- number
 			id = 240, -- jump [J240]
 			fromLocationId = 76, -- from[L76]
 			toLocationId = 77, -- to[L77]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 412, -- number
 			id = 239, -- jump [J239]
 			fromLocationId = 75, -- from[L75]
 			toLocationId = 80, -- to[L80]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 413, -- number
 			id = 263, -- jump [J263]
 			fromLocationId = 95, -- from[L95]
 			toLocationId = 96, -- to[L96]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 414, -- number
 			id = 276, -- jump [J276]
 			fromLocationId = 104, -- from[L104]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]<>0",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+105",
 				},
 			},
@@ -20345,22 +9874,9 @@ return {
 			id = 282, -- jump [J282]
 			fromLocationId = 109, -- from[L109]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+110",
 				},
 			},
@@ -20370,54 +9886,21 @@ return {
 			id = 288, -- jump [J288]
 			fromLocationId = 114, -- from[L114]
 			toLocationId = 115, -- to[L115]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 417, -- number
 			id = 135, -- jump [J135]
 			fromLocationId = 20, -- from[L20]
 			toLocationId = 21, -- to[L21]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 418, -- number
 			id = 302, -- jump [J302]
 			fromLocationId = 125, -- from[L125]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+126",
 				},
 			},
@@ -20428,117 +9911,47 @@ return {
 			fromLocationId = 130, -- from[L130]
 			toLocationId = 132, -- to[L132]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]=[p8]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 420, -- number
 			id = 309, -- jump [J309]
 			fromLocationId = 130, -- from[L130]
 			toLocationId = 131, -- to[L131]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]<>[p8]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 421, -- number
 			id = 317, -- jump [J317]
 			fromLocationId = 137, -- from[L137]
 			toLocationId = 138, -- to[L138]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 422, -- number
 			id = 328, -- jump [J328]
 			fromLocationId = 146, -- from[L146]
 			toLocationId = 147, -- to[L147]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 423, -- number
 			id = 341, -- jump [J341]
 			fromLocationId = 157, -- from[L157]
 			toLocationId = 158, -- to[L158]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 424, -- number
 			id = 353, -- jump [J353]
 			fromLocationId = 167, -- from[L167]
 			toLocationId = 168, -- to[L168]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 425, -- number
 			id = 364, -- jump [J364]
 			fromLocationId = 176, -- from[L176]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+177",
 				},
 			},
@@ -20548,16 +9961,6 @@ return {
 			id = 363, -- jump [J363]
 			fromLocationId = 175, -- from[L175]
 			toLocationId = 176, -- to[L176]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 427, -- number
@@ -20565,69 +9968,29 @@ return {
 			fromLocationId = 181, -- from[L181]
 			toLocationId = 183, -- to[L183]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]<0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 428, -- number
 			id = 371, -- jump [J371]
 			fromLocationId = 181, -- from[L181]
 			toLocationId = 182, -- to[L182]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]>=0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 429, -- number
 			id = 383, -- jump [J383]
 			fromLocationId = 190, -- from[L190]
 			toLocationId = 191, -- to[L191]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 430, -- number
 			id = 401, -- jump [J401]
 			fromLocationId = 204, -- from[L204]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+205",
 				},
 			},
@@ -20637,38 +10000,16 @@ return {
 			id = 400, -- jump [J400]
 			fromLocationId = 203, -- from[L203]
 			toLocationId = 204, -- to[L204]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 432, -- number
 			id = 412, -- jump [J412]
 			fromLocationId = 213, -- from[L213]
 			toLocationId = 40, -- to[L40]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p4] mod 100 = 7",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p4]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p4] div 100",
 				},
 			},
@@ -20678,22 +10019,10 @@ return {
 			id = 413, -- jump [J413]
 			fromLocationId = 213, -- from[L213]
 			toLocationId = 139, -- to[L139]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p4] mod 100 = 56",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p4]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p4] div 100",
 				},
 			},
@@ -20703,22 +10032,10 @@ return {
 			id = 414, -- jump [J414]
 			fromLocationId = 213, -- from[L213]
 			toLocationId = 150, -- to[L150]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p4] mod 100 = 62",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p4]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p4] div 100",
 				},
 			},
@@ -20728,22 +10045,10 @@ return {
 			id = 415, -- jump [J415]
 			fromLocationId = 213, -- from[L213]
 			toLocationId = 159, -- to[L159]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p4] mod 100 = 66",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p4]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p4] div 100",
 				},
 			},
@@ -20753,54 +10058,21 @@ return {
 			id = 428, -- jump [J428]
 			fromLocationId = 222, -- from[L222]
 			toLocationId = 223, -- to[L223]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 437, -- number
 			id = 429, -- jump [J429]
 			fromLocationId = 223, -- from[L223]
 			toLocationId = 224, -- to[L224]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 438, -- number
 			id = 439, -- jump [J439]
 			fromLocationId = 230, -- from[L230]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+231",
 				},
 			},
@@ -20810,22 +10082,9 @@ return {
 			id = 190, -- jump [J190]
 			fromLocationId = 40, -- from[L40]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+41",
 				},
 			},
@@ -20836,31 +10095,14 @@ return {
 			fromLocationId = 139, -- from[L139]
 			toLocationId = 141, -- to[L141]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]=[p8]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 441, -- number
 			id = 320, -- jump [J320]
 			fromLocationId = 139, -- from[L139]
 			toLocationId = 140, -- to[L140]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]<>[p8]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 442, -- number
@@ -20868,199 +10110,80 @@ return {
 			fromLocationId = 150, -- from[L150]
 			toLocationId = 152, -- to[L152]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]=[p8]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 443, -- number
 			id = 333, -- jump [J333]
 			fromLocationId = 150, -- from[L150]
 			toLocationId = 151, -- to[L151]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]<>[p8]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 444, -- number
 			id = 343, -- jump [J343]
 			fromLocationId = 159, -- from[L159]
 			toLocationId = 160, -- to[L160]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 445, -- number
 			id = 489, -- jump [J489]
 			fromLocationId = 256, -- from[L256]
 			toLocationId = 255, -- to[L255]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 446, -- number
 			id = 494, -- jump [J494]
 			fromLocationId = 258, -- from[L258]
 			toLocationId = 257, -- to[L257]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 447, -- number
 			id = 517, -- jump [J517]
 			fromLocationId = 267, -- from[L267]
 			toLocationId = 266, -- to[L266]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 448, -- number
 			id = 522, -- jump [J522]
 			fromLocationId = 269, -- from[L269]
 			toLocationId = 268, -- to[L268]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 449, -- number
 			id = 248, -- jump [J248]
 			fromLocationId = 83, -- from[L83]
 			toLocationId = 87, -- to[L87]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 450, -- number
 			id = 252, -- jump [J252]
 			fromLocationId = 87, -- from[L87]
 			toLocationId = 88, -- to[L88]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 451, -- number
 			id = 385, -- jump [J385]
 			fromLocationId = 192, -- from[L192]
 			toLocationId = 193, -- to[L193]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 452, -- number
 			id = 48, -- jump [J48]
 			fromLocationId = 6, -- from[L6]
 			toLocationId = 7, -- to[L7]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]>=[p46]",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p45]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p45]-[p46]",
 				},
 				{
 					index = "[p46]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p46]+2",
 				},
 				{
 					index = "[p47]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p47]+1",
 				},
 			},
@@ -21070,31 +10193,14 @@ return {
 			id = 49, -- jump [J49]
 			fromLocationId = 6, -- from[L6]
 			toLocationId = 8, -- to[L8]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p45]<[p46]",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p47]",
 				},
 				{
 					index = "[p6]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "1",
 				},
 			},
@@ -21105,15 +10211,7 @@ return {
 			fromLocationId = 184, -- from[L184]
 			toLocationId = 27, -- to[L27]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]=0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 455, -- number
@@ -21121,30 +10219,14 @@ return {
 			fromLocationId = 184, -- from[L184]
 			toLocationId = 185, -- to[L185]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]<0",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "-[p5]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "-[p7]",
 				},
 			},
@@ -21154,16 +10236,7 @@ return {
 			id = 376, -- jump [J376]
 			fromLocationId = 184, -- from[L184]
 			toLocationId = 185, -- to[L185]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]>0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 457, -- number
@@ -21171,117 +10244,47 @@ return {
 			fromLocationId = 77, -- from[L77]
 			toLocationId = 79, -- to[L79]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]=0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 458, -- number
 			id = 242, -- jump [J242]
 			fromLocationId = 77, -- from[L77]
 			toLocationId = 78, -- to[L78]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]<>0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 459, -- number
 			id = 245, -- jump [J245]
 			fromLocationId = 80, -- from[L80]
 			toLocationId = 81, -- to[L81]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 460, -- number
 			id = 264, -- jump [J264]
 			fromLocationId = 96, -- from[L96]
 			toLocationId = 97, -- to[L97]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 461, -- number
 			id = 289, -- jump [J289]
 			fromLocationId = 115, -- from[L115]
 			toLocationId = 116, -- to[L116]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 462, -- number
 			id = 136, -- jump [J136]
 			fromLocationId = 21, -- from[L21]
 			toLocationId = 22, -- to[L22]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 463, -- number
 			id = 311, -- jump [J311]
 			fromLocationId = 132, -- from[L132]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+133",
 				},
 			},
@@ -21291,128 +10294,48 @@ return {
 			id = 310, -- jump [J310]
 			fromLocationId = 131, -- from[L131]
 			toLocationId = 132, -- to[L132]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 465, -- number
 			id = 318, -- jump [J318]
 			fromLocationId = 138, -- from[L138]
 			toLocationId = 214, -- to[L214]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 466, -- number
 			id = 329, -- jump [J329]
 			fromLocationId = 147, -- from[L147]
 			toLocationId = 148, -- to[L148]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 467, -- number
 			id = 342, -- jump [J342]
 			fromLocationId = 158, -- from[L158]
 			toLocationId = 214, -- to[L214]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 468, -- number
 			id = 354, -- jump [J354]
 			fromLocationId = 168, -- from[L168]
 			toLocationId = 169, -- to[L169]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 469, -- number
 			id = 373, -- jump [J373]
 			fromLocationId = 183, -- from[L183]
 			toLocationId = 184, -- to[L184]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 470, -- number
 			id = 372, -- jump [J372]
 			fromLocationId = 182, -- from[L182]
 			toLocationId = 28, -- to[L28]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 471, -- number
 			id = 384, -- jump [J384]
 			fromLocationId = 191, -- from[L191]
 			toLocationId = 114, -- to[L114]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 472, -- number
@@ -21420,15 +10343,7 @@ return {
 			fromLocationId = 224, -- from[L224]
 			toLocationId = 27, -- to[L27]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]=0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 473, -- number
@@ -21436,30 +10351,14 @@ return {
 			fromLocationId = 224, -- from[L224]
 			toLocationId = 225, -- to[L225]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]<0",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "-[p5]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "-[p7]",
 				},
 			},
@@ -21469,38 +10368,16 @@ return {
 			id = 432, -- jump [J432]
 			fromLocationId = 224, -- from[L224]
 			toLocationId = 225, -- to[L225]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]>0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 475, -- number
 			id = 322, -- jump [J322]
 			fromLocationId = 141, -- from[L141]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+142",
 				},
 			},
@@ -21510,38 +10387,15 @@ return {
 			id = 321, -- jump [J321]
 			fromLocationId = 140, -- from[L140]
 			toLocationId = 141, -- to[L141]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 477, -- number
 			id = 335, -- jump [J335]
 			fromLocationId = 152, -- from[L152]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+153",
 				},
 			},
@@ -21551,16 +10405,6 @@ return {
 			id = 334, -- jump [J334]
 			fromLocationId = 151, -- from[L151]
 			toLocationId = 152, -- to[L152]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 479, -- number
@@ -21568,101 +10412,41 @@ return {
 			fromLocationId = 160, -- from[L160]
 			toLocationId = 162, -- to[L162]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]=[p8]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 480, -- number
 			id = 345, -- jump [J345]
 			fromLocationId = 160, -- from[L160]
 			toLocationId = 161, -- to[L161]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]<>[p8]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 481, -- number
 			id = 253, -- jump [J253]
 			fromLocationId = 88, -- from[L88]
 			toLocationId = 89, -- to[L89]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 482, -- number
 			id = 386, -- jump [J386]
 			fromLocationId = 193, -- from[L193]
 			toLocationId = 194, -- to[L194]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 483, -- number
 			id = 50, -- jump [J50]
 			fromLocationId = 7, -- from[L7]
 			toLocationId = 6, -- to[L6]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 484, -- number
 			id = 51, -- jump [J51]
 			fromLocationId = 8, -- from[L8]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+9",
 				},
 			},
@@ -21672,22 +10456,10 @@ return {
 			id = 377, -- jump [J377]
 			fromLocationId = 185, -- from[L185]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]<>0",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+186",
 				},
 			},
@@ -21697,48 +10469,18 @@ return {
 			id = 244, -- jump [J244]
 			fromLocationId = 79, -- from[L79]
 			toLocationId = 80, -- to[L80]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 487, -- number
 			id = 243, -- jump [J243]
 			fromLocationId = 78, -- from[L78]
 			toLocationId = 84, -- to[L84]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 488, -- number
 			id = 246, -- jump [J246]
 			fromLocationId = 81, -- from[L81]
 			toLocationId = 248, -- to[L248]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 489, -- number
@@ -21746,133 +10488,54 @@ return {
 			fromLocationId = 97, -- from[L97]
 			toLocationId = 99, -- to[L99]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]=[p8]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 490, -- number
 			id = 266, -- jump [J266]
 			fromLocationId = 97, -- from[L97]
 			toLocationId = 98, -- to[L98]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]<>[p8]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 491, -- number
 			id = 290, -- jump [J290]
 			fromLocationId = 116, -- from[L116]
 			toLocationId = 117, -- to[L117]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 492, -- number
 			id = 137, -- jump [J137]
 			fromLocationId = 22, -- from[L22]
 			toLocationId = 23, -- to[L23]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 493, -- number
 			id = 416, -- jump [J416]
 			fromLocationId = 214, -- from[L214]
 			toLocationId = 215, -- to[L215]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 494, -- number
 			id = 330, -- jump [J330]
 			fromLocationId = 148, -- from[L148]
 			toLocationId = 149, -- to[L149]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 495, -- number
 			id = 355, -- jump [J355]
 			fromLocationId = 169, -- from[L169]
 			toLocationId = 170, -- to[L170]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 496, -- number
 			id = 433, -- jump [J433]
 			fromLocationId = 225, -- from[L225]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]<>0",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+226",
 				},
 			},
@@ -21882,22 +10545,9 @@ return {
 			id = 347, -- jump [J347]
 			fromLocationId = 162, -- from[L162]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+163",
 				},
 			},
@@ -21907,16 +10557,6 @@ return {
 			id = 346, -- jump [J346]
 			fromLocationId = 161, -- from[L161]
 			toLocationId = 162, -- to[L162]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 499, -- number
@@ -21924,15 +10564,7 @@ return {
 			fromLocationId = 89, -- from[L89]
 			toLocationId = 27, -- to[L27]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]=0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 500, -- number
@@ -21940,30 +10572,14 @@ return {
 			fromLocationId = 89, -- from[L89]
 			toLocationId = 90, -- to[L90]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]<0",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p5]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "-[p5]",
 				},
 				{
 					index = "[p7]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "-[p7]",
 				},
 			},
@@ -21973,70 +10589,28 @@ return {
 			id = 256, -- jump [J256]
 			fromLocationId = 89, -- from[L89]
 			toLocationId = 90, -- to[L90]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p5]>0",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 502, -- number
 			id = 387, -- jump [J387]
 			fromLocationId = 194, -- from[L194]
 			toLocationId = 195, -- to[L195]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 503, -- number
 			id = 249, -- jump [J249]
 			fromLocationId = 84, -- from[L84]
 			toLocationId = 85, -- to[L85]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 504, -- number
 			id = 268, -- jump [J268]
 			fromLocationId = 99, -- from[L99]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+100",
 				},
 			},
@@ -22046,38 +10620,16 @@ return {
 			id = 267, -- jump [J267]
 			fromLocationId = 98, -- from[L98]
 			toLocationId = 99, -- to[L99]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 506, -- number
 			id = 291, -- jump [J291]
 			fromLocationId = 117, -- from[L117]
 			toLocationId = 12, -- to[L12]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "1=0",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+118",
 				},
 			},
@@ -22087,22 +10639,10 @@ return {
 			id = 292, -- jump [J292]
 			fromLocationId = 117, -- from[L117]
 			toLocationId = 13, -- to[L13]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "1=2",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+118",
 				},
 			},
@@ -22112,38 +10652,16 @@ return {
 			id = 293, -- jump [J293]
 			fromLocationId = 117, -- from[L117]
 			toLocationId = 118, -- to[L118]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "1=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 509, -- number
 			id = 138, -- jump [J138]
 			fromLocationId = 23, -- from[L23]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+24",
 				},
 			},
@@ -22154,69 +10672,29 @@ return {
 			fromLocationId = 215, -- from[L215]
 			toLocationId = 217, -- to[L217]
 			priority = 10.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]=[p8]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 511, -- number
 			id = 418, -- jump [J418]
 			fromLocationId = 215, -- from[L215]
 			toLocationId = 216, -- to[L216]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]<>[p8]",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 512, -- number
 			id = 331, -- jump [J331]
 			fromLocationId = 149, -- from[L149]
 			toLocationId = 192, -- to[L192]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 513, -- number
 			id = 356, -- jump [J356]
 			fromLocationId = 170, -- from[L170]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+171",
 				},
 			},
@@ -22226,22 +10704,10 @@ return {
 			id = 257, -- jump [J257]
 			fromLocationId = 90, -- from[L90]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "[p6]<>0",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+91",
 				},
 			},
@@ -22251,22 +10717,10 @@ return {
 			id = 388, -- jump [J388]
 			fromLocationId = 195, -- from[L195]
 			toLocationId = 12, -- to[L12]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "1=0",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+196",
 				},
 			},
@@ -22276,22 +10730,10 @@ return {
 			id = 389, -- jump [J389]
 			fromLocationId = 195, -- from[L195]
 			toLocationId = 13, -- to[L13]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "1=2",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+196",
 				},
 			},
@@ -22301,38 +10743,16 @@ return {
 			id = 390, -- jump [J390]
 			fromLocationId = 195, -- from[L195]
 			toLocationId = 196, -- to[L196]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
 			formulaToPass = "1=1",
-			paramsChanges = { -- amount: 56
-			},
 		},
 		{
 			index = 518, -- number
 			id = 90, -- jump [J90]
 			fromLocationId = 12, -- from[L12]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+14",
 				},
 			},
@@ -22342,22 +10762,9 @@ return {
 			id = 91, -- jump [J91]
 			fromLocationId = 13, -- from[L13]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+14",
 				},
 			},
@@ -22367,22 +10774,9 @@ return {
 			id = 420, -- jump [J420]
 			fromLocationId = 217, -- from[L217]
 			toLocationId = 1, -- to[L1]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
 			paramsChanges = { -- amount: 56
 				{
 					index = "[p1]",
-					change = 0,
-					showingType = 0,
-					isChangePercentage = false,
-					isChangeValue = false,
-					isChangeFormula = true,
 					changingFormula = "[p1]*256+218",
 				},
 			},
@@ -22392,16 +10786,6 @@ return {
 			id = 419, -- jump [J419]
 			fromLocationId = 216, -- from[L216]
 			toLocationId = 217, -- to[L217]
-			priority = 1.0,
-			dayPassed = false,
-			alwaysShow = false,
-			jumpingCountLimit = 0,
-			showingOrder = 5,
-			text = "",
-			description = "",
-			formulaToPass = "",
-			paramsChanges = { -- amount: 56
-			},
 		},
 	},
 }
