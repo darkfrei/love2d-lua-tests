@@ -7,11 +7,18 @@ SidePanel.textFont = love.graphics.newFont(14)
 
 local leftPanel, rightPanel
 
+local font30 = love.graphics.newFont("NotoSans-Regular.ttf", 30)
+local font20 = love.graphics.newFont("NotoSans-Regular.ttf", 20)
+
+SidePanel.headerFont = font30
+SidePanel.textFont = font20
+
 -- main.lua
 function love.load()
 	love.window.setMode (1920, 1080)
 
 	-- create left side panel with custom settings
+--	leftPanel = SidePanel:newPanel({side = "left", width = 600})
 	leftPanel = SidePanel:newPanel({side = "left", width = 600})
 
 	-- define header font and store on panel (can be overridden per-element)
@@ -29,7 +36,7 @@ function love.load()
 
 		playerName = "Hero",
 		playerHealth = "100",
-		description = "Multi-line text",
+		description = "Multi-line text\nAnd",
 	}
 
 	-- add fields to panel, pass font explicitly (optional)
@@ -53,14 +60,12 @@ function love.load()
 	leftPanel:addElement({type = "separator"})
 	leftPanel:addElement({type = "text", text = "fixText: "..exampleData.fixText})
 	leftPanel:addElement({type = "separator"})
-	leftPanel:addElement({type = "field", table=exampleData, key = "playerName"})
+	leftPanel:addElement({type = "field", table=exampleData, key = "playerName", w = 100})
+	leftPanel:addElement({type = "field", table=exampleData, key = "playerName", w = 100})
 	leftPanel:addElement({type = "separator"})
-	leftPanel:addElement({
-			type = "image",
-			img = "image580x280.png"
-		})
+	leftPanel:addElement({type = "image",	filename = "image580x280.png"})
 	leftPanel:addElement({type = "separator"})
-	leftPanel:addElement({type = "multilineField", table=exampleData, key = "playerName"})
+	leftPanel:addElement({type = "field", multiline = true, table=exampleData, key = "description", w = 200})
 	leftPanel:addElement({type = "separator"})
 
 
@@ -68,90 +73,74 @@ function love.load()
 
 	rightPanel = SidePanel:newPanel({side = "right", width = 600})
 	rightPanel:addElement({type = "header", text = "P-Panel"})
+	rightPanel.hideKey = "p"
 	rightPanel:addElement({
 			type = "image",
-			img = "image580x280.png"
+			filename = "image280x280.png"
 		})
+	rightPanel:addElement({type = "separator"})
+	rightPanel:addLine({
+			{type = "separator"}, -- must be vertical separator
+			{type = "text", text = 'Edit:'},
+--			{type = "separator"}, -- must be vertical separator
+			{type = "field", table=exampleData, key = "playerName", autoWidth = true},
+			{type = "separator"}, -- must be vertical separator
+		})
+	rightPanel:addElement({type = "separator"})
+	rightPanel:addLine({
+			{type = "separator"}, -- must be vertical separator
+			{type = "text", text = exampleData.lineText.key},
+			{type = "separator"}, -- must be vertical separator
+			{type = "text", text = exampleData.lineText.value},
+			{type = "separator"}, -- must be vertical separator
+			{type = "text", text = '0000000000000\n0000000000000\n0000000000000', autoWidth = true},
+			{type = "separator"}, -- must be vertical separator
+			{type = "text", text = exampleData.lineText.value},
+			{type = "separator"}, -- must be vertical separator
+		})
+	rightPanel:addElement({type = "separator"})
+	rightPanel:addElement({
+			type = "image",
+			filename = "image1580x280.png"
+		})
+
+	-- multiline
+	rightPanel:addElement({type = "field", multiline = true, table=exampleData, key = "description"})
+	
+	rightPanel:addElement({type = "separator"})
 
 end
 
 
 function love.update(dt)
-	-- draw panel
-	if leftPanel then
-		leftPanel:update(dt)
-	end
-
-	if rightPanel then
-		rightPanel:update(dt)
-	end
+	SidePanel.updateAll(dt)
 end
 
 function love.draw()
-	-- draw panel
-	if leftPanel then
-		leftPanel:draw()
-	end
-	if rightPanel then
-		rightPanel:draw()
-	end
+	SidePanel.drawAll()
 end
 
 function love.mousepressed(x, y, button)
-	if leftPanel then
-		leftPanel:mousepressed(x, y, button)
-	end
-	if rightPanel then
-		rightPanel:mousepressed(x, y, button)
-	end
+	SidePanel.mousepressedAll(x, y, button)
+end
+
+function love.mousereleased(x, y, button)
+	SidePanel.mousereleasedAll(x, y, button)
 end
 
 function love.mousemoved(mx, my, dx, dy)
-	if leftPanel and leftPanel.mousemoved then
-		leftPanel:mousemoved(mx, my, dx, dy)
-	end
-	if rightPanel and rightPanel.mousemoved then
-		rightPanel:mousemoved(mx, my, dx, dy)
-	end
-end
-
-
-function love.mousereleased(x, y, button)
-	if leftPanel then
-		leftPanel:mousereleased(x, y, button)
-	end
-	if rightPanel then
-		rightPanel:mousereleased(x, y, button)
-	end
+	SidePanel.mousemovedAll(mx, my, dx, dy)
 end
 
 function love.wheelmoved(x, y)
-	if leftPanel and leftPanel.wheelmoved then
-		leftPanel:wheelmoved(x, y)
-	end
-	if rightPanel and rightPanel.wheelmoved then
-		rightPanel:wheelmoved(x, y)
-	end
+	SidePanel.wheelmovedAll(x, y)
 end
 
 function love.textinput(t)
-	if leftPanel and leftPanel.textinput then
-		leftPanel:textinput(t)
-	end
-	if rightPanel and rightPanel.textinput then
-		rightPanel:textinput(t)
-	end
+	SidePanel.textinputAll(t)
 end
 
 function love.keypressed(key)
-	if leftPanel then
-		leftPanel:keypressed(key)
-	end
-	if rightPanel then
-		rightPanel:keypressed(key)
-	end
-
-	if key == "escape" then
-		love.event.quit()
-	end
+	SidePanel.keypressedAll(key)
+	if key == "escape" then love.event.quit() end
 end

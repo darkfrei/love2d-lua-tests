@@ -31,8 +31,12 @@ end
 
 -- wrap text into lines that fit within maxWidth using given font
 local function wrapText(font, text, maxWidth)
-	if not text or text == "" then return {""}, 0 end
+	if not text or text == "" then 
+		--print("[wrapText] empty text, returning single empty line")
+		return {""}, 0 
+	end
 	if not font or maxWidth == nil or maxWidth <= 0 then 
+		--print("[wrapText] invalid font or maxWidth, returning full text as single line")
 		return {text}, font and font:getWidth(text) or 0 
 	end
 
@@ -43,11 +47,9 @@ local function wrapText(font, text, maxWidth)
 		local parts = {}
 		local cur = ""
 		local pos = 1
-
 		while pos do
 			local nextPos = utf8.offset(word, 2, pos)
 			local ch = word:sub(pos, (nextPos and nextPos - 1) or #word)
-
 			if font:getWidth(cur .. ch) <= maxWidth then
 				cur = cur .. ch
 			else
@@ -56,16 +58,12 @@ local function wrapText(font, text, maxWidth)
 				else
 					table.insert(parts, cur)
 					cur = ch
-					if font:getWidth(cur) > maxWidth then
-						table.insert(parts, cur)
-						cur = ""
-					end
 				end
 			end
 			pos = nextPos
 		end
-
 		if cur ~= "" then table.insert(parts, cur) end
+		--print("[wrapText] splitLongWord:", word, "->", table.concat(parts, "|"))
 		return parts
 	end
 
@@ -81,34 +79,41 @@ local function wrapText(font, text, maxWidth)
 			startPos = nil
 		end
 
+		--print("[wrapText] paragraph:", paragraph)
+
 		if paragraph == "" then
 			table.insert(lines, "")
+			--print("[wrapText] empty paragraph -> added empty line")
 		else
 			local current = ""
-			for word in paragraph:gmatch("%S+") do
-				local sep = (current == "") and "" or " "
-				if font:getWidth(current .. sep .. word) <= maxWidth then
-					current = current .. sep .. word
+			for word, sep in paragraph:gmatch("(%S+)(%s*)") do
+				local token = word .. sep -- include trailing spaces
+				--print("  [wrapText] token:", token)
+				if font:getWidth(current .. token) <= maxWidth then
+					current = current .. token
+					--print("    appended to current line ->", current)
 				else
 					if current ~= "" then
 						table.insert(lines, current)
 						maxLineWidth = math.max(maxLineWidth, font:getWidth(current))
+						--print("    line full, added:", current)
 						current = ""
 					end
-
-					if font:getWidth(word) <= maxWidth then
-						current = word
+					if font:getWidth(token) <= maxWidth then
+						current = token
+						--print("    token fits on new line ->", current)
 					else
-						local parts = splitLongWord(word)
+						local parts = splitLongWord(token)
 						for _, part in ipairs(parts) do
 							if current == "" then
 								current = part
 							else
-								if font:getWidth(current .. " " .. part) <= maxWidth then
-									current = current .. " " .. part
+								if font:getWidth(current .. part) <= maxWidth then
+									current = current .. part
 								else
 									table.insert(lines, current)
 									maxLineWidth = math.max(maxLineWidth, font:getWidth(current))
+									--print("    split word, added line:", current)
 									current = part
 								end
 							end
@@ -120,14 +125,18 @@ local function wrapText(font, text, maxWidth)
 			if current ~= "" then
 				table.insert(lines, current)
 				maxLineWidth = math.max(maxLineWidth, font:getWidth(current))
+				--print("  added final line of paragraph:", current)
 			end
 		end
 
 		if not startPos then break end
 	end
 
+	--print("[wrapText] finished, total lines:", #lines, "maxLineWidth:", maxLineWidth)
 	return lines, maxLineWidth
 end
+
+
 
 -----------------------------------------------------------
 -- BASE ELEMENT CLASS
@@ -141,10 +150,10 @@ function Element:new(instance)
 	setmetatable(instance, self)
 
 	-- position and size
-	instance.x = instance.x or 0
-	instance.y = instance.y or 0
-	instance.w = instance.w or 0
-	instance.h = instance.h or 0
+	instance.x = instance.x or nil
+	instance.y = instance.y or nil
+	instance.w = instance.w or nil
+	instance.h = instance.h or nil
 
 	-- default padding
 	instance.paddingX = instance.paddingX or 4
@@ -182,9 +191,9 @@ local TextElement = setmetatable({}, {__index = Element})
 TextElement.__index = TextElement
 
 function TextElement:new(elConfig)
---	print ('elConfig.type', elConfig.type)
+--	--print ('elConfig.type', elConfig.type)
 	local instance = Element.new(self, elConfig)
---	print ('instance.type', instance.type)
+--	--print ('instance.type', instance.type)
 
 	-- store text and font
 	instance.text = elConfig.text or ""
@@ -331,45 +340,27 @@ function SeparatorElement:draw()
 end
 
 -----------------------------------------------------------
--- FIELD ELEMENT (single line input)
+-- FIELD ELEMENT (single and multiline input)
 -----------------------------------------------------------
 
 local FieldElement = setmetatable({}, {__index = Element})
 FieldElement.__index = FieldElement
 
---function FieldElement:new(config)
---	local instance = Element.new(self, config)
-
---	instance.label = config.label or ""
---	instance.value = config.value or ""
---	instance.isEditing = false
---	instance.isHovered = false
---	instance.cursorPos = 0
-
---	-- styling
---	instance.bgColor = config.bgColor or {0.2, 0.2, 0.25}
---	instance.bgColorHover = config.bgColorHover or {0.25, 0.25, 0.35}
---	instance.borderColor = config.borderColor or {0.3, 0.3, 0.35}
---	instance.borderColorActive = config.borderColorActive or {0.3, 0.5, 0.7}
-
---	-- default height
---	instance.h = config.h or 30
-
---	return instance
---end
 
 function FieldElement:new(config)
 	local instance = Element.new(self, config)
 
-	instance.label = config.label or ""
-	instance.value = config.value or ""
 	instance.isEditing = false
 	instance.isHovered = false
-	instance.cursorPos = utf8.len(instance.value)
+	instance.multiline = config.multiline or false
 
-	-- data binding
+	-- data binding (required)
 	instance.tableRef = config.table
 	instance.keyRef = config.key
+
+	-- default paddings
+	instance.paddingX = config.paddingX or 6
+	instance.paddingY = config.paddingY or 4
 
 	-- styling
 	instance.bgColor = config.bgColor or {0.2, 0.2, 0.25}
@@ -377,20 +368,22 @@ function FieldElement:new(config)
 	instance.borderColor = config.borderColor or {0.3, 0.3, 0.35}
 	instance.borderColorActive = config.borderColorActive or {0.3, 0.5, 0.7}
 
-	-- calculate base text height
 	instance.lineHeight = instance.font:getHeight()
+	--print ('instance.lineHeight', instance.lineHeight)
 
-	-- set default height if not given
-	if not config.h or config.h == 0 then
-		instance.h = instance.lineHeight + 2 * instance.paddingY
-	else
-		instance.h = config.h
-	end
+-- test, removed:
+--	local h = config.h or (2 * instance.lineHeight + 2 * instance.paddingY)
+--	instance.h = h
 
-	-- sync from table if exists
-	if instance.tableRef and instance.keyRef then
-		local v = instance.tableRef[instance.keyRef]
-		if v ~= nil then instance.value = tostring(v) end
+
+
+	if instance.multiline then
+		instance.minHeight = (3 * instance.lineHeight + 2 * instance.paddingY)
+		--print ('field instance.minHeight', instance.minHeight)
+--		instance.h = instance.minHeight
+--	else
+--		-- single-line fields get full text height + paddings
+--		instance.h = (config.h and config.h > 0) and config.h or (instance.lineHeight + 2 * instance.paddingY)
 	end
 
 	return instance
@@ -398,13 +391,138 @@ end
 
 
 
+-- recalc field height for any text, single or multiline
 function FieldElement:calculateSize(availableWidth)
-	self.w = availableWidth
+	if self.fixedW then
+		self.w = self.fixedW
+	else
+		self.w = availableWidth
+	end
+
+	local value = tostring(self.tableRef and self.tableRef[self.keyRef] or "")
+	local contentWidth = self.w - 2 * self.paddingX
+
+	-- always wrap text
+	local lines, _ = wrapText(self.font, value, contentWidth)
+	local lineCount = math.max(1, #lines)
+
+	-- recalc height based on wrapped lines
+	self.h = lineCount * self.lineHeight + 2 * self.paddingY
+
+	-- enforce minimum height if set
+	if self.minHeight then
+		self.h = math.max(self.h, self.minHeight)
+	end
+
 	return self.w, self.h
 end
 
+
+
+
+function FieldElement:drawSingleLine(value)
+	local contentWidth = self.w - 2 * self.paddingX
+	local lines, _ = wrapText(self.font, value, contentWidth)
+
+	local drawY = self.y + self.paddingY
+	for _, line in ipairs(lines) do
+		love.graphics.print(line, self.x + self.paddingX, drawY)
+		drawY = drawY + self.lineHeight
+	end
+
+	-- draw cursor
+	if self.isEditing then
+		local blink = math.floor(love.timer.getTime() * 2) % 2 == 0
+		if blink then
+			love.graphics.setColor(1, 1, 1)
+			love.graphics.line(
+				self.x + self.paddingX + self.cursorX,
+				self.cursorY,
+				self.x + self.paddingX + self.cursorX,
+				self.cursorY + self.lineHeight
+			)
+		end
+	end
+end
+
+function FieldElement:drawMultiline(value)
+	local contentWidth = self.w - 2 * self.paddingX
+
+	-- split value into paragraphs by newline
+	local paragraphs = {}
+	if value == "" then
+		paragraphs = {""}
+	else
+		for line in (value .. "\n"):gmatch("([^\n]*)\n") do
+			table.insert(paragraphs, line)
+		end
+	end
+
+	local drawY = self.y + self.paddingY
+
+	for _, paragraph in ipairs(paragraphs) do
+		local wrappedLines = wrapText(self.font, paragraph, contentWidth)
+
+		for _, wline in ipairs(wrappedLines) do
+			love.graphics.print(wline, self.x + self.paddingX, drawY)
+			drawY = drawY + self.lineHeight
+		end
+	end
+
+	-- draw cursor at precalculated position
+	if self.isEditing then
+		local blink = math.floor(love.timer.getTime() * 2) % 2 == 0
+		if blink then
+			love.graphics.setColor(1, 1, 1)
+			love.graphics.line(
+				self.x + self.paddingX + (self.cursorX or 0),
+				self.cursorY or (self.y + self.paddingY),
+				self.x + self.paddingX + (self.cursorX or 0),
+				(self.cursorY or (self.y + self.paddingY)) + self.lineHeight
+			)
+		end
+	end
+end
+
+
+-- recalc wrapped lines for current text and store them
+function FieldElement:updateWrappedLines()
+	local value = tostring(self.tableRef and self.tableRef[self.keyRef] or "")
+	local contentWidth = self.w - 2 * self.paddingX
+	self.wrappedLines, self.maxLineWidth = wrapText(self.font, value, contentWidth)
+end
+
+
+-- unified draw for wrapped text (used for single-line and multiline fields)
+function FieldElement:drawWrapped()
+	if not self.wrappedLines then
+		self:updateWrappedLines()
+	end
+
+	local drawY = self.y + self.paddingY
+	for _, line in ipairs(self.wrappedLines) do
+		love.graphics.print(line, self.x + self.paddingX, drawY)
+		drawY = drawY + self.lineHeight
+	end
+
+	-- draw cursor
+	if self.isEditing then
+		local blink = math.floor(love.timer.getTime() * 2) % 2 == 0
+		if blink then
+			love.graphics.setColor(1, 1, 1)
+			love.graphics.line(
+				self.x + self.paddingX + (self.cursorX or 0),
+				self.cursorY or (self.y + self.paddingY),
+				self.x + self.paddingX + (self.cursorX or 0),
+				(self.cursorY or (self.y + self.paddingY)) + self.lineHeight
+			)
+		end
+	end
+end
+
+
+
 function FieldElement:draw()
-	-- draw background
 	if self.isHovered then
 		love.graphics.setColor(self.bgColorHover)
 	else
@@ -412,7 +530,6 @@ function FieldElement:draw()
 	end
 	love.graphics.rectangle("fill", self.x, self.y, self.w, self.h, 3)
 
-	-- draw border
 	if self.isEditing then
 		love.graphics.setColor(self.borderColorActive)
 	else
@@ -420,30 +537,184 @@ function FieldElement:draw()
 	end
 	love.graphics.rectangle("line", self.x, self.y, self.w, self.h, 3)
 
-	-- draw text
 	love.graphics.setColor(self.fgColor)
 	love.graphics.setFont(self.font)
-	love.graphics.print(self.value, self.x + self.paddingX, self.y + self.paddingY)
 
-	-- draw cursor if editing
-	if self.isEditing then
-		local textBeforeCursor = utf8.sub(self.value, 1, self.cursorPos)
-		local cursorX = self.x + self.paddingX + self.font:getWidth(textBeforeCursor)
-		local cursorY = self.y + self.paddingY
-		local blink = math.floor(love.timer.getTime() * 2) % 2 == 0
-		if blink then
-			love.graphics.setColor(1, 1, 1)
-			love.graphics.line(cursorX, cursorY, cursorX, cursorY + self.font:getHeight())
-		end
-	end
+	local value = tostring(self.tableRef and self.tableRef[self.keyRef] or "")
+	self:drawWrapped(value)
 end
+
+-- recalc cursor metrics after text or cursor movement using pre-wrapped lines
+function FieldElement:updateCursorMetrics()
+	local value = tostring(self.tableRef and self.tableRef[self.keyRef] or "")
+	local contentWidth = self.w - 2 * self.paddingX
+
+	-- update wrapped lines
+	self:updateWrappedLines()
+	local lines = self.wrappedLines
+
+	local charCount = 0
+	local cursorX, cursorY = 0, self.y + self.paddingY
+	local found = false
+
+	--print("=== updateCursorMetrics ===")
+	--print("full value:", string.format("%q", value))
+	--print("cursorPos:\t", self.cursorPos)
+	--print("paragraphs count:", #lines)
+
+	for lineIdx, lineText in ipairs(lines) do
+		local lineLen = utf8.len(lineText)
+		--print(string.format("line %d: '%s' (chars %d)", lineIdx, lineText, lineLen))
+
+		for i = 0, lineLen do
+			-- position before character i
+			if charCount == self.cursorPos then
+				local textBefore = (i == 0) and "" or utf8.sub(lineText, 1, i)
+				cursorX = self.font:getWidth(textBefore)
+				cursorY = self.y + self.paddingY + (lineIdx - 1) * self.lineHeight
+				found = true
+				--print(string.format("  cursor in line: localPos=%d, cursorX=%.1f, cursorY=%.1f", i, cursorX, cursorY))
+				break
+			end
+			charCount = charCount + 1
+		end
+
+		if found then break end
+	end
+
+	if not found then
+		cursorX = 0
+		cursorY = self.y + self.paddingY
+		--print("cursor not found, fallback to start")
+	end
+
+	self.cursorX = cursorX
+	self.cursorY = cursorY
+	--print(string.format("final cursorX=%.1f cursorY=%.1f", self.cursorX, self.cursorY))
+	--print("===========================\n")
+end
+
+
+
+--function FieldElement:textinput(t)
+--	if self.isEditing and self.tableRef and self.keyRef then
+--		local value = tostring(self.tableRef[self.keyRef])
+--		local before = utf8.sub(value, 1, self.cursorPos)
+--		local after = utf8.sub(value, self.cursorPos + 1)
+--		self.tableRef[self.keyRef] = before .. t .. after
+--		self.cursorPos = self.cursorPos + 1
+
+--		-- update field size and cursor metrics
+----		if self.multiline then
+--		self:calculateSize(self.w)
+----		end
+--		--print ('\n'..'FieldElement:textinput')
+--		self:updateCursorMetrics()
+
+--		-- debug log
+--		--print(string.format(
+----				"[FieldElement:textinput] len=%d cursor=%d cursorX=%.1f cursorY=%.1f",
+----				utf8.len(self.tableRef[self.keyRef]), self.cursorPos, self.cursorX, self.cursorY
+----			))
+--	end
+--end
+
+-- field text input
+function FieldElement:textinput(t)
+	if not self.isEditing or not self.tableRef or not self.keyRef then
+		return false
+	end
+
+	local value = tostring(self.tableRef[self.keyRef])
+	local before = utf8.sub(value, 1, self.cursorPos)
+	local after = utf8.sub(value, self.cursorPos + 1)
+	self.tableRef[self.keyRef] = before .. t .. after
+	self.cursorPos = self.cursorPos + #t
+
+	self:calculateSize(self.w)
+	self:updateWrappedLines()
+	self:updateCursorMetrics()
+
+	return true  -- indicate that value changed
+end
+
+
+
+
+
+-- field element key handling
+function FieldElement:keypressed(key)
+	if not self.isEditing or not self.tableRef or not self.keyRef then return end
+
+	local value = tostring(self.tableRef[self.keyRef])
+	local changed = false
+
+	if key == "return" then
+		if self.multiline then
+			local before = utf8.sub(value, 1, self.cursorPos)
+			local after = utf8.sub(value, self.cursorPos + 1)
+			self.tableRef[self.keyRef] = before .. "\n" .. after
+			self.cursorPos = self.cursorPos + 1
+			changed = true
+		else
+			self.isEditing = false
+		end
+	elseif key == "backspace" and self.cursorPos > 0 then
+		local before = utf8.sub(value, 1, self.cursorPos - 1)
+		local after = utf8.sub(value, self.cursorPos + 1)
+		self.tableRef[self.keyRef] = before .. after
+		self.cursorPos = self.cursorPos - 1
+		changed = true
+	elseif key == "delete" and self.cursorPos < utf8.len(value) then
+		local before = utf8.sub(value, 1, self.cursorPos)
+		local after = utf8.sub(value, self.cursorPos + 2)
+		self.tableRef[self.keyRef] = before .. after
+		changed = true
+	elseif key == "left" and self.cursorPos > 0 then
+		self.cursorPos = self.cursorPos - 1
+	elseif key == "right" and self.cursorPos < utf8.len(value) then
+		self.cursorPos = self.cursorPos + 1
+	elseif key == "home" then
+		local before = utf8.sub(value, 1, self.cursorPos)
+		local lastNewline = before:match(".*()\n")
+		self.cursorPos = lastNewline or 0
+	elseif key == "end" then
+		local after = utf8.sub(value, self.cursorPos + 1)
+		local nextNewline = after:find("\n")
+		if nextNewline then
+			self.cursorPos = self.cursorPos + nextNewline - 1
+		else
+			self.cursorPos = utf8.len(value)
+		end
+	elseif key == "up" or key == "down" then
+		-- handle vertical movement (unchanged, omitted here for brevity)
+	end
+
+	-- recalc height if multiline and content changed
+	if changed and self.multiline then
+		self:calculateSize(self.w)
+	end
+
+	-- recalc cursor metrics
+	self:updateCursorMetrics()
+
+	-- return true if content changed, so SidePanel can propagate
+	return changed
+end
+
+
 
 function FieldElement:mousepressed(mx, my, button)
 	if button == 1 then
 		if mx >= self.x and mx <= self.x + self.w and 
 		my >= self.y and my <= self.y + self.h then
 			self.isEditing = true
-			self.cursorPos = utf8.len(self.value)
+			local value = tostring(self.tableRef and self.tableRef[self.keyRef] or "")
+			-- move cursor to the end of text
+			self.cursorPos = utf8.len(value)
+			-- recalc cursor metrics
+			--print ('\n'..'FieldElement:mousepressed')
+			self:updateCursorMetrics()
 			return true
 		else
 			self.isEditing = false
@@ -452,239 +723,6 @@ function FieldElement:mousepressed(mx, my, button)
 	return false
 end
 
---function FieldElement:textinput(t)
---	if self.isEditing then
---		local before = utf8.sub(self.value, 1, self.cursorPos)
---		local after = utf8.sub(self.value, self.cursorPos + 1)
---		self.value = before .. t .. after
---		self.cursorPos = self.cursorPos + 1
---	end
---end
-
-function FieldElement:textinput(t)
-	if self.isEditing then
-		local before = utf8.sub(self.value, 1, self.cursorPos)
-		local after = utf8.sub(self.value, self.cursorPos + 1)
-		self.value = before .. t .. after
-		self.cursorPos = self.cursorPos + 1
-
-		-- update bound table
-		if self.tableRef and self.keyRef then
-			self.tableRef[self.keyRef] = self.value
-		end
-	end
-end
-
-function FieldElement:keypressed(key)
-	if not self.isEditing then return end
-
-	if key == "backspace" and self.cursorPos > 0 then
-		local before = utf8.sub(self.value, 1, self.cursorPos - 1)
-		local after = utf8.sub(self.value, self.cursorPos + 1)
-		self.value = before .. after
-		self.cursorPos = self.cursorPos - 1
-	elseif key == "delete" and self.cursorPos < utf8.len(self.value) then
-		local before = utf8.sub(self.value, 1, self.cursorPos)
-		local after = utf8.sub(self.value, self.cursorPos + 2)
-		self.value = before .. after
-	elseif key == "left" and self.cursorPos > 0 then
-		self.cursorPos = self.cursorPos - 1
-	elseif key == "right" and self.cursorPos < utf8.len(self.value) then
-		self.cursorPos = self.cursorPos + 1
-	elseif key == "home" then
-		self.cursorPos = 0
-	elseif key == "end" then
-		self.cursorPos = utf8.len(self.value)
-	elseif key == "return" or key == "escape" then
-		self.isEditing = false
-	end
-
-	-- update bound table
-	if self.tableRef and self.keyRef then
-		self.tableRef[self.keyRef] = self.value
-	end
-end
-
------------------------------------------------------------
--- MULTILINE FIELD ELEMENT
------------------------------------------------------------
-
-local MultilineFieldElement = setmetatable({}, {__index = FieldElement})
-MultilineFieldElement.__index = MultilineFieldElement
-
-function MultilineFieldElement:new(config)
-	local instance = FieldElement.new(self, config)
-
-	instance.lines = {}
-	instance.minHeight = config.minHeight or 60
-
-	return instance
-end
-
-function MultilineFieldElement:calculateSize(availableWidth)
-	self.w = availableWidth
-
-	local contentWidth = self.w - 2 * self.paddingX
-	self.lines, _ = wrapText(self.font, self.value, contentWidth)
-
-	local lineHeight = self.font:getHeight()
-	self.h = math.max(self.minHeight, #self.lines * lineHeight + 2 * self.paddingY)
-
-	return self.w, self.h
-end
-
-function MultilineFieldElement:textinput(t)
-	if self.isEditing then
-		local before = utf8.sub(self.value, 1, self.cursorPos)
-		local after = utf8.sub(self.value, self.cursorPos + 1)
-		self.value = before .. t .. after
-		self.cursorPos = self.cursorPos + 1
-		
-		if self.tableRef and self.keyRef then
-			self.tableRef[self.keyRef] = self.value
-		end
-		
-		self:calculateSize(self.w)
-	end
-end
-
-function MultilineFieldElement:keypressed(key)
-	if not self.isEditing then return end
-	
-	local changed = false
-	
-	if key == "return" then
-		local before = utf8.sub(self.value, 1, self.cursorPos)
-		local after = utf8.sub(self.value, self.cursorPos + 1)
-		self.value = before .. "\n" .. after
-		self.cursorPos = self.cursorPos + 1
-		changed = true
-	elseif key == "backspace" and self.cursorPos > 0 then
-		local before = utf8.sub(self.value, 1, self.cursorPos - 1)
-		local after = utf8.sub(self.value, self.cursorPos + 1)
-		self.value = before .. after
-		self.cursorPos = self.cursorPos - 1
-		changed = true
-	elseif key == "delete" and self.cursorPos < utf8.len(self.value) then
-		local before = utf8.sub(self.value, 1, self.cursorPos)
-		local after = utf8.sub(self.value, self.cursorPos + 2)
-		self.value = before .. after
-		changed = true
-	elseif key == "left" and self.cursorPos > 0 then
-		self.cursorPos = self.cursorPos - 1
-	elseif key == "right" and self.cursorPos < utf8.len(self.value) then
-		self.cursorPos = self.cursorPos + 1
-	elseif key == "home" then
-		self.cursorPos = 0
-	elseif key == "end" then
-		self.cursorPos = utf8.len(self.value)
-	elseif key == "escape" then
-		self.isEditing = false
-	end
-	
-	if changed then
-		if self.tableRef and self.keyRef then
-			self.tableRef[self.keyRef] = self.value
-		end
-		
-		-- recalculate height and notify panel
-		local oldH = self.h
-		self:calculateSize(self.w)
-		
-		if oldH ~= self.h and self.panel then
-			self.panel:recalculateElements()
-		end
-	end
-end
-
-
-
-function MultilineFieldElement:draw()
-	if self.isHovered then
-		love.graphics.setColor(self.bgColorHover)
-	else
-		love.graphics.setColor(self.bgColor)
-	end
-	love.graphics.rectangle("fill", self.x, self.y, self.w, self.h, 3)
-	
-	if self.isEditing then
-		love.graphics.setColor(self.borderColorActive)
-	else
-		love.graphics.setColor(self.borderColor)
-	end
-	love.graphics.rectangle("line", self.x, self.y, self.w, self.h, 3)
-	
-	love.graphics.setColor(self.fgColor)
-	love.graphics.setFont(self.font)
-	
-	local lineHeight = self.font:getHeight()
-	local contentWidth = self.w - 2 * self.paddingX
-	
-	-- split by newlines first
-	local paragraphs = {}
-	if self.value == "" then
-		paragraphs = {""}
-	else
-		for line in (self.value .. "\n"):gmatch("([^\n]*)\n") do
-			table.insert(paragraphs, line)
-		end
-	end
-	
-	-- draw and track cursor position
-	local drawY = self.y + self.paddingY
-	local cursorX, cursorY = 0, 0
-	local charCount = 0
-	local foundCursor = false
-	
-	for pIdx, paragraph in ipairs(paragraphs) do
-		-- wrap this paragraph
-		local wrappedLines = wrapText(self.font, paragraph, contentWidth)
-		
-		for wIdx, wline in ipairs(wrappedLines) do
-			love.graphics.print(wline, self.x + self.paddingX, drawY)
-			
-			-- check if cursor is on this wrapped line
-			if self.isEditing and not foundCursor then
-				local lineLen = utf8.len(wline)
-				if self.cursorPos >= charCount and self.cursorPos <= charCount + lineLen then
-					local textBeforeCursor = utf8.sub(wline, 1, self.cursorPos - charCount)
-					cursorX = self.font:getWidth(textBeforeCursor)
-					cursorY = drawY
-					foundCursor = true
-				end
-				charCount = charCount + lineLen
-			else
-				charCount = charCount + utf8.len(wline)
-			end
-			
-			drawY = drawY + lineHeight
-		end
-		
-		-- account for newline character between paragraphs
-		if pIdx < #paragraphs then
-			charCount = charCount + 1
-			
-			-- check if cursor is at the newline position
-			if self.isEditing and not foundCursor and self.cursorPos == charCount - 1 then
-				cursorX = self.font:getWidth(paragraphs[pIdx])
-				cursorY = drawY - lineHeight
-				foundCursor = true
-			end
-		end
-	end
-	
-	-- draw cursor
-	if self.isEditing then
-		local blink = math.floor(love.timer.getTime() * 2) % 2 == 0
-		if blink then
-			love.graphics.setColor(1, 1, 1)
-			love.graphics.line(
-				self.x + self.paddingX + cursorX, cursorY,
-				self.x + self.paddingX + cursorX, cursorY + lineHeight
-			)
-		end
-	end
-end
 
 -----------------------------------------------------------
 -- LINE ELEMENT (horizontal container)
@@ -798,38 +836,37 @@ function ImageElement:new(config)
 	local instance = Element.new(self, config)
 
 	-- load image
-	if config.img then
-		instance.image = love.graphics.newImage(config.img)
+	if config.filename then
+		instance.image = love.graphics.newImage(config.filename)
 	else
 		error("[ImageElement] missing image file path")
 	end
-
-	-- image dimensions
-	instance.imgW = instance.image:getWidth()
-	instance.imgH = instance.image:getHeight()
-
-	-- if width or height not given, use image size
-	instance.w = config.w or instance.imgW
-	instance.h = config.h or instance.imgH
-
-	-- alignment options (optional)
-	instance.align = config.align or "left"
 
 	return instance
 end
 
 function ImageElement:calculateSize(availableWidth)
-	-- stretch to full width, preserve aspect ratio
-	local scale = availableWidth / self.imgW
-	self.w = availableWidth
-	self.h = self.imgH * scale
-	return self.w, self.h
+	local imgW = self.image:getWidth()
+	local imgH = self.image:getHeight()
+	local scale = availableWidth / imgW
+	--print ('scale', scale)
+	if scale < 1 then
+		self.w = availableWidth
+		self.h = imgH * scale
+		self.scale = scale
+		return self.w, self.h
+	else
+		self.w = imgW
+		self.h = imgH
+		self.scale = nil
+		return self.w, self.h
+	end
 end
 
 
 function ImageElement:draw()
 	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.draw(self.image, self.x, self.y)
+	love.graphics.draw(self.image, self.x, self.y, 0, self.scale)
 end
 
 
@@ -843,7 +880,7 @@ return {
 	HeaderElement = HeaderElement,
 	SeparatorElement = SeparatorElement,
 	FieldElement = FieldElement,
-	MultilineFieldElement = MultilineFieldElement,
+--	MultilineFieldElement = MultilineFieldElement,
 	LineElement = LineElement,
 	ImageElement = ImageElement,
 }
