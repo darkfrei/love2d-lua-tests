@@ -558,10 +558,10 @@ function SidePanel.updateFieldsContent(changedField)
 				el:updateCursorMetrics()
 
 				-- debug
-				print(string.format(
-					"[updateFieldsContent] updated field keyRef=%s, oldH=%.1f newH=%.1f",
-					tostring(el.keyRef), oldH, el.h
-				))
+--				--print(string.format(
+--					"[updateFieldsContent] updated field keyRef=%s, oldH=%.1f newH=%.1f",
+--					tostring(el.keyRef), oldH, el.h
+--				))
 			elseif el.type == "line" and el.elements then
 				updateElements(el.elements)
 			end
@@ -603,18 +603,18 @@ end
 
 function SidePanel:textinput(t)
 	-- debug: indicate panel receiving input
-	print('SidePanel:textinput called, side:', self.side, 'input:', t)
+	--print('SidePanel:textinput called, side:', self.side, 'input:', t)
 
 	local handled = false
 
 	-- helper to process a field
 	local function processField(field)
 		if field:textinput(t) then
-			print(string.format(
-				"    field updated, keyRef=%s, new value='%s'",
-				tostring(field.keyRef),
-				tostring(field.tableRef[field.keyRef])
-			))
+			--print(string.format(
+--				"    field updated, keyRef=%s, new value='%s'",
+--				tostring(field.keyRef),
+--				tostring(field.tableRef[field.keyRef])
+--			))
 			-- update all matching fields in all panels
 			SidePanel.updateFieldsContent(field)
 			-- recalc positions for all panels
@@ -623,7 +623,7 @@ function SidePanel:textinput(t)
 			end
 			return true
 		else
-			print("    field:textinput returned false")
+			--print("    field:textinput returned false")
 			return false
 		end
 	end
@@ -631,13 +631,13 @@ function SidePanel:textinput(t)
 	-- iterate top-level elements
 	for _, el in ipairs(self.elements) do
 		if el.type == "field" and el.isEditing then
-			print("  attempting to textinput into field, keyRef="..tostring(el.keyRef))
+			--print("  attempting to textinput into field, keyRef="..tostring(el.keyRef))
 			handled = processField(el)
 			break -- only one field can be edited at a time per panel
 		elseif el.type == "line" and el.elements then
 			for _, child in ipairs(el.elements) do
 				if child.type == "field" and child.isEditing then
-					print("    attempting to textinput into child field, keyRef="..tostring(child.keyRef))
+					--print("    attempting to textinput into child field, keyRef="..tostring(child.keyRef))
 					handled = processField(child)
 					break
 				end
@@ -647,7 +647,7 @@ function SidePanel:textinput(t)
 	end
 
 	if not handled then
-		print("  no editable field handled input in this panel")
+		--print("  no editable field handled input in this panel")
 	end
 end
 

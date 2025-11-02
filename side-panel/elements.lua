@@ -6,27 +6,17 @@ local utf8 = require("utf8")
 -- helper function to get substring by character count (UTF-8 aware)
 function utf8.sub(s, i, j)
 	if not s then return "" end
-	local len = utf8.len(s)
-	if not len then return "" end
-
+	local len = utf8.len(s) or 0
 	i = i or 1
 	j = j or len
-
 	if i < 0 then i = len + i + 1 end
 	if j < 0 then j = len + j + 1 end
 	if i < 1 then i = 1 end
 	if j > len then j = len end
 	if i > j then return "" end
-
 	local startByte = utf8.offset(s, i)
-	if not startByte then return "" end
-
 	local endByte = utf8.offset(s, j + 1)
-	if endByte then
-		return string.sub(s, startByte, endByte - 1)
-	else
-		return string.sub(s, startByte)
-	end
+	return string.sub(s, startByte, endByte and endByte - 1 or -1)
 end
 
 -- wrap text into lines that fit within maxWidth using given font
@@ -347,6 +337,30 @@ local FieldElement = setmetatable({}, {__index = Element})
 FieldElement.__index = FieldElement
 
 
+--------------- helpers FieldElement
+local function getWrappedLinesWithStarts(font, textStr, maxWidth)
+	local pos = 0
+	local lines, starts = {}, {}
+	for rawLine in (textStr .. "\n"):gmatch("(.-)\n") do
+		if rawLine == "" then
+			table.insert(lines, "")
+			table.insert(starts, pos)
+		else
+			local _, wrapped = font:getWrap(rawLine, maxWidth)
+			for _, w in ipairs(wrapped) do
+				table.insert(lines, w)
+				table.insert(starts, pos)
+				pos = pos + utf8.len(w)
+			end
+		end
+		pos = pos + 1
+	end
+	if #textStr > 0 then pos = pos - 1 end
+	return lines, starts
+end
+
+--------------- end of helpers FieldElement
+
 function FieldElement:new(config)
 	local instance = Element.new(self, config)
 
@@ -545,6 +559,7 @@ function FieldElement:draw()
 end
 
 -- recalc cursor metrics after text or cursor movement using pre-wrapped lines
+--[[
 function FieldElement:updateCursorMetrics()
 	local value = tostring(self.tableRef and self.tableRef[self.keyRef] or "")
 	local contentWidth = self.w - 2 * self.paddingX
@@ -593,6 +608,68 @@ function FieldElement:updateCursorMetrics()
 	--print(string.format("final cursorX=%.1f cursorY=%.1f", self.cursorX, self.cursorY))
 	--print("===========================\n")
 end
+--]]
+
+
+--[[
+function FieldElement:updateCursorMetrics()
+	if not self.font then return end
+	
+	
+
+	local value = tostring(self.tableRef and self.tableRef[self.keyRef] or "")
+	local textBeforeCursor = utf8.sub(value, 1, self.cursorPos)
+	local contentWidth = self.w - 2 * self.paddingX
+
+	-- wrap text up to cursor exactly as it is drawn
+	local wrappedLines = wrapText(self.font, textBeforeCursor, contentWidth)
+	
+	self:updateWrappedLines()
+
+	-- last wrapped line = line where cursor is
+	local lastLine = wrappedLines[#wrappedLines] or ""
+	local lineCount = #wrappedLines
+
+	self.cursorX = self.font:getWidth(lastLine)
+	self.cursorY = self.y + self.paddingY + (lineCount - 1) * self.lineHeight
+end
+--]]
+
+function FieldElement:updateCursorMetrics()
+	local text = tostring(self.tableRef[self.keyRef] or "")
+	local maxWidth = self.w - 2 * self.paddingX
+
+	-- build wrapped lines safely
+	local allLines, allStarts = getWrappedLinesWithStarts(self.font, text, maxWidth)
+	if not allLines or #allLines == 0 then
+		allLines, allStarts = {""}, {0}
+	end
+
+	-- clamp cursorPos
+	self.cursorPos = math.max(0, math.min(self.cursorPos or 0, utf8.len(text)))
+
+	-- find current visual line
+	local cursorLineIndex = 1
+	for i = 1, #allLines do
+		local startPos = allStarts[i] or 0
+		local len = utf8.len(allLines[i] or "")
+		if self.cursorPos >= startPos and self.cursorPos <= startPos + len then
+			cursorLineIndex = i
+			break
+		end
+	end
+
+	-- get cursor offset inside line
+	local lineStartPos = allStarts[cursorLineIndex] or 0
+	local charsInLineToCursor = math.max(self.cursorPos - lineStartPos, 0)
+	local lineText = allLines[cursorLineIndex] or ""
+	local subToCursor = utf8.sub(lineText, 1, charsInLineToCursor)
+
+	-- update cursor coords
+	self.cursorX = self.font:getWidth(subToCursor)
+	self.cursorY = self.y + self.paddingY + (cursorLineIndex - 1) * self.lineHeight
+end
+
 
 
 
@@ -625,103 +702,232 @@ function FieldElement:textinput(t)
 		return false
 	end
 
-	local value = tostring(self.tableRef[self.keyRef])
-	local before = utf8.sub(value, 1, self.cursorPos)
-	local after = utf8.sub(value, self.cursorPos + 1)
+	local text = tostring(self.tableRef[self.keyRef])
+	local before = utf8.sub(text, 1, self.cursorPos)
+	local after = utf8.sub(text, self.cursorPos + 1)
 	self.tableRef[self.keyRef] = before .. t .. after
-	self.cursorPos = self.cursorPos + #t
+	self.cursorPos = self.cursorPos + utf8.len(t)
 
+	self:updateDesiredX()
 	self:calculateSize(self.w)
 	self:updateWrappedLines()
 	self:updateCursorMetrics()
-
-	return true  -- indicate that value changed
+	return true
 end
 
+function FieldElement:updateDesiredX()
+	local text = tostring(self.tableRef[self.keyRef])
+	local maxWidth = self.w - 2 * self.paddingX
+	local allLines, allStarts = getWrappedLinesWithStarts(self.font, text, maxWidth)
 
+	local idx = 1
+	for i = 1, #allLines do
+		local startPos = allStarts[i]
+		local len = utf8.len(allLines[i])
+		if self.cursorPos >= startPos and self.cursorPos <= startPos + len then
+			idx = i
+			break
+		end
+	end
 
+	local lineStartPos = allStarts[idx] or 0
+	local charsInLineToCursor = math.max(self.cursorPos - lineStartPos, 0)
+	local lineText = allLines[idx] or ""
+	local subToCursor = utf8.sub(lineText, 1, charsInLineToCursor)
+	self.desiredCursorX = self.font:getWidth(subToCursor)
+end
 
+function FieldElement:moveCursorVertical(direction)
+	local text = tostring(self.tableRef and self.tableRef[self.keyRef] or "")
+	local maxWidth = self.w - 2 * self.paddingX
+
+	-- get all wrapped visual lines and their start positions
+	local allLines, allStarts = getWrappedLinesWithStarts(self.font, text, maxWidth)
+	if #allLines == 0 then return end
+
+	-- find current visual line index
+	local currentIdx = 1
+	for i = 1, #allLines do
+		local startPos = allStarts[i]
+		local len = utf8.len(allLines[i])
+		if self.cursorPos >= startPos and self.cursorPos <= startPos + len then
+			currentIdx = i
+			break
+		end
+	end
+
+	local targetIdx = currentIdx + direction
+	if targetIdx < 1 or targetIdx > #allLines then
+		return -- out of bounds
+	end
+
+	-- set desiredCursorX if not set yet
+	if not self.desiredCursorX then
+		local currentLineText = allLines[currentIdx]
+		local currentStart = allStarts[currentIdx]
+		local relPos = math.max(self.cursorPos - currentStart, 0)
+		local sub = utf8.sub(currentLineText, 1, relPos)
+		self.desiredCursorX = self.font:getWidth(sub)
+	end
+
+	-- get target line info
+	local targetText = allLines[targetIdx]
+	local targetStart = allStarts[targetIdx]
+	local targetLen = utf8.len(targetText)
+	local maxX = self.font:getWidth(targetText or "")
+
+	-- clamp desired x so it doesn't go past line width
+	local desiredX = math.min(self.desiredCursorX or 0, maxX)
+
+	-- find closest character boundary to desired x
+	local closestPos = 0
+	local closestDiff = math.huge
+	for i = 0, targetLen do
+		local sub = utf8.sub(targetText, 1, i)
+		local w = self.font:getWidth(sub)
+		local diff = math.abs(w - desiredX)
+		if diff < closestDiff then
+			closestDiff = diff
+			closestPos = i
+		end
+	end
+
+	self.cursorPos = targetStart + closestPos
+	self:updateCursorMetrics()
+end
 
 -- field element key handling
 function FieldElement:keypressed(key)
-	if not self.isEditing or not self.tableRef or not self.keyRef then return end
-
-	local value = tostring(self.tableRef[self.keyRef])
+	if not self.isEditing or not self.tableRef or not self.keyRef then return false end
+	local text = tostring(self.tableRef[self.keyRef])
 	local changed = false
 
-	if key == "return" then
-		if self.multiline then
-			local before = utf8.sub(value, 1, self.cursorPos)
-			local after = utf8.sub(value, self.cursorPos + 1)
-			self.tableRef[self.keyRef] = before .. "\n" .. after
-			self.cursorPos = self.cursorPos + 1
-			changed = true
-		else
-			self.isEditing = false
-		end
-	elseif key == "backspace" and self.cursorPos > 0 then
-		local before = utf8.sub(value, 1, self.cursorPos - 1)
-		local after = utf8.sub(value, self.cursorPos + 1)
-		self.tableRef[self.keyRef] = before .. after
+	local function replaceText(startIdx, endIdx, replacement)
+		local before = utf8.sub(text, 1, startIdx - 1)
+		local after = utf8.sub(text, endIdx + 1)
+		text = before .. (replacement or "") .. after
+	end
+
+	if key == "backspace" and self.cursorPos > 0 then
+		replaceText(self.cursorPos, self.cursorPos, "")
 		self.cursorPos = self.cursorPos - 1
 		changed = true
-	elseif key == "delete" and self.cursorPos < utf8.len(value) then
-		local before = utf8.sub(value, 1, self.cursorPos)
-		local after = utf8.sub(value, self.cursorPos + 2)
-		self.tableRef[self.keyRef] = before .. after
+	elseif key == "delete" and self.cursorPos < utf8.len(text) then
+		replaceText(self.cursorPos + 1, self.cursorPos + 1, "")
 		changed = true
 	elseif key == "left" and self.cursorPos > 0 then
 		self.cursorPos = self.cursorPos - 1
-	elseif key == "right" and self.cursorPos < utf8.len(value) then
+	elseif key == "right" and self.cursorPos < utf8.len(text) then
 		self.cursorPos = self.cursorPos + 1
+	elseif key == "return" then
+		replaceText(self.cursorPos + 1, self.cursorPos, "\n")
+		self.cursorPos = self.cursorPos + 1
+		changed = true
 	elseif key == "home" then
-		local before = utf8.sub(value, 1, self.cursorPos)
-		local lastNewline = before:match(".*()\n")
-		self.cursorPos = lastNewline or 0
+		self.cursorPos = 0
 	elseif key == "end" then
-		local after = utf8.sub(value, self.cursorPos + 1)
-		local nextNewline = after:find("\n")
-		if nextNewline then
-			self.cursorPos = self.cursorPos + nextNewline - 1
-		else
-			self.cursorPos = utf8.len(value)
-		end
-	elseif key == "up" or key == "down" then
-		-- handle vertical movement (unchanged, omitted here for brevity)
+		self.cursorPos = utf8.len(text)
+	elseif key == "up" then
+		self:moveCursorVertical(-1)
+	elseif key == "down" then
+		self:moveCursorVertical(1)
 	end
 
-	-- recalc height if multiline and content changed
-	if changed and self.multiline then
+	self.tableRef[self.keyRef] = text
+	if changed then
 		self:calculateSize(self.w)
 	end
-
-	-- recalc cursor metrics
+	self:updateDesiredX()
+	self:updateWrappedLines()
 	self:updateCursorMetrics()
-
-	-- return true if content changed, so SidePanel can propagate
 	return changed
 end
 
 
 
 function FieldElement:mousepressed(mx, my, button)
-	if button == 1 then
-		if mx >= self.x and mx <= self.x + self.w and 
-		my >= self.y and my <= self.y + self.h then
-			self.isEditing = true
-			local value = tostring(self.tableRef and self.tableRef[self.keyRef] or "")
-			-- move cursor to the end of text
-			self.cursorPos = utf8.len(value)
-			-- recalc cursor metrics
-			--print ('\n'..'FieldElement:mousepressed')
-			self:updateCursorMetrics()
-			return true
-		else
-			self.isEditing = false
+	if button ~= 1 then return false end
+
+	-- check click inside field bounds
+	if mx < self.x or mx > self.x + self.w or my < self.y or my > self.y + self.h then
+		self.isEditing = false
+		return false
+	end
+
+	self.isEditing = true
+	local text = tostring(self.tableRef and self.tableRef[self.keyRef] or "")
+	local maxWidth = self.w - 2 * self.paddingX
+
+	-- get wrapped visual lines and absolute start positions
+	local allLines, allStarts = getWrappedLinesWithStarts(self.font, text, maxWidth)
+	if #allLines == 0 then
+		-- empty text: put cursor at start
+		self.cursorPos = 0
+		self.desiredCursorX = 0
+		self:updateCursorMetrics()
+		return true
+	end
+
+	-- determine clicked visual line index
+	local localY = my - (self.y + self.paddingY)
+	local lineIndex = math.floor(localY / self.lineHeight) + 1
+	if lineIndex < 1 then lineIndex = 1 end
+	if lineIndex > #allLines then lineIndex = #allLines end
+
+	local lineText = allLines[lineIndex] or ""
+	local lineStartPos = allStarts[lineIndex] or 0
+
+	-- compute local x inside text area
+	local localX = mx - (self.x + self.paddingX)
+	if localX < 0 then localX = 0 end
+
+	-- find cursor position in line by accumulating character widths
+	-- we compute widths for boundaries between characters:
+	-- boundary 0 = 0, boundary 1 = width(char1), boundary 2 = width(char1..char2), ...
+	local len = utf8.len(lineText) or 0
+	local accumWidths = {}    -- accumWidths[b] = width of first b characters, b from 0..len
+	accumWidths[0] = 0
+	for i = 1, len do
+		local sub = utf8.sub(lineText, 1, i)
+		accumWidths[i] = self.font:getWidth(sub)
+	end
+
+	-- if clicked to the right of last char, place cursor at end
+	if localX >= accumWidths[len] then
+		self.cursorPos = lineStartPos + len
+		self.desiredCursorX = accumWidths[len]
+		self:updateCursorMetrics()
+		return true
+	end
+
+	-- otherwise find boundary k so that localX is between accumWidths[k-1] and accumWidths[k]
+	-- then decide whether cursor should be at k-1 or k by comparing distance to the two boundaries
+	local cursorInLine = 0
+	for k = 1, len do
+		local left = accumWidths[k-1] or 0
+		local right = accumWidths[k]
+		if localX <= right then
+			-- choose closer boundary
+			if (localX - left) <= (right - localX) then
+				cursorInLine = k - 1
+			else
+				cursorInLine = k
+			end
+			break
 		end
 	end
-	return false
+
+	-- set global cursor position and desired x
+	self.cursorPos = lineStartPos + cursorInLine
+	self.desiredCursorX = accumWidths[cursorInLine] or 0
+
+	-- update metrics/wrapped lines for drawing
+	self:updateWrappedLines()
+	self:updateCursorMetrics()
+	return true
 end
+
+
 
 
 -----------------------------------------------------------
