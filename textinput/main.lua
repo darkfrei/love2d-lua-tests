@@ -1,4 +1,6 @@
 -- minimal_textinput.lua
+-- https://github.com/darkfrei/love2d-lua-tests/tree/main/textinput
+-- https://love2d.org/wiki/TextInputField
 
 local utf8 = require("utf8")
 
