@@ -1,4 +1,6 @@
-return {
+-- https://github.com/roginvs/space-rangers-quest/blob/master/src/lib/qmreader.ts
+
+return { -- quest.qmm
 	header = 1111111127,
 	givingRace = 31,
 	whenDone = 1,
@@ -26,7 +28,7 @@ return {
 	},
 	defaultParamChange = {
 		change = 0,
-		showingType = 0,
+		showingType = 0, -- don't change
 		isChangePercentage = false,
 		isChangeValue = false,
 		isChangeFormula = true,
@@ -10789,3 +10791,257 @@ return {
 		},
 	},
 }
+
+
+--[[
+QM/QMM File Format Specification (Space Rangers Quest Format)
+==============================================================
+
+## Overview
+QM (Quest Master) and QMM (Quest Master Modified) are binary file formats 
+used for text-based adventure quests in Space Rangers game series.
+Files may be compressed using zlib/pako compression.
+
+## File Reading Algorithm
+
+### Step 1: Check for Compression
+1. Read first 2 bytes
+2. If bytes are 0x78 0x9C (zlib magic): decompress entire file with zlib
+3. Continue with decompressed data
+
+### Step 2: Read Header Magic
+Position: 0x00
+- Read 4 bytes: magic signature
+  - QM files: specific magic value (varies by version)
+  - Check against known TGE versions (4.2.x, 4.3.x, 5.x)
+
+### Step 3: Read Version Info
+Position: 0x04
+- Read 4 bytes (int32): major version
+- Read 4 bytes (int32): minor version
+- Read 4 bytes (int32): revision
+Example: version 5.2.10 = major:5, minor:2, revision:10
+
+### Step 4: Read Quest Metadata
+
+#### Quest Header Block
+Read in sequence:
+1. Quest name:
+   - Read 4 bytes (int32): string length N
+   - Read N bytes: UTF-8/CP1251 string
+   
+2. Task text (given to player):
+   - Read 4 bytes (int32): string length
+   - Read string data
+   
+3. Success text:
+   - Read 4 bytes (int32): string length
+   - Read string data
+   
+4. Failure text:
+   - Read 4 bytes (int32): string length
+   - Read string data
+   
+5. Race identifiers:
+   - Read 4 bytes (int32): from_race (0-5: Maloc, Peleng, People, Fei, Gaal, Klingon/None)
+   - Read 4 bytes (int32): to_race (same encoding)
+   
+6. Planet/Star names:
+   - Read string: from_planet
+   - Read string: from_star
+   - Read string: to_planet
+   - Read string: to_star
+   
+7. Quest settings:
+   - Read 4 bytes (int32): difficulty (0-100)
+   - Read 4 bytes (int32): days_to_complete
+   - Read 4 bytes (int32): money_reward
+   
+8. Ranger type required:
+   - Read 4 bytes (int32): required_ranger_type
+     (0=any, 1=trader, 2=pirate, 3=warrior)
+
+### Step 5: Read Parameters Section
+
+1. Read 4 bytes (int32): parameter_count (max 48 for v4.x, 96 for v5.x)
+
+2. For each parameter (loop parameter_count times):
+   
+   a) Read 4 bytes (int32): parameter_id (usually sequential)
+   
+   b) Parameter name:
+      - Read 4 bytes (int32): name_length
+      - Read name_length bytes: UTF-8 string
+   
+   c) Read 4 bytes (int32): min_value
+   
+   d) Read 4 bytes (int32): max_value
+   
+   e) Initial values:
+      - Read 4 bytes (int32): initial_values_count
+      - For each initial value:
+        - Read 4 bytes (int32): value OR
+        - Read range specification string
+   
+   f) Read 1 byte: parameter_type
+      - 0 = normal
+      - 1 = success (quest ends successfully)
+      - 2 = fail (quest ends in failure)
+      - 3 = death (player dies)
+   
+   g) If parameter_type != 0:
+      - Read 4 bytes (int32): critical_value
+   
+   h) Read 1 byte (boolean): is_money_parameter
+   
+   i) Read 1 byte (boolean): show_when_zero
+   
+   j) Display ranges:
+      - Read 4 bytes (int32): ranges_count
+      - For each range:
+        - Read 4 bytes (int32): range_min
+        - Read 4 bytes (int32): range_max
+        - Read string: display_format
+          (can contain <>, [pX], {expressions})
+
+### Step 6: Read Locations Section
+
+1. Read 4 bytes (int32): locations_count
+
+2. For each location:
+   
+   a) Read 4 bytes (int32): location_id
+   
+   b) Read 1 byte: location_type
+      - 0 = normal
+      - 1 = starting location
+      - 2 = success ending
+      - 3 = fail ending
+      - 4 = death ending
+   
+   c) Read 1 byte (boolean): is_empty
+      (if true, text shown only when transition has no description)
+   
+   d) Read 1 byte (boolean): day_passed
+      (if true, one game day passes when entering this location)
+   
+   e) Description texts:
+      - Read 4 bytes (int32): texts_count (1-10)
+      - For each text:
+        - Read string: description_text
+   
+   f) Read string: description_selection_formula
+      (expression or range like [1..5] to choose which text to show)
+   
+   g) Parameter modifications:
+      - Read 4 bytes (int32): modifications_count
+      - For each modification:
+        - Read 4 bytes (int32): parameter_index
+        - Read 1 byte: modification_type
+          - 0 = add value
+          - 1 = subtract value
+          - 2 = percentage change
+          - 3 = assign value
+          - 4 = expression evaluation
+        - Read string: value_or_expression
+        - Read 1 byte: show_change_in_stats
+   
+   h) Parameter visibility:
+      - For each parameter (48 or 96):
+        - Read 1 byte: visibility_change
+          - 0 = no change
+          - 1 = show parameter
+          - 2 = hide parameter
+   
+   i) Critical value messages:
+      - For each parameter:
+        - Read 1 byte (boolean): has_custom_message
+        - If true:
+          - Read string: custom_critical_message
+   
+   j) Editor position:
+      - Read 4 bytes (float): x_position
+      - Read 4 bytes (float): y_position
+
+### Step 7: Read Transitions Section
+
+1. Read 4 bytes (int32): transitions_count
+
+2. For each transition:
+   
+   a) Read 4 bytes (int32): transition_id
+   
+   b) Read 4 bytes (int32): from_location_id
+   
+   c) Read 4 bytes (int32): to_location_id
+   
+   d) Read 4 bytes (float): priority
+      (used for random selection when multiple transitions compete)
+   
+   e) Read 1 byte (boolean): day_passed
+   
+   f) Read string: question_text
+      (shown as choice to player; empty = automatic transition)
+   
+   g) Description texts:
+      - Read 4 bytes (int32): texts_count (0-10)
+      - For each text:
+        - Read string: description_text
+   
+   h) Read string: description_selection_formula
+   
+   i) Read 4 bytes (int32): pass_count_limit
+      (0 = unlimited, N = can pass N times)
+   
+   j) Read 1 byte (boolean): always_show
+      (if true, show even when unavailable)
+   
+   k) Read 1 byte: display_order (0-9)
+      (controls vertical position in choice list)
+   
+   l) Logic formula:
+      - Read string: global_logic_formula
+        (expression that must evaluate to true for transition to be available)
+   
+   m) Parameter conditions:
+      - Read 4 bytes (int32): conditions_count
+      - For each condition:
+        - Read 4 bytes (int32): parameter_index
+        - Read 1 byte: condition_type
+          - 0 = must be in range
+          - 1 = must not be in range
+          - 2 = must equal values
+          - 3 = must not equal values
+          - 4 = must be multiple of
+          - 5 = must not be multiple of
+        - Read 4 bytes (int32): values_count
+        - For each value:
+          - Read 4 bytes (int32): value OR
+          - Read range specification
+   
+   n) Parameter modifications:
+      (same format as in locations)
+   
+   o) Parameter visibility:
+      (same format as in locations)
+   
+   p) Critical value messages:
+      (same format as in locations)
+   
+   q) Editor position for arrow drawing:
+      - Read 4 bytes (float): control_point_x
+      - Read 4 bytes (float): control_point_y
+
+### Step 8: Read Additional Data (v5.x only)
+
+For version 5.x and above:
+1. Read 4 bytes (int32): has_extended_data
+2. If has_extended_data != 0:
+   - Read extended parameter data (48 additional parameters)
+   - Read extended features flags
+   - Read compatibility data
+
+## Data Types Reference
+
+### String Reading
+--]]
