@@ -1,0 +1,142 @@
+-- mode: table
+return {
+
+ 1,
+ "abc",
+ true,
+
+stringKeys = {
+ -- 1) plain identifiers
+ plainCamelCaseIdentifier = "OK", -- camelCase
+ PlainPascalCaseIdentifier = "OK", -- PascalCase
+ plain_snake_case_identifier = "OK", -- snake_case
+ PLAIN_CONSTANT_CASE = "OK", -- CONSTANT_CASE
+ mixed123identifier = "OK", -- letters+digits
+
+ -- 2) kebab / dash identifiers
+ plain-kebab-identifier = "OK", -- kebab-case
+ extended-kebab-case-key = "OK", -- more dashes
+
+
+ -- 3) bracketed string keys ["..."]
+ ["bracketed-string-key"] = "OK",
+ ["another_string_key"] = "OK",
+ ["some-kebab-string-key"] = "OK",
+
+ -- 4) quoted string keys "..."
+ "quoted-string-key" = "OK",
+ "quoted_snake_key" = "OK",
+ "quoted-kebab-key" = "OK",
+
+ -- 5) numeric-looking identifiers
+ numberLikeId1 = "OK",
+ id2value = "OK",
+ 
+  -- 6) bracketed identifiers (raw identifiers inside [])
+ [bracketed-ident] = "OK",
+ [another-bracket-key] = "OK",
+
+ -- 7) unicode identifiers
+ пример_unicode_ключ = "OK",
+ пример_unicode_значение = "норм",
+ ключ-с-дефисом = "OK", -- unicode + dash
+},
+
+
+
+ quotes_double = '"""',
+ quotes_single = "'''",
+ mixed_quotes = [[He said: "It's fine!" I'm ok]],
+ brackets = "{{}}[[]]<>(())",
+ backslash = "\\\\\\",
+ escape_sequences = "Line1\nLine2\tTabbed",
+ camalCase = "OK",
+-- "snake-case" = "not OK",
+ equals = "a=b=c===",
+ dashes = "----",
+ special = "!@#$%^&*()_+-=[]{}|;:,.<>?/~`",
+ all_together = [[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]],
+ 
+ settings = {
+ "default",
+ quotes1 = "'",
+ quotes2 = '"',
+ type = "123456",
+ resolution = {
+ height = 1080,
+ width = 1920,
+ },
+ volume = 0.8,
+ fullscreen = false,
+ },
+ items = {
+ 3,
+ {
+ name = "Apple",
+ id = 101,
+ price = 0.5,
+ },
+ {
+ name = "Banana",
+ id = 102,
+ price = 0.3,
+ },
+ {
+ name = "Orange",
+ id = 103,
+ price = 0.7,
+ },
+ },
+ nested = {
+ arr2 = {
+ b = "y",
+ c = "z",
+ a = "x",
+ },
+ deep = {
+ key2 = {
+ foo = "bar",
+ hello = "world",
+ },
+ key1 = {
+ 1,
+ 2,
+ 3,
+ },
+ },
+ arr1 = {
+ 10,
+ 20,
+ 30,
+ 40,
+ 50,
+ },
+ },
+ users = {
+ {
+ 1,
+ 2,
+ 3,
+ active = true,
+ age = 7,
+ id = 1,
+ name = "Alice",
+ },
+ {
+ active = false,
+ age = 9,
+ id = 2,
+ name = "Bob",
+ },
+ {
+ active = true,
+ age = 12,
+ id = 3,
+ name = "Charlie",
+ },
+ admin = "Bob",
+ },
+ message = "Hello, LuaML!",
+ score = 42,
+ flag = true,
+}
