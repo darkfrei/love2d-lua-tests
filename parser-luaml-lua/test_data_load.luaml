@@ -5,6 +5,8 @@ return {
  "abc",
  true,
 
+ calculate = function(x, y) return x + y end,
+
 stringKeys = {
  -- 1) plain identifiers
  plainCamelCaseIdentifier = "OK", -- camelCase
