@@ -1,0 +1,40 @@
+todo:
+
+qmplayer-love2d/
+├── main.lua                 # Точка входа Love2D
+├── conf.lua                # Конфигурация Love2D
+├── lib/
+│   ├── qm/
+│   │   ├── parser.lua      # Парсер .qm файлов
+│   │   ├── quest.lua       # Класс Quest - основной квест
+│   │   ├── location.lua    # Класс Location - локация
+│   │   ├── jump.lua        # Класс Jump - переход
+│   │   └── param.lua       # Класс Parameter - параметр
+│   ├── player/
+│   │   ├── player.lua      # Класс QMPlayer - движок игры
+│   │   ├── state.lua       # Состояние игры
+│   │   └── formula.lua     # Вычисление формул
+│   ├── ui/
+│   │   ├── screen.lua      # Менеджер экранов
+│   │   ├── game.lua        # Игровой экран
+│   │   ├── menu.lua        # Главное меню
+│   │   └── textbox.lua     # Компонент текстового блока
+│   └── utils/
+│       ├── binary.lua      # Работа с бинарными данными
+│       ├── text.lua        # Обработка текста
+│       └── math.lua        # Математические утилиты
+└── quests/
+    └── *.qm                # Файлы квестов
+    
+    
+    
+    
+    
+version 1.1
+qmplayer-love2d/
+├── main.lua          # Основной файл плеера
+├── conf.lua          # Конфигурация Love2D
+└── quests/
+    └── data.lua      # Данные квеста (полученные из парсера)
+
+version 1.0
