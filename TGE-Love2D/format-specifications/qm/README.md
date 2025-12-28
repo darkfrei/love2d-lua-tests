@@ -1,6 +1,6 @@
 # Space Rangers Quest (.qm) Binary Format Specification
 
-This document describes the **legacy `.qm` quest binary format** used in *Space Rangers 2 / Dominators* and compatible engines (e.g. OpenSR).
+This document describes the **legacy `.qm` quest binary format** used in *Space Rangers* and compatible engines (e.g. OpenSR).
 It is based on reverse engineering, the OpenSR source code, and the 010 Editor template by VirRus77.
 
 This specification applies **only to `.qm` files**, not to `.qmm`.
