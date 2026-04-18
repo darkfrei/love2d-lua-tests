@@ -1,88 +1,103 @@
 -- truss/physics.lua
--- Core physics routines. All functions receive a World as first argument.
+-- core physics routines; this module implements a simple mass-spring system for beams
+-- each node is a point mass; each beam behaves like a spring with damping
 --
--- Public API:
--- Physics.refresh_masses(world) redistribute beam self-weight to nodes
--- Physics.compute_forces(world) accumulate forces into node.fx / node.fy
--- Physics.verlet_step(world, dt) one Velocity Verlet sub-step
--- Physics.check_failures(world) break beams that exceed MAX_F
+-- public api:
+-- physics.refresh_masses(world) recompute node masses from beam weights
+-- physics.compute_forces(world) compute all forces acting on nodes
+-- physics.verlet_step(world, dt) integrate motion using velocity verlet
+-- physics.check_failures(world) break beams that exceed strength limit
 
 local Physics = {}
 
--- Distribute beam self-weight evenly to endpoint nodes.
--- Must be called after any topology change (add / remove node or beam).
+-- distribute beam self-weight evenly to endpoint nodes; each beam contributes half its weight to each node
+-- this keeps mass consistent with current structure; must be called after adding or removing beams
 function Physics.refresh_masses(world)
 	local cfg = world.config
 	for _, n in ipairs(world.nodes) do
-		n.mass = cfg.NODE_BASE_MASS
+		n.mass = cfg.NODE_BASE_MASS -- start from base mass of node itself
 	end
 	for _, bm in ipairs(world.beams) do
 		if not bm.broken then
-			local half_mass = cfg.BEAM_WT * bm.L0 * 0.5
+			local half_mass = cfg.BEAM_WT * bm.L0 * 0.5 -- beam mass proportional to rest length
 			world.nodes[bm.n1].mass = world.nodes[bm.n1].mass + half_mass
 			world.nodes[bm.n2].mass = world.nodes[bm.n2].mass + half_mass
 		end
 	end
 end
 
--- Compute and apply forces for one beam.
--- Separated into its own function to keep compute_forces readable.
+-- compute and apply forces for one beam; this is the core spring + damping model
+-- result is accumulated into node force buffers n.fx / n.fy
 local function apply_beam_forces(world, bm)
 	local cfg = world.config
 	local n1 = world.nodes[bm.n1]
 	local n2 = world.nodes[bm.n2]
 
+	-- vector from n1 to n2
 	local dx = n2.x - n1.x
 	local dy = n2.y - n1.y
-	local L = math.sqrt(dx*dx + dy*dy)
+	local L = math.sqrt(dx*dx + dy*dy) -- current length of beam
 
-	-- skip degenerate (zero-length) beams
+	-- skip degenerate case to avoid division by zero
 	if L < 1e-6 then return end
 
+	-- unit direction vector along beam
 	local ux = dx / L
 	local uy = dy / L
 
-	-- 1. Elastic spring force: F = k * (L - L0)
-	local k = cfg.EA / bm.L0
+	-- elastic spring force; hooke law f = k * (L - L0)
+	-- if L > L0 beam is stretched; if L < L0 beam is compressed
+	local k = cfg.EA / bm.L0 -- stiffness scales with material stiffness EA and inversely with length
 	local F_el = k * (L - bm.L0)
-	bm.force = F_el
+	bm.force = F_el -- store for visualization and failure checks
 
+	-- track max forces for UI / debugging
 	local af = math.abs(F_el)
 	if af > world.max_force then world.max_force = af end
 	if af > world.peak_force then world.peak_force = af end
 
+	-- apply equal and opposite forces to nodes
 	n1.fx = n1.fx + F_el * ux
 	n1.fy = n1.fy + F_el * uy
 	n2.fx = n2.fx - F_el * ux
 	n2.fy = n2.fy - F_el * uy
 
-	-- Split relative velocity into axial and lateral components
+	-- relative velocity between nodes
 	local vx_r = n2.vx - n1.vx
 	local vy_r = n2.vy - n1.vy
-	local v_ax = vx_r * ux + vy_r * uy -- scalar, along beam axis
-	local v_lx = vx_r - v_ax * ux -- lateral vector component x
-	local v_ly = vy_r - v_ax * uy -- lateral vector component y
+
+	-- project velocity onto beam axis; this is stretching/compression speed
+	local v_ax = vx_r * ux + vy_r * uy
+
+	-- subtract axial component to get lateral motion; this is bending/swinging
+	local v_lx = vx_r - v_ax * ux
+	local v_ly = vy_r - v_ax * uy
 	local v_lat = math.sqrt(v_lx*v_lx + v_ly*v_ly)
 
+	-- effective mass of beam pair; used in damping formulas
 	local m_eff = (n1.mass + n2.mass) * 0.5
 
-	-- 2. Axial damping
-	-- c_crit = 2 * sqrt(k * m_eff)
+	-- axial damping; removes oscillations along beam direction
+	-- critical damping c = 2 * sqrt(k * m); we scale it by ZETA_AXIAL
 	local c_ax = 2.0 * math.sqrt(k * m_eff)
 	local F_dax = cfg.ZETA_AXIAL * c_ax * v_ax
+
 	n1.fx = n1.fx + F_dax * ux
 	n1.fy = n1.fy + F_dax * uy
 	n2.fx = n2.fx - F_dax * ux
 	n2.fy = n2.fy - F_dax * uy
 
-	-- 3. Lateral (angular / pendulum) damping
-	-- c_crit = 2 * m_eff * sqrt(G / L)
+	-- lateral damping; stabilizes swinging like a pendulum
+	-- frequency approx sqrt(g / L); used to estimate critical damping
 	if v_lat > 1e-9 then
 		local w_pend = math.sqrt(cfg.G / math.max(L, 1))
 		local c_ang = 2.0 * m_eff * w_pend
 		local F_dlat = cfg.ZETA_ANGULAR * c_ang * v_lat
+
+		-- direction of lateral motion
 		local lux = v_lx / v_lat
 		local luy = v_ly / v_lat
+
 		n1.fx = n1.fx + F_dlat * lux
 		n1.fy = n1.fy + F_dlat * luy
 		n2.fx = n2.fx - F_dlat * lux
@@ -90,22 +105,25 @@ local function apply_beam_forces(world, bm)
 	end
 end
 
--- Zero force accumulators, then accumulate gravity, loads, and beam forces.
+-- compute all forces in the system; result is stored in each node as fx fy
 function Physics.compute_forces(world)
 	local cfg = world.config
 	local nodes = world.nodes
 
+	-- reset accumulators before summing forces
 	for _, n in ipairs(nodes) do
 		n.fx, n.fy = 0, 0
 	end
 
+	-- gravity acts on all masses; positive G means downward force
 	for _, n in ipairs(nodes) do
 		n.fy = n.fy + n.mass * cfg.G
 		if n.load then
-			n.fy = n.fy + n.load * cfg.G
+			n.fy = n.fy + n.load * cfg.G -- additional user-defined load
 		end
 	end
 
+	-- add internal forces from all beams
 	for _, bm in ipairs(world.beams) do
 		if not bm.broken then
 			apply_beam_forces(world, bm)
@@ -113,12 +131,12 @@ function Physics.compute_forces(world)
 	end
 end
 
--- Advance positions and velocities by one Velocity Verlet sub-step.
--- Pinned DOFs are held at rest position after each drift.
+-- integrate motion using velocity verlet; stable and commonly used in physics simulations
+-- step is split into kick drift kick to improve energy behavior
 function Physics.verlet_step(world, dt)
 	local nodes = world.nodes
 
-	-- Half-kick: v += a * (dt/2)
+	-- first half update of velocity using current forces
 	for _, n in ipairs(nodes) do
 		if not (n.pin_x and n.pin_y) then
 			n.vx = n.vx + (n.fx / n.mass) * dt * 0.5
@@ -126,7 +144,7 @@ function Physics.verlet_step(world, dt)
 		end
 	end
 
-	-- Drift: x += v * dt, then enforce pin constraints
+	-- update positions; pinned axes are constrained to rest position
 	for _, n in ipairs(nodes) do
 		if not n.pin_x then n.x = n.x + n.vx * dt end
 		if not n.pin_y then n.y = n.y + n.vy * dt end
@@ -134,10 +152,10 @@ function Physics.verlet_step(world, dt)
 		if n.pin_y then n.y = n.rest_y; n.vy = 0 end
 	end
 
-	-- Recompute forces at new positions
+	-- recompute forces at new positions; needed for second half step
 	Physics.compute_forces(world)
 
-	-- Second half-kick
+	-- second half update of velocity
 	for _, n in ipairs(nodes) do
 		if not (n.pin_x and n.pin_y) then
 			n.vx = n.vx + (n.fx / n.mass) * dt * 0.5
@@ -148,9 +166,8 @@ function Physics.verlet_step(world, dt)
 	end
 end
 
--- Break any beam whose |force| exceeds MAX_F.
--- Fires world.on_beam_break(beam) callback if set.
--- Returns true if at least one beam broke.
+-- check if any beam exceeds strength limit; if so mark as broken
+-- broken beams no longer contribute forces; masses are recomputed after break
 function Physics.check_failures(world)
 	local broke = false
 	for _, bm in ipairs(world.beams) do
@@ -158,12 +175,20 @@ function Physics.check_failures(world)
 			bm.broken = true
 			broke = true
 			if world.on_beam_break then
-				world.on_beam_break(bm)
+				world.on_beam_break(bm) -- optional callback for effects or sound
 			end
 		end
 	end
-	if broke then
-		Physics.refresh_masses(world)
+	
+	if broke then -- commented: 
+-- do not recompute masses after break
+-- broken beams still contribute mass
+		-- Physics.refresh_masses(world)
+
+-- do not recompute masses here
+-- broken beams are visually simulated as separate pieces
+-- removing their mass would cause mismatch between physics and rendering
+
 	end
 	return broke
 end

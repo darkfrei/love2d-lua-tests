@@ -2,22 +2,22 @@
 -- Game-specific bridge creation and canvas rendering.
 --
 -- Depends on globals set by main.lua:
--- world, gstate, sel, hover, tool, font11, font14, W, H
+-- world, gstate, sel, hover, tool, font11, font14, Width, Height
 -- Depends on UI constants set by main.lua:
 -- UI.TBW, UI.GRID, UI.NR, UI.BW
 
 
 
- -------------------------------------------------------------
+-------------------------------------------------------------
 -- stress color palette
- -------------------------------------------------------------
+-------------------------------------------------------------
 local STRESS_COLOR_NEUTRAL = {0.58, 0.60, 0.64, 1} -- zero force (grey)
 local STRESS_COLOR_TENSION = {0.10, 0.40, 1.00, 1} -- tension (blue)
 local STRESS_COLOR_COMPRESSION = {1.00, 0.20, 0.10, 1} -- compression (red)
 
- -------------------------------------------------------------
+-------------------------------------------------------------
 -- returns rgba color for axial force value
- -------------------------------------------------------------
+-------------------------------------------------------------
 local function stress_color(force, max_f)
 	-- handle zero or missing force
 	if not force or force == 0 then
@@ -36,7 +36,7 @@ local function stress_color(force, max_f)
 	local target = (t < 0) and STRESS_COLOR_COMPRESSION or STRESS_COLOR_TENSION
 
 	-- interpolation strength
-	local s = math.min(math.abs(t) * 20, 1)
+	local s = math.min(math.abs(t) * 2, 1)
 
 	-- interpolate between neutral and target
 	return {
@@ -52,11 +52,11 @@ end
 ---------------------------------------------------------------
 
 -- populates `world` with a 5-panel warren truss centered on the canvas
--- W: window width in pixels (used to compute canvas center)
+-- Width: window width in pixels (used to compute canvas center)
 
- -----------------------------------------------------------
+-----------------------------------------------------------
 -- examples (manual usage)
- -----------------------------------------------------------
+-----------------------------------------------------------
 -- add node:
 -- world:add_node(x, y, { pin_x = true, pin_y = true, load = 10 })
 --
@@ -67,18 +67,18 @@ end
 -- world:add_node(100, 200)
 -- world:add_node(200, 200)
 -- world:add_beam(1, 2)
- -----------------------------------------------------------
-local function new_bridge(world, W)
+-----------------------------------------------------------
+local function new_bridge(world, Width)
 	world.nodes, world.beams = {}, {}
 
-	local cx = UI.TBW + (W - UI.TBW) / 2 -- canvas center x (excluding toolbar)
+	local cx = UI.TBW + (Width - UI.TBW) / 2 -- canvas center x (excluding toolbar)
 	local by = 430 -- bottom chord y position
 	local ty = 300 -- top chord y position
 	local span = 660 -- total horizontal span (px)
 	local n = 5 -- number of panels in example bridge
-	
+
 	local extLoad = world.config.EXT_LOAD
-	
+
 	print ('bridge, new_bridge, extLoad:'..extLoad)
 
 	-- bottom chord nodes
@@ -129,16 +129,16 @@ end
 local function draw_grid()
 	love.graphics.setColor(0.11, 0.12, 0.16)
 	love.graphics.setLineWidth(1)
-	for x = UI.TBW, W, UI.GRID do love.graphics.line(x, 0, x, H) end
-	for y = 0, H, UI.GRID do love.graphics.line(UI.TBW, y, W, y) end
+	for x = UI.TBW, Width, UI.GRID do love.graphics.line(x, 0, x, Height) end
+	for y = 0, Height, UI.GRID do love.graphics.line(UI.TBW, y, Width, y) end
 
 	love.graphics.setColor(0.28, 0.20, 0.12)
 	love.graphics.setLineWidth(3)
-	love.graphics.line(UI.TBW, 450, W, 450)
+	love.graphics.line(UI.TBW, 450, Width, 450)
 
 	love.graphics.setColor(0.20, 0.14, 0.08)
 	love.graphics.setLineWidth(1)
-	for xi = UI.TBW, W, 20 do
+	for xi = UI.TBW, Width, 20 do
 		love.graphics.line(xi, 450, xi - 12, 464)
 	end
 end
@@ -309,19 +309,40 @@ local function draw_preview()
 	love.graphics.setLineWidth(1)
 end
 
+local function draw_ragdolls()
+	if not world.hinged_fragments or #world.hinged_fragments == 0 then return end
+
+	for _, f in ipairs(world.hinged_fragments) do
+		local n = world.nodes[f.node_idx]
+		if n then
+			local tip_x = n.x + f.length * math.cos(f.angle)
+			local tip_y = n.y + f.length * math.sin(f.angle)
+
+			love.graphics.setColor(0.5, 0.5, 0.5, 0.8)
+			love.graphics.setLineWidth(UI.BW * 0.8)
+			love.graphics.line(n.x, n.y, tip_x, tip_y)
+		end
+	end
+
+--    love.graphics.setLineWidth(1)
+end
+
 local Bridge = {
 --	stress_color = stress_color,
 	new_bridge = new_bridge,
---	draw_grid = draw_grid,
+	draw_grid = draw_grid,
 --	draw_beams = draw_beams,
 --	draw_nodes = draw_nodes,
 --	draw_preview = draw_preview,
-	}
+
+
+	draw_ragdolls = draw_ragdolls,
+}
 
 --local Bridge = {}
 
 Bridge.draw = function ()
-	draw_grid()
+--	draw_grid()
 	draw_beams()
 	draw_nodes()
 	draw_preview()

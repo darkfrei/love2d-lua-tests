@@ -1,13 +1,14 @@
 -- truss/init.lua
--- Library entry point.
+-- library entry point
 --
--- Usage:
--- local Truss = require("truss")
--- local world = Truss.new() -- default physics constants
--- local world = Truss.new({ G=300 }) -- override gravity only
+-- usage:
+-- local truss = require("truss")
+-- local world = truss.new() -- use default physics constants
+-- local world = truss.new({ G = 300 }) -- override gravity only
 --
--- Returns a module table with a single function:
--- Truss.new(config?) -> World
+-- returns:
+-- module table with function:
+-- truss.new(config?) -> world
 
 local World = require("truss.world")
 

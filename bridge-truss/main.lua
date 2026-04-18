@@ -4,6 +4,9 @@
 -- physics to the truss library and drawing to bridge.lua.
 
 local Truss = require("truss")
+local BrokenTruss = require("truss.broken-truss")
+
+
 local Bridge = require("bridge")
 
 ---------------------------------------------------------------
@@ -21,7 +24,7 @@ UI = {
 -- Global shared state
 ---------------------------------------------------------------
 world = nil -- truss world; created in love.load
-W, H = 0, 0 -- window dimensions
+Width, Height = 0, 0 -- window dimensions
 
 gstate = "build" -- current mode: "build" or "simulate"
 tool = "node" -- active build tool
@@ -73,7 +76,7 @@ end
 local function draw_toolbar()
 	-- background
 	love.graphics.setColor(0.09, 0.10, 0.13)
-	love.graphics.rectangle("fill", 0, 0, UI.TBW, H)
+	love.graphics.rectangle("fill", 0, 0, UI.TBW, Height)
 
 	-- header
 	love.graphics.setColor(0.17, 0.19, 0.26)
@@ -89,7 +92,7 @@ local function draw_toolbar()
 	-- tool buttons
 	for i, btn in ipairs(TOOL_BTNS) do
 		local ty = btn_top(i)
-		local act = (tool == btn.id and gstate == "build")
+		local act = (tool == btn.id and (gstate == "build" or gstate == "pause"))
 		love.graphics.setColor(act and {0.20, 0.46, 0.88} or {0.16, 0.18, 0.23})
 		love.graphics.rectangle("fill", 5, ty, UI.TBW-10, 28, 4)
 		love.graphics.setColor(act and {1, 1, 1} or {0.70, 0.74, 0.80})
@@ -170,7 +173,7 @@ local function draw_toolbar()
 
 	-- footer counters
 	love.graphics.setColor(0.14, 0.16, 0.21)
-	love.graphics.rectangle("fill", 0, H-52, UI.TBW, 52)
+	love.graphics.rectangle("fill", 0, Height-52, UI.TBW, 52)
 	love.graphics.setColor(0.52, 0.57, 0.68)
 	love.graphics.setFont(font12)
 
@@ -178,14 +181,14 @@ local function draw_toolbar()
 	love.graphics.printf(
 		"Nodes: " .. #world.nodes .. " Beams: " .. #world.beams ..
 		(bk > 0 and ("\nBroken: " .. bk) or ""),
-		6, H-48, UI.TBW-12)
+		6, Height-48, UI.TBW-12)
 
 	love.graphics.setFont(font14)
 
 	-- toolbar right border
 	love.graphics.setColor(0.24, 0.28, 0.38)
 	love.graphics.setLineWidth(1.5)
-	love.graphics.line(UI.TBW, 0, UI.TBW, H)
+	love.graphics.line(UI.TBW, 0, UI.TBW, Height)
 	love.graphics.setLineWidth(1)
 end
 
@@ -195,9 +198,9 @@ end
 -- draws bottom status bar
 local function draw_status()
 	love.graphics.setColor(0.07, 0.08, 0.11)
-	love.graphics.rectangle("fill", UI.TBW, H-30, W-UI.TBW, 30)
+	love.graphics.rectangle("fill", UI.TBW, Height-30, Width-UI.TBW, 30)
 	love.graphics.setColor(0.24, 0.26, 0.35)
-	love.graphics.line(UI.TBW, H-30, W, H-30)
+	love.graphics.line(UI.TBW, Height-30, Width, Height-30)
 	love.graphics.setColor(sim_running and {0.60, 0.92, 0.60} or {0.80, 0.80, 0.60})
 
 	local txt = msg
@@ -206,7 +209,7 @@ local function draw_status()
 			world.max_force, sim_time, msg)
 	end
 
-	love.graphics.print(txt, UI.TBW + 10, H - 22)
+	love.graphics.print(txt, UI.TBW + 10, Height - 22)
 end
 
 -- draws top overlay hints
@@ -254,7 +257,7 @@ local function start_sim()
 	world:start()
 	sim_running = true
 	sim_time = 0
-	msg = "Simulation running. [SPACE] = stop."
+	msg = "Simulation running. [SPACE] = pause."
 end
 
 
@@ -262,14 +265,24 @@ end
 local function stop_sim()
 	sim_running = false
 	world:reset()
+	BrokenTruss.clear(world)
 	msg = "Back to build mode."
+end
+
+-- stops simulation and resets state
+local function pause_sim()
+	sim_running = false
+--	world:reset()
+--	BrokenTruss.clear(world)
+	msg = "Simulation on pause. [SPACE] = stop."
 end
 
 -- resets bridge to initial state
 local function reset_bridge()
 	sim_running = false
 	world.nodes, world.beams = {}, {}
-	Bridge.new_bridge(world, W)
+	Bridge.new_bridge(world, Width)
+	BrokenTruss.clear(world)
 	gstate = "build"
 	sel, hover = nil, nil
 	msg = "Warren truss ready. SPACE=simulate Q/E=axial-z A/D=angular-z"
@@ -398,7 +411,8 @@ end
 
 
 function love.load()
-	W, H = love.graphics.getDimensions()
+--	Height = love.graphics.getHeight
+	Width, Height = love.graphics.getDimensions()
 	love.graphics.setLineStyle("smooth")
 
 	font14 = love.graphics.newFont(14)
@@ -410,6 +424,8 @@ function love.load()
 	world = Truss.new({
 --			EXT_LOAD = 5, -- external load multiplier
 		})
+	BrokenTruss.enable(world)
+
 
 	reset_bridge()
 end
@@ -423,6 +439,8 @@ function love.update(dt)
 	-- simulation step
 	if gstate == "simulate" and sim_running then
 		world:step(dt)
+		BrokenTruss.step(world, dt)
+		
 		sim_time = sim_time + math.min(dt, world.config.DT_MAX)
 	end
 end
@@ -430,15 +448,17 @@ end
 
 function love.draw()
 	love.graphics.setColor(0.08, 0.09, 0.13)
-	love.graphics.rectangle("fill", UI.TBW, 0, W - UI.TBW, H)
-	
---	Bridge.draw_grid()
+	love.graphics.rectangle("fill", UI.TBW, 0, Width - UI.TBW, Height)
+
+	Bridge.draw_grid()
 --	Bridge.draw_beams()
 --	Bridge.draw_nodes()
 --	Bridge.draw_preview()
 
+	Bridge.draw_ragdolls()
+
 	Bridge.draw()
-	
+
 	draw_toolbar()
 	draw_status()
 	draw_overlay()
@@ -550,6 +570,7 @@ function love.keypressed(k)
 			start_sim()
 		elseif gstate == "simulate" then
 			gstate = "pause"
+			pause_sim()
 		elseif gstate == "pause" then
 			gstate = "build"
 			stop_sim()
