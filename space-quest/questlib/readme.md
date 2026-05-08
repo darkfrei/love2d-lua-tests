@@ -1,249 +1,601 @@
-# Questlib notation reference
+# Questlib
 
-A love2d module for creating, playing, editing and saving text quests.
+A Love2D module for writing, running, and saving text-based quests.
+Quest data is written in plain Lua tables. No external dependencies.
 
 ---
 
-## Values and references
+## Module overview
 
-Variables are stored in a flat `values` table with string keys.
+The module is split into four layers:
+
+- `questlib` (init.lua) -- public API, entry point for the game
+- `runtime` -- manages state, resolves nodes and choices
+- `validator` -- checks quest data for structural errors before loading
+- `evaluator` -- resolves expressions and parses inline text
+
+---
+
+## Public API
 
 ```lua
-values = {
-    gold          = 10,
-    name          = "aria",
-    status        = "active",
-    met_alchemist = false,
+local questlib = require('questlib')
+```
+
+### questlib.load(data)
+
+Validates and loads a quest table. Enters the start node and returns its state.
+Throws an error if validation fails.
+
+```lua
+local node = questlib.load(require('my_quest'))
+```
+
+### questlib.choose(index)
+
+Executes a choice by its display index. Applies effects, resolves the transition,
+and returns the new node state. Returns nil if the choice is disabled or consumed.
+
+```lua
+local node = questlib.choose(1)
+```
+
+### questlib.step()
+
+Re-enters the current node without making a choice. Useful after manually
+modifying state with set_state.
+
+```lua
+local node = questlib.step()
+```
+
+### questlib.get_state() / questlib.set_state(t)
+
+Read or write the current variables table directly.
+
+```lua
+local state = questlib.get_state()
+state.gold = state.gold + 100
+questlib.set_state(state)
+```
+
+### questlib.save_state(path) / questlib.load_state(path)
+
+Serialize and restore the variables table to/from a file.
+
+```lua
+questlib.save_state("saved_quest.lua")
+```
+
+```lua
+questlib.load_state("saved_quest.lua")
+```
+
+### questlib.reset()
+
+Clears all runtime state. Call before loading a new quest.
+
+```lua
+questlib.reset()
+```
+
+---
+
+## Node state (return value)
+
+Every function that advances the quest returns a node state table:
+
+```lua
+{
+  id    = "tavern",
+  text   = { ... },   -- flat list of rendered segments (see Text output)
+  stats   = { ... },   -- flat list of rendered stat segments
+  after_text = { ... },  -- rendered transition text from the previous choice, or nil
+  choices  = {
+    { index = 1, id = "buy_ale", label = "Buy ale", enabled = true },
+    { index = 2, id = "leave",  label = "Leave",  enabled = false },
+  }
 }
 ```
 
-A reference to a variable is written as `<varname>` — a string wrapped in angle brackets.
-A bare value without angle brackets is a literal (number, string, or boolean).
+`text`, `stats`, and `after_text` are all flat segment lists ready for rendering.
+`choices` is the display list in sorted order. Use `index` to call `questlib.choose`.
+
+---
+
+## Variables
+
+Variables are a flat key-value table defined under `variables` in the quest.
+All keys are strings, values may be numbers, strings, or booleans.
 
 ```lua
-"<gold>"      -- reference: resolves to values["gold"]
-10            -- literal number
-"active"      -- literal string
-true          -- literal boolean
+variables = {
+  gold    = 10,
+  name    = "aria",
+  has_key  = false,
+  reputation = 0,
+}
 ```
 
-Positional references use `p1`, `p2`, `p3`, ... as keys:
+A reference to a variable is written as a string wrapped in angle brackets: `"<gold>"`.
+This syntax is recognised by the evaluator in expressions and in inline text.
+
+A bare value without angle brackets is a literal:
 
 ```lua
-"<p1>"        -- values["p1"]
-"<p2>"        -- values["p2"]
+"<gold>"  -- variable reference, resolves to values["gold"]
+10     -- literal number
+"active"  -- literal string
+true    -- literal boolean
 ```
 
 ---
 
-## Expression types
+## Expressions
 
-All expressions are plain lua tables. The type is inferred from the operator at position 2 (or position 1 for CTE).
+All expressions are plain Lua tables. The operator at position 2 determines the type.
 
-### COMP — comparison
+### Comparison (COMP)
 
-Produces a boolean.
+Produces a boolean. Used in conditions, ternary conditions, and visibility rules.
 
-```
-{value1, op, value2}
-```
-
-Operators: `==  !=  <  >  <=  >=`
+Operators: `== != < > <= >=`
 
 ```lua
-{"<gold>",       ">=", 10}
-{"<gold>",       "==", 0}
-{"<status>",     "==", "active"}
-{"<reputation>", ">=", 70}
+{"<gold>",    ">=", 10}
+{"<status>",   "==", "active"}
+{"<comms_on>",  "==", true}
 ```
 
-### EXPR — arithmetic expression
+### Arithmetic (EXPR)
 
 Produces a number. Used as a value inside COMP or ASSI.
 
-```
-{value1, op, value2}
-```
-
-Operators: `+  -  *  /  %`
+Operators: `+ - * / %`
 
 ```lua
 {"<price>", "*", 2}
-{"<gold>",  "+", "<bonus>"}
+{"<gold>", "+", "<bonus>"}
 ```
 
-The evaluator distinguishes COMP from EXPR by the operator symbol.
+### Assignment (ASSI)
 
-### ASSI — assignment
+Mutates a variable. Used inside effects only.
 
-Used inside jump `effects`. Mutates `values`.
-
-```
-{target, op, value}
-```
-
-Operators: `=  +=  -=  *=  /=`
+Operators: `= += -= *= /=`
 
 ```lua
-{"<gold>",          "-=", 5}
-{"<gold>",          "=",  0}
-{"<met_alchemist>", "=",  true}
-{"<score>",         "+=", {"<bonus>", "*", 2}}  -- EXPR as value
+{"<gold>",  "-=", 5}
+{"<has_key>", "=", true}
+{"<score>",  "+=", {"<bonus>", "*", 2}}
 ```
 
-### CTE — conditional expression
+### Ternary
 
-Produces one of two values depending on a condition.
+Evaluates a condition and returns one of two values. The else branch is optional.
 
-```
+```lua
 {"?", condition, then_val, else_val}
 ```
 
-`else_val` is optional and defaults to `nil`.
-`condition` is any expression that produces a boolean (typically a COMP).
-
 ```lua
-{"?", {"<gold>", ">=", 10}, "branch_a", "branch_b"}
-{"?", {"<reputation>", ">=", 70}, "branch_a", "branch_b"}
-```
-
-Nesting is allowed:
-
-```lua
+{"?", {"<gold>", ">=", 10}, "rich", "poor"}
+{"?", "has_credits", "Shop open", "Shop closed"}  -- condition ref
 {"?", {"<gold>", ">=", 10},
-    {"?", {"<reputation>", ">=", 5}, "rich and known", "rich"},
-    "poor"
+  {"?", {"<rep>", ">", 5}, "rich and known", "rich"},
+  "poor"
 }
 ```
 
-Right-hand side of COMP may be an EXPR:
+The condition may be a COMP expression or a string reference to `shared_conditions`.
+
+---
+
+## Quest file structure
+
+A quest is a single Lua table returned from a file.
 
 ```lua
-{"?", {"<gold>", ">=", {"<price>", "*", 2}}, true, false}
+return {
+  id     = "my_quest",
+  start_node = "intro",
+  variables = { ... },
+
+  shared_conditions = { ... },
+  shared_effects  = { ... },
+  shared_snippets  = { ... },
+  shared_stats   = { ... },
+  shared_choices  = { ... },
+
+  nodes = { ... },
+}
 ```
 
-CTE as a value inside ASSI — price doubles if the player has more than 1000 gold:
+All `shared_` sections are dictionaries keyed by id.
+They are optional -- inline definitions inside nodes are always valid.
+
+---
+
+## shared_conditions
+
+Named condition expressions. Referenced by string key in visible, enabled,
+ternary conditions, and snippet conditions.
 
 ```lua
-{"<price>", "*=", {"?", {"<gold>", ">", 1000}, 2, 1}}
+shared_conditions = {
+  has_gold  = {"<gold>",    ">=", 10},
+  has_key   = {"<has_key>",  "==", true},
+  threat_high = {"<threat>",   ">", 5},
+  comms_on  = {"<comms>",   "==", true},
+}
+```
+
+Usage by reference:
+
+```lua
+visible = "has_gold"
+enabled = "has_key"
+{"?", "threat_high", "Alert: CRITICAL", "Alert: Normal"}
 ```
 
 ---
 
-## Text format
+## shared_effects
 
-Node text is a lua table of segments. Each segment is either a plain string or a CTE that resolves to a string.
+Named effect lists. Each entry is an array of ASSI expressions.
+Referenced by string key in choice effects.
+
+```lua
+shared_effects = {
+  spend_gold = {
+    {"<gold>", "-=", 10}
+  },
+  siphon_fuel = {
+    {"<fuel>", "+=", 25},
+    {"<fuel>", "=", {"?", {"<fuel>", ">", 100}, 100, "<fuel>"}},
+    {"<threat>", "+=", 2},
+  },
+}
+```
+
+Usage by reference:
+
+```lua
+effects = "spend_gold"
+effects = "siphon_fuel"
+```
+
+Inline effects (not shared) are written as an array directly on the choice:
+
+```lua
+effects = {
+  {"<gold>", "-=", 5},
+  {"<visited>", "=", true},
+}
+```
+
+---
+
+## shared_snippets
+
+Named expressions or strings inserted into text by reference.
+A snippet is either a plain string or a ternary that resolves to a string.
+
+```lua
+shared_snippets = {
+  power_status = {"?", "has_fuel",
+    "Reactor output: **stable**.",
+    "Reactor output: **critical**."},
+    
+  comms_status = {"?", "comms_on",
+    "Long-range comms: **online**.",
+    "Long-range comms: **offline**."},
+  threat_line = "Threat Level: <threat>",
+}
+```
+
+Used in text or stats arrays:
 
 ```lua
 text = {
-    "you enter the tavern. ",
-    {"?", {"<gold>", ">=", 10}, "you are **wealthy**", "your pockets are `empty`"},
-    " the innkeeper looks at **<name>**.",
+  "The hub hums. ",
+  {"snippet", "power_status"},
+  " Comms report: ",
+  {"snippet", "comms_status"},
 }
 ```
 
-The evaluator walks the table, resolves each segment, then parses inline markdown.
-
-### Inline markdown
-
-Standard markdown subset is used for styling within string segments.
-
-| syntax         | meaning       |
-|----------------|---------------|
-| `**text**`     | bold          |
-| `*text*`       | italic        |
-| `` `text` ``   | monospace     |
-| `~~text~~`     | strikethrough |
-| `<varname>`    | variable reference, resolves and renders as highlight |
-
-### Evaluated output (segments)
-
-The evaluator returns a flat list of segment tables.
-
-```lua
--- text at gold = 3, name = "aria"
-{
-    { text = "you enter the tavern. " },
-    { text = "your pockets are " },
-    { text = "empty",    style = "m"  },  -- monospace from `empty`
-    { text = ". the innkeeper looks at " },
-    { text = "aria",     style = "bh" },  -- bold + highlight from **<name>**
-}
-```
-
-`style` is a string mask. Flags are combined freely:
-
-| flag | meaning       |
-|------|---------------|
-| `b`  | bold          |
-| `i`  | italic        |
-| `m`  | monospace     |
-| `s`  | strikethrough |
-| `h`  | highlight     |
-
-A segment with no style flags omits the `style` field entirely.
-Variable references (`<varname>`) always receive the `h` flag unless overridden by surrounding markup.
+The ternary condition inside a snippet may be a string reference to `shared_conditions`
+or a full COMP expression.
 
 ---
 
-## Quest structure
+## shared_stats
 
-### Quest
+Named stat groups. Each group is an array of strings, ternary expressions, or snippet refs.
+Expanded inline when referenced by key inside a node's stats array.
 
 ```lua
-{
-    id          = "my_quest",
-    title       = "the alchemist",
-    description = "a short quest about gold and reputation",
-    variables   = {
-        gold          = 10,
-        reputation    = 0,
-        met_alchemist = false,
-    },
-    start_node  = "intro",
-    nodes       = { ... },
+shared_stats = {
+  global = {
+    "Crew: <player_name>",
+    "Credits: <credits>",
+    "Fuel: <fuel>%",
+    {"snippet", "threat_line"},
+    {"?", "threat_high", "Alert: ==CRITICAL==", "Alert: Normal"},
+  }
 }
 ```
 
-### Node
+Usage inside a node:
 
 ```lua
-{
-    id   = "tavern",
-    text = {
-        "the innkeeper eyes you. ",
-        {"?", {"<gold>", ">=", 10}, "he nods *respectfully*", "he sneers"},
-        ". you have **<gold>** coins.",
-    },
-    jumps = { ... },
+stats = { "global", "Location: Engineering Bay" }
+```
+
+String entries in stats are resolved in order: if the key exists in shared_stats,
+it is expanded; otherwise the string is treated as a literal text line.
+
+---
+
+## shared_choices
+
+Named choices available across all nodes. Referenced by string key inside
+a node's choices array.
+
+```lua
+shared_choices = {
+  return_hub = {
+    label  = "Head back to the Central Hub",
+    priority = 10,
+    transition = { target = "hub" }
+  },
+  global_rest = {
+    label  = "Rest and let the scrubbers cycle (+15 oxygen, -10 credits)",
+    visible = {"<oxygen>", "<", 90},
+    enabled = "has_credits",
+    priority = 2,
+    once   = true,
+    effects = "rest_quarters",
+    transition = {
+      text  = {"Scrubbers ran a full cycle. **Oxygen +15. Credits -10.**"},
+      target = "hub"
+    }
+  },
 }
 ```
 
-### Jump
+Shared choices get their `id` injected automatically from the dictionary key.
+This id is used for `once` and `consumed` tracking.
+
+---
+
+## Nodes
+
+Each node is an entry in the `nodes` array.
 
 ```lua
 {
-    id        = "buy_ale",
-    label     = "buy ale (5 coins)",
-    condition = {"<gold>", ">=", 5},       -- COMP, optional
-    effects   = {
-        {"<gold>", "-=", 5},               -- list of ASSI
-    },
-    target    = "tavern_drink",            -- node id
+  id   = "engineering",
+  text  = { ... },
+  stats  = { ... },
+  choices = { ... },
 }
 ```
 
-`condition` is optional. If absent, the jump is always shown.
-`effects` is applied in order when the jump is taken.
-Jumps are presented to the player in randomised order.
+### text
+
+Array of strings, ternary expressions, and snippet refs.
+Strings may contain inline markdown and variable references (`<varname>`).
+
+```lua
+text = {
+  "The reactor hums. ",
+  {"snippet", "power_status"},
+  "\nFuel remaining: **<fuel>%**.",
+  {"?", {"<fuel>", "<=", 10}, " **Warning: critical.**", ""},
+}
+```
+
+### stats
+
+Array of strings, ternary expressions, and snippet refs.
+Strings are either a shared_stats group key or a literal stat line.
+
+```lua
+stats = {
+  "global",
+  "Location: Engineering Bay",
+  "Reactor: ==Unstable==",
+  {"?", "comms_on", "Comms: **Active**", "Comms: ==Dead=="},
+}
+```
+
+### choices
+
+Array of shared choice keys (strings) and inline choice tables, in display order.
+
+```lua
+choices = {
+  "global_rest",
+  {
+    id    = "siphon",
+    label  = "Siphon fuel from auxiliary tanks (+25 fuel, +2 threat)",
+    visible = "fuel_not_full",
+    enabled = "siphon_limit",
+    priority = 0,
+    effects = "siphon_fuel",
+    transition = {
+      text  = {"Auxiliary reserves drained. **Fuel: <fuel>%.**"},
+      target = "engineering"
+    }
+  },
+  "return_hub"
+}
+```
+
+---
+
+## Choice fields
+
+| field   | type          | description                   |
+|------------|-------------------------|--------------------------------------------------|
+| id     | string         | unique identifier, required for once/consumed  |
+| label   | string         | display text shown to the player         |
+| visible  | cond ref or COMP    | hides choice if false, default true       |
+| enabled  | cond ref or COMP    | greys out choice if false, still shown      |
+| priority  | number         | lower = shown first, default 0          |
+| once    | boolean         | hidden after first use              |
+| consumed  | boolean         | hidden after first use, also removes from node  |
+| effects  | effect ref or ASSI list | applied when choice is taken           |
+| transition | table          | text and/or target node after choice is taken  |
+
+Only one of `once` and `consumed` may be set on a single choice.
+
+### Transition
+
+```lua
+transition = {
+  text  = {"Array repaired. **Credits: <credits>.**"},
+  target = "comms_room"
+}
+```
+
+`text` is optional. If omitted, no after_text is produced.
+`target` is optional. If omitted, the current node is re-entered.
+`text` follows the same format as node text (strings, ternary, snippet refs).
+
+---
+
+## Text output (rendered segments)
+
+The evaluator returns a flat array of segment tables. Each segment has a `text` field
+and an optional `style` field.
+
+```lua
+{ text = "the innkeeper nods " }
+{ text = "respectfully", style = "i" }
+{ text = "aria",     style = "bh" }
+```
+
+Style flags:
+
+| flag | meaning    |
+|------|---------------|
+| b  | bold     |
+| i  | italic    |
+| m  | monospace   |
+| s  | strikethrough |
+| h  | highlight   |
+
+Flags combine freely. A segment with no styling omits the style field.
+
+### Inline markdown
+
+| syntax    | style flag |
+|--------------|------------|
+| `**text**`  | b (bold)  |
+| `*text*`   | i (italic) |
+| `` `text` `` | m (mono)  |
+| `~~text~~`  | s (strike) |
+| `==text==`  | h (highlight, used for place names and titles) |
+
+Variable references inside strings (`<varname>`) are always rendered with the h flag.
 
 ---
 
 ## Evaluator rules
 
-1. A string matching `^<[%w_]+>$` is a variable reference — look up in `values`.
-2. A table with `t[1] == "?"` is a CTE — evaluate condition, recurse into then or else.
-3. A table with `t[2]` matching `== != < > <= >=` is a COMP — return boolean.
-4. A table with `t[2]` matching `+ - * / %` is an EXPR — return number.
-5. A table with `t[2]` matching `= += -= *= /=` is an ASSI — mutate values, return nil.
-6. Anything else is a literal — return as-is.
+Resolution order inside `evaluator.resolve`:
+
+1. A string matching `^<[%w_]+>$` is a variable reference -- look up in values.
+2. A table with `t[1] == "?"` is a ternary -- evaluate condition, recurse into then or else.
+3. A table with `t[2]` in `== != < > <= >=` is a COMP -- return boolean.
+4. A table with `t[2]` in `+ - * / %` is an EXPR -- return number.
+5. A table with `t[2]` in `= += -= *= /=` is an ASSI -- mutate values, return nil.
+6. Anything else is returned as a literal.
+
+Condition string references (`"has_gold"`, `"comms_on"`) are resolved to their
+COMP expression by the runtime before being passed to the evaluator.
+The evaluator itself only sees raw expressions, never string keys.
+
+---
+
+## Validation
+
+`questlib.load` runs a full validation pass before entering the runtime.
+Errors are printed with a path and description:
+
+```
+[VALIDATION ERROR] nodes.engineering.choices[1].enabled: cond ref not found (got: has_gold_typo)
+[VALIDATION ERROR] shared_effects.siphon_fuel[2]: must be assignment (got: >=)
+```
+
+Validation checks:
+
+- All referenced conditions, effects, snippets, choices exist in their shared maps
+- Expressions have the correct structure and operator
+- Assignments are only used in effect context
+- Choice flags (once, consumed) are not combined
+- start_node exists in the nodes array
+- Every node has an id and a text array
+
+---
+
+## Minimal quest example
+
+```lua
+return {
+  id     = "demo",
+  start_node = "start",
+  variables = { gold = 10, visited_market = false },
+
+  shared_conditions = {
+    is_rich = {"<gold>", ">=", 20},
+  },
+
+  nodes = {
+    {
+      id  = "start",
+      text = { "You stand at a crossroads. You have **<gold>** coins." },
+      choices = {
+        {
+          id     = "go_market",
+          label   = "Visit the market",
+          effects  = { {"<visited_market>", "=", true} },
+          transition = { target = "market" }
+        },
+        {
+          id     = "go_forest",
+          label   = "Enter the forest",
+          transition = { target = "forest" }
+        },
+      }
+    },
+    {
+      id  = "market",
+      text = {
+        "The market is busy. ",
+        {"?", "is_rich", "Merchants eye you with interest.", "Merchants ignore you."},
+      },
+      choices = {
+        {
+          id     = "buy",
+          label   = "Buy supplies (-10 gold)",
+          enabled  = "is_rich",
+          effects  = { {"<gold>", "-=", 10} },
+          transition = { text = {"You spend 10 gold."}, target = "start" }
+        },
+        { id = "leave", label = "Leave", transition = { target = "start" } },
+      }
+    },
+    {
+      id  = "forest",
+      text = { "The forest is quiet. Nothing happens." },
+      choices = {
+        { id = "back", label = "Go back", transition = { target = "start" } }
+      }
+    },
+  }
+}
+```

@@ -1,15 +1,14 @@
+-- init.lua
 local validator = require('questlib.validator')
 local runtime   = require('questlib.runtime')
 local serializer = require('questlib.serializer')
 
 local questlib = {}
 
--- loads and validates quest data, returns first node state or nil
 function questlib.load(data)
 	if type(data) ~= 'table' then
 		error("[questlib] load() requires a table")
 	end
-
 	print("[questlib] load() called")
 	local err = validator.validate_quest(data)
 	if err then
@@ -27,20 +26,17 @@ function questlib.load(data)
 	return result
 end
 
--- refreshes current node (useful after external state changes)
 function questlib.step()
 	local id = runtime.get_current_id()
 	if not id then return nil end
 	return runtime.enter_node(id)
 end
 
--- executes a choice by index, returns new node state or nil
 function questlib.choose(index)
 	if type(index) ~= 'number' or index < 1 then
 		print("[questlib] choose() invalid index:", tostring(index))
 		return nil
 	end
-
 	local result = runtime.choose(index)
 	if result then
 		print("[questlib] choice executed. new node:", result.id)
@@ -60,14 +56,12 @@ function questlib.set_state(t)
 	end
 end
 
--- saves current variables to file
 function questlib.save_state(path)
 	if type(path) ~= 'string' then return false, "path must be string" end
 	print("[questlib] saving state to:", path)
 	return serializer.save_table(path, runtime.get_state())
 end
 
--- loads variables from file and applies to runtime
 function questlib.load_state(path)
 	if type(path) ~= 'string' then return false, "path must be string" end
 	print("[questlib] loading state from:", path)
@@ -81,10 +75,9 @@ function questlib.load_state(path)
 	return true
 end
 
--- clears runtime and maps, keeps variables if init_vars provided
-function questlib.reset(init_vars)
+function questlib.reset()
 	print("[questlib] full reset.")
-	runtime.reset(init_vars)
+	runtime.reset()
 end
 
 return questlib

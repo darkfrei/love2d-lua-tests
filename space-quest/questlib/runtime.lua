@@ -14,78 +14,63 @@ local current_node_id = nil
 local current_choices = {}
 local after_text = nil
 local _node_map = {}
-local _shared_choice_map = {}
-local _choice_usage = {}
 local _condition_map = {}
 local _effect_map = {}
-local _transition_map = {}
-local _cte_map = {}
+local _snippet_map = {}
+local _stats_map = {}
+local _choice_map = {}
+local _choice_usage = {}
 
-local function resolve_flag_expr(val)
-	if type(val) == 'string' and _condition_map[val] then
-		return _condition_map[val].expr
+local function resolve_condition_ref(expr)
+	if type(expr) == 'string' and _condition_map[expr] then
+		return _condition_map[expr]
 	end
-	return val
+	return expr
 end
 
-local function resolve_choice(c_ref)
-	if type(c_ref) == 'string' then return _shared_choice_map[c_ref] end
-	return c_ref
-end
-
-local function resolve_transition(val)
-	if not val then return nil end
-	local text_part, target_part
-	if type(val) == 'string' then
-		local ref = _transition_map[val]
-		if ref then
-			text_part = ref.text
-			target_part = ref.target
-		else
-			text_part = { val }
-		end
-	elseif type(val) == 'table' then
-		text_part = val.text
-		target_part = val.target
-		if type(text_part) == 'string' and _transition_map[text_part] then
-			text_part = _transition_map[text_part].text
-		end
-	end
-	if text_part and type(text_part) ~= 'table' then
-		text_part = { tostring(text_part) }
-	end
-	return { text = text_part, target = target_part }
-end
-
-local function resolve_effects_list(val)
-	if not val then return {} end
-	local raw = type(val) == 'string' and { val } or val
-	local final = {}
-	for _, eff in ipairs(raw) do
-		if type(eff) == 'string' and _effect_map[eff] then
-			for _, act in ipairs(_effect_map[eff].actions) do table.insert(final, act) end
-		else table.insert(final, eff) end
-	end
-	return final
-end
-
-local function resolve_text_ctes(text_array)
+local function resolve_choice_refs(c_data)
 	local resolved = {}
-	for _, seg in ipairs(text_array) do
-		if type(seg) == 'table' and seg[1] == 'cte' then
-			local cte = _cte_map[seg[2]]
-			if cte then table.insert(resolved, {"?", cte.condition, cte["then"], cte["else"]})
-			else table.insert(resolved, seg) end
-		else table.insert(resolved, seg) end
+	for k, v in pairs(c_data) do
+		if k == 'enabled' or k == 'visible' then
+			resolved[k] = resolve_condition_ref(v)
+		elseif k == 'effects' and type(v) == 'string' and _effect_map[v] then
+			resolved[k] = _effect_map[v]
+		else
+			resolved[k] = v
+		end
 	end
 	return resolved
+end
+
+local function preprocess_stats_item(item)
+	if type(item) ~= 'table' then return item end
+	if item[1] == '?' then
+		return {"?", resolve_condition_ref(item[2]), item[3], item[4]}
+	end
+--	if item[1] == 'snippet' then
+--		local expr = _snippet_map[item[2]]
+--		if expr then
+--			return {"?", resolve_condition_ref(expr[2]), expr[3], expr[4]}
+--		end
+--	end
+	if item[1] == 'snippet' then
+		local expr = _snippet_map[item[2]]
+		if expr then
+			if type(expr) == 'table' then
+				return {"?", resolve_condition_ref(expr[2]), expr[3], expr[4]}
+			else
+				return expr
+			end
+		end
+	end
+	return item
 end
 
 function runtime.reset(init_vars)
 	values = init_vars and deep_copy(init_vars) or {}
 	quest = nil; current_node_id = nil; current_choices = {}; after_text = nil
-	_node_map = {}; _shared_choice_map = {}; _choice_usage = {}
-	_condition_map = {}; _effect_map = {}; _transition_map = {}; _cte_map = {}
+	_node_map = {}; _condition_map = {}; _effect_map = {}; _snippet_map = {}
+	_stats_map = {}; _choice_map = {}; _choice_usage = {}
 end
 
 function runtime.load_quest(data)
@@ -93,54 +78,65 @@ function runtime.load_quest(data)
 	values = data.variables and deep_copy(data.variables) or {}
 	current_node_id = data.start_node
 	current_choices = {}; after_text = nil; _choice_usage = {}
-	_node_map = {}; _shared_choice_map = {}
-	_condition_map = {}; _effect_map = {}; _transition_map = {}; _cte_map = {}
 
-	if quest.nodes then for _, n in ipairs(quest.nodes) do if n.id then _node_map[n.id] = n end end end
-	if quest.shared_choices then for _, c in ipairs(quest.shared_choices) do if c.id then _shared_choice_map[c.id] = c end end end
-	if quest.conditions then for _, c in ipairs(quest.conditions) do if c.id then _condition_map[c.id] = c end end end
-	if quest.effects then for _, e in ipairs(quest.effects) do if e.id then _effect_map[e.id] = e end end end
-	if quest.transitions then for _, t in ipairs(quest.transitions) do if t.id then _transition_map[t.id] = t end end end
-	if quest.ctes then for _, c in ipairs(quest.ctes) do if c.id then _cte_map[c.id] = c end end end
+	-- Загружаем словари напрямую (они не мутируют в рантайме)
+	_condition_map = data.shared_conditions or {}
+	_effect_map    = data.shared_effects    or {}
+	_snippet_map   = data.shared_snippets   or {}
+	_stats_map     = data.shared_stats      or {}
+
+	-- Явно инжектим id в каждый выбор для корректной работы once/consumed
+	_choice_map = {}
+	if data.shared_choices then
+		for id, c in pairs(data.shared_choices) do
+			local entry = deep_copy(c)
+			entry.id = id
+			_choice_map[id] = entry
+		end
+	end
+
+	_node_map = {}
+	if quest.nodes then
+		for _, n in ipairs(quest.nodes) do
+			if n.id then _node_map[n.id] = n end
+		end
+	end
 end
 
 function runtime.enter_node(id)
 	if not quest or not _node_map[id] then return nil end
 	local node = _node_map[id]
 
-	local flag_expr = resolve_flag_expr(node.visible or node.condition)
-	if flag_expr then
-		local flag_val = evaluator.resolve(flag_expr, values)
-		if flag_val == false then return nil end
-	end
+--	local flag_expr = resolve_condition_ref(node.visible)
+--	if flag_expr then
+--		local flag_val = evaluator.resolve(flag_expr, values)
+--		if flag_val == false then return nil end
+--	end
 
 	local list = {}
 	if node.choices then
 		for _, c_ref in ipairs(node.choices) do
-			local c = resolve_choice(c_ref)
-			if c then
-				local vis_expr = resolve_flag_expr(c.visible)
+			local c_data = type(c_ref) == 'string' and _choice_map[c_ref] or c_ref
+			if c_data then
+				local c = resolve_choice_refs(c_data)
+				local vis_expr = resolve_condition_ref(c.visible)
 				local is_visible = true
 				if vis_expr then is_visible = evaluator.resolve(vis_expr, values) ~= false end
-
 				if is_visible and c.id and (c.once or c.consumed) and _choice_usage[c.id] then
 					is_visible = false
 				end
 
 				if is_visible then
-					local ena_expr = resolve_flag_expr(c.enabled)
+					local ena_expr = resolve_condition_ref(c.enabled)
 					local is_enabled = true
 					if ena_expr then is_enabled = evaluator.resolve(ena_expr, values) ~= false end
-
 					local prio = c.priority or 0
 					if not is_enabled then prio = prio + 100 end
 
 					table.insert(list, {
-							data = c,
-							enabled = is_enabled,
-							priority = prio,
-							resolved_effects = resolve_effects_list(c.effects),
-							resolved_transition = resolve_transition(c.transition)
+							data = c, enabled = is_enabled, priority = prio,
+							resolved_effects = type(c.effects) == 'table' and c.effects or {},
+							resolved_transition = c.transition
 						})
 				end
 			end
@@ -148,41 +144,55 @@ function runtime.enter_node(id)
 	end
 
 	table.sort(list, function(a, b)
-			if a.priority == b.priority then return (a.data.id or "") < (b.data.id or "") end
+			if a.priority == b.priority then return (a.data.id or " ") < (b.data.id or " ") end
 			return a.priority < b.priority
 		end)
 
-	local i = 1
-	while i <= #list do
-		local j = i + 1
-		while j <= #list and list[j].priority == list[i].priority do j = j + 1 end
-		for k = j - 1, i + 1, -1 do
-			local r = math.random(i, k)
-			list[k], list[r] = list[r], list[k]
-		end
-		i = j
-	end
-
 	current_choices = list
-
 	local ui_choices = {}
 	for i, ch in ipairs(current_choices) do
 		table.insert(ui_choices, {
-				index = i,
-				id = ch.data.id,
-				label = ch.data.label or "",
-				enabled = ch.enabled,
-				target = ch.resolved_transition and ch.resolved_transition.target
+				index = i, id = ch.data.id, label = ch.data.label or " ",
+				enabled = ch.enabled, target = ch.resolved_transition and ch.resolved_transition.target
 			})
 	end
 
 	local raw_text = node.text or {}
-	local processed_text = resolve_text_ctes(raw_text)
+	local processed_text = {}
+	for _, seg in ipairs(raw_text) do
+		if type(seg) == 'table' and seg[1] == 'snippet' then
+			local snippet_expr = _snippet_map[seg[2]]
+			if snippet_expr then
+				local cond = resolve_condition_ref(snippet_expr[2])
+				table.insert(processed_text, {"?", cond, snippet_expr[3], snippet_expr[4]})
+			else
+				table.insert(processed_text, seg)
+			end
+		else
+			table.insert(processed_text, seg)
+		end
+	end
 
-	-- NEW: merge global + node stats
 	local raw_stats = {}
-	for _, item in ipairs(quest.global_stats or {}) do table.insert(raw_stats, item) end
-	for _, item in ipairs(node.stats or {}) do table.insert(raw_stats, item) end
+	if node.stats then
+--		for _, item in ipairs(node.stats) do
+--			if type(item) == 'string' and _stats_map[item] then
+--				for _, seg in ipairs(_stats_map[item]) do table.insert(raw_stats, seg) end
+--			else
+--				table.insert(raw_stats, item)
+--			end
+--		end
+
+		for _, item in ipairs(node.stats) do
+			if type(item) == 'string' and _stats_map[item] then
+				for _, seg in ipairs(_stats_map[item]) do
+					table.insert(raw_stats, preprocess_stats_item(seg))
+				end
+			else
+				table.insert(raw_stats, preprocess_stats_item(item))
+			end
+		end
+	end
 
 	local processed_stats = {}
 	for _, item in ipairs(raw_stats) do
@@ -196,7 +206,6 @@ function runtime.enter_node(id)
 		after_text = after_text,
 		choices = ui_choices
 	}
-
 	after_text = nil
 	current_node_id = id
 	return result
@@ -206,28 +215,16 @@ function runtime.choose(index)
 	local ch = current_choices[index]
 	if not ch or not ch.enabled then return nil end
 
-	print("[runtime] CHOICE triggered:", ch.data.id)
-	print("[runtime] STATE BEFORE effects:", "threat=" .. tostring(values.threat_level), "key=" .. tostring(values.has_override_key))
-
 	if ch.resolved_effects then
-		for _, eff in ipairs(ch.resolved_effects) do
-			evaluator.resolve(eff, values)
-		end
+		for _, eff in ipairs(ch.resolved_effects) do evaluator.resolve(eff, values) end
 	end
 
-	print("[runtime] STATE AFTER effects:", "threat=" .. tostring(values.threat_level), "key=" .. tostring(values.has_override_key))
-
 	if ch.resolved_transition then
-		if ch.resolved_transition.text then
-			after_text = evaluator.parse_text(ch.resolved_transition.text, values)
-		end
-		if ch.resolved_transition.target then
-			current_node_id = ch.resolved_transition.target
-		end
+		if ch.resolved_transition.text then after_text = evaluator.parse_text(ch.resolved_transition.text, values) end
+		if ch.resolved_transition.target then current_node_id = ch.resolved_transition.target end
 	end
 
 	if ch.data.id and (ch.data.once or ch.data.consumed) then _choice_usage[ch.data.id] = true end
-
 	return runtime.enter_node(current_node_id)
 end
 
