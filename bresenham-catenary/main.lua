@@ -1,25 +1,36 @@
 -- main.lua
--- catenary chain rendered via function-based Bresenham rasterization
+-- fixed-length catenary chain with stable endpoint rendering (geometry-driven endpoint only)
 
 local catenary = require("catenary")
 local bresenham = require("universal-bresenham")
 
 local state = {}
-
 local renderScale = 5
 local canvas = nil
 
--- clamp helper
+-- cached chain result (prevents recomputation)
+local cached = {
+	key = nil,
+	points = nil,
+	nadirX = nil,
+	nadirY = nil,
+	endX = nil,
+	endY = nil,
+}
+
 local function clamp(v, lo, hi)
 	return math.max(lo, math.min(hi, v))
 end
 
--- squared distance
 local function dist2(ax, ay, bx, by)
 	local dx = ax - bx
 	local dy = ay - by
 	return dx * dx + dy * dy
 end
+
+--
+-- canvas setup
+--
 
 local function createCanvas()
 	local w = math.floor(love.graphics.getWidth() / renderScale)
@@ -37,83 +48,200 @@ local function resetState()
 	state = {
 		ax = math.floor(w * 0.25),
 		ay = math.floor(h * 0.38),
+
 		bx = math.floor(w * 0.75),
 		by = math.floor(h * 0.38),
 
-		slackFactor = 1.35,
-		slackMin = 1.001,
-		slackMax = 6.0,
-		slackStep = 0.02,
+		chainLength = 100,
+		lengthMin = 50,
+		lengthMax = 2000,
+		lengthStep = 10,
 
 		showGrid = true,
-		showSmooth = false,
-		showInfo = true,
+		showNadir = true,
 
 		dragging = nil,
-		dragOffsetX = 0,
-		dragOffsetY = 0,
 	}
 end
 
--- rasterize catenary directly from function
-local function buildCatenaryPixels(s)
+--
+-- cache key
+--
+
+local function makeKey(s)
+	return table.concat({
+			s.ax, s.ay, s.bx, s.by, s.chainLength
+			}, ":")
+end
+
+--
+-- vertical helper
+--
+
+local function verticalPixels(x, yFrom, yTo)
+	local pts = {}
+	local step = (yTo >= yFrom) and 1 or -1
+
+	for y = yFrom, yTo, step do
+		pts[#pts + 1] = { x = x, y = y }
+	end
+
+	return pts
+end
+
+--
+-- chain builder (geometry only)
+--
+
+local function buildChainPixels(s)
+	local key = makeKey(s)
+
+	if cached.key == key then
+		return cached.points, cached.nadirX, cached.nadirY, cached.endX, cached.endY
+	end
+
 	local dx = s.bx - s.ax
 	local dy = s.by - s.ay
 
 	local straight = math.sqrt(dx * dx + dy * dy)
-	local len = straight * s.slackFactor
+	local len = s.chainLength
 
-	local f = catenary.buildFunction(
+	-- chain too short → straight truncated segment
+	if len < straight then
+		local t = len / math.max(straight, 1e-6)
+
+		local ex = math.floor(s.bx - dx * t + 0.5)
+		local ey = math.floor(s.by - dy * t + 0.5)
+
+		local pixels
+
+		if math.abs(s.bx - ex) < 1 then
+			pixels = verticalPixels(
+				s.bx,
+				math.min(s.by, ey),
+				math.max(s.by, ey)
+			)
+		else
+			local ddx = s.bx - ex
+			local ddy = s.by - ey
+			local slope = ddy / ddx
+
+			local function lineF(x)
+				return s.by + slope * (x - s.bx)
+			end
+
+			pixels = bresenham.rasterizeFunction(
+				lineF,
+				math.min(ex, s.bx),
+				math.max(ex, s.bx)
+			)
+		end
+
+		cached.key = key
+		cached.points = pixels
+		cached.nadirX = nil
+		cached.nadirY = nil
+
+		-- endpoint = last pixel of geometry (NOT mouse, NOT anchor)
+		local last = pixels[#pixels]
+		cached.endX = last.x
+		cached.endY = last.y
+
+		return pixels, nil, nil, cached.endX, cached.endY
+	end
+
+	-- vertical chain special case
+	if math.abs(dx) < 1 then
+		local midY = (s.ay + s.by) * 0.5 + len * 0.5
+		local yTop = math.min(s.ay, s.by)
+		local yBottom = math.floor(midY + 0.5)
+
+		local pixels = verticalPixels(s.ax, yTop, yBottom)
+
+		cached.key = key
+		cached.points = pixels
+		cached.nadirX = s.ax
+		cached.nadirY = yBottom
+
+		local last = pixels[#pixels]
+		cached.endX = last.x
+		cached.endY = last.y
+
+		return pixels, s.ax, yBottom, cached.endX, cached.endY
+	end
+
+	-- true catenary curve
+	local f, nadirX, nadirY = catenary.buildFunction(
 		s.ax, s.ay,
 		s.bx, s.by,
 		len
 	)
 
-	local xStart = math.min(s.ax, s.bx)
-	local xEnd = math.max(s.ax, s.bx)
+	local pixels = bresenham.rasterizeFunction(
+		f,
+		math.min(s.ax, s.bx),
+		math.max(s.ax, s.bx)
+	)
 
-	local pixels = bresenham.rasterizeFunction(f, xStart, xEnd)
+	cached.key = key
+	cached.points = pixels
+	cached.nadirX = nadirX
+	cached.nadirY = nadirY
 
-	return pixels, len, straight
+	-- endpoint strictly from geometry
+	local last = pixels[#pixels]
+	cached.endX = last.x
+	cached.endY = last.y
+
+	return pixels, nadirX, nadirY, cached.endX, cached.endY
 end
 
+--
+-- rendering
+--
+
 local function drawChain(s)
-	local pixels, len, straight = buildCatenaryPixels(s)
+	local pixels, nadirX, nadirY, endX, endY = buildChainPixels(s)
 
 	if not pixels or #pixels < 2 then
-		return nil
+		return
 	end
 
-	-- convert to flat array for love.graphics.points
 	local flat = {}
-
 	for i = 1, #pixels do
 		local p = pixels[i]
-		if p and p.x and p.y then
-			flat[#flat + 1] = p.x
-			flat[#flat + 1] = p.y
-		end
+		flat[#flat + 1] = p.x
+		flat[#flat + 1] = p.y
 	end
 
 	love.graphics.setColor(0.35, 0.85, 1, 1)
 	love.graphics.points(flat)
 
-	local lowest = nil
-
-	for _, p in ipairs(pixels) do
-		if p and p.x and p.y then
-			if not lowest or p.y > lowest.y then
-				lowest = p
-			end
-		end
+	if state.showNadir and nadirX and nadirY then
+		love.graphics.setColor(1, 0.85, 0.2, 0.6)
+		love.graphics.points(
+			math.floor(nadirX + 0.5),
+			math.floor(nadirY + 0.5)
+		)
 	end
 
-	if not lowest then
-		return nil
+	-- IMPORTANT:
+	-- endpoint is rendered ONLY from cached geometry
+	-- never from mouse position or anchor state
+	if state.showNadir and endX and endY then
+		love.graphics.setColor(1, 0.85, 0.2, 1)
+		love.graphics.circle(
+			"fill",
+			math.floor(endX + 0.5),
+			math.floor(endY + 0.5),
+			3
+		)
 	end
-
-	return lowest, len, straight
 end
+
+--
+-- grid and anchors
+--
 
 local function drawGrid(w, h)
 	local step = 10
@@ -141,30 +269,18 @@ local function drawAnchors(s)
 			s.bx - 1, s.by,
 			s.bx + 1, s.by,
 		})
+
+	love.graphics.setColor(1, 0.85, 0.2, 0.9)
+	love.graphics.circle("line", s.ax, s.ay, 12)
 end
 
-local function drawNadir(lowest)
-	if not lowest or type(lowest.x) ~= "number" or type(lowest.y) ~= "number" then
-		return
-	end
-
-	local nx = math.floor(lowest.x + 0.5)
-	local ny = math.floor(lowest.y + 0.5)
-
-	love.graphics.setColor(1, 0.85, 0.2, 0.3)
---	love.graphics.line(nx, 0, nx, canvas:getHeight())
-
-	love.graphics.setColor(1, 0.85, 0.2, 1)
-	love.graphics.points(nx, ny)
-end
+--
+-- LOVE lifecycle
+--
 
 function love.load()
-
-	love.window.setTitle("Catenary Function, Bresenham Raster")
+	love.window.setTitle("catenary fixed length (stable endpoint)")
 	love.window.setMode(800, 600, { resizable = true })
-
-	love.graphics.setLineStyle( "rough" )
-
 
 	createCanvas()
 	resetState()
@@ -173,7 +289,12 @@ end
 function love.resize()
 	createCanvas()
 	resetState()
+	cached.key = nil
 end
+
+--
+-- input
+--
 
 function love.mousepressed(x, y, button)
 	if button ~= 1 then return end
@@ -184,16 +305,12 @@ function love.mousepressed(x, y, button)
 	local da = dist2(sx, sy, state.ax, state.ay)
 	local db = dist2(sx, sy, state.bx, state.by)
 
-	local threshold = 20 * 20
-
-	if da <= threshold or db <= threshold then
-		local which = (da < db) and "a" or "b"
-		state.dragging = which
-	end
+	state.dragging = (da < db) and "a" or "b"
 end
 
-function love.mousereleased(x, y, button)
-	if button == 1 then state.dragging = nil end
+function love.mousereleased(_, _, button)
+	if button ~= 1 then return end
+	state.dragging = nil
 end
 
 function love.mousemoved(x, y)
@@ -207,15 +324,23 @@ function love.mousemoved(x, y)
 	else
 		state.bx, state.by = sx, sy
 	end
+
+	cached.key = nil
 end
 
-function love.wheelmoved(dx, dy)
-	state.slackFactor = clamp(
-		state.slackFactor + dy * state.slackStep,
-		state.slackMin,
-		state.slackMax
+function love.wheelmoved(_, dy)
+	state.chainLength = clamp(
+		state.chainLength + dy * state.lengthStep,
+		state.lengthMin,
+		state.lengthMax
 	)
+
+	cached.key = nil
 end
+
+--
+-- render loop
+--
 
 function love.draw()
 	local w = canvas:getWidth()
@@ -228,13 +353,10 @@ function love.draw()
 		drawGrid(w, h)
 	end
 
-	local lowest, len, str = drawChain(state)
-
+	drawChain(state)
 	drawAnchors(state)
-	drawNadir(lowest)
 
 	love.graphics.setCanvas()
-
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.draw(canvas, 0, 0, 0, renderScale, renderScale)
 end
