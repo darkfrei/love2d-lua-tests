@@ -10,12 +10,12 @@ local canvas = nil
 
 -- cached chain result (prevents recomputation)
 local cached = {
-	key = nil,
+	key    = nil,
 	points = nil,
 	nadirX = nil,
 	nadirY = nil,
-	endX = nil,
-	endY = nil,
+	endX   = nil,
+	endY   = nil,
 }
 
 local function clamp(v, lo, hi)
@@ -53,11 +53,11 @@ local function resetState()
 		by = math.floor(h * 0.38),
 
 		chainLength = 100,
-		lengthMin = 50,
-		lengthMax = 2000,
-		lengthStep = 10,
+		lengthMin   = 50,
+		lengthMax   = 2000,
+		lengthStep  = 10,
 
-		showGrid = true,
+		showGrid  = true,
 		showNadir = true,
 
 		dragging = nil,
@@ -69,9 +69,7 @@ end
 --
 
 local function makeKey(s)
-	return table.concat({
-			s.ax, s.ay, s.bx, s.by, s.chainLength
-			}, ":")
+	return table.concat({ s.ax, s.ay, s.bx, s.by, s.chainLength }, ":")
 end
 
 --
@@ -79,7 +77,7 @@ end
 --
 
 local function verticalPixels(x, yFrom, yTo)
-	local pts = {}
+	local pts  = {}
 	local step = (yTo >= yFrom) and 1 or -1
 
 	for y = yFrom, yTo, step do
@@ -90,7 +88,7 @@ local function verticalPixels(x, yFrom, yTo)
 end
 
 --
--- chain builder (geometry only)
+-- chain builder — always starts from A, never exceeds chainLength
 --
 
 local function buildChainPixels(s)
@@ -104,73 +102,69 @@ local function buildChainPixels(s)
 	local dy = s.by - s.ay
 
 	local straight = math.sqrt(dx * dx + dy * dy)
-	local len = s.chainLength
+	local len      = s.chainLength
 
-	-- chain too short → straight truncated segment
+	-- chain too short → truncated segment from A towards B
 	if len < straight then
-		local t = len / math.max(straight, 1e-6)
-
-		local ex = math.floor(s.bx - dx * t + 0.5)
-		local ey = math.floor(s.by - dy * t + 0.5)
+		local t  = len / math.max(straight, 1e-6)
+		local ex = math.floor(s.ax + dx * t + 0.5)
+		local ey = math.floor(s.ay + dy * t + 0.5)
 
 		local pixels
 
-		if math.abs(s.bx - ex) < 1 then
+		if math.abs(ex - s.ax) < 1 then
+			-- vertical truncation
 			pixels = verticalPixels(
-				s.bx,
-				math.min(s.by, ey),
-				math.max(s.by, ey)
+				s.ax,
+				math.min(s.ay, ey),
+				math.max(s.ay, ey)
 			)
 		else
-			local ddx = s.bx - ex
-			local ddy = s.by - ey
-			local slope = ddy / ddx
+			local slope = (ey - s.ay) / (ex - s.ax)
 
 			local function lineF(x)
-				return s.by + slope * (x - s.bx)
+				return s.ay + slope * (x - s.ax)
 			end
 
 			pixels = bresenham.rasterizeFunction(
 				lineF,
-				math.min(ex, s.bx),
-				math.max(ex, s.bx)
+				math.min(s.ax, ex),
+				math.max(s.ax, ex)
 			)
 		end
 
-		cached.key = key
+		local last = pixels[#pixels]
+
+		cached.key    = key
 		cached.points = pixels
 		cached.nadirX = nil
 		cached.nadirY = nil
-
-		-- endpoint = last pixel of geometry (NOT mouse, NOT anchor)
-		local last = pixels[#pixels]
-		cached.endX = last.x
-		cached.endY = last.y
+		cached.endX   = last and last.x
+		cached.endY   = last and last.y
 
 		return pixels, nil, nil, cached.endX, cached.endY
 	end
 
 	-- vertical chain special case
 	if math.abs(dx) < 1 then
-		local midY = (s.ay + s.by) * 0.5 + len * 0.5
-		local yTop = math.min(s.ay, s.by)
+		local midY    = (s.ay + s.by) * 0.5 + len * 0.5
+		local yTop    = math.min(s.ay, s.by)
 		local yBottom = math.floor(midY + 0.5)
 
 		local pixels = verticalPixels(s.ax, yTop, yBottom)
+		local last   = pixels[#pixels]
 
-		cached.key = key
+		cached.key    = key
 		cached.points = pixels
 		cached.nadirX = s.ax
 		cached.nadirY = yBottom
-
-		local last = pixels[#pixels]
-		cached.endX = last.x
-		cached.endY = last.y
+		cached.endX   = last and last.x
+		cached.endY   = last and last.y
 
 		return pixels, s.ax, yBottom, cached.endX, cached.endY
 	end
 
-	-- true catenary curve
+	-- true catenary curve from A to B
 	local f, nadirX, nadirY = catenary.buildFunction(
 		s.ax, s.ay,
 		s.bx, s.by,
@@ -183,15 +177,14 @@ local function buildChainPixels(s)
 		math.max(s.ax, s.bx)
 	)
 
-	cached.key = key
+	local last = pixels[#pixels]
+
+	cached.key    = key
 	cached.points = pixels
 	cached.nadirX = nadirX
 	cached.nadirY = nadirY
-
-	-- endpoint strictly from geometry
-	local last = pixels[#pixels]
-	cached.endX = last.x
-	cached.endY = last.y
+	cached.endX   = last and last.x
+	cached.endY   = last and last.y
 
 	return pixels, nadirX, nadirY, cached.endX, cached.endY
 end
@@ -201,11 +194,9 @@ end
 --
 
 local function drawChain(s)
-	local pixels, nadirX, nadirY, endX, endY = buildChainPixels(s)
+	local pixels, nadirX, nadirY = buildChainPixels(s)
 
-	if not pixels or #pixels < 2 then
-		return
-	end
+	if not pixels or #pixels < 2 then return end
 
 	local flat = {}
 	for i = 1, #pixels do
@@ -224,19 +215,6 @@ local function drawChain(s)
 			math.floor(nadirY + 0.5)
 		)
 	end
-
-	-- IMPORTANT:
-	-- endpoint is rendered ONLY from cached geometry
-	-- never from mouse position or anchor state
---	if state.showNadir and endX and endY then
---		love.graphics.setColor(1, 0.85, 0.2, 1)
---		love.graphics.circle(
---			"fill",
---			math.floor(endX + 0.5),
---			math.floor(endY + 0.5),
---			3
---		)
---	end
 end
 
 --
@@ -247,36 +225,36 @@ local function drawGrid(w, h)
 	local step = 10
 	love.graphics.setColor(0.18, 0.18, 0.25, 1)
 
-	for x = 0, w, step do
-		love.graphics.line(x, 0, x, h)
-	end
-
-	for y = 0, h, step do
-		love.graphics.line(0, y, w, y)
-	end
+	for x = 0, w, step do love.graphics.line(x, 0, x, h) end
+	for y = 0, h, step do love.graphics.line(0, y, w, y) end
 end
 
 local function drawAnchors(s)
+	-- dashed line between anchors
 	love.graphics.setColor(0.55, 0.55, 0.7, 0.4)
 	love.graphics.line(s.ax, s.ay, s.bx, s.by)
 
-	love.graphics.setColor(1, 0.85, 0.2, 1)
+	-- point A — red (fixed)
+	love.graphics.setColor(1, 0.3, 0.3, 1)
 	love.graphics.points({
-			s.ax, s.ay,
+			s.ax,     s.ay,
 			s.ax - 1, s.ay,
 			s.ax + 1, s.ay,
-			s.bx, s.by,
+		})
+
+	-- point B — green (draggable)
+	love.graphics.setColor(0.3, 1, 0.4, 1)
+	love.graphics.points({
+			s.bx,     s.by,
 			s.bx - 1, s.by,
 			s.bx + 1, s.by,
 		})
 
-	love.graphics.setColor(1, 0.85, 0.2, 0.9)
+	-- green circle around the last point of the chain
 	if cached.endX and cached.endY then
+		love.graphics.setColor(0.3, 1, 0.4, 0.9)
 		love.graphics.circle("line", cached.endX, cached.endY, 12)
-	else
-		love.graphics.circle("line", s.ax, s.ay, 12)	
 	end
-
 end
 
 --
@@ -286,8 +264,6 @@ end
 function love.load()
 	love.window.setTitle("catenary fixed length (stable endpoint)")
 	love.window.setMode(800, 600, { resizable = true })
-	love.graphics.setLineStyle ( "rough" )
-	love.graphics.setLineWidth (0.899)
 
 	createCanvas()
 	resetState()
@@ -300,7 +276,7 @@ function love.resize()
 end
 
 --
--- input
+-- input — only B is draggable
 --
 
 function love.mousepressed(x, y, button)
@@ -309,10 +285,11 @@ function love.mousepressed(x, y, button)
 	local sx = math.floor(x / renderScale)
 	local sy = math.floor(y / renderScale)
 
-	local da = dist2(sx, sy, state.ax, state.ay)
-	local db = dist2(sx, sy, state.bx, state.by)
+	local threshold = 12 * 12
 
-	state.dragging = (da < db) and "a" or "b"
+	if dist2(sx, sy, state.bx, state.by) <= threshold then
+		state.dragging = "b"
+	end
 end
 
 function love.mousereleased(_, _, button)
@@ -326,12 +303,7 @@ function love.mousemoved(x, y)
 	local sx = math.floor(x / renderScale)
 	local sy = math.floor(y / renderScale)
 
-	if state.dragging == "a" then
-		state.ax, state.ay = sx, sy
-	else
-		state.bx, state.by = sx, sy
-	end
-
+	state.bx, state.by = sx, sy
 	cached.key = nil
 end
 
@@ -354,11 +326,12 @@ function love.draw()
 	local h = canvas:getHeight()
 
 	love.graphics.setCanvas(canvas)
+	love.graphics.setLineStyle("rough")
+	love.graphics.setLineWidth(0.899)
 	love.graphics.clear(0.07, 0.07, 0.12, 1)
 
-	if state.showGrid then
-		drawGrid(w, h)
-	end
+	drawGrid(w, h)
+--	if state.showGrid then drawGrid(w, h) end
 
 	drawChain(state)
 	drawAnchors(state)
