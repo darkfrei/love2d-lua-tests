@@ -228,15 +228,15 @@ local function drawChain(s)
 	-- IMPORTANT:
 	-- endpoint is rendered ONLY from cached geometry
 	-- never from mouse position or anchor state
-	if state.showNadir and endX and endY then
-		love.graphics.setColor(1, 0.85, 0.2, 1)
-		love.graphics.circle(
-			"fill",
-			math.floor(endX + 0.5),
-			math.floor(endY + 0.5),
-			3
-		)
-	end
+--	if state.showNadir and endX and endY then
+--		love.graphics.setColor(1, 0.85, 0.2, 1)
+--		love.graphics.circle(
+--			"fill",
+--			math.floor(endX + 0.5),
+--			math.floor(endY + 0.5),
+--			3
+--		)
+--	end
 end
 
 --
@@ -271,7 +271,12 @@ local function drawAnchors(s)
 		})
 
 	love.graphics.setColor(1, 0.85, 0.2, 0.9)
-	love.graphics.circle("line", s.ax, s.ay, 12)
+	if cached.endX and cached.endY then
+		love.graphics.circle("line", cached.endX, cached.endY, 12)
+	else
+		love.graphics.circle("line", s.ax, s.ay, 12)	
+	end
+
 end
 
 --
@@ -281,6 +286,8 @@ end
 function love.load()
 	love.window.setTitle("catenary fixed length (stable endpoint)")
 	love.window.setMode(800, 600, { resizable = true })
+	love.graphics.setLineStyle ( "rough" )
+	love.graphics.setLineWidth (0.899)
 
 	createCanvas()
 	resetState()
