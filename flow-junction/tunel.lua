@@ -1,24 +1,24 @@
 -- tunel.lua
 -- conflict zone manager with discrete time scheduling
--- atomically checks space-time occupancy based on baked trajectories
+-- performs atomic space-time occupancy checks
+-- using pre-baked vehicle trajectories
 
 local M = {}
 
-local RADIUS        = 20
+local RADIUS         = 20
 local CONFLICT_DIST  = 2 * RADIUS + 2
 local CONFLICT_DIST2 = CONFLICT_DIST * CONFLICT_DIST
 local SAMPLE_STEP    = 8
 local SAFETY_DIST2   = (RADIUS * 2 + 2) ^ 2
 
-local zones    = {}
+local zones = {}
 local schedule = {}
 
--- ─────────────────────────────────────────────────────────────────────────────
--- geometry
--- ─────────────────────────────────────────────────────────────────────────────
+-- geometry ------------------------------------------------------------------
 
 local function quadratic(p0, p1, p2, t)
 	local u = 1 - t
+
 	return {
 		x = u*u*p0.x + 2*u*t*p1.x + t*t*p2.x,
 		y = u*u*p0.y + 2*u*t*p1.y + t*t*p2.y
@@ -27,6 +27,7 @@ end
 
 local function cubic(p0, p1, p2, p3, t)
 	local u = 1 - t
+
 	return {
 		x = u^3*p0.x + 3*u^2*t*p1.x + 3*u*t^2*p2.x + t^3*p3.x,
 		y = u^3*p0.y + 3*u^2*t*p1.y + 3*u*t^2*p2.y + t^3*p3.y
@@ -35,15 +36,20 @@ end
 
 local function sampleBezier(pts)
 	local out = {}
+
 	if #pts == 3 then
 		for i = 0, 24 do
-			out[#out + 1] = quadratic(pts[1], pts[2], pts[3], i / 24)
+			out[#out + 1] =
+			quadratic(pts[1], pts[2], pts[3], i / 24)
 		end
+
 	elseif #pts == 4 then
 		for i = 0, 24 do
-			out[#out + 1] = cubic(pts[1], pts[2], pts[3], pts[4], i / 24)
+			out[#out + 1] =
+			cubic(pts[1], pts[2], pts[3], pts[4], i / 24)
 		end
 	end
+
 	return out
 end
 
@@ -52,18 +58,28 @@ local function sampleWay(way, nodes)
 
 	for _, id in ipairs(way.nodeRefs) do
 		local n = nodes[id]
-		if n then pts[#pts + 1] = n end
+
+		if n then
+			pts[#pts + 1] = n
+		end
 	end
 
 	if way.tags and way.tags.curve == "linear" then
 		local out = {}
 
 		for i = 1, #pts - 1 do
-			local a, b = pts[i], pts[i + 1]
-			local dx, dy = b.x - a.x, b.y - a.y
-			local len = math.sqrt(dx*dx + dy*dy)
-			local steps = math.max(1, math.floor(len / SAMPLE_STEP))
+			local a = pts[i]
+			local b = pts[i + 1]
 
+			local dx = b.x - a.x
+			local dy = b.y - a.y
+
+			local len = math.sqrt(dx*dx + dy*dy)
+
+			local steps =
+			math.max(1, math.floor(len / SAMPLE_STEP))
+
+			-- subdivide long linear segments for accurate collision sampling
 			for j = 0, steps - 1 do
 				out[#out + 1] = {
 					x = a.x + dx * (j / steps),
@@ -73,6 +89,7 @@ local function sampleWay(way, nodes)
 		end
 
 		out[#out + 1] = pts[#pts]
+
 		return out
 
 	elseif way.tags and way.tags.curve == "bezier" then
@@ -82,35 +99,50 @@ local function sampleWay(way, nodes)
 	return pts
 end
 
--- ─────────────────────────────────────────────────────────────────────────────
--- geometry utilities
--- ─────────────────────────────────────────────────────────────────────────────
+-- geometry utilities --------------------------------------------------------
 
 local function cross(o, a, b)
-	return (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x)
+	return
+	(a.x - o.x) * (b.y - o.y) -
+	(a.y - o.y) * (b.x - o.x)
 end
 
 local function convexHull(pts)
 	local n = #pts
-	if n <= 3 then return pts end
+
+	if n <= 3 then
+		return pts
+	end
 
 	table.sort(pts, function(a, b)
-			return (a.x == b.x and a.y < b.y) or a.x < b.x
+			return
+			(a.x == b.x and a.y < b.y) or
+			a.x < b.x
 		end)
 
 	local lower = {}
+
 	for i = 1, n do
-		while #lower >= 2 and cross(lower[#lower-1], lower[#lower], pts[i]) <= 0 do
+		while
+		#lower >= 2 and
+		cross(lower[#lower-1], lower[#lower], pts[i]) <= 0
+		do
 			table.remove(lower)
 		end
+
 		lower[#lower + 1] = pts[i]
 	end
 
 	local upper = {}
+
 	for i = n, 1, -1 do
-		while #upper >= 2 and cross(upper[#upper-1], upper[#upper], pts[i]) <= 0 do
+		while
+		#upper >= 2 and
+		cross(upper[#upper-1], upper[#upper], pts[i]) <= 0
+		do
 			table.remove(upper)
 		end
+
 		upper[#upper + 1] = pts[i]
 	end
 
@@ -126,21 +158,32 @@ end
 
 local function expandHull(hull, d)
 	local n = #hull
-	if n < 3 then return hull end
 
-	local cx, cy = 0, 0
+	if n < 3 then
+		return hull
+	end
+
+	local cx = 0
+	local cy = 0
+
 	for _, p in ipairs(hull) do
 		cx = cx + p.x
 		cy = cy + p.y
 	end
-	cx, cy = cx / n, cy / n
+
+	cx = cx / n
+	cy = cy / n
 
 	local out = {}
+
 	for _, p in ipairs(hull) do
-		local dx, dy = p.x - cx, p.y - cy
+		local dx = p.x - cx
+		local dy = p.y - cy
+
 		local len = math.sqrt(dx*dx + dy*dy)
 
-		out[#out + 1] = len > 1e-6 and {
+		out[#out + 1] =
+		len > 1e-6 and {
 			x = p.x + (dx / len) * d,
 			y = p.y + (dy / len) * d
 			} or p
@@ -149,18 +192,17 @@ local function expandHull(hull, d)
 	return out
 end
 
--- ─────────────────────────────────────────────────────────────────────────────
--- public schedule api
--- ─────────────────────────────────────────────────────────────────────────────
+-- public schedule api -------------------------------------------------------
 
 function M.getZones()
 	return zones
 end
 
 function M.cleanPassedTicks(currentWorldTick)
-	-- remove old ticks to prevent schedule growth
+	-- remove outdated schedule entries
+	-- prevents unbounded schedule growth over time
 	for tick, _ in pairs(schedule) do
-		if tick < currentWorldTick - 100 then
+		if tick < currentWorldTick then
 			schedule[tick] = nil
 		end
 	end
@@ -171,7 +213,9 @@ function M.registerCarAtTick(tick, car)
 		schedule[tick] = {}
 	end
 
+	-- avoid duplicate registration of the same car on the same tick
 	local alreadyRegistered = false
+
 	for _, c in ipairs(schedule[tick]) do
 		if c == car then
 			alreadyRegistered = true
@@ -191,6 +235,7 @@ function M.unregisterCarEverywhere(car)
 				table.remove(carList, i)
 			end
 		end
+
 		if #carList == 0 then
 			schedule[tick] = nil
 		end
@@ -203,14 +248,19 @@ end
 
 function M.isSlotOccupied(tick, currentCar, currentPos)
 	local carsAtTick = schedule[tick]
-	if not carsAtTick then return false end
+
+	if not carsAtTick then
+		return false
+	end
 
 	for _, other in ipairs(carsAtTick) do
 		if other ~= currentCar then
 			local otherPos = other:getPosAtTick(tick)
+
 			if otherPos then
 				local dx = otherPos.x - currentPos.x
 				local dy = otherPos.y - currentPos.y
+
 				local dist2 = dx*dx + dy*dy
 
 				if dist2 < SAFETY_DIST2 then
@@ -225,6 +275,7 @@ end
 
 function M.build(level)
 	local ways = {}
+
 	for _, way in ipairs(level.ways) do
 		ways[#ways + 1] = {
 			id = way.id,
@@ -234,13 +285,16 @@ function M.build(level)
 
 	local raw = {}
 
+	-- collect raw geometric conflict samples
 	for i = 1, #ways do
 		for j = i + 1, #ways do
-			local w1, w2 = ways[i], ways[j]
+			local w1 = ways[i]
+			local w2 = ways[j]
 
 			for _, pa in ipairs(w1.pts) do
 				for _, pb in ipairs(w2.pts) do
-					local dx, dy = pb.x - pa.x, pb.y - pa.y
+					local dx = pb.x - pa.x
+					local dy = pb.y - pa.y
 
 					if dx*dx + dy*dy < CONFLICT_DIST2 then
 						raw[#raw + 1] = {
@@ -255,12 +309,16 @@ function M.build(level)
 
 	local clusters = {}
 	local used = {}
+
 	local CLUSTER_R2 = (CONFLICT_DIST * 2) ^ 2
 
+	-- merge nearby conflict samples into continuous conflict zones
 	for i = 1, #raw do
 		if not used[i] then
 			local cluster = { raw[i] }
+
 			used[i] = true
+
 			local changed = true
 
 			while changed do
@@ -269,12 +327,15 @@ function M.build(level)
 				for j = 1, #raw do
 					if not used[j] then
 						for _, c in ipairs(cluster) do
-							local dx, dy = raw[j].x - c.x, raw[j].y - c.y
+							local dx = raw[j].x - c.x
+							local dy = raw[j].y - c.y
 
 							if dx*dx + dy*dy < CLUSTER_R2 then
 								cluster[#cluster + 1] = raw[j]
+
 								used[j] = true
 								changed = true
+
 								break
 							end
 						end
@@ -292,6 +353,7 @@ function M.build(level)
 		local hull = convexHull(cluster)
 		local verts = {}
 
+		-- expand hull slightly for stable collision tolerance
 		for _, p in ipairs(expandHull(hull, 4)) do
 			verts[#verts + 1] = p.x
 			verts[#verts + 1] = p.y
@@ -315,35 +377,65 @@ function M.draw(currentWorldTick, alpha)
 		end
 	end
 
-	if not currentWorldTick then return end
+	if not currentWorldTick then
+		return
+	end
 
-	-- draw scheduled occupancy
+	-- draw reserved schedule occupancy
 	for bookedTick, carList in pairs(schedule) do
 		for _, car in ipairs(carList) do
-			local posNow = car:getPosAtTick(bookedTick)
-			local posNext = car:getPosAtTick(bookedTick + 1)
+			local posNow =
+			car:getPosAtTick(bookedTick)
+
+			local posNext =
+			car:getPosAtTick(bookedTick + 1)
 
 			if posNow then
-				local x, y = posNow.x, posNow.y
+				local x = posNow.x
+				local y = posNow.y
 
+				-- smooth interpolation for current simulation tick
 				if bookedTick == currentWorldTick and posNext and alpha then
-					x = posNow.x + (posNext.x - posNow.x) * alpha
-					y = posNow.y + (posNext.y - posNow.y) * alpha
+					x =
+					posNow.x +
+					(posNext.x - posNow.x) * alpha
+
+					y =
+					posNow.y +
+					(posNext.y - posNow.y) * alpha
 				end
 
 				if bookedTick < currentWorldTick then
-					love.graphics.setColor(car.color[1], car.color[2], car.color[3], 0.15)
+					love.graphics.setColor(
+						car.color[1],
+						car.color[2],
+						car.color[3],
+						0.15
+					)
+
 				elseif bookedTick == currentWorldTick then
 					love.graphics.setColor(1, 1, 1, 0.8)
+
 				else
-					love.graphics.setColor(car.color[1], car.color[2], car.color[3], 0.40)
+					love.graphics.setColor(
+						car.color[1],
+						car.color[2],
+						car.color[3],
+						0.40
+					)
 				end
 
 				love.graphics.circle("fill", x, y, 6)
 
+				-- debug tick labels every 5 simulation steps
 				if bookedTick % 5 == 0 then
 					love.graphics.setColor(1, 1, 1, 0.3)
-					love.graphics.print(tostring(bookedTick), x + 8, y - 6)
+
+					love.graphics.print(
+						tostring(bookedTick),
+						x + 8,
+						y - 6
+					)
 				end
 			end
 		end
