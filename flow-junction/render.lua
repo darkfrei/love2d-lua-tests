@@ -1,227 +1,136 @@
 -- render.lua
 --
--- simple level renderer
---
--- api:
---   M.draw(level)
---
--- level format:
---   level.nodes[id] = { x, y }
---
---   level.ways = {
---       {
---           id = "...",
---           nodeRefs = { ... },
---           tags = {
---               curve = "linear" | "bezier"
---           }
---       }
---   }
---
--- features:
---   - linear way rendering
---   - quadratic bezier rendering
---   - cubic bezier rendering
---   - control polygon visualization
---   - node id visualization
+-- draws static level geometry (roads + nodes)
 
 local M = {}
 
--- bezier subdivision count
-local STEPS = 24
+-- =========================================================
+-- bezier helpers
+-- =========================================================
 
--- quadratic bezier interpolation
---
--- p0:
---   start point
---
--- p1:
---   control point
---
--- p2:
---   end point
 local function quadratic(p0, p1, p2, t)
 	local u = 1 - t
-
 	return {
-		x = u * u * p0.x
-		+ 2 * u * t * p1.x
-		+ t * t * p2.x,
-
-		y = u * u * p0.y
-		+ 2 * u * t * p1.y
-		+ t * t * p2.y,
+		x = u*u*p0.x + 2*u*t*p1.x + t*t*p2.x,
+		y = u*u*p0.y + 2*u*t*p1.y + t*t*p2.y
 	}
 end
 
--- cubic bezier interpolation
---
--- p0:
---   start point
---
--- p1/p2:
---   control points
---
--- p3:
---   end point
 local function cubic(p0, p1, p2, p3, t)
 	local u = 1 - t
-
 	return {
-		x = u^3 * p0.x
-		+ 3 * u^2 * t * p1.x
-		+ 3 * u * t^2 * p2.x
-		+ t^3 * p3.x,
-
-		y = u^3 * p0.y
-		+ 3 * u^2 * t * p1.y
-		+ 3 * u * t^2 * p2.y
-		+ t^3 * p3.y,
+		x = u^3*p0.x + 3*u^2*t*p1.x + 3*u*t^2*p2.x + t^3*p3.x,
+		y = u^3*p0.y + 3*u^2*t*p1.y + 3*u*t^2*p2.y + t^3*p3.y
 	}
 end
 
--- samples a bezier curve into a polyline
---
--- supported layouts:
---   3 points -> quadratic
---   4 points -> cubic
-local function sampleBezier(points)
+-- =========================================================
+-- sampling
+-- =========================================================
+
+local function sampleBezier(pts)
 	local out = {}
 
-	if #points == 3 then
-		for i = 0, STEPS do
-			local t = i / STEPS
-
-			out[#out + 1] = quadratic(
-				points[1],
-				points[2],
-				points[3],
-				t
-			)
+	if #pts == 3 then
+		for i = 0, 24 do
+			out[#out + 1] = quadratic(pts[1], pts[2], pts[3], i / 24)
 		end
-
-	elseif #points == 4 then
-		for i = 0, STEPS do
-			local t = i / STEPS
-
-			out[#out + 1] = cubic(
-				points[1],
-				points[2],
-				points[3],
-				points[4],
-				t
-			)
+	elseif #pts == 4 then
+		for i = 0, 24 do
+			out[#out + 1] = cubic(pts[1], pts[2], pts[3], pts[4], i / 24)
 		end
 	end
 
 	return out
 end
 
--- draws connected line segments
-local function drawLine(points, r, g, b)
-	if #points < 2 then
-		return
+local SAMPLE_STEP = 8
+
+local function sampleWay(way, nodes)
+	local pts = {}
+	for _, id in ipairs(way.nodeRefs) do
+		pts[#pts + 1] = nodes[id]
 	end
 
+	if way.tags.curve == "linear" then
+		local out = {}
+		for i = 1, #pts - 1 do
+			local a = pts[i]
+			local b = pts[i + 1]
+
+			local dx = b.x - a.x
+			local dy = b.y - a.y
+			local len = math.sqrt(dx*dx + dy*dy)
+
+			local steps = math.max(1, math.floor(len / SAMPLE_STEP))
+
+			for j = 0, steps - 1 do
+				local t = j / steps
+				out[#out + 1] = { x = a.x + dx * t, y = a.y + dy * t }
+			end
+		end
+
+		out[#out + 1] = pts[#pts]
+		return out
+
+	elseif way.tags.curve == "bezier" then
+		return sampleBezier(pts)
+	end
+
+	return pts
+end
+
+-- =========================================================
+-- drawing
+-- =========================================================
+
+local function drawLine(points, r, g, b)
 	love.graphics.setColor(r, g, b)
 
 	for i = 1, #points - 1 do
-		local a = points[i]
-		local bPoint = points[i + 1]
-
 		love.graphics.line(
-			a.x, a.y,
-			bPoint.x, bPoint.y
+			points[i].x, points[i].y,
+			points[i + 1].x, points[i + 1].y
 		)
 	end
 end
 
--- draws bezier control polygon and handles
-local function drawHandles(points)
-	-- control polygon
+local function drawHandles(pts)
 	love.graphics.setColor(1, 0.5, 0.1, 0.9)
 
-	for i = 1, #points - 1 do
-		local a = points[i]
-		local b = points[i + 1]
-
+	for i = 1, #pts - 1 do
 		love.graphics.line(
-			a.x, a.y,
-			b.x, b.y
+			pts[i].x, pts[i].y,
+			pts[i + 1].x, pts[i + 1].y
 		)
 	end
-
-	-- control points
-	for i, p in ipairs(points) do
-		love.graphics.setColor(1, 0.7, 0.2)
-		love.graphics.circle("fill", p.x, p.y, 4)
-
-		-- local node index inside the way
-		love.graphics.setColor(1, 1, 1, 0.7)
-		love.graphics.print(tostring(i), p.x + 6, p.y + 6)
-	end
-end
-
--- resolves node ids into node objects
-local function resolvePoints(nodeRefs, nodes)
-	local points = {}
-
-	for _, id in ipairs(nodeRefs) do
-		local node = nodes[id]
-
-		if node then
-			points[#points + 1] = node
-		end
-	end
-
-	return points
 end
 
 function M.draw(level)
-	love.graphics.clear(0.08, 0.10, 0.12)
-
-	-- draw ways
 	for _, way in ipairs(level.ways) do
-		local points = resolvePoints(
-			way.nodeRefs,
-			level.nodes
-		)
+		local curve = way.tags and way.tags.curve
 
-		local curve =
-		way.tags
-		and way.tags.curve
+		local pts = {}
+		for _, id in ipairs(way.nodeRefs) do
+			pts[#pts + 1] = level.nodes[id]
+		end
 
-		-- simple polyline
 		if curve == "linear" then
-			drawLine(points, 0.9, 0.9, 0.9)
+			drawLine(pts, 0.9, 0.9, 0.9)
 
-			-- sampled bezier
 		elseif curve == "bezier" then
-			local sampled = sampleBezier(points)
-
+			local sampled = sampleBezier(pts)
 			drawLine(sampled, 0.2, 0.8, 1.0)
-			drawHandles(points)
+			drawHandles(pts)
 		end
 	end
 
-	-- draw all global nodes
-	for id, node in pairs(level.nodes) do
+	for id, n in pairs(level.nodes) do
 		love.graphics.setColor(1, 1, 1, 0.5)
-		love.graphics.circle(
-			"fill",
-			node.x,
-			node.y,
-			3
-		)
+		love.graphics.circle("fill", n.x, n.y, 3)
 
-		-- global node id
 		love.graphics.setColor(1, 1, 1, 0.6)
-
-		love.graphics.print(
-			tostring(id),
-			node.x + 12,
-			node.y + 20
-		)
+		love.graphics.print(tostring(id), n.x + 10, n.y + 10)
 	end
 end
 
