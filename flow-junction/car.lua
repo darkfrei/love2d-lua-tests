@@ -1,23 +1,23 @@
 -- car.lua
 -- proactive space-time trajectory planner
--- guarantees strictly positive movement speed, smooth s-curve motion
--- on open segments, and monotonic constant max speed inside tunnels
+-- guarantees strictly positive movement speed, smooth motion
+-- and deterministic tunnel reservations
 
 local M = {}
 
 local tunel = require("tunel")
 
--- constants -----------------------------------------------------------------
 local RADIUS    = 20
-local MAX_SPEED = 60
-local MIN_SPEED = 20   -- minimum safe speed, cars never stop or move backward
-local tickRate  = 0.1
+local MAX_SPEED = 40
+local MIN_SPEED = 2
 
-local SAFE_FOLLOW_DIST = (RADIUS * 3) ^ 2   -- squared safe following distance
+local tickRate
 
--- helper functions ----------------------------------------------------------
+local SAFE_FOLLOW_DIST = (RADIUS * 2) + 2
+
 local function cubic(p0, p1, p2, p3, t)
 	local u = 1 - t
+
 	return {
 		x = u^3*p0.x + 3*u^2*t*p1.x + 3*u*t^2*p2.x + t^3*p3.x,
 		y = u^3*p0.y + 3*u^2*t*p1.y + 3*u*t^2*p2.y + t^3*p3.y,
@@ -28,9 +28,10 @@ local function computePathLength(points)
 	local len = 0
 
 	for i = 2, #points do
-		local dx = points[i].x - points[i-1].x
-		local dy = points[i].y - points[i-1].y
-		len = len + math.sqrt(dx*dx + dy*dy)
+		local dx = points[i].x - points[i - 1].x
+		local dy = points[i].y - points[i - 1].y
+
+		len = len + math.sqrt(dx * dx + dy * dy)
 	end
 
 	return len
@@ -43,6 +44,7 @@ local function sampleWay(way, nodes)
 
 	for _, id in ipairs(way.nodeRefs) do
 		local node = nodes[id]
+
 		if node then
 			pts[#pts + 1] = node
 		end
@@ -57,7 +59,13 @@ local function sampleWay(way, nodes)
 
 	elseif way.tags.curve == "bezier" and #pts == 4 then
 		for i = 0, STEPS do
-			out[#out + 1] = cubic(pts[1], pts[2], pts[3], pts[4], i / STEPS)
+			out[#out + 1] = cubic(
+				pts[1],
+				pts[2],
+				pts[3],
+				pts[4],
+				i / STEPS
+			)
 		end
 	end
 
@@ -80,9 +88,8 @@ local function buildPathWithSegments(wayIds, level)
 		if way then
 			local pts = sampleWay(way, level.nodes)
 
-			-- remove duplicate join point between connected ways
 			if i > 1 and #pts > 0 and #pathPoints > 0 then
-				local last = pathPoints[#pathPoints]
+				local last  = pathPoints[#pathPoints]
 				local first = pts[1]
 
 				if last.x == first.x and last.y == first.y then
@@ -107,16 +114,17 @@ local function buildPathWithSegments(wayIds, level)
 	return pathPoints, segments
 end
 
--- routes --------------------------------------------------------------------
 local ROUTES = {
 	{ "N-IN", "N-MID", "N-OUT" },
 	{ "S-IN", "S-MID", "S-OUT" },
 	{ "E-IN", "E-MID", "E-OUT" },
 	{ "W-IN", "W-MID", "W-OUT" },
+
 	{ "N-IN", "N-E", "W-OUT" },
 	{ "E-IN", "E-S", "N-OUT" },
 	{ "S-IN", "S-W", "E-OUT" },
 	{ "W-IN", "W-N", "S-OUT" },
+
 	{ "N-IN", "N-W", "E-OUT" },
 	{ "E-IN", "E-N", "S-OUT" },
 	{ "S-IN", "S-E", "W-OUT" },
@@ -129,9 +137,15 @@ local COLORS = {
 	{ 0.30, 0.55, 1.00 },
 	{ 1.00, 0.85, 0.20 },
 	{ 0.85, 0.35, 1.00 },
+	{ 0.15, 0.85, 0.95 },
+	{ 1.00, 0.55, 0.10 },
+	{ 0.60, 0.90, 0.20 },
+	{ 1.00, 0.40, 0.70 },
+	{ 0.40, 0.25, 0.95 },
 }
 
--- tunnel zone lookup --------------------------------------------------------
+local colorIndex = 0
+
 function M.checkPointInZones(x, y)
 	local zones = tunel.getZones()
 
@@ -141,13 +155,14 @@ function M.checkPointInZones(x, y)
 		local j = n
 
 		for i = 1, n do
-			local xi = verts[i*2-1]
-			local yi = verts[i*2]
-			local xj = verts[j*2-1]
-			local yj = verts[j*2]
+			local xi = verts[i * 2 - 1]
+			local yi = verts[i * 2]
 
-			if ((yi > y) ~= (yj > y)) and
-			(x < (xj - xi) * (y - yi) / (yj - yi + 1e-12) + xi) then
+			local xj = verts[j * 2 - 1]
+			local yj = verts[j * 2]
+
+			if ((yi > y) ~= (yj > y))
+			and (x < (xj - xi) * (y - yi) / (yj - yi + 1e-12) + xi) then
 				inside = not inside
 			end
 
@@ -162,7 +177,6 @@ function M.checkPointInZones(x, y)
 	return false
 end
 
--- car class -----------------------------------------------------------------
 local Car = {}
 Car.__index = Car
 
@@ -170,10 +184,10 @@ function Car.new(pathPoints, segments, wayIds, color, spawnTick)
 	local dists = { 0 }
 
 	for i = 2, #pathPoints do
-		local dx = pathPoints[i].x - pathPoints[i-1].x
-		local dy = pathPoints[i].y - pathPoints[i-1].y
+		local dx = pathPoints[i].x - pathPoints[i - 1].x
+		local dy = pathPoints[i].y - pathPoints[i - 1].y
 
-		dists[i] = dists[i-1] + math.sqrt(dx*dx + dy*dy)
+		dists[i] = dists[i - 1] + math.sqrt(dx * dx + dy * dy)
 	end
 
 	local car = setmetatable({
@@ -186,6 +200,7 @@ function Car.new(pathPoints, segments, wayIds, color, spawnTick)
 			realSpawnTick   = spawnTick,
 			spawnTick       = spawnTick,
 			endTick         = spawnTick,
+
 			done            = false,
 			color           = color,
 
@@ -198,30 +213,42 @@ function Car.new(pathPoints, segments, wayIds, color, spawnTick)
 	return car
 end
 
--- scan alternating open/tunnel path segments --------------------------------
 function Car:scanTunnelSegments()
 	local segments = {}
 
-	local step = 1.0
+	local step = MAX_SPEED * tickRate
+
 	local currentDist = 0
 	local segStart = 0
+
 	local prevInTunnel = false
 
 	local pStart = self:getPosAtDist(0)
 
 	if pStart then
-		prevInTunnel = M.checkPointInZones(pStart.x, pStart.y)
+		prevInTunnel = M.checkPointInZones(
+			pStart.x,
+			pStart.y
+		)
 	end
 
 	while currentDist < self.total do
-		currentDist = math.min(currentDist + step, self.total)
+		currentDist = math.min(
+			currentDist + step,
+			self.total
+		)
 
 		local p = self:getPosAtDist(currentDist)
 
 		if p then
-			local inTunnel = M.checkPointInZones(p.x, p.y)
+			local inTunnel = M.checkPointInZones(
+				p.x,
+				p.y
+			)
 
-			if inTunnel ~= prevInTunnel or currentDist == self.total then
+			if inTunnel ~= prevInTunnel
+			or currentDist == self.total then
+
 				table.insert(segments, {
 						inTunnel = prevInTunnel,
 						startDist = segStart,
@@ -238,12 +265,11 @@ function Car:scanTunnelSegments()
 	return segments
 end
 
--- tunnel reservation conflict check -----------------------------------------
 function Car:hasTunnelConflict(startTick, startDist, endDist)
 	local tick = startTick
 	local simDist = startDist
 
-	while simDist <= endDist - 1e-6 do
+	while simDist < endDist do
 		local pos = self:getPosAtDist(simDist)
 
 		if not pos then
@@ -261,7 +287,6 @@ function Car:hasTunnelConflict(startTick, startDist, endDist)
 	return false
 end
 
--- rear-end collision distance check -----------------------------------------
 function Car:hasLongitudinalConflictAtTick(tick, pos)
 	for _, other in ipairs(M.getLiveCars()) do
 		if other ~= self then
@@ -271,7 +296,7 @@ function Car:hasLongitudinalConflictAtTick(tick, pos)
 				local dx = otherPos.x - pos.x
 				local dy = otherPos.y - pos.y
 
-				if dx*dx + dy*dy < SAFE_FOLLOW_DIST then
+				if dx * dx + dy * dy < SAFE_FOLLOW_DIST then
 					return true
 				end
 			end
@@ -281,10 +306,6 @@ function Car:hasLongitudinalConflictAtTick(tick, pos)
 	return false
 end
 
--- ============================================================================
--- stable trajectory baking
--- ============================================================================
-
 function Car:bakeTrajectory()
 	local tunSegments = self:scanTunnelSegments()
 
@@ -293,196 +314,138 @@ function Car:bakeTrajectory()
 		return
 	end
 
-	local safetyCounter = 0
-	local maxIterations = 300
+	local currentTick = self.realSpawnTick + self.spawnDelayTicks
 
-	while safetyCounter < maxIterations do
-		safetyCounter = safetyCounter + 1
+	self.spawnTick = currentTick
 
-		local currentTick = self.realSpawnTick + self.spawnDelayTicks
-		self.spawnTick = currentTick
+	local tempTrajectory = {}
 
-		local tempTrajectory = {}
-		local globalConflictFound = false
+	for idx, seg in ipairs(tunSegments) do
 
-		for idx, seg in ipairs(tunSegments) do
-			if globalConflictFound then
-				break
+		if seg.inTunnel then
+			if self:hasTunnelConflict(
+				currentTick,
+				seg.startDist,
+				seg.endDist
+				) then
+				self.spawnDelayTicks = self.spawnDelayTicks + 2
+				return self:bakeTrajectory()
 			end
 
-			if not seg.inTunnel then
-				-- open segment s-curve planning before tunnel entry
-				local nextTunnel = tunSegments[idx + 1]
+			local steps = math.max(
+				1,
+				math.ceil(seg.length / (MAX_SPEED * tickRate))
+			)
 
-				local nominalDuration = math.ceil(
-					seg.length / (MAX_SPEED * tickRate)
-				)
+			for step = 0, steps - 1 do
+				local dist = seg.startDist
+				+ (seg.length * step / steps)
 
-				local requiredDuration = nominalDuration
+				local pos = self:getPosAtDist(dist)
 
-				if nextTunnel and nextTunnel.inTunnel then
-					local arrivalAtTunnelTick =
-					currentTick + nominalDuration
-
-					local wait = 0
-
-					-- search for safe tunnel entry window
-					while wait < 1000 do
-						if not self:hasTunnelConflict(
-							arrivalAtTunnelTick + wait,
-							nextTunnel.startDist,
-							nextTunnel.endDist
-							) then
-							break
-						end
-
-						wait = wait + 2
-					end
-
-					requiredDuration = nominalDuration + wait
-				end
-
-				-- maximum allowed slowdown duration before violating min speed
-				local maxPossibleDuration = math.ceil(
-					seg.length / (MIN_SPEED * tickRate)
-				)
-
-				if requiredDuration > maxPossibleDuration then
-					-- delay entire spawn instead of forcing reverse motion
-					local excessWait =
-					requiredDuration - maxPossibleDuration
-
-					self.spawnDelayTicks =
-					self.spawnDelayTicks + excessWait
-
-					globalConflictFound = true
-					break
-				end
-
-				-- compute s-curve speed dip profile
-				local steps = requiredDuration
-				local targetDip = 0
-
-				if steps > nominalDuration and steps > 1 then
-					local avgSpeed =
-					(seg.length / tickRate) / steps
-
-					targetDip =
-					2 * (MAX_SPEED - avgSpeed)
-
-					if MAX_SPEED - targetDip < MIN_SPEED then
-						targetDip = MAX_SPEED - MIN_SPEED
-					end
-				end
-
-				-- monotonic distance integration without backward motion
-				local accumulatedDist = seg.startDist
-
-				for step = 0, steps - 1 do
-					local t_frac =
-					step / (steps - 1 == 0 and 1 or steps - 1)
-
-					local pos = self:getPosAtDist(accumulatedDist)
-
-					-- rear-end safety validation
-					if pos and self:hasLongitudinalConflictAtTick(
-						currentTick,
-						pos
-						) then
-						self.spawnDelayTicks =
-						self.spawnDelayTicks + 2
-
-						globalConflictFound = true
-						break
-					end
-
-					if pos then
-						tempTrajectory[currentTick] = pos
-					end
-
-					-- s-curve speed function
-					local speedModifier =
-					math.sin(math.pi * t_frac) ^ 2
-
-					local currentSpeed =
-					MAX_SPEED - (targetDip * speedModifier)
-
-					accumulatedDist =
-					accumulatedDist + currentSpeed * tickRate
-
-					currentTick = currentTick + 1
-				end
-
-				if globalConflictFound then
-					break
-				end
-
-				-- exact segment end alignment
-				local pos = self:getPosAtDist(seg.endDist)
-
-				if pos then
-					tempTrajectory[currentTick] = pos
-				end
-
-			else
-				-- tunnel traversal at constant max speed
-				if self:hasTunnelConflict(
-					currentTick,
-					seg.startDist,
-					seg.endDist
+				if pos and self:hasLongitudinalConflictAtTick(
+					currentTick + step,
+					pos
 					) then
-					self.spawnDelayTicks =
-					self.spawnDelayTicks + 2
-
-					globalConflictFound = true
-					break
+					self.spawnDelayTicks = self.spawnDelayTicks + 2
+					return self:bakeTrajectory()
 				end
 
-				local simDist = seg.startDist
+				if pos then
+					tempTrajectory[currentTick + step] = pos
+				end
+			end
 
-				while simDist < seg.endDist do
-					local pos = self:getPosAtDist(simDist)
+			currentTick = currentTick + steps
 
-					if pos and self:hasLongitudinalConflictAtTick(
-						currentTick,
-						pos
+		else
+			local nextTunnel = tunSegments[idx + 1]
+
+			local nominalSteps = math.max(
+				1,
+				math.ceil(seg.length / (MAX_SPEED * tickRate))
+			)
+
+			local requiredSteps = nominalSteps
+
+			if nextTunnel and nextTunnel.inTunnel then
+				local arrivalTick = currentTick + nominalSteps
+				local wait = 0
+
+				while wait < 1000 do
+					if not self:hasTunnelConflict(
+						arrivalTick + wait,
+						nextTunnel.startDist,
+						nextTunnel.endDist
 						) then
-						self.spawnDelayTicks =
-						self.spawnDelayTicks + 2
-
-						globalConflictFound = true
 						break
 					end
 
-					if pos then
-						tempTrajectory[currentTick] = pos
-					end
-
-					simDist = simDist + MAX_SPEED * tickRate
-					currentTick = currentTick + 1
+					wait = wait + 2
 				end
 
-				if globalConflictFound then
-					break
-				end
+				requiredSteps = nominalSteps + wait
+			end
 
-				local pos = self:getPosAtDist(seg.endDist)
+			local maxPossibleSteps = math.ceil(
+				seg.length / (MIN_SPEED * tickRate)
+			)
 
-				if pos then
-					tempTrajectory[currentTick] = pos
+			if requiredSteps > maxPossibleSteps then
+				self.spawnDelayTicks = self.spawnDelayTicks
+				+ (requiredSteps - maxPossibleSteps)
+
+				return self:bakeTrajectory()
+			end
+
+			local T = requiredSteps * tickRate
+
+			local dip = 0
+
+			if requiredSteps > nominalSteps then
+				dip = 2 * (
+					MAX_SPEED - (seg.length / T)
+				)
+
+				if MAX_SPEED - dip < MIN_SPEED then
+					dip = MAX_SPEED - MIN_SPEED
 				end
 			end
-		end
 
-		if not globalConflictFound then
-			-- valid trajectory built successfully
-			self.trajectory = tempTrajectory
-			self.endTick = currentTick
-			break
+			for step = 0, requiredSteps - 1 do
+				local t = step * tickRate
+
+				local dist =
+				(MAX_SPEED - dip / 2) * t
+				+ ((dip * T) / (4 * math.pi))
+				* math.sin((2 * math.pi * t) / T)
+
+				dist = math.min(dist, seg.length)
+
+				local pos = self:getPosAtDist(
+					seg.startDist + dist
+				)
+
+				if pos and self:hasLongitudinalConflictAtTick(
+					currentTick + step,
+					pos
+					) then
+					self.spawnDelayTicks = self.spawnDelayTicks + 2
+					return self:bakeTrajectory()
+				end
+
+				if pos then
+					tempTrajectory[currentTick + step] = pos
+				end
+			end
+
+			currentTick = currentTick + requiredSteps
 		end
 	end
 
-	-- register tunnel occupancy schedule
+	self.trajectory = tempTrajectory
+	self.endTick = currentTick
+
 	for t, p in pairs(self.trajectory) do
 		if M.checkPointInZones(p.x, p.y) then
 			tunel.registerCarAtTick(t, self)
@@ -492,10 +455,17 @@ end
 
 function Car:buildSimpleTrajectory()
 	local trajectory = {}
-	local totalTicks = math.ceil(self.total / (MAX_SPEED * tickRate))
+
+	local totalTicks = math.ceil(
+		self.total / (MAX_SPEED * tickRate)
+	)
 
 	for i = 0, totalTicks do
-		local dist = math.min(i * MAX_SPEED * tickRate, self.total)
+		local dist = math.min(
+			i * MAX_SPEED * tickRate,
+			self.total
+		)
+
 		local pos = self:getPosAtDist(dist)
 
 		if pos then
@@ -507,33 +477,41 @@ function Car:buildSimpleTrajectory()
 	self.endTick = self.realSpawnTick + totalTicks
 end
 
--- ============================================================================
--- position lookup
--- ============================================================================
-
 function Car:getPosAtDist(d)
 	local path = self.pathPoints
 	local dists = self.dists
+
 	local n = #path
 
-	if n == 0 then return nil end
-	if n == 1 then return path[1] end
+	if n == 0 then
+		return nil
+	end
 
-	d = math.max(0, math.min(d, self.total))
+	if n == 1 then
+		return path[1]
+	end
+
+	d = math.max(
+		0,
+		math.min(d, self.total)
+	)
 
 	for i = 2, n do
 		if dists[i] >= d then
-			local segLen = dists[i] - dists[i-1]
+			local segLen = dists[i] - dists[i - 1]
 
 			if segLen < 1e-6 then
 				return path[i]
 			end
 
-			local frac = (d - dists[i-1]) / segLen
+			local frac = (d - dists[i - 1]) / segLen
 
 			return {
-				x = path[i-1].x + (path[i].x - path[i-1].x) * frac,
-				y = path[i-1].y + (path[i].y - path[i-1].y) * frac,
+				x = path[i - 1].x
+				+ (path[i].x - path[i - 1].x) * frac,
+
+				y = path[i - 1].y
+				+ (path[i].y - path[i - 1].y) * frac,
 			}
 		end
 	end
@@ -550,7 +528,7 @@ function Car:getPos(currentWorldTick, alpha)
 		return nil
 	end
 
-	local posNow = self:getPosAtTick(currentWorldTick)
+	local posNow  = self:getPosAtTick(currentWorldTick)
 	local posNext = self:getPosAtTick(currentWorldTick + 1)
 
 	if not posNow then
@@ -561,7 +539,6 @@ function Car:getPos(currentWorldTick, alpha)
 		return posNow
 	end
 
-	-- linear interpolation between discrete ticks
 	return {
 		x = posNow.x + (posNext.x - posNow.x) * alpha,
 		y = posNow.y + (posNext.y - posNow.y) * alpha,
@@ -594,22 +571,40 @@ function Car:draw(currentWorldTick, alpha)
 		self.color[3]
 	)
 
-	love.graphics.circle("fill", p.x, p.y, RADIUS)
+	love.graphics.circle(
+		"fill",
+		p.x,
+		p.y,
+		RADIUS
+	)
+
+	love.graphics.setColor(1, 1, 1, 0.9)
+	love.graphics.setLineWidth(1.5)
+
+	love.graphics.circle(
+		"line",
+		p.x,
+		p.y,
+		RADIUS
+	)
 
 	love.graphics.setColor(0, 0, 0, 0.5)
-	love.graphics.circle("fill", p.x, p.y, 8)
+
+	love.graphics.circle(
+		"fill",
+		p.x,
+		p.y,
+		8
+	)
 end
 
--- ============================================================================
--- module state
--- ============================================================================
-
 local cars = {}
+
 local currentTicks = 0
 local currentAlpha = 0
 
-function M.setTickRate(rate)
-	tickRate = rate
+function M.setTickRate(WORLD_TICK_RATE)
+	tickRate = WORLD_TICK_RATE
 end
 
 function M.spawnCar(level, currentWorldTick)
@@ -622,7 +617,9 @@ function M.spawnCar(level, currentWorldTick)
 		return
 	end
 
-	local color = COLORS[math.random(#COLORS)]
+	colorIndex = (colorIndex % #COLORS) + 1
+
+	local color = COLORS[colorIndex]
 
 	cars[#cars + 1] = Car.new(
 		pathPoints,
@@ -639,7 +636,6 @@ function M.update(dt, level, worldTick, alpha)
 
 	for i = #cars, 1, -1 do
 		if cars[i]:checkFinished(worldTick) then
---			tunel.unregisterCarEverywhere(cars[i])
 			table.remove(cars, i)
 		end
 	end

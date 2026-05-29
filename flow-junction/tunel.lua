@@ -14,8 +14,6 @@ local SAFETY_DIST2   = (RADIUS * 2 + 2) ^ 2
 local zones = {}
 local schedule = {}
 
--- geometry ------------------------------------------------------------------
-
 local function quadratic(p0, p1, p2, t)
 	local u = 1 - t
 
@@ -79,7 +77,6 @@ local function sampleWay(way, nodes)
 			local steps =
 			math.max(1, math.floor(len / SAMPLE_STEP))
 
-			-- subdivide long linear segments for accurate collision sampling
 			for j = 0, steps - 1 do
 				out[#out + 1] = {
 					x = a.x + dx * (j / steps),
@@ -98,8 +95,6 @@ local function sampleWay(way, nodes)
 
 	return pts
 end
-
--- geometry utilities --------------------------------------------------------
 
 local function cross(o, a, b)
 	return
@@ -158,49 +153,55 @@ end
 
 local function expandHull(hull, d)
 	local n = #hull
-
-	if n < 3 then
-		return hull
-	end
-
-	local cx = 0
-	local cy = 0
-
-	for _, p in ipairs(hull) do
-		cx = cx + p.x
-		cy = cy + p.y
-	end
-
-	cx = cx / n
-	cy = cy / n
+	if n < 3 then return hull end
 
 	local out = {}
 
-	for _, p in ipairs(hull) do
-		local dx = p.x - cx
-		local dy = p.y - cy
+	for i = 1, n do
+		local a = hull[((i - 2 + n) % n) + 1]
+		local b = hull[i]
+		local c = hull[(i % n) + 1]
 
-		local len = math.sqrt(dx*dx + dy*dy)
+		local function norm(p, q)
+			local dx = q.x - p.x
+			local dy = q.y - p.y
+			local l = math.sqrt(dx*dx + dy*dy)
 
-		out[#out + 1] =
-		len > 1e-6 and {
-			x = p.x + (dx / len) * d,
-			y = p.y + (dy / len) * d
-			} or p
+			if l < 1e-9 then
+				return 0, 0
+			end
+
+			return dy/l, -dx/l
+		end
+
+		local nx1, ny1 = norm(a, b)
+		local nx2, ny2 = norm(b, c)
+
+		local bx = nx1 + nx2
+		local by = ny1 + ny2
+		local dot = bx*nx2 + by*ny2
+
+		if math.abs(dot) < 0.15 then
+			out[i] = {
+				x = b.x + nx1 * d,
+				y = b.y + ny1 * d
+			}
+		else
+			out[i] = {
+				x = b.x + bx * d / dot,
+				y = b.y + by * d / dot
+			}
+		end
 	end
 
 	return out
 end
-
--- public schedule api -------------------------------------------------------
 
 function M.getZones()
 	return zones
 end
 
 function M.cleanPassedTicks(currentWorldTick)
-	-- remove outdated schedule entries
-	-- prevents unbounded schedule growth over time
 	for tick, _ in pairs(schedule) do
 		if tick < currentWorldTick then
 			schedule[tick] = nil
@@ -213,7 +214,6 @@ function M.registerCarAtTick(tick, car)
 		schedule[tick] = {}
 	end
 
-	-- avoid duplicate registration of the same car on the same tick
 	local alreadyRegistered = false
 
 	for _, c in ipairs(schedule[tick]) do
@@ -285,7 +285,6 @@ function M.build(level)
 
 	local raw = {}
 
-	-- collect raw geometric conflict samples
 	for i = 1, #ways do
 		for j = i + 1, #ways do
 			local w1 = ways[i]
@@ -312,7 +311,6 @@ function M.build(level)
 
 	local CLUSTER_R2 = (CONFLICT_DIST * 2) ^ 2
 
-	-- merge nearby conflict samples into continuous conflict zones
 	for i = 1, #raw do
 		if not used[i] then
 			local cluster = { raw[i] }
@@ -353,8 +351,7 @@ function M.build(level)
 		local hull = convexHull(cluster)
 		local verts = {}
 
-		-- expand hull slightly for stable collision tolerance
-		for _, p in ipairs(expandHull(hull, 4)) do
+		for _, p in ipairs(expandHull(hull, RADIUS + 4)) do
 			verts[#verts + 1] = p.x
 			verts[#verts + 1] = p.y
 		end
@@ -368,12 +365,15 @@ function M.build(level)
 end
 
 function M.draw(currentWorldTick, alpha)
-	-- draw conflict zones
-	love.graphics.setColor(0.25, 0.28, 0.32, 0.5)
+	love.graphics.setLineWidth(1.5)
 
 	for _, verts in ipairs(zones) do
 		if #verts >= 6 then
+			love.graphics.setColor(0.25, 0.28, 0.32, 0.5)
 			love.graphics.polygon("fill", verts)
+
+			love.graphics.setColor(0.25, 0.55, 1.0, 0.85)
+			love.graphics.polygon("line", verts)
 		end
 	end
 
@@ -381,7 +381,6 @@ function M.draw(currentWorldTick, alpha)
 		return
 	end
 
-	-- draw reserved schedule occupancy
 	for bookedTick, carList in pairs(schedule) do
 		for _, car in ipairs(carList) do
 			local posNow =
@@ -394,7 +393,6 @@ function M.draw(currentWorldTick, alpha)
 				local x = posNow.x
 				local y = posNow.y
 
-				-- smooth interpolation for current simulation tick
 				if bookedTick == currentWorldTick and posNext and alpha then
 					x =
 					posNow.x +
@@ -427,7 +425,6 @@ function M.draw(currentWorldTick, alpha)
 
 				love.graphics.circle("fill", x, y, 6)
 
-				-- debug tick labels every 5 simulation steps
 				if bookedTick % 5 == 0 then
 					love.graphics.setColor(1, 1, 1, 0.3)
 
