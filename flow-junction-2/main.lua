@@ -1,5 +1,5 @@
 -- main.lua
--- application entry point: editor / simulation state switch
+-- application entry point switching between editor and simulation states
 
 local Editor     = require("editor")
 local Simulation = require("simulation")
@@ -9,64 +9,58 @@ local state = "editor"
 local App = {}
 
 local function deepCopyMap(src)
-	local map = {
-		nodes = {},
-		ways = {}
-	}
-
+	local map = { nodes = {}, ways = {} }
 	for id, n in pairs(src.nodes or {}) do
 		map.nodes[id] = { x = n.x, y = n.y }
 	end
-
 	for i, w in ipairs(src.ways or {}) do
 		local refs = {}
 		for _, r in ipairs(w.nodeRefs or {}) do
 			refs[#refs + 1] = r
 		end
 
+		-- copy all tags, not just curve
+		local tags = {}
+		if w.tags then
+			for k, v in pairs(w.tags) do
+				tags[k] = v
+			end
+		end
+		if not tags.curve then tags.curve = "linear" end
+
 		map.ways[i] = {
-			id = w.id or i,
+			id       = w.id or i,
 			nodeRefs = refs,
-			tags = {
-				curve = (w.tags and w.tags.curve) or "linear"
-			}
+			tags     = tags
 		}
 	end
-
 	return map
 end
 
--- 
--- state control
--- 
-
 function App.setState(newState)
-	if type(newState) ~= "string" then
-		print("ERROR: invalid state:", newState)
-		return
-	end
-
+	if type(newState) ~= "string" then return end
 	if newState == state then return end
-	state = newState
 
-	if state == "simulation" then
+	if newState == "simulation" then
+		-- при входе в симуляцию: синхронизируем карту и запускаем с нуля
 		local mapCopy = deepCopyMap(Editor.map)
 		Simulation.syncMap(mapCopy)
+		Simulation.reset()
+	elseif newState == "editor" then
+		-- при выходе из симуляции: чистим все машины
+		Simulation.stop()
 	end
+
+	state = newState
 end
 
 function App.getState()
 	return state
 end
 
--- 
--- love lifecycle
--- 
-
 function love.load()
 	love.window.setMode(1920, 1080, { resizable = true, vsync = true })
 	love.window.setTitle("flow junction")
-
 	Editor.load(App)
 	Simulation.load(App)
 end
@@ -86,10 +80,6 @@ function love.draw()
 		Simulation.draw()
 	end
 end
-
--- 
--- input routing
--- 
 
 function love.mousepressed(x, y, button)
 	if state == "editor" then
@@ -117,36 +107,32 @@ end
 
 function love.wheelmoved(x, y)
 	if state == "editor" then
-		if Editor.wheelmoved then
-			Editor.wheelmoved(x, y)
-		end
+		if Editor.wheelmoved then Editor.wheelmoved(x, y) end
 	elseif state == "simulation" then
-		if Simulation.wheelmoved then
-			Simulation.wheelmoved(x, y)
-		end
+		if Simulation.wheelmoved then Simulation.wheelmoved(x, y) end
 	end
 end
 
 function love.keypressed(key)
 	if state == "editor" then
-		if Editor.keypressed then
-			Editor.keypressed(key)
-		end
+		if Editor.keypressed then Editor.keypressed(key) end
 	elseif state == "simulation" then
-		if Simulation.keypressed then
-			Simulation.keypressed(key)
-		end
+		if Simulation.keypressed then Simulation.keypressed(key) end
 	end
 end
 
-function love.keyreleased(key, scancode)
+function love.keyreleased(key)
 	if state == "editor" then
-		if Editor.keyreleased then
-			Editor.keyreleased(key)
-		end
+		if Editor.keyreleased then Editor.keyreleased(key) end
 	elseif state == "simulation" then
-		if Simulation.keyreleased then
-			Simulation.keyreleased(key)
-		end
+		if Simulation.keyreleased then Simulation.keyreleased(key) end
+	end
+end
+
+function love.textinput(t)
+	if state == "editor" then
+		if Editor.textinput then Editor.textinput(t) end
+	elseif state == "simulation" then
+		if Simulation.textinput then Simulation.textinput(t) end
 	end
 end

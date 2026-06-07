@@ -1,9 +1,11 @@
 -- core/renderer.lua
--- rendering of static level geometry, road splines, and grid
+-- rendering: grid, roads, nodes, and debug overlays
 
 local M = {}
 
--- helper functions
+--
+-- helpers
+--
 
 local function drawPolyline(points)
 	for i = 1, #points - 1 do
@@ -22,16 +24,16 @@ local function sampleBezier(pts, steps)
 		local u = 1 - t
 
 		local x =
-		u ^ 3 * pts[1].x +
-		3 * u ^ 2 * t * pts[2].x +
-		3 * u * t ^ 2 * pts[3].x +
-		t ^ 3 * pts[4].x
+			u ^ 3 * pts[1].x +
+			3 * u ^ 2 * t * pts[2].x +
+			3 * u * t ^ 2 * pts[3].x +
+			t ^ 3 * pts[4].x
 
 		local y =
-		u ^ 3 * pts[1].y +
-		3 * u ^ 2 * t * pts[2].y +
-		3 * u * t ^ 2 * pts[3].y +
-		t ^ 3 * pts[4].y
+			u ^ 3 * pts[1].y +
+			3 * u ^ 2 * t * pts[2].y +
+			3 * u * t ^ 2 * pts[3].y +
+			t ^ 3 * pts[4].y
 
 		out[#out + 1] = { x = x, y = y }
 	end
@@ -39,7 +41,33 @@ local function sampleBezier(pts, steps)
 	return out
 end
 
--- background and grid rendering
+--
+-- arrow rendering
+--
+
+local function drawArrow(x, y, dx, dy, size, r, g, b, a)
+	local len = math.sqrt(dx * dx + dy * dy)
+	if len < 0.001 then return end
+
+	local nx = dx / len
+	local ny = dy / len
+
+	local tx = x + nx * size
+	local ty = y + ny * size
+
+	local px = -ny * size * 0.45
+	local py =  nx * size * 0.45
+
+	love.graphics.setColor(r, g, b, a)
+	love.graphics.setLineWidth(2)
+	love.graphics.line(x, y, tx, ty)
+	love.graphics.line(tx, ty, x + px, y + py)
+	love.graphics.line(tx, ty, x - px, y - py)
+end
+
+--
+-- background and grid
+--
 
 function M.drawBackground()
 	love.graphics.clear(0.08, 0.10, 0.12)
@@ -69,18 +97,19 @@ function M.drawGrid(camera)
 	end
 end
 
--- ways rendering
+--
+-- ways
+--
 
 function M.drawWays(level, editor)
-	if not level or not level.ways then
-		return
-	end
+	if not level or not level.ways then return end
 
-	local hoveredWay = editor and editor.hoveredWay
+	local hoveredWay  = editor and editor.hoveredWay
 	local selectedWay = editor and editor.selectedWay
 
 	for idx, way in ipairs(level.ways) do
 		local curve = way.tags and way.tags.curve or "linear"
+		local wtype = way.tags and way.tags.type
 
 		local pts = {}
 
@@ -93,11 +122,30 @@ function M.drawWays(level, editor)
 
 		if #pts >= 2 then
 			local isSelected = (selectedWay == idx)
-			local isHovered = (hoveredWay == idx)
+			local isHovered  = (hoveredWay == idx)
 
 			local r, g, b, a, lw
 
-			if curve == "bezier" then
+			-- color by lane type
+			if wtype == "in" then
+				if isSelected then
+					r, g, b, a, lw = 0.20, 1.00, 0.45, 1.0, 4
+				elseif isHovered then
+					r, g, b, a, lw = 0.50, 1.00, 0.65, 1.0, 3
+				else
+					r, g, b, a, lw = 0.15, 0.80, 0.35, 1.0, 2
+				end
+
+			elseif wtype == "out" then
+				if isSelected then
+					r, g, b, a, lw = 1.00, 0.25, 0.25, 1.0, 4
+				elseif isHovered then
+					r, g, b, a, lw = 1.00, 0.55, 0.45, 1.0, 3
+				else
+					r, g, b, a, lw = 0.85, 0.20, 0.20, 1.0, 2
+				end
+
+			elseif curve == "bezier" then
 				if isSelected then
 					r, g, b, a, lw = 1.0, 0.55, 0.10, 1.0, 4
 				elseif isHovered then
@@ -105,6 +153,7 @@ function M.drawWays(level, editor)
 				else
 					r, g, b, a, lw = 0.20, 0.80, 1.0, 1.0, 2
 				end
+
 			else
 				if isSelected then
 					r, g, b, a, lw = 1.0, 0.35, 0.35, 1.0, 4
@@ -130,22 +179,34 @@ function M.drawWays(level, editor)
 
 					love.graphics.setLineWidth(1)
 
-					-- control handle 1: anchor to ctrl1
+					-- control handles
 					love.graphics.setColor(1.0, 0.85, 0.20, ha)
 					love.graphics.line(pts[1].x, pts[1].y, pts[2].x, pts[2].y)
-
 					love.graphics.circle("fill", pts[2].x, pts[2].y, ds)
 					love.graphics.setColor(0, 0, 0, 0.5)
 					love.graphics.circle("line", pts[2].x, pts[2].y, ds)
 
-					-- control handle 2: anchor to ctrl2
 					love.graphics.setColor(0.40, 1.0, 0.55, ha)
 					love.graphics.line(pts[4].x, pts[4].y, pts[3].x, pts[3].y)
-
 					love.graphics.circle("fill", pts[3].x, pts[3].y, ds)
 					love.graphics.setColor(0, 0, 0, 0.5)
 					love.graphics.circle("line", pts[3].x, pts[3].y, ds)
 				end
+			end
+
+			-- direction arrows
+			if wtype == "in" or wtype == "out" then
+				local p1 = pts[1]
+				local p2 = pts[2]
+
+				local mx = (p1.x + p2.x) * 0.5
+				local my = (p1.y + p2.y) * 0.5
+
+				local col = (wtype == "in")
+					and {0.10, 1.00, 0.40, 0.9}
+					or  {1.00, 0.20, 0.20, 0.9}
+
+				drawArrow(mx, my, p2.x - p1.x, p2.y - p1.y, 18, unpack(col))
 			end
 		end
 	end
@@ -153,23 +214,22 @@ function M.drawWays(level, editor)
 	love.graphics.setLineWidth(1)
 end
 
--- nodes rendering
+--
+-- nodes
+--
 
 function M.drawNodes(level, editor)
-	if not level or not level.nodes then
-		return
-	end
+	if not level or not level.nodes then return end
 
-	local hovered = editor and editor.hoveredNode
+	local hovered  = editor and editor.hoveredNode
 	local selected = editor and editor.selectedNode
 
 	for id, node in pairs(level.nodes) do
 		local isSelected = (selected == id)
-		local isHovered = (hovered == id)
+		local isHovered  = (hovered == id)
 
 		local r = isSelected and 8 or (isHovered and 7 or 6)
 
-		-- fill
 		if isSelected then
 			love.graphics.setColor(1.0, 0.35, 0.35, 1.0)
 		elseif isHovered then
@@ -180,7 +240,6 @@ function M.drawNodes(level, editor)
 
 		love.graphics.circle("fill", node.x, node.y, r)
 
-		-- outline
 		if isSelected then
 			love.graphics.setLineWidth(2)
 			love.graphics.setColor(1.0, 0.70, 0.70, 1.0)
@@ -194,7 +253,6 @@ function M.drawNodes(level, editor)
 
 		love.graphics.circle("line", node.x, node.y, r)
 
-		-- selection glow ring
 		if isSelected then
 			love.graphics.setLineWidth(1)
 			love.graphics.setColor(1.0, 0.35, 0.35, 0.35)
@@ -205,12 +263,12 @@ function M.drawNodes(level, editor)
 	love.graphics.setLineWidth(1)
 end
 
--- node labels
+--
+-- labels
+--
 
 function M.drawNodeLabels(level)
-	if not level or not level.nodes then
-		return
-	end
+	if not level or not level.nodes then return end
 
 	love.graphics.setColor(0.6, 0.7, 0.8, 0.8)
 
@@ -219,14 +277,12 @@ function M.drawNodeLabels(level)
 	end
 end
 
+--
 -- editor overlay
+--
 
 function M.drawEditorOverlay(editor)
-	if not editor then
-		return
-	end
-
-	if editor.tools and editor.tools.drawOverlay then
+	if editor and editor.tools and editor.tools.drawOverlay then
 		editor.tools:drawOverlay()
 	end
 end

@@ -1,52 +1,56 @@
 -- editor/tools.lua
--- editing tools logic: selection, node movement, node/way creation
+-- editor tools logic: selection, movement, node and way creation
 
 local Map = require("core.map")
 
 local Tools = {}
 Tools.__index = Tools
 
-local MODE_SELECT = "select"
-local MODE_ADD_NODE = "addNode"
-local MODE_ADD_WAY = "addWay"
+local MODE_SELECT      = "select"
+local MODE_ADD_NODE    = "addNode"
+local MODE_ADD_LINEAR  = "addLinear"
+local MODE_ADD_BEZIER  = "addBezier"
 
--- helpers 
+-- helpers
 
 local function nodeInWay(map, wayIdx, nodeId)
 	local way = map.ways[wayIdx]
 	if not way then return false end
-
 	for _, id in ipairs(way.nodeRefs) do
 		if id == nodeId then return true end
 	end
-
 	return false
 end
 
--- constructor   
+-- constructor
 
 function Tools.new(editor)
 	local self = setmetatable({}, Tools)
-	self.editor = editor
-	self.mode = MODE_SELECT
 
-	self._wayNodes = {}
+	self.editor = editor
+	self.mode   = MODE_SELECT
+
+	-- way construction state
+	-- list of accumulated node ids for new way
+	self._wayNodes   = {}
+
+	-- current mouse world coordinates for preview rendering
 	self._wayMouseWX = 0
 	self._wayMouseWY = 0
 
+	-- drag state
 	self._dragActive = false
 	self._dragNodeId = nil
-	self._dragOffX = 0
-	self._dragOffY = 0
+	self._dragOffX   = 0
+	self._dragOffY   = 0
 
 	return self
 end
 
 function Tools:setMode(mode)
-	self.mode = mode
+	self.mode      = mode
 	self._wayNodes = {}
-
-	-- do not reset selectedWay / selectedNode to preserve editor context
+	-- do not reset selectedWay or selectedNode on mode change
 	self.editor.notify("mode: " .. mode)
 end
 
@@ -63,13 +67,14 @@ function Tools:getWayPreviewNodes()
 	return self._wayNodes
 end
 
--- mouse input   
+-- input handling
 
 function Tools:mousepressed(sx, sy, button)
 	local editor = self.editor
-	local cam = editor.camera
+	local cam    = editor.camera
 	local wx, wy = cam:toWorld(sx, sy)
 
+	-- start panning on right or middle mouse button
 	if button == 2 or button == 3 then
 		cam:startPan(sx, sy)
 		return
@@ -77,17 +82,17 @@ function Tools:mousepressed(sx, sy, button)
 
 	if button == 1 then
 		if self.mode == MODE_SELECT then
-
 			if editor.hoveredNode then
 				editor.selectedNode = editor.hoveredNode
 
-				-- keep selectedWay only if node belongs to it
+				-- keep selectedWay only if the clicked node belongs to it
 				if editor.selectedWay then
 					if not nodeInWay(editor.map, editor.selectedWay, editor.hoveredNode) then
 						editor.selectedWay = nil
 					end
 				end
 
+				-- start node dragging
 				self._dragActive = true
 				self._dragNodeId = editor.hoveredNode
 
@@ -96,32 +101,41 @@ function Tools:mousepressed(sx, sy, button)
 				self._dragOffY = n.y - wy
 
 			elseif editor.hoveredWay then
-				editor.selectedWay = editor.hoveredWay
+				editor.selectedWay  = editor.hoveredWay
 				editor.selectedNode = nil
 
 			else
 				editor.selectedNode = nil
-				editor.selectedWay = nil
+				editor.selectedWay  = nil
 			end
 
 		elseif self.mode == MODE_ADD_NODE then
 			local id = Map.addNode(editor.map, wx, wy)
-			editor.notify("node created: " .. id)
+			editor.notify("node created id: " .. id)
 
-		elseif self.mode == MODE_ADD_WAY then
+		elseif self.mode == MODE_ADD_LINEAR then
 			if editor.hoveredNode then
-				table.insert(self._wayNodes, editor.hoveredNode)
+				self._wayNodes[#self._wayNodes + 1] = editor.hoveredNode
 				editor.notify("node added to way")
 			else
 				local id = Map.addNode(editor.map, wx, wy)
-				table.insert(self._wayNodes, id)
-				editor.notify("node created and linked: " .. id)
+				self._wayNodes[#self._wayNodes + 1] = id
+				editor.notify("node created and added id: " .. id)
 			end
 
-			if #self._wayNodes == 2 and love.keyboard.isDown("lshift") then
-				self:finishWay("linear")
-			elseif #self._wayNodes == 4 then
-				self:finishWay("bezier")
+		elseif self.mode == MODE_ADD_BEZIER then
+			if editor.hoveredNode then
+				self._wayNodes[#self._wayNodes + 1] = editor.hoveredNode
+				editor.notify("node added to way")
+			else
+				local id = Map.addNode(editor.map, wx, wy)
+				self._wayNodes[#self._wayNodes + 1] = id
+				editor.notify("node created and added id: " .. id)
+			end
+
+			-- bezier auto-finalizes at exactly 4 nodes
+			if #self._wayNodes == 4 then
+				self:finishWay()
 			end
 		end
 	end
@@ -154,16 +168,44 @@ function Tools:mousemoved(sx, sy, dx, dy)
 		)
 	end
 
+	-- update mouse world position for preview rendering
 	self._wayMouseWX, self._wayMouseWY = cam:toWorld(sx, sy)
 end
 
--- finish way 
+function Tools:keypressed(key)
+	if self.mode == MODE_ADD_LINEAR then
+		if key == "return" then
+			self:finishWay()
+			return true
+		end
+		if key == "escape" then
+			self._wayNodes = {}
+			self.editor.notify("way cancelled")
+			return true
+		end
+	end
 
-function Tools:finishWay(forcedType)
+	if self.mode == MODE_ADD_BEZIER then
+		if key == "escape" then
+			self._wayNodes = {}
+			self.editor.notify("way cancelled")
+			return true
+		end
+	end
+
+	if self.mode ~= MODE_SELECT and key == "escape" then
+		self:cancel()
+		return true
+	end
+end
+
+-- way construction finalization logic
+
+function Tools:finishWay()
 	local editor = self.editor
 
 	if #self._wayNodes < 2 then
-		editor.notify("at least 2 nodes required to create a way")
+		editor.notify("at least two nodes are required to create a way")
 		self._wayNodes = {}
 		return
 	end
@@ -173,38 +215,60 @@ function Tools:finishWay(forcedType)
 		refs[#refs + 1] = id
 	end
 
-	local finalType = forcedType or "linear"
-	if #refs == 4 then
-		finalType = "bezier"
+	local curveType
+	if self.mode == MODE_ADD_BEZIER then
+		curveType = "bezier"
+	else
+		curveType = "linear"
 	end
 
-	Map.addWay(editor.map, nil, refs, finalType)
-	editor.notify("way added: [" .. finalType .. "]")
+	Map.addWay(editor.map, nil, refs, curveType)
+	editor.notify("way added type [" .. curveType .. "]")
 	self._wayNodes = {}
 end
 
--- draw overlay  
+-- overlay rendering (called inside camera transform)
 
 function Tools:drawOverlay()
-	if self.mode == MODE_ADD_WAY and #self._wayNodes > 0 then
-		local map = self.editor.map
+	local isAddMode = (self.mode == MODE_ADD_LINEAR or self.mode == MODE_ADD_BEZIER)
+
+	if isAddMode and #self._wayNodes > 0 then
+		local map        = self.editor.map
 		local lastNodeId = self._wayNodes[#self._wayNodes]
-		local lastNode = map.nodes[lastNodeId]
+		local lastNode   = map.nodes[lastNodeId]
 
 		if lastNode then
+			-- preview line from last node to cursor
 			love.graphics.setLineWidth(2)
-			love.graphics.setColor(0.95, 0.65, 0.20, 0.5)
-			love.graphics.line(lastNode.x, lastNode.y, self._wayMouseWX, self._wayMouseWY)
+			if self.mode == MODE_ADD_BEZIER then
+				love.graphics.setColor(0.20, 0.80, 1.0, 0.5)
+			else
+				love.graphics.setColor(0.95, 0.65, 0.20, 0.5)
+			end
+			love.graphics.line(
+				lastNode.x, lastNode.y,
+				self._wayMouseWX, self._wayMouseWY
+			)
 
+			-- preview connections between selected nodes
 			love.graphics.setColor(1, 1, 1, 0.4)
-
 			for i = 1, #self._wayNodes - 1 do
 				local n1 = map.nodes[self._wayNodes[i]]
 				local n2 = map.nodes[self._wayNodes[i + 1]]
-
 				if n1 and n2 then
 					love.graphics.line(n1.x, n1.y, n2.x, n2.y)
 				end
+			end
+
+			-- bezier: show node counter hint
+			if self.mode == MODE_ADD_BEZIER then
+				local cnt = #self._wayNodes
+				love.graphics.setColor(0.20, 0.80, 1.0, 0.8)
+				love.graphics.print(
+					cnt .. "/4",
+					self._wayMouseWX + 14,
+					self._wayMouseWY - 14
+				)
 			end
 		end
 	end

@@ -175,6 +175,7 @@ end
 
 function Editor.keypressed(key)
 	if Editor.ui and Editor.ui:keypressed(key) then return end
+	if Editor.tools and Editor.tools:keypressed(key) then return end
 
 	if key == "delete" or key == "backspace" then
 		if Editor.selectedNode then

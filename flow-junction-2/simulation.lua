@@ -112,25 +112,12 @@ function Simulation.syncMap(editorMap)
 				end
 
 				local wayType = (w.tags and w.tags.type) or nil
-				if not wayType and type(w.id) == "string" then
-					if w.id:sub(-3) == "-IN" then
-						wayType = "in"
-					elseif w.id:sub(-4) == "-OUT" then
-						wayType = "out"
-					elseif w.id:find("%-MID$") then
-						wayType = "mid"
-					elseif w.tags and w.tags.curve == "bezier" then
-						wayType = "turn"
-					end
-				end
 
 				Simulation.map.ways[#Simulation.map.ways + 1] = {
 					id       = w.id or i,
 					nodeRefs = refs,
 					tags     = {
 						curve = w.tags.curve,
-						from  = w.tags and w.tags.from or nil,
-						to    = w.tags and w.tags.to   or nil,
 						type  = wayType,
 					}
 				}
@@ -259,7 +246,9 @@ function Simulation.mousemoved(x, y, dx, dy)
 	end
 
 	if Simulation.isDragging and Simulation.camera then
-		Simulation.camera:move(dx, dy)
+		local cam = Simulation.camera
+		cam.x = cam.x - dx / cam.scale
+		cam.y = cam.y - dy / cam.scale
 	end
 end
 
