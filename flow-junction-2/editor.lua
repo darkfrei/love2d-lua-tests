@@ -34,20 +34,9 @@ Editor.notification = {
 	timer = 0,
 }
 
--- 
+--
 -- load
--- 
-
--- function Editor.load(appContext)
---     Editor.app    = appContext
---     Editor.camera = Camera.new()
---     Editor.map    = Map.new()
---     Editor.tools  = Tools.new(Editor)
---     Editor.ui     = UIHub.new(Editor, "editor")
-
---     Map.loadDefault(Editor.map)
---     Editor.notify("editor loaded | scroll - zoom | rmb/mmb - pan")
--- end
+--
 
 function Editor.load(appContext)
 	Editor.app    = appContext
@@ -72,9 +61,9 @@ function Editor.load(appContext)
 	Editor.notify("editor loaded | scroll - zoom | rmb/mmb - pan")
 end
 
--- 
+--
 -- update
--- 
+--
 
 function Editor.update(dt)
 	if Editor.notification.timer > 0 then
@@ -103,9 +92,9 @@ function Editor.update(dt)
 	end
 end
 
--- 
+--
 -- draw
--- 
+--
 
 function Editor.draw()
 	Renderer.drawBackground()
@@ -117,6 +106,8 @@ function Editor.draw()
 	Renderer.drawNodes(Editor.map, Editor)
 	Renderer.drawEditorOverlay(Editor)
 	Renderer.drawNodeLabels(Editor.map, Editor.camera)
+	-- layer badges drawn last so they appear on top of road geometry
+	Renderer.drawLayerBadges(Editor.map)
 
 	Editor.camera:pop()
 
@@ -135,9 +126,9 @@ function Editor.draw()
 	end
 end
 
--- 
+--
 -- input
--- 
+--
 
 function Editor.mousepressed(x, y, button)
 	if Editor.ui and Editor.ui:mousepressed(x, y, button) then return end
@@ -169,9 +160,9 @@ function Editor.wheelmoved(x, y)
 	end
 end
 
--- 
+--
 -- keyboard
--- 
+--
 
 function Editor.keypressed(key)
 	if Editor.ui and Editor.ui:keypressed(key) then return end
@@ -222,9 +213,9 @@ function Editor.keypressed(key)
 	end
 end
 
--- 
+--
 -- text input
--- 
+--
 
 function Editor.textinput(t)
 	if Editor.ui then
@@ -232,9 +223,9 @@ function Editor.textinput(t)
 	end
 end
 
--- 
+--
 -- helpers
--- 
+--
 
 function Editor.notify(text)
 	Editor.notification.text  = tostring(text)

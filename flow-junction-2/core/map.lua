@@ -36,11 +36,15 @@ function Map.moveNode(map, id, x, y)
 	n.y = y
 end
 
-function Map.addWay(map, id, nodeRefs, curveType)
+-- layer: integer, 0 = ground (default), 1+ = bridge/overpass, negative = underpass
+function Map.addWay(map, id, nodeRefs, curveType, layer)
 	local way = {
 		id       = id or (#map.ways + 1),
 		nodeRefs = nodeRefs,
-		tags     = { curve = curveType or "linear" }
+		tags     = {
+			curve = curveType or "linear",
+			layer = layer or 0,
+		}
 	}
 	table.insert(map.ways, way)
 	return way.id
@@ -71,21 +75,21 @@ function Map.loadDefault(map)
 	}
 
 	map.ways = {
-		{ id = "N-IN",  nodeRefs = { 1,  2  }, tags = { curve = "linear", type = "in",  from = "N", to = "N" } },
-		{ id = "N-MID", nodeRefs = { 2,  4  }, tags = { curve = "linear", type = "mid", from = "N", to = "S" } },
-		{ id = "N-OUT", nodeRefs = { 4,  5  }, tags = { curve = "linear", type = "out", from = "N", to = "S" } },
+		{ id = "N-IN",  nodeRefs = { 1,  2  }, tags = { curve = "linear", type = "in",  from = "N", to = "N", layer = 0 } },
+		{ id = "N-MID", nodeRefs = { 2,  4  }, tags = { curve = "linear", type = "mid", from = "N", to = "S", layer = 0 } },
+		{ id = "N-OUT", nodeRefs = { 4,  5  }, tags = { curve = "linear", type = "out", from = "N", to = "S", layer = 0 } },
 
-		{ id = "S-IN",  nodeRefs = { 6,  7  }, tags = { curve = "linear", type = "in",  from = "S", to = "S" } },
-		{ id = "S-MID", nodeRefs = { 7,  9  }, tags = { curve = "linear", type = "mid", from = "S", to = "N" } },
-		{ id = "S-OUT", nodeRefs = { 9,  10 }, tags = { curve = "linear", type = "out", from = "S", to = "N" } },
+		{ id = "S-IN",  nodeRefs = { 6,  7  }, tags = { curve = "linear", type = "in",  from = "S", to = "S", layer = 0 } },
+		{ id = "S-MID", nodeRefs = { 7,  9  }, tags = { curve = "linear", type = "mid", from = "S", to = "N", layer = 0 } },
+		{ id = "S-OUT", nodeRefs = { 9,  10 }, tags = { curve = "linear", type = "out", from = "S", to = "N", layer = 0 } },
 
-		{ id = "E-IN",  nodeRefs = { 11, 12 }, tags = { curve = "linear", type = "in",  from = "E", to = "E" } },
-		{ id = "E-MID", nodeRefs = { 12, 14 }, tags = { curve = "linear", type = "mid", from = "E", to = "W" } },
-		{ id = "E-OUT", nodeRefs = { 14, 15 }, tags = { curve = "linear", type = "out", from = "E", to = "W" } },
+		{ id = "E-IN",  nodeRefs = { 11, 12 }, tags = { curve = "linear", type = "in",  from = "E", to = "E", layer = 0 } },
+		{ id = "E-MID", nodeRefs = { 12, 14 }, tags = { curve = "linear", type = "mid", from = "E", to = "W", layer = 0 } },
+		{ id = "E-OUT", nodeRefs = { 14, 15 }, tags = { curve = "linear", type = "out", from = "E", to = "W", layer = 0 } },
 
-		{ id = "W-IN",  nodeRefs = { 16, 17 }, tags = { curve = "linear", type = "in",  from = "W", to = "W" } },
-		{ id = "W-MID", nodeRefs = { 17, 19 }, tags = { curve = "linear", type = "mid", from = "W", to = "E" } },
-		{ id = "W-OUT", nodeRefs = { 19, 20 }, tags = { curve = "linear", type = "out", from = "W", to = "E" } },
+		{ id = "W-IN",  nodeRefs = { 16, 17 }, tags = { curve = "linear", type = "in",  from = "W", to = "W", layer = 0 } },
+		{ id = "W-MID", nodeRefs = { 17, 19 }, tags = { curve = "linear", type = "mid", from = "W", to = "E", layer = 0 } },
+		{ id = "W-OUT", nodeRefs = { 19, 20 }, tags = { curve = "linear", type = "out", from = "W", to = "E", layer = 0 } },
 	}
 
 	map._nextNodeId = 32
@@ -244,28 +248,25 @@ end
 -- io
 --
 
+function Map.setWayTags(map, idx, tags)
+	local way = map.ways[idx]
+	if not way then return end
+	if not way.tags then way.tags = {} end
+
+	for k, v in pairs(tags) do
+		way.tags[k] = v
+	end
+end
+
+function Map.clearWayType(map, idx)
+	local way = map.ways[idx]
+	if not way then return end
+	if way.tags then
+		way.tags.type = nil
+	end
+end
+
 function Map.loadFromFile(map, filename)
-
-	-- set tags on existing way
-	function Map.setWayTags(map, idx, tags)
-		local way = map.ways[idx]
-		if not way then return end
-		if not way.tags then way.tags = {} end
-
-		for k, v in pairs(tags) do
-			way.tags[k] = v
-		end
-	end
-
-	-- clear way type tag
-	function Map.clearWayType(map, idx)
-		local way = map.ways[idx]
-		if not way then return end
-		if way.tags then
-			way.tags.type = nil
-		end
-	end
-
 	local data = FileManager.load(filename)
 	if type(data) ~= "table" then
 		return false, "invalid map"
@@ -273,6 +274,14 @@ function Map.loadFromFile(map, filename)
 
 	map.nodes = data.nodes or {}
 	map.ways  = data.ways or {}
+
+	-- ensure all ways have a layer tag (backward compat with old saves)
+	for _, way in ipairs(map.ways) do
+		if not way.tags then way.tags = {} end
+		if way.tags.layer == nil then
+			way.tags.layer = 0
+		end
+	end
 
 	local maxId = 0
 	for id, _ in pairs(map.nodes) do

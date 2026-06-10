@@ -1,5 +1,6 @@
 -- editor/tools.lua
 -- editor tools logic: selection, movement, node and way creation
+-- bezier mode: 3 nodes = quadratic, 4 nodes = cubic (auto-finalizes either)
 
 local Map = require("core.map")
 
@@ -30,15 +31,10 @@ function Tools.new(editor)
 	self.editor = editor
 	self.mode   = MODE_SELECT
 
-	-- way construction state
-	-- list of accumulated node ids for new way
 	self._wayNodes   = {}
-
-	-- current mouse world coordinates for preview rendering
 	self._wayMouseWX = 0
 	self._wayMouseWY = 0
 
-	-- drag state
 	self._dragActive = false
 	self._dragNodeId = nil
 	self._dragOffX   = 0
@@ -50,7 +46,6 @@ end
 function Tools:setMode(mode)
 	self.mode      = mode
 	self._wayNodes = {}
-	-- do not reset selectedWay or selectedNode on mode change
 	self.editor.notify("mode: " .. mode)
 end
 
@@ -74,7 +69,6 @@ function Tools:mousepressed(sx, sy, button)
 	local cam    = editor.camera
 	local wx, wy = cam:toWorld(sx, sy)
 
-	-- start panning on right or middle mouse button
 	if button == 2 or button == 3 then
 		cam:startPan(sx, sy)
 		return
@@ -85,14 +79,12 @@ function Tools:mousepressed(sx, sy, button)
 			if editor.hoveredNode then
 				editor.selectedNode = editor.hoveredNode
 
-				-- keep selectedWay only if the clicked node belongs to it
 				if editor.selectedWay then
 					if not nodeInWay(editor.map, editor.selectedWay, editor.hoveredNode) then
 						editor.selectedWay = nil
 					end
 				end
 
-				-- start node dragging
 				self._dragActive = true
 				self._dragNodeId = editor.hoveredNode
 
@@ -126,15 +118,16 @@ function Tools:mousepressed(sx, sy, button)
 		elseif self.mode == MODE_ADD_BEZIER then
 			if editor.hoveredNode then
 				self._wayNodes[#self._wayNodes + 1] = editor.hoveredNode
-				editor.notify("node added to way")
+				editor.notify("node added to bezier")
 			else
 				local id = Map.addNode(editor.map, wx, wy)
 				self._wayNodes[#self._wayNodes + 1] = id
 				editor.notify("node created and added id: " .. id)
 			end
 
-			-- bezier auto-finalizes at exactly 4 nodes
-			if #self._wayNodes == 4 then
+			-- quadratic (3 nodes) or cubic (4 nodes) — both auto-finalize
+			local n = #self._wayNodes
+			if n == 3 or n == 4 then
 				self:finishWay()
 			end
 		end
@@ -168,7 +161,6 @@ function Tools:mousemoved(sx, sy, dx, dy)
 		)
 	end
 
-	-- update mouse world position for preview rendering
 	self._wayMouseWX, self._wayMouseWY = cam:toWorld(sx, sy)
 end
 
@@ -199,7 +191,7 @@ function Tools:keypressed(key)
 	end
 end
 
--- way construction finalization logic
+-- way construction finalization
 
 function Tools:finishWay()
 	local editor = self.editor
@@ -223,11 +215,19 @@ function Tools:finishWay()
 	end
 
 	Map.addWay(editor.map, nil, refs, curveType)
-	editor.notify("way added type [" .. curveType .. "]")
+
+	local nodeCount = #refs
+	if curveType == "bezier" then
+		local kind = (nodeCount == 3) and "quadratic" or "cubic"
+		editor.notify("bezier way added [" .. kind .. ", " .. nodeCount .. " nodes]")
+	else
+		editor.notify("linear way added [" .. nodeCount .. " nodes]")
+	end
+
 	self._wayNodes = {}
 end
 
--- overlay rendering (called inside camera transform)
+-- overlay rendering (inside camera transform)
 
 function Tools:drawOverlay()
 	local isAddMode = (self.mode == MODE_ADD_LINEAR or self.mode == MODE_ADD_BEZIER)
@@ -238,7 +238,6 @@ function Tools:drawOverlay()
 		local lastNode   = map.nodes[lastNodeId]
 
 		if lastNode then
-			-- preview line from last node to cursor
 			love.graphics.setLineWidth(2)
 			if self.mode == MODE_ADD_BEZIER then
 				love.graphics.setColor(0.20, 0.80, 1.0, 0.5)
@@ -250,7 +249,6 @@ function Tools:drawOverlay()
 				self._wayMouseWX, self._wayMouseWY
 			)
 
-			-- preview connections between selected nodes
 			love.graphics.setColor(1, 1, 1, 0.4)
 			for i = 1, #self._wayNodes - 1 do
 				local n1 = map.nodes[self._wayNodes[i]]
@@ -260,15 +258,16 @@ function Tools:drawOverlay()
 				end
 			end
 
-			-- bezier: show node counter hint
 			if self.mode == MODE_ADD_BEZIER then
-				local cnt = #self._wayNodes
+				local cnt  = #self._wayNodes
+				-- show how many nodes collected and what will finalize
+				local hint
+				if cnt == 1 then hint = "1/3  (+2 = quadratic, +3 = cubic)"
+				elseif cnt == 2 then hint = "2/3  (click = quadratic ready, +1 more = cubic)"
+				elseif cnt == 3 then hint = "3 — finalizing quadratic..."
+				end
 				love.graphics.setColor(0.20, 0.80, 1.0, 0.8)
-				love.graphics.print(
-					cnt .. "/4",
-					self._wayMouseWX + 14,
-					self._wayMouseWY - 14
-				)
+				love.graphics.print(hint or (cnt .. "/4"), self._wayMouseWX + 14, self._wayMouseWY - 14)
 			end
 		end
 	end

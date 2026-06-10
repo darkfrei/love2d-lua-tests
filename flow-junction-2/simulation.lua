@@ -1,14 +1,11 @@
 -- simulation.lua
 -- scene context: physics steps, traffic ticks, path binding
 
-local Camera      = require("core.camera")
-local Renderer    = require("core.renderer")
-local Map         = require("core.map")
-local UIHub       = require("ui.ui")
-
--- local CarManager  = require("simulation.car-manager")
-local Tunel       = require("simulation.tunel")
-
+local Camera     = require("core.camera")
+local Renderer   = require("core.renderer")
+local Map        = require("core.map")
+local UIHub      = require("ui.ui")
+local Tunel      = require("simulation.tunel")
 local CarManager = require("simulation.car-manager")
 
 local Simulation = {}
@@ -21,37 +18,17 @@ Simulation.app    = nil
 Simulation.paused = false
 Simulation.speed  = 1
 
--- time control
--- Simulation.spawnInterval = 0.5
--- Simulation.tickTimer = 0
-Simulation.worldTick = 1
-
-Simulation.spawnInterval = 0.3   -- spawn interval (seconds)
-Simulation.tickInterval  = 0.1   -- tick length (10 ticks/sec)
+Simulation.worldTick     = 1
+Simulation.spawnInterval = 0.1
+Simulation.tickInterval  = 0.1
 Simulation.tickTimer     = 0
-Simulation.spawnTimer    = Simulation.spawnInterval
+Simulation.spawnTimer    = 0
 
--- input state
 Simulation.isDragging = false
 
--- 
+--
 -- load
--- 
-
--- function Simulation.load(appContext)
---     Simulation.app    = appContext
---     Simulation.camera = Camera.new()
---     Simulation.map    = Map.new()
---     Simulation.ui     = UIHub.new(Simulation, "simulation")
-
---     Simulation.spawnInterval = 3.0
---     Simulation.tickInterval  = 0.1
---     Simulation.tickTimer     = 0
---     Simulation.spawnTimer    = 0
---     Simulation.worldTick     = 1
-
---     CarManager.clear()
--- end
+--
 
 function Simulation.load(appContext)
 	Simulation.app    = appContext
@@ -62,15 +39,15 @@ function Simulation.load(appContext)
 	Simulation.spawnInterval = 0.5
 	Simulation.tickInterval  = 0.1
 	Simulation.tickTimer     = 0
-	Simulation.spawnTimer    = Simulation.spawnInterval -- spawn on first tick
+	Simulation.spawnTimer    = Simulation.spawnInterval
 	Simulation.worldTick     = 1
 
 	CarManager.clear()
 end
 
--- 
+--
 -- map sync
--- 
+--
 
 function Simulation.syncMap(editorMap)
 
@@ -80,30 +57,13 @@ function Simulation.syncMap(editorMap)
 		Simulation.map.nodes[id] = { x = n.x, y = n.y }
 	end
 
-	-- copy ways
+	-- copy ways, preserving all tags including layer
 	Simulation.map.ways = {}
 
-	print("[syncMap] ways debug:")
-
 	for i, w in ipairs(editorMap.ways or {}) do
-
-		if not w then
-			print(i, "nil way skipped")
-		else
+		if w then
 			local hasRefs = w.nodeRefs and #w.nodeRefs > 0
 			local hasTags = w.tags and w.tags.curve
-
-			print("[RAW]", i, w.id,
-				"type=",  w.tags and w.tags.type  or "NIL",
-				"curve=", w.tags and w.tags.curve or "NIL",
-				"from=",  w.tags and w.tags.from  or "NIL"
-			)
-
-			print(i,
-				w.id or "no-id",
-				hasRefs and "OK refs" or "NO REFS",
-				hasTags and ("curve=" .. w.tags.curve) or "NO TAGS"
-			)
 
 			if hasRefs and hasTags then
 				local refs = {}
@@ -111,21 +71,18 @@ function Simulation.syncMap(editorMap)
 					refs[#refs + 1] = r
 				end
 
-				local wayType = (w.tags and w.tags.type) or nil
-
 				Simulation.map.ways[#Simulation.map.ways + 1] = {
 					id       = w.id or i,
 					nodeRefs = refs,
 					tags     = {
 						curve = w.tags.curve,
-						type  = wayType,
+						type  = w.tags.type  or nil,
+						layer = tonumber(w.tags.layer) or 0,
 					}
 				}
 			end
 		end
 	end
-
-	print("[syncMap] final ways:", #Simulation.map.ways)
 
 	-- rebuild tunnel system
 	Tunel.build(Simulation.map)
@@ -139,9 +96,9 @@ function Simulation.syncMap(editorMap)
 	Simulation.camera:fitAll(Simulation.map)
 end
 
--- 
+--
 -- update
--- 
+--
 
 function Simulation.update(dt)
 
@@ -172,21 +129,16 @@ function Simulation.update(dt)
 	CarManager.update(Simulation.worldTick, alpha)
 end
 
--- 
+--
 -- draw
--- 
+--
 
-local function drawHUD ()
+local function drawHUD()
 	local cars = CarManager.getLiveCars()
 
 	love.graphics.origin()
-
 	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.print(
-		"cars: " .. tostring(#cars),
-		20,
-		20
-	)
+	love.graphics.print("cars: " .. tostring(#cars), 20, 20)
 end
 
 function Simulation.draw()
@@ -196,6 +148,8 @@ function Simulation.draw()
 
 	Renderer.drawGrid(Simulation.camera)
 	Renderer.drawWays(Simulation.map)
+	-- layer badges visible in simulation too
+	Renderer.drawLayerBadges(Simulation.map)
 
 	Tunel.draw(
 		Simulation.worldTick,
@@ -216,9 +170,9 @@ function Simulation.draw()
 	drawHUD()
 end
 
--- 
+--
 -- input
--- 
+--
 
 function Simulation.mousepressed(x, y, button)
 	if Simulation.ui and Simulation.ui:mousepressed(x, y, button) then
@@ -272,11 +226,10 @@ function Simulation.keypressed(key)
 	end
 end
 
--- 
+--
 -- state control
--- 
+--
 
--- called on entering simulation mode
 function Simulation.reset()
 	Simulation.worldTick  = 1
 	Simulation.tickTimer  = 0
@@ -285,7 +238,6 @@ function Simulation.reset()
 	CarManager.clear()
 end
 
--- called on returning to editor, clears all cars
 function Simulation.stop()
 	Simulation.paused     = true
 	Simulation.worldTick  = 1

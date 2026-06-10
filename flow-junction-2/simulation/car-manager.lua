@@ -12,7 +12,6 @@ local cars      = {}
 local idCounter = 0
 
 -- lifecycle
--- ---------------------------------------------------------
 
 function M.setTickRate(rate)
 	Car.setTickRate(rate)
@@ -23,9 +22,16 @@ function M.syncMap(map)
 end
 
 -- path builder
--- ---------------------------------------------------------
 
 local BEZIER_STEPS = 24
+
+local function quadraticBezier(p0, p1, p2, t)
+	local u = 1 - t
+	return {
+		x = u*u*p0.x + 2*u*t*p1.x + t*t*p2.x,
+		y = u*u*p0.y + 2*u*t*p1.y + t*t*p2.y,
+	}
+end
 
 local function cubicBezier(p0, p1, p2, p3, t)
 	local u = 1 - t
@@ -44,15 +50,19 @@ local function sampleWay(way, nodes)
 
 	local curve = way.tags and way.tags.curve or "linear"
 
-	if curve == "bezier" and #pts == 4 then
+	if curve == "bezier" then
 		local out = {}
-		for i = 0, BEZIER_STEPS do
-			out[#out + 1] = cubicBezier(
-				pts[1], pts[2], pts[3], pts[4],
-				i / BEZIER_STEPS
-			)
+		if #pts == 3 then
+			for i = 0, BEZIER_STEPS do
+				out[#out + 1] = quadraticBezier(pts[1], pts[2], pts[3], i / BEZIER_STEPS)
+			end
+			return out
+		elseif #pts == 4 then
+			for i = 0, BEZIER_STEPS do
+				out[#out + 1] = cubicBezier(pts[1], pts[2], pts[3], pts[4], i / BEZIER_STEPS)
+			end
+			return out
 		end
-		return out
 	end
 
 	return pts
@@ -100,8 +110,6 @@ local function buildPath(route, level)
 			for _, p in ipairs(pts) do
 				pathPoints[#pathPoints + 1] = p
 			end
-		else
-			-- way not found in level graph
 		end
 	end
 
@@ -109,7 +117,6 @@ local function buildPath(route, level)
 end
 
 -- spawn
--- ---------------------------------------------------------
 
 function M.spawnCar(map, tick)
 	local route = Spawn.spawnRoute(map)
@@ -122,20 +129,33 @@ function M.spawnCar(map, tick)
 
 	idCounter = idCounter + 1
 
+	-- layer of the first way in the route for collision grouping
+	local wayIndex = {}
+	for _, w in ipairs(map.ways) do
+		wayIndex[w.id] = w
+	end
+	local firstWayLayer = 0
+	if #route > 0 then
+		local fw = wayIndex[route[1]]
+		if fw and fw.tags then
+			firstWayLayer = tonumber(fw.tags.layer) or 0
+		end
+	end
+
 	local car = Car.new(
 		idCounter,
 		pathPoints,
 		segments,
 		route,
 		nil,
-		tick
+		tick,
+		firstWayLayer
 	)
 
 	cars[#cars + 1] = car
 end
 
 -- update
--- ---------------------------------------------------------
 
 function M.update(worldTick, alpha)
 	for i = #cars, 1, -1 do
@@ -148,7 +168,6 @@ function M.update(worldTick, alpha)
 end
 
 -- draw
--- ---------------------------------------------------------
 
 function M.draw(worldTick, alpha)
 	for _, c in ipairs(cars) do
@@ -157,14 +176,9 @@ function M.draw(worldTick, alpha)
 end
 
 -- query
--- ---------------------------------------------------------
 
 function M.getLiveCars()
 	return cars
-end
-
-function M.setTickRate(rate)
-	Car.setTickRate(rate)
 end
 
 function M.clear()

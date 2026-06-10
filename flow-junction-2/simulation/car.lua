@@ -92,7 +92,7 @@ end
 
 -- constructor
 
-function Car.new(id, pathPoints, segments, route, color, spawnTick)
+function Car.new(id, pathPoints, segments, route, color, spawnTick, layer)
 
 	local dists = { 0 }
 	for i = 2, #pathPoints do
@@ -117,6 +117,7 @@ function Car.new(id, pathPoints, segments, route, color, spawnTick)
 			color           = COLORS[colorIndex],
 			trajectory      = {},
 			spawnDelayTicks = 0,
+			layer           = layer or 0,
 			}, Car)
 
 	self:bakeTrajectory()
@@ -227,7 +228,8 @@ function Car:hasLeadingCarConflict(tick, pos)
 	local allCars = require("simulation.car-manager").getLiveCars()
 
 	for _, other in ipairs(allCars) do
-		if other ~= self then
+		-- cars on different layers are physically separated, skip
+		if other ~= self and (other.layer or 0) == (self.layer or 0) then
 			local otherPos = other:getPosAtTick(tick)
 			if otherPos then
 				local dx = otherPos.x - pos.x
@@ -288,6 +290,13 @@ end
 -- trajectory baking
 
 function Car:bakeTrajectory()
+	-- cars on elevated or underground layers have no conflict zones with ground traffic
+	-- skip the entire tunnel scheduling and go straight to simple trajectory
+	if (self.layer or 0) ~= 0 then
+		self:buildSimpleTrajectory()
+		return
+	end
+
 	local MAX_ATTEMPTS = 300
 
 	for attempt = 1, MAX_ATTEMPTS do

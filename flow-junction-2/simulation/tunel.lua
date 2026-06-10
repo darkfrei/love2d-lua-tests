@@ -1,15 +1,16 @@
 -- simulation/tunel.lua
 -- discrete space-time conflict scheduler with spatial convex hulls
+-- ways on different layers are physically separate and never conflict
 
 local M = {}
 
-local RADIUS = 20
+local RADIUS        = 20
 local CONFLICT_DIST = 2 * RADIUS + 2
 local CONFLICT_DIST2 = CONFLICT_DIST * CONFLICT_DIST
-local SAMPLE_STEP = 8
-local SAFETY_DIST2 = (RADIUS * 2 + 2) ^ 2
+local SAMPLE_STEP   = 8
+local SAFETY_DIST2  = (RADIUS * 2 + 2) ^ 2
 
-local zones = {}
+local zones    = {}
 local schedule = {}
 
 local function quadratic(p0, p1, p2, t)
@@ -171,7 +172,6 @@ function M.getZones()
 	return zones
 end
 
--- added cleanup for simulation restart
 function M.clear()
 	schedule = {}
 end
@@ -216,21 +216,26 @@ function M.getCarsAtTick(tick)
 	return schedule[tick] or {}
 end
 
+-- cars on different layers never block each other
 function M.isSlotOccupied(tick, currentCar, currentPos)
 	local carsAtTick = schedule[tick]
 	if not carsAtTick then
 		return false
 	end
 
+	local myLayer = currentCar.layer or 0
+
 	for _, other in ipairs(carsAtTick) do
 		if other ~= currentCar then
-			local otherPos = other:getPosAtTick(tick)
-			if otherPos then
-				local dx = otherPos.x - currentPos.x
-				local dy = otherPos.y - currentPos.y
+			if (other.layer or 0) == myLayer then
+				local otherPos = other:getPosAtTick(tick)
+				if otherPos then
+					local dx = otherPos.x - currentPos.x
+					local dy = otherPos.y - currentPos.y
 
-				if dx * dx + dy * dy < SAFETY_DIST2 then
-					return true
+					if dx * dx + dy * dy < SAFETY_DIST2 then
+						return true
+					end
 				end
 			end
 		end
@@ -239,6 +244,7 @@ function M.isSlotOccupied(tick, currentCar, currentPos)
 	return false
 end
 
+-- build conflict zones; only ways on the same layer can conflict
 function M.build(level)
 	schedule = {}
 
@@ -246,8 +252,9 @@ function M.build(level)
 
 	for _, way in ipairs(level.ways) do
 		ways[#ways + 1] = {
-			id = way.id,
-			pts = sampleWay(way, level.nodes)
+			id    = way.id,
+			layer = (way.tags and tonumber(way.tags.layer)) or 0,
+			pts   = sampleWay(way, level.nodes)
 		}
 	end
 
@@ -258,16 +265,19 @@ function M.build(level)
 			local w1 = ways[i]
 			local w2 = ways[j]
 
-			for _, pa in ipairs(w1.pts) do
-				for _, pb in ipairs(w2.pts) do
-					local dx = pb.x - pa.x
-					local dy = pb.y - pa.y
+			-- different layers: no conflict zones between them
+			if w1.layer == w2.layer then
+				for _, pa in ipairs(w1.pts) do
+					for _, pb in ipairs(w2.pts) do
+						local dx = pb.x - pa.x
+						local dy = pb.y - pa.y
 
-					if dx * dx + dy * dy < CONFLICT_DIST2 then
-						raw[#raw + 1] = {
-							x = (pa.x + pb.x) * 0.5,
-							y = (pa.y + pb.y) * 0.5
-						}
+						if dx * dx + dy * dy < CONFLICT_DIST2 then
+							raw[#raw + 1] = {
+								x = (pa.x + pb.x) * 0.5,
+								y = (pa.y + pb.y) * 0.5
+							}
+						end
 					end
 				end
 			end
@@ -275,7 +285,7 @@ function M.build(level)
 	end
 
 	local clusters = {}
-	local used = {}
+	local used     = {}
 	local CLUSTER_R2 = (CONFLICT_DIST * 2) ^ 2
 
 	for i = 1, #raw do
@@ -295,8 +305,8 @@ function M.build(level)
 
 							if dx * dx + dy * dy < CLUSTER_R2 then
 								cluster[#cluster + 1] = raw[j]
-								used[j] = true
-								changed = true
+								used[j]  = true
+								changed  = true
 								break
 							end
 						end
@@ -311,7 +321,7 @@ function M.build(level)
 	local result = {}
 
 	for _, cluster in ipairs(clusters) do
-		local hull = convexHull(cluster)
+		local hull  = convexHull(cluster)
 		local verts = {}
 
 		for _, p in ipairs(expandHull(hull, RADIUS + 4)) do
@@ -345,7 +355,7 @@ function M.draw(currentWorldTick, alpha)
 
 	for bookedTick, carList in pairs(schedule) do
 		for _, car in ipairs(carList) do
-			local posNow = car:getPosAtTick(bookedTick)
+			local posNow  = car:getPosAtTick(bookedTick)
 			local posNext = car:getPosAtTick(bookedTick + 1)
 
 			if posNow then
