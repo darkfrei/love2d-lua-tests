@@ -63,25 +63,11 @@ function Sidebar:_build()
 		y = y + BTN_H + BTN_GAP
 	end
 
-	local function toolBtnPair(l1, k1, a1, l2, k2, a2)
-		local hw = (bw - 4) / 2
-		local b1 = makeBtn(x,          y, hw, BTN_H, l1, a1)
-		local b2 = makeBtn(x + hw + 4, y, hw, BTN_H, l2, a2)
-		b1._toolKey = k1
-		b2._toolKey = k2
-		self.buttons[#self.buttons + 1] = b1
-		self.buttons[#self.buttons + 1] = b2
-		y = y + BTN_H + BTN_GAP
-	end
-
 	if self.mode == "editor" then
 		local tools = self.context.tools
 		toolBtn("Select / Move", "select",    function() tools:setMode("select")    end)
 		toolBtn("Add Node",      "addNode",   function() tools:setMode("addNode")   end)
-		toolBtnPair(
-			"Linear", "addLinear", function() tools:setMode("addLinear") end,
-			"Bezier", "addBezier", function() tools:setMode("addBezier") end
-		)
+		toolBtn("Add Way", "addWay", function() tools:setMode("addWay") end)
 		btn("Fit View", function() if cb.fitView then cb.fitView() end end)
 		btn("Load Map", function() if cb.openLoad then cb.openLoad() end end)
 		btn("Save Map", function() if cb.openSave then cb.openSave() end end)

@@ -10,9 +10,9 @@ Car.__index = Car
 
 local RADIUS     = 20
 local MAX_SPEED  = 200    -- pixels per second
-local MIN_SPEED  = 40     -- pixels per second
-local MAX_ACCEL  = 80     -- pixels per second per second
-local MAX_BRAKE  = 120    -- pixels per second per second
+local MIN_SPEED  = 150     -- pixels per second
+local MAX_ACCEL  = 60     -- pixels per second per second
+local MAX_BRAKE  = 60    -- pixels per second per second
 local TICK_RATE  = 0.1    -- will be overwritten via setTickRate
 local SAFE_DIST2 = (RADIUS * 2 + 2) ^ 2
 

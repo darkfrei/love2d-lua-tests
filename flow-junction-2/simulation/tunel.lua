@@ -375,12 +375,12 @@ function M.draw(currentWorldTick, alpha)
 					love.graphics.setColor(car.color[1], car.color[2], car.color[3], 0.35)
 				end
 
-				love.graphics.circle("fill", x, y, 5)
+--				love.graphics.circle("fill", x, y, 5)
 
-				if bookedTick % 5 == 0 then
-					love.graphics.setColor(1, 1, 1, 0.25)
-					love.graphics.print(tostring(bookedTick), x + 8, y - 6)
-				end
+--				if bookedTick % 5 == 0 then
+--					love.graphics.setColor(1, 1, 1, 0.25)
+--					love.graphics.print(tostring(bookedTick), x + 8, y - 6)
+--				end
 			end
 		end
 	end

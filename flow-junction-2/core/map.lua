@@ -151,24 +151,21 @@ function Map.wayAt(map, wx, wy, radius)
 		local pts   = collectPts(map, way)
 
 		if #pts >= 2 then
-			if curve == "bezier" and #pts == 4 then
+			if curve == "bezier" and (#pts == 3 or #pts == 4) then
 				local prev = pts[1]
 
 				for i = 1, 20 do
 					local t = i / 20
 					local u = 1 - t
+					local x, y
 
-					local x =
-					u^3 * pts[1].x +
-					3 * u^2 * t * pts[2].x +
-					3 * u * t^2 * pts[3].x +
-					t^3 * pts[4].x
-
-					local y =
-					u^3 * pts[1].y +
-					3 * u^2 * t * pts[2].y +
-					3 * u * t^2 * pts[3].y +
-					t^3 * pts[4].y
+					if #pts == 3 then
+						x = u*u*pts[1].x + 2*u*t*pts[2].x + t*t*pts[3].x
+						y = u*u*pts[1].y + 2*u*t*pts[2].y + t*t*pts[3].y
+					else
+						x = u^3*pts[1].x + 3*u^2*t*pts[2].x + 3*u*t^2*pts[3].x + t^3*pts[4].x
+						y = u^3*pts[1].y + 3*u^2*t*pts[2].y + 3*u*t^2*pts[3].y + t^3*pts[4].y
+					end
 
 					local cur = { x = x, y = y }
 

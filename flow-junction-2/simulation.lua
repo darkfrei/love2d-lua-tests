@@ -19,7 +19,7 @@ Simulation.paused = false
 Simulation.speed  = 1
 
 Simulation.worldTick     = 1
-Simulation.spawnInterval = 0.1
+Simulation.spawnInterval = 0.2
 Simulation.tickInterval  = 0.1
 Simulation.tickTimer     = 0
 Simulation.spawnTimer    = 0
@@ -36,7 +36,7 @@ function Simulation.load(appContext)
 	Simulation.map    = Map.new()
 	Simulation.ui     = UIHub.new(Simulation, "simulation")
 
-	Simulation.spawnInterval = 0.5
+--	Simulation.spawnInterval = 0.5
 	Simulation.tickInterval  = 0.1
 	Simulation.tickTimer     = 0
 	Simulation.spawnTimer    = Simulation.spawnInterval
