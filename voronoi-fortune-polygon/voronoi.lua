@@ -23,6 +23,11 @@
 local Voronoi = {}
 Voronoi.__index = Voronoi
 
+-- LOVE2D bundles Lua 5.1 (or LuaJIT), where "unpack" is a global
+-- function; Lua 5.2+ moved it to table.unpack. This keeps the library
+-- working under both without changing behavior on the target runtime.
+local unpack = unpack or table.unpack
+
 local defaultBoundingPolygon = {50, 50, 750, 50, 750, 550, 50, 550}
 
 ----------------------------------------
@@ -403,14 +408,14 @@ end
 
 function Voronoi.new(boundingPolygon)
 	local diagram = setmetatable({
-			sites = {},
-			cells = {},
-			vertices = {},
-			edges = {},
-			delaunayEdges = {},
-			lastFallbackCount = 0,
-			boundingPolygon = defaultBoundingPolygon,
-			}, Voronoi)
+		sites = {},
+		cells = {},
+		vertices = {},
+		edges = {},
+		delaunayEdges = {},
+		lastFallbackCount = 0,
+		boundingPolygon = defaultBoundingPolygon,
+	}, Voronoi)
 
 	if boundingPolygon then
 		diagram:setBoundingPolygon(boundingPolygon)
@@ -638,7 +643,7 @@ function Voronoi:update()
 				local siteA = cells[i].site
 				local siteB = cells[j].site
 				local alreadyAdded = (visitedPairs[siteA] and visitedPairs[siteA][siteB])
-				or (visitedPairs[siteB] and visitedPairs[siteB][siteA])
+					or (visitedPairs[siteB] and visitedPairs[siteB][siteA])
 				if not alreadyAdded then
 					delaunayEdges[#delaunayEdges + 1] = { a = siteA, b = siteB }
 					visitedPairs[siteA] = visitedPairs[siteA] or {}

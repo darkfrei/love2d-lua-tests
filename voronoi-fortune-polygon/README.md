@@ -47,7 +47,16 @@ for that one site only.
 
 - `voronoi.lua`: the library. Framework independent except for the `draw*`
   and `exportGraphToClipboard` methods, which call LOVE2D functions.
-- `main.lua`: a LOVE2D demo showing how to use the library.
+- `polygon_utils.lua`: standalone polygon/geometry helpers used by the
+  demo (bounding boxes, centroid, area, edge/vertex picking, shared-border
+  detection, convex hull, random point sampling). No dependency on any
+  global demo state.
+- `recursive_subdivision.lua`: builds and maintains the recursive Voronoi
+  hierarchy (see Recursive subdivision below) - generation, recomputing
+  leaves, adjacency, and 4-coloring. Depends on `voronoi.lua` and
+  `polygon_utils.lua`.
+- `main.lua`: a LOVE2D demo showing how to use the library - state, input
+  handling, and the `love.*` callbacks. Requires the three files above.
 - `conf.lua`: LOVE2D window configuration (default resolution, resizing).
 
 ## Installation
@@ -236,7 +245,8 @@ Any extra fields you add (such as `color`) are preserved as is.
 
 ## Running the demo
 
-Place `voronoi.lua`, `main.lua`, and `conf.lua` in the same folder and run
+Place `voronoi.lua`, `polygon_utils.lua`, `recursive_subdivision.lua`,
+`main.lua`, and `conf.lua` in the same folder and run
 with LOVE2D:
 
 ```
@@ -278,9 +288,9 @@ Controls:
   the diagram's own sites, since they are not used in this mode. The
   first time it's turned on, it generates a fresh hierarchy; toggling it
   off and back on again reuses the same site coordinates.
-- 8: reroll the recursive subdivision with brand new random sites (and
-  colors) at every level, using the current bounding polygon as the root
-  shape. Also turns the mode on if it was off.
+- 8: reroll the recursive subdivision with brand new random sites at
+  every level, using the current bounding polygon as the root shape. Also
+  turns the mode on if it was off.
 
 ## Recursive subdivision
 
@@ -294,13 +304,27 @@ levels (`recursiveMaxDepth`, default 8). Each level is a flat list of
 sites at fixed, absolute coordinates (`recursiveLayers[depth]`), generated
 once (or on an explicit reroll, key 8) and never moved automatically.
 Rendering recomputes the whole hierarchy from scratch every time
-(`computeRecursiveLeaves`): starting from the root bounding polygon, it
-drops all of level 1's sites into a fresh `Voronoi` instance, then for
-each resulting cell, drops all of level 2's sites into another fresh
-`Voronoi` instance bounded by that cell, and so on down to the deepest
-level. A site only ever ends up subdividing whichever cell it
+(`RecursiveSubdivision.computeLeaves`): starting from the root bounding
+polygon, it drops all of level 1's sites into a fresh `Voronoi` instance,
+then for each resulting cell, drops all of level 2's sites into another
+fresh `Voronoi` instance bounded by that cell, and so on down to the
+deepest level. A site only ever ends up subdividing whichever cell it
 geometrically falls inside *at that moment* - this is exactly the
 library's ordinary `site.valid` / `pointInPolygon` check, nothing custom.
+
+Since `recursiveLayers[depth]` is one flat list shared across the entire
+tree (not split up per branch), a naive implementation would feed every
+point at that depth - including ones that obviously belong to a
+completely unrelated branch - into every single node's throwaway
+`Voronoi` instance, relying on `addSite`/`update()` alone to sort out
+which ones are actually valid there. That works, but it means paying for
+a full Fortune's sweep over hundreds of irrelevant points per node, which
+gets extremely slow for a large hierarchy (multiple seconds for a full
+FullHD hierarchy in testing). `computeLeaves` instead pre-filters with a
+plain `Voronoi.pointInPolygon` check - far cheaper than a full sweep -
+before constructing each node's Voronoi instance, so its actual
+computation only ever involves the handful of points (usually 0 to 4)
+that truly belong to it.
 
 The point of fixing the coordinates instead of rerolling them on every
 recompute is that dragging the outer bounding polygon (or, in principle,
@@ -314,37 +338,164 @@ reintroduces randomness, it's cheap enough to run on every mouse-move
 event while dragging a bounding polygon vertex or edge, so the whole
 hierarchy visibly reshapes live as you drag.
 
-Each leaf's fill color is inherited from its level-1 ancestor site,
-assigned once when that site's coordinates are generated and never
-re-rolled independently, so live recomputation during dragging never
-causes colors to flicker; only the cell outlines move.
+Rendering (`recursiveLeaves`) is a flat list of leaf polygons. Each one
+is filled using a proper 4-coloring of the map: `RecursiveSubdivision.
+buildLeafAdjacency` determines which leaves actually share a border (not
+just which vertices coincide - see below), and `RecursiveSubdivision.
+colorLeaves` assigns one of `RecursiveSubdivision.defaultFourColors` to
+each leaf so that no two bordering leaves ever get the same color. This
+is the classic four color theorem setting: any planar map can be colored
+this way with only 4 colors.
 
-Generation (`generateRecursiveLayers`) is a separate step from the
-recompute described above, and it does its own walk down the tree: it
-actually places `recursiveSitesPerCell` (default 2) points strictly
-inside every polygon it visits, using a throwaway `Voronoi` instance per
-branch purely to learn that branch's cell shapes, before moving on to the
-next level. This matters because merely scattering, say, 2^depth points
-independently over the whole root polygon (ignoring where the actual
-cells at that depth are) can easily leave some cells - usually small ones
-or ones far from the root's centroid - with zero points by pure chance,
-so they'd never subdivide further and would show up as a flat,
-unsubdivided patch. Guaranteeing per-cell coverage at generation time
-avoids that. The result is still stored as one flat list of fixed
-coordinates per depth (`recursiveLayers[depth]`), exactly like before, so
-the later recompute step is unaffected by this and remains just as cheap
-and just as safe to run during dragging.
+An earlier version of `colorLeaves` used DSATUR with backtracking, but
+DSATUR's core rule ("color whichever uncolored vertex currently has the
+most distinctly-colored neighbors") needs an O(n) rescan of every
+remaining vertex at each step, and still failed to find a full 4-coloring
+within a reasonable attempt budget on real generated hierarchies of a few
+hundred to a couple thousand leaves - the fallback color showed up far
+more than "rare". The current implementation instead uses smallest-last
+(degeneracy) ordering: repeatedly peel off whichever remaining vertex
+currently has the lowest residual degree (using bucket queues, so this
+only touches each edge a constant number of times, close to O(n + m)
+overall), then color in the reverse of that peeling order, taking the
+lowest available color at each step. Benchmarked against the old DSATUR
+approach on real generated hierarchies of up to about 1100 leaves,
+smallest-last ordering alone already found a full 4-coloring in a single
+pass in most cases, one to two orders of magnitude faster - because
+peeling by residual degree only ever touches a vertex's immediate
+neighbors, never the whole remaining vertex set. `colorLeaves` still
+tries a few restarts (`restartAttempts`, default 3) with a randomized
+tiebreak for diversity among equal-degree vertices.
 
-With the default depth of 8 and 2 sites per cell, the hierarchy can
-produce up to 256 leaf cells at generation time. After that, dragging the
-root polygon can still leave a cell with zero points inside it if the
-distortion is severe enough to push both of its points out - that's
-expected and matches ordinary invalid-site behavior, not a bug; press 8
-to reroll if you want full coverage again. `recursiveMaxDepth` and
-`recursiveSitesPerCell` are plain, easily adjustable local variables in
+Whatever conflicts remain after a given restart's greedy pass (typically
+none, and rarely more than a handful even on graphs with over a thousand
+leaves) are handed to Kempe chain repair, applied to *every* restart
+attempt rather than only to whichever one happened to have the fewest
+raw conflicts before repair. That distinction matters: an attempt with
+fewer raw conflicts isn't necessarily easier to repair than one with
+more, so picking the "best" attempt before repair and only fixing that
+one can end up keeping a harder-to-repair coloring over an easier one -
+in testing, this was the actual reason a couple of leaves would
+occasionally end up in the fallback color even after repair, not a flaw
+in the repair logic itself.
+
+The repair step (`kempeChainRepair`) itself also runs multiple passes
+over the leftover conflicts rather than a single left-to-right scan: for
+a conflicted leaf, it picks one of its neighbors' colors and a second
+color, then flips every leaf reachable from that neighbor through leaves
+colored only one of those two colors (a "Kempe chain") to the other
+color. This never breaks validity anywhere else in the map - that's the
+classical argument behind Kempe chains - so if the flip frees up a color
+for the conflicted leaf, it's always safe to apply. Fixing one leaf this
+way can change colors elsewhere in the graph, which can in turn free up
+a color for some *other* conflicted leaf that appeared earlier in the
+same left-to-right scan and had already been given up on for that pass;
+repeating the pass until it makes no further progress (bounded to 5
+passes) catches those knock-on fixes instead of leaving a leaf in
+fallback purely because of scan order. Only in the extremely unlikely
+case a conflict survives everything above does a leaf get drawn in
+`RecursiveSubdivision.defaultFallbackColor` instead of silently repeating
+a neighbor's color - in stress testing (50 randomly generated full-size
+hierarchies, up to about 1300 leaves each), this happened for exactly one
+leaf in one hierarchy out of 50.
+
+Determining adjacency isn't just a matter of matching vertex coordinates
+between leaves, because two neighboring leaves in the hierarchy are very
+often subdivided to different depths on either side of their shared
+border: one side might have a single long edge facing several shorter
+edges on the other side (a "T-junction"), so vertex-for-vertex matching
+would miss the connection entirely. `PolygonUtils.sharesBorder` instead
+checks, for every edge pair between two leaves, whether they're collinear
+and overlap by more than a tiny length - which correctly detects a shared
+border regardless of how differently each side happened to subdivide.
+Bounding-box overlap (`PolygonUtils.boundsOverlap`) is checked first as a
+cheap rejection test, since the vast majority of leaf pairs aren't
+anywhere near each other and don't need the more expensive per-edge
+check. Both tolerances (the bounding-box epsilon and the collinearity
+check) are deliberately tight, well under a pixel: these edges come from
+exact geometric clipping, not noisy measurements, so a loose tolerance
+mostly just risks false-positive adjacency between deep, tiny cells that
+pass close to each other without truly sharing a border - which inflates
+the graph for no real reason and was the main cause of frequent
+fallback-colored leaves before this was tightened.
+
+Coloring is recomputed less often than the leaf geometry itself: dragging
+a bounding polygon vertex or edge keeps `recursiveLeaves` live-updated
+every frame (cheap), but only re-solves adjacency and coloring
+(`recolorRecursiveLeaves` in `main.lua`) when the drag ends, or on
+explicit triggers (reroll, toggling the mode on, picking a new root
+polygon) - full recoloring is meaningfully more expensive than just
+recomputing leaf outlines, and the leaf boundaries barely change between
+one drag frame and the next anyway, so there's little benefit to redoing
+it on every single frame.
+
+Both adjacency and coloring are recomputed every time
+`regenerateRecursiveLeaves` runs, including live during dragging, same as
+the leaf polygons themselves.
+
+Generation (`RecursiveSubdivision.generateLayers`) is a separate step
+from the recompute described above, and it processes the tree level by
+level (breadth-first), not branch by branch (depth-first): every polygon
+still alive at depth N gets a chance to subdivide before any of them
+proceeds to depth N+1. For each one, it rolls a random subdivision count
+via `randomSubdivisionCount` - mostly 2, sometimes 3, rarely 4, weighted
+by `recursiveCountWeights` (65% / 28% / 7% by default) - and places that
+many points strictly inside that specific polygon, using a throwaway
+`Voronoi` instance per polygon purely to learn its cell shapes for the
+next level down. This matters for two separate reasons:
+
+- Merely scattering points independently over the whole root polygon
+  (ignoring where the actual cells at that depth are) can easily leave
+  some cells - usually small ones, or ones far from the root's centroid -
+  with zero points by pure chance, so they'd never subdivide further and
+  would show up as a flat, unsubdivided patch. Placing points per actual
+  polygon avoids that.
+- Processing level by level rather than branch by branch matters because
+  of `recursiveMaxTotalSites` (see below): with a depth-first walk, the
+  first-explored branch could recurse all the way to `recursiveMaxDepth`
+  and spend the whole site budget on itself, leaving every other branch -
+  including large ones, purely due to traversal order - stuck with no
+  subdivision at all. Spending the budget level by level instead means it
+  runs out (if it ever does) evenly across whatever is still being
+  subdivided at that depth, not lopsidedly against whichever branch
+  happened to be visited last.
+
+The result is still stored as one flat list of fixed coordinates per
+depth (`recursiveLayers[depth]`), exactly like before, so the later
+recompute step is unaffected by any of this and remains just as cheap and
+just as safe to run during dragging.
+
+After a branch's points are placed, they're relaxed twice (one step of
+Lloyd's algorithm, twice: move each site to its own cell's centroid,
+recompute, repeat) before recursing into the next level - the same
+Lloyd's step as the standalone relax feature (key 5), just applied
+automatically per branch at generation time. This is purely cosmetic: it
+tends to produce more evenly sized cells with fewer thin slivers than raw
+random placement, and doesn't affect dragging safety, which only depends
+on the final coordinates being fixed, not on how they were chosen. The
+relaxed coordinates, not the original random ones, are what get stored
+into `recursiveLayers[depth]` and used from then on.
+
+Before subdividing a polygon, `walk` also checks its area against
+`recursiveMinAreaFraction` (0.1% of the root polygon's area by default):
+below that, the polygon stops subdividing and stays a leaf, however
+shallow. This only ever affects small cells - a large cell's area never
+drops near the threshold just because other, unrelated cells are tiny -
+so big regions keep subdividing normally down to `recursiveMaxDepth`
+while thin slivers and other small leftover slices stop early instead of
+fracturing into a dense tangle of barely visible lines.
+
+With the default depth of 8 and mostly-2-sometimes-more sites per cell,
+the hierarchy can produce a few hundred leaf cells at generation time.
+After that, dragging the root polygon can still leave a cell with zero
+points inside it if the distortion is severe enough to push all of its
+points out - that's expected and matches ordinary invalid-site behavior,
+not a bug; press 8 to reroll if you want full coverage again.
+`recursiveMaxDepth`, `recursiveCountWeights`, and
+`recursiveMinAreaFraction` are plain, easily adjustable local variables in
 `main.lua`; every intermediate diagram in the hierarchy is cheap
 regardless, since none of them ever holds more than one branch's worth of
-sites at a time.
+sites (2 to 4) at a time.
 
 ## Roadmap
 
