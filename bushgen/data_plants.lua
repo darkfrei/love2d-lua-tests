@@ -1,0 +1,192 @@
+-- data_plants.lua
+-- presets for bushgen: one entry per plant kind
+--
+-- palette: hue in degrees, from darkest (h0, s0, v0) to lightest (h1, s1, v1),
+--   n colours; dark end is cool and blue, light end warm and yellow
+-- crease: how many ramp steps a part loses where a closer part overlaps it
+-- gap: highest ramp step allowed in such a crease (0 = darkest colour)
+-- fringe: chance (0..1) that a light pixel hangs down into darker one below
+-- texture: chance (0..1) per grid cell to stamp a tiny leaf
+-- noise: random jitter of the shade before rounding to a ramp step
+-- contrast: stretches the light around the middle (1 = unchanged)
+-- edgeTips: chance to grow small leaf tips out of the silhouette
+-- bark: branch colour (hue, sat, value), barkShow: up to which ramp step it shows
+-- fold: how strongly the two halves of a leaf differ in light
+
+local green = {h0 = 195, h1 = 78, s0 = 0.55, s1 = 0.62, v0 = 0.13, v1 = 0.86, n = 7}
+local moss  = {h0 = 190, h1 = 85, s0 = 0.55, s1 = 0.65, v0 = 0.15, v1 = 0.80, n = 5}
+local lime  = {h0 = 185, h1 = 66, s0 = 0.55, s1 = 0.58, v0 = 0.16, v1 = 0.92, n = 7}
+local deep  = {h0 = 200, h1 = 95, s0 = 0.60, s1 = 0.65, v0 = 0.11, v1 = 0.74, n = 7}
+local pale  = {h0 = 180, h1 = 70, s0 = 0.50, s1 = 0.55, v0 = 0.16, v1 = 0.88, n = 7}
+local teal  = {h0 = 205, h1 = 140, s0 = 0.55, s1 = 0.45, v0 = 0.14, v1 = 0.80, n = 7}
+
+return {
+	{
+		name = "round",
+		kind = "blob",
+		palette = green,
+		radius = {11, 13},
+		squash = 0.88,
+		clumps = {14, 20},
+		clumpRadius = {3.2, 5.0},
+		crease = 3, gap = 1, fringe = 0.0,
+	},
+	{
+		name = "foliage",
+		kind = "blob",
+		palette = lime,
+		radius = {11, 13},
+		squash = 0.88,
+		clumps = {12, 16},
+		clumpRadius = {3.5, 5.0},
+		crease = 3, gap = 1, fringe = 0.35,
+		texture = 0.5, edgeTips = 0.3,
+	},
+	{
+		name = "sphere",
+		kind = "sphere",
+		palette = moss,
+		radius = {11, 12.5},
+		squash = 1.0,
+		clumps = {6, 9},
+		clumpRadius = {2.5, 3.5},
+		crease = 1, gap = 3, fringe = 0.0,
+		texture = 0.9, noise = 0.0, contrast = 1.5, edgeTips = 0.35,
+	},
+	{
+		name = "hedge",
+		kind = "hedge",
+		palette = deep,
+		length = {8, 12},
+		radius = {7, 8.5},
+		squash = 0.9,
+		clumps = {22, 30},
+		clumpRadius = {2.6, 3.8},
+		crease = 3, gap = 0, fringe = 0.4, texture = 0.4,
+		edgeTips = 0.35, contrast = 1.35,
+		bark = {h = 18, s = 0.6, v = 0.45}, barkShow = 3,
+	},
+	{
+		name = "fine",
+		kind = "blob",
+		palette = teal,
+		radius = {10, 12},
+		squash = 0.85,
+		clumps = {45, 60},
+		clumpRadius = {2.0, 3.0},
+		crease = 2, gap = 2, fringe = 0.2,
+	},
+	{
+		name = "cluster",
+		kind = "cluster",
+		palette = green,
+		parts = {2, 4},
+		radius = {5.5, 8},
+		squash = 0.85,
+		clumps = {6, 10},
+		clumpRadius = {2.5, 3.6},
+		crease = 3, gap = 1, fringe = 0.3,
+	},
+	{
+		name = "leafy",
+		kind = "leafy",
+		palette = lime,
+		radius = {9, 11},
+		squash = 0.85,
+		leaves = {38, 50},
+		leafLength = {3.5, 5.5},
+		leafWidth = {1.4, 1.9},
+		crease = 3, gap = 1, fold = 0.6, noise = 0.05,
+	},
+	{
+		name = "spiky",
+		kind = "rosette",
+		palette = deep,
+		leaves = {7, 10},
+		leafLength = {10, 13},
+		leafWidth = {2.2, 2.8},
+		lift = {1, 3},
+		arc = {0.9, 1.0},
+		droop = 0.3,
+		innerShrink = 0.15,
+		foreshorten = 0.8,
+		crease = 3, gap = 0, fold = 1.0, noise = 0.05,
+	},
+	{
+		name = "fern",
+		kind = "fern",
+		palette = green,
+		leaves = {6, 8},
+		leafLength = {10, 13},
+		lift = {2, 4},
+		leafletLength = 3.5,
+		leafletWidth = 1.5,
+		foreshorten = 0.8,
+		crease = 3, gap = 0, fold = 0.4, noise = 0.05,
+	},
+	{
+		name = "broad",
+		kind = "rosette",
+		palette = pale,
+		leaves = {9, 12},
+		leafLength = {10, 13},
+		leafWidth = {3.2, 4.0},
+		lift = {1.5, 3.5},
+		arc = {0.9, 1.0},
+		droop = 0.5,
+		foreshorten = 0.8,
+		crease = 3, gap = 1, fold = 0.8, noise = 0.05,
+	},
+	{
+		name = "grass",
+		kind = "tuft",
+		palette = pale,
+		leaves = {7, 10},
+		leafLength = {8, 12},
+		leafWidth = {1.8, 2.3},
+		lift = {7, 11},
+		arc = {0.6, 0.85},
+		foreshorten = 0.6,
+		crease = 2, gap = 1, noise = 0.0, contrast = 1.2,
+	},
+	{
+		name = "tiered",
+		kind = "tiered",
+		palette = deep,
+		tiers = {3, 5},
+		radius = {9, 11},
+		squash = 0.45,
+		tierHeight = 0.42,
+		taper = 0.6,
+		clumps = {9, 9},
+		clumpRadius = {2.0, 3.2},
+		crease = 3, gap = 0, fringe = 0.3, edgeTips = 0.3,
+	},
+	{
+		name = "bramble",
+		kind = "bramble",
+		palette = green,
+		stems = {2, 4},
+		stemLength = {4.5, 6.5},
+		fan = 1.3,
+		depth = 3,
+		jointLeaves = 0.5,
+		clumpRadius = {2.2, 3.4},
+		crease = 3, gap = 1, fringe = 0.2, edgeTips = 0.25,
+		bark = {h = 24, s = 0.5, v = 0.5},
+	},
+	{
+		name = "bigleaf",
+		kind = "rosette",
+		palette = green,
+		leaves = {6, 8},
+		leafLength = {9, 12},
+		leafWidth = {3.8, 4.6},
+		lift = {2, 4},
+		arc = {0.9, 1.0},
+		droop = 1.5,
+		innerShrink = 0.35,
+		foreshorten = 0.8,
+		crease = 3, gap = 0, fold = 0.5, noise = 0.0, spot = 0.3,
+	},
+}
